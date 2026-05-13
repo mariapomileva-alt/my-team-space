@@ -1,8 +1,12 @@
 GitHub Pages for this repo (project site URL: https://mariapomileva-alt.github.io/my-team-space/)
 
+FASTEST FIX (no Actions required)
+- This repo includes a pre-built static site in the **docs/** folder (regenerated with `npm run pages:docs`).
+- GitHub: **Settings → Pages → Deploy from a branch → Branch: main → Folder: /docs** (NOT "/ (root)").
+- If the folder is **/** (root), GitHub Pages shows **README.md** — that looks exactly like the default Next.js "Getting Started" page.
+
 WHY YOU SAW THE DEFAULT NEXT PAGE
-- GitHub Pages was probably serving an old "Deploy from branch" folder, or a build without this repo's app/page.tsx.
-- This project needs a STATIC EXPORT (next build -> out/) with BASE_PATH=/my-team-space.
+- Pages was serving **README from root**, not the Next.js app. Next.js source is not run by GitHub Pages; only static HTML in **docs/** (or Actions artifact) works.
 
 ALREADY IN THE REPO (after you pull latest)
 - next.config.ts: output: "export", images unoptimized, basePath from env BASE_PATH
