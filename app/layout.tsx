@@ -9,9 +9,9 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "MyTeamSpace — one beautiful link for your whole team",
+  title: "MyTeamSpace — your team, finally in one space",
   description:
-    "A team space for sports clubs, schools, and kids communities. Schedules, announcements, results, trips, achievements — no app download. Transparent for parents, fun for kids, easy for coaches.",
+    "A beautiful digital home for youth teams: schedules, announcements, achievements, trips, and gamification — one link in the browser, no app for parents.",
 };
 
 export default function RootLayout({
