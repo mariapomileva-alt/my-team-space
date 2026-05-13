@@ -23,24 +23,24 @@ import { motion } from "framer-motion";
 import { saveTeamPreviewLocal, clearTeamPreviewLocal } from "@/lib/preview-storage";
 
 const BLOCK_LABELS: Record<BlockInstance["type"], string> = {
-  hero: "Шапка страницы",
-  announcement_bar: "Бегущая строка / объявления",
-  calendar: "Календарь",
-  schedule: "Расписание на неделю",
-  results: "Результаты и доска",
-  achievements: "Награды и серии",
-  team_feed: "Лента команды",
-  attendance: "Посещаемость",
-  camp_trip: "Сбор / поездка",
-  contacts: "Контакты",
-  documents: "Документы",
-  polls: "Опросы",
-  gallery: "Фотогалерея",
-  sponsors: "Партнёры",
-  weather: "Погода",
-  countdown: "Обратный отсчёт",
-  birthdays: "Дни рождения",
-  quick_links: "Быстрые ссылки",
+  hero: "Hero header",
+  announcement_bar: "Announcement bar",
+  calendar: "Calendar",
+  schedule: "Weekly schedule",
+  results: "Results & board",
+  achievements: "Achievements & streaks",
+  team_feed: "Team feed",
+  attendance: "Attendance",
+  camp_trip: "Camp & trip",
+  contacts: "Contacts",
+  documents: "Documents",
+  polls: "Polls",
+  gallery: "Photo gallery",
+  sponsors: "Partners",
+  weather: "Weather",
+  countdown: "Countdown",
+  birthdays: "Birthdays",
+  quick_links: "Quick links",
 };
 
 function SortableRow({
@@ -70,7 +70,7 @@ function SortableRow({
       <button
         type="button"
         className="touch-manipulation cursor-grab px-1 text-zinc-400 active:cursor-grabbing"
-        aria-label="Перетащить"
+        aria-label="Reorder"
         {...attributes}
         {...listeners}
       >
@@ -138,12 +138,12 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              Конструктор страницы
+              Page editor
             </p>
             <h1 className="text-xl font-bold">{team.name}</h1>
             <p className="mt-1 max-w-xl text-sm text-zinc-600">
-              Это не приложение из стора — одна веб-страница по ссылке. Соберите её блоками и
-              отправьте родителям обычный URL.
+              Not an app store download — one public webpage per link. Stack blocks here and share
+              the URL with families.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -154,14 +154,14 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
               }}
               className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
             >
-              Сохранить черновик (этот браузер)
+              Save draft (this browser)
             </button>
             <button
               type="button"
               onClick={() => clearTeamPreviewLocal(team.slug)}
               className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700"
             >
-              Сбросить черновик
+              Clear saved draft
             </button>
             <Link
               href={`/${team.slug}`}
@@ -169,10 +169,10 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
               rel="noopener noreferrer"
               className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
             >
-              Открыть страницу команды
+              Open team page
             </Link>
             <Link href="/" className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold">
-              На главную
+              Home
             </Link>
           </div>
         </div>
@@ -180,9 +180,9 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
 
       <main className="mx-auto max-w-3xl space-y-10 px-4 py-8 sm:px-8">
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold">Цветовая тема страницы</h2>
+          <h2 className="text-lg font-bold">Color theme</h2>
           <p className="mt-1 text-sm text-zinc-600">
-            Готовые палитры: можно сменить внешний вид всей веб-страницы одним выбором.
+            Ready-made palettes — change the whole page look with one click.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {THEMES.map((t) => (
@@ -214,11 +214,11 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
         </section>
 
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold">Блоки на странице</h2>
+          <h2 className="text-lg font-bold">Page blocks</h2>
           <p className="mt-1 text-sm text-zinc-600">
-            Перетащите порядок, включайте и выключайте блоки. Нажмите{" "}
-            <strong>Сохранить черновик</strong> и откройте страницу команды — увидите правки в этом
-            браузере. Позже всё будет сохраняться в облаке (Supabase).
+            Drag to reorder, toggle blocks on or off, then <strong>Save draft</strong> and open the
+            team page — you&apos;ll see changes in this browser. Cloud save with Supabase comes
+            next.
           </p>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
             <SortableContext items={blocksSorted.map((b) => b.id)} strategy={verticalListSortingStrategy}>
@@ -232,7 +232,7 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
         </section>
 
         <p className="text-center text-xs text-zinc-500">
-          Черновик хранится в браузере (localStorage). В продакшене — таблица команд и RLS в
+          Draft is stored in the browser (localStorage). In production — teams table and RLS in
           Supabase.
         </p>
       </main>

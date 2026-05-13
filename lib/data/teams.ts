@@ -13,13 +13,13 @@ export const MOCK_TEAMS: TeamSpace[] = [
     secondaryColor: "#0ea5e9",
     themeId: "sharky_aqua",
     plan: "pro",
-    tagline: "Одна страница в браузере для родителей, детей и тренера.",
+    tagline: "One browser page for parents, athletes, and coaches.",
     blocks: sharkyBlocks.map((b) =>
       b.type === "hero"
         ? {
             ...b,
             settings: {
-              quote: "Влюбляйтесь в старт вместе.",
+              quote: "Fall in love with racing together.",
               coverStyle: "gradient",
             },
           }
@@ -35,7 +35,7 @@ export const MOCK_TEAMS: TeamSpace[] = [
     secondaryColor: "#38bdf8",
     themeId: "premium_forest",
     plan: "club",
-    tagline: "Маленькие гребки — большие мечты. Всё на одной странице.",
+    tagline: "Small strokes. Big dreams — all on one page.",
     blocks: createDefaultBlocks(),
   },
   {
@@ -47,7 +47,7 @@ export const MOCK_TEAMS: TeamSpace[] = [
     secondaryColor: "#f472b6",
     themeId: "pastel_youth",
     plan: "free",
-    tagline: "Ритм и уверенность — делитесь одной ссылкой с родителями.",
+    tagline: "Rhythm and confidence — share one link with families.",
     blocks: createDefaultBlocks(),
   },
 ];

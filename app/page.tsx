@@ -7,47 +7,47 @@ export default function MarketingHome() {
         <span className="text-lg font-extrabold tracking-tight">MyTeamSpace</span>
         <nav className="flex flex-wrap gap-2 text-sm font-semibold">
           <Link href="/sharky" className="rounded-full bg-zinc-900 px-4 py-2 text-white">
-            Пример страницы команды
+            Demo team page
           </Link>
           <Link
             href="/admin/sharky"
             className="rounded-full border border-zinc-200 px-4 py-2 text-zinc-700"
           >
-            Редактор (демо)
+            Page editor (demo)
           </Link>
         </nav>
       </header>
 
       <main className="mx-auto max-w-6xl px-6 pb-24 pt-4">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-600">
-          Не приложение — обычный сайт
+          A website — not an app store download
         </p>
         <h1 className="mt-4 max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-5xl">
-          Конструктор{" "}
+          A micro{" "}
           <span className="bg-gradient-to-r from-sky-600 to-orange-500 bg-clip-text text-transparent">
-            одной веб-страницы
+            page builder
           </span>{" "}
-          для команды: как микро-Тильда, но под спорт и детские клубы.
+          for your team: Tilda-style blocks for sports clubs, schools, and kids communities.
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600">
-          Тренер сам включает блоки, меняет цвета и текст — родители и ученики открывают{" "}
-          <strong>одну ссылку в браузере</strong>. Ничего не ставят из магазинов приложений: это
-          привычная веб-страница с расписанием, новостями, автобусом, результатами и контактами.
+          Coaches toggle blocks, colors, and copy — parents and athletes open{" "}
+          <strong>one link in the browser</strong>. No install: it&apos;s a normal web page with
+          schedule, news, trips, results, and contacts.
         </p>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-3">
           {[
             {
-              t: "Свой адрес",
-              d: "Например: ваш-сайт.ru/sharky — логотип, цвета и блоки только вашей команды.",
+              t: "Your own URL",
+              d: "e.g. myteamspace.app/sharky — logo, colors, and blocks unique to your team.",
             },
             {
-              t: "Конструктор блоков",
-              d: "Включить / выключить / перетащить блоки — без кода, за несколько минут.",
+              t: "Block constructor",
+              d: "Enable, disable, reorder — no code, ready in minutes.",
             },
             {
-              t: "Для родителей и детей",
-              d: "Крупные кнопки, понятные карточки, всё читается с телефона в Safari или Chrome.",
+              t: "Parents & kids",
+              d: "Large tap targets, clear cards; works great on mobile Safari and Chrome.",
             },
           ].map((x) => (
             <div
@@ -61,7 +61,7 @@ export default function MarketingHome() {
         </div>
 
         <p className="mt-16 text-center text-sm text-zinc-500">
-          Технически: Next.js + Tailwind + позже Supabase для сохранения страниц команд в облаке.
+          Built with Next.js and Tailwind; Supabase next for saving each team&apos;s page in the cloud.
         </p>
       </main>
     </div>

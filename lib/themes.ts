@@ -16,8 +16,8 @@ export type ThemeDefinition = {
 export const THEMES: ThemeDefinition[] = [
   {
     id: "sharky_aqua",
-    label: "Аква «Шарки»",
-    description: "Тёмно-синий, бирюза, белый — как у триатлон-команды",
+    label: "Sharky Aqua",
+    description: "Deep blue, aqua, white — triathlon energy",
     cssVars: {
       "--mts-page-bg":
         "linear-gradient(165deg, #e8f4fc 0%, #cfe8f5 35%, #b8dce8 100%)",
@@ -38,8 +38,8 @@ export const THEMES: ThemeDefinition[] = [
   },
   {
     id: "dark_athletic",
-    label: "Тёмный athletic",
-    description: "Ночной режим с лаймовыми акцентами",
+    label: "Dark athletic",
+    description: "Night mode with electric lime highlights",
     cssVars: {
       "--mts-page-bg": "linear-gradient(180deg, #0c0f14 0%, #121820 100%)",
       "--mts-card": "linear-gradient(180deg, #151b24 0%, #10151c 100%)",
@@ -59,8 +59,8 @@ export const THEMES: ThemeDefinition[] = [
   },
   {
     id: "energetic_orange",
-    label: "Энергичный оранжевый",
-    description: "Закат и драйв для мотивации",
+    label: "Energetic orange",
+    description: "High-energy sunset workout vibe",
     cssVars: {
       "--mts-page-bg":
         "linear-gradient(170deg, #fff7ed 0%, #ffedd5 45%, #fed7aa 100%)",
@@ -81,8 +81,8 @@ export const THEMES: ThemeDefinition[] = [
   },
   {
     id: "minimal_mono",
-    label: "Минимализм моно",
-    description: "Спокойная чёрно-белая подача",
+    label: "Minimal mono",
+    description: "Editorial black & white calm",
     cssVars: {
       "--mts-page-bg": "linear-gradient(180deg, #fafafa 0%, #f4f4f5 100%)",
       "--mts-card": "#ffffff",
@@ -102,8 +102,8 @@ export const THEMES: ThemeDefinition[] = [
   },
   {
     id: "premium_forest",
-    label: "Премиум лес",
-    description: "Глубокий зелёный — доверие и outdoor",
+    label: "Premium forest",
+    description: "Deep green trust & outdoor clubs",
     cssVars: {
       "--mts-page-bg":
         "linear-gradient(165deg, #ecfdf5 0%, #d1fae5 40%, #a7f3d0 100%)",
@@ -124,8 +124,8 @@ export const THEMES: ThemeDefinition[] = [
   },
   {
     id: "pastel_youth",
-    label: "Пастель для детей",
-    description: "Мягко и дружелюбно для детей и родителей",
+    label: "Pastel youth",
+    description: "Soft, friendly for kids & parents",
     cssVars: {
       "--mts-page-bg":
         "linear-gradient(160deg, #fdf4ff 0%, #e0f2fe 45%, #fef9c3 100%)",

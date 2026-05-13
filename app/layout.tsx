@@ -9,9 +9,9 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "MyTeamSpace — конструктор веб-страницы команды для тренера",
+  title: "MyTeamSpace — team webpage builder for coaches",
   description:
-    "Не приложение: одна страница в браузере для родителей и учеников. Блоки, цвета, расписание и новости — как лёгкий конструктор сайта для спортивных команд.",
+    "Not an app: one browser page for parents and athletes. Blocks, colors, schedule, and news — a lightweight site builder for sports teams.",
 };
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${dmSans.variable} h-full antialiased`}>
+    <html lang="en" className={`${dmSans.variable} h-full antialiased`}>
       <body className="min-h-full font-[family-name:var(--font-mts)]">{children}</body>
     </html>
   );
