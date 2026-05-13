@@ -34,6 +34,8 @@ npm run pages:docs:root
 Use **`pages:docs`** only for the default project URL  
 `https://mariapomileva-alt.github.io/my-team-space/`.
 
+**Trade-off:** after you switch to `pages:docs:root` and push, that long `github.io/.../my-team-space/` URL is no longer the right place to test the site (paths are for domain root). Prefer **`https://myteamspace.cc`** (or a preview) for QA.
+
 ### Namecheap Advanced DNS (replace parking)
 
 1. **Remove** the `www` CNAME pointing to `parkingpage.namecheap.com`.
