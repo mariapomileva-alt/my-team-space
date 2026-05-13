@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* Theme tokens applied via `.mts-shell` inline vars from lib/themes.ts */
+.mts-shell {
+  min-height: 100vh;
+  background: var(--mts-page-bg);
+  color: var(--mts-text);
+}
+
+.mts-card {
+  background: var(--mts-card);
+  border-color: var(--mts-card-border);
+  border-radius: var(--mts-radius);
+  box-shadow: var(--mts-shadow);
+}
+
+@theme inline {
+  --font-sans: var(--font-mts), ui-sans-serif, system-ui, sans-serif;
+}
