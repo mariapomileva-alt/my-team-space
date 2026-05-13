@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "pages:docs": "sh -c 'BASE_PATH=/my-team-space npm run build && rm -rf docs && mkdir -p docs && cp -R out/. docs/ && touch docs/.nojekyll'",
+    "pages:docs:root": "sh -c 'BASE_PATH= npm run build && rm -rf docs && mkdir -p docs && cp -R out/. docs/ && touch docs/.nojekyll && printf %s myteamspace.cc > docs/CNAME'",
     "start": "next start",
     "lint": "eslint"
   },

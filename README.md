@@ -21,6 +21,38 @@ npm run pages:docs
 
 Commit and push the updated `docs/` folder (or switch to GitHub Actions — see `DEPLOY_GITHUB_PAGES.txt`).
 
+## Custom domain (`myteamspace.cc`) on GitHub Pages
+
+Your repo already includes `docs/CNAME` with **`myteamspace.cc`** (apex). GitHub will serve the `docs/` output at **`https://myteamspace.cc/`** (site root), not under `/my-team-space/`.
+
+Because of that, the static export **must be built without** `BASE_PATH` so asset URLs are `/_next/...` instead of `/my-team-space/_next/...`:
+
+```bash
+npm run pages:docs:root
+```
+
+Use **`pages:docs`** only for the default project URL  
+`https://mariapomileva-alt.github.io/my-team-space/`.
+
+### Namecheap Advanced DNS (replace parking)
+
+1. **Remove** the `www` CNAME pointing to `parkingpage.namecheap.com`.
+2. **Remove** the `@` URL Redirect to `http://www.myteamspace.cc/` (or it will fight GitHub).
+3. **Add four A records** for the apex `@` (GitHub Pages):
+
+   | Type | Host | Value            | TTL     |
+   |------|------|------------------|---------|
+   | A    | `@`  | `185.199.108.153` | 30 min or Automatic |
+   | A    | `@`  | `185.199.109.153` | same |
+   | A    | `@`  | `185.199.110.153` | same |
+   | A    | `@`  | `185.199.111.153` | same |
+
+   (Official list: [GitHub — configuring an apex domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-an-apex-domain).)
+
+4. In the GitHub repo: **Settings → Pages → Custom domain** enter **`myteamspace.cc`**, save, wait for DNS check, then enable **Enforce HTTPS** when it appears.
+
+**Optional `www`:** add a **CNAME** record: Host `www`, Value `mariapomileva-alt.github.io.`, then add **`www.myteamspace.cc`** under the same Pages custom-domain UI if you want both hosts.
+
 ## Local dev
 
 ```bash
