@@ -1,0 +1,73 @@
+GitHub Pages for this repo (project site URL: https://mariapomileva-alt.github.io/my-team-space/)
+
+WHY YOU SAW THE DEFAULT NEXT PAGE
+- GitHub Pages was probably serving an old "Deploy from branch" folder, or a build without this repo's app/page.tsx.
+- This project needs a STATIC EXPORT (next build -> out/) with BASE_PATH=/my-team-space.
+
+ALREADY IN THE REPO (after you pull latest)
+- next.config.ts: output: "export", images unoptimized, basePath from env BASE_PATH
+- app/admin/[slug]/page.tsx: generateStaticParams for static export
+
+OPTION A — GitHub Actions (recommended)
+1. Repo Settings → Pages → Build and deployment → Source: GitHub Actions (not "Deploy from branch").
+2. Add this file in the repo: .github/workflows/deploy-github-pages.yml
+   If git push rejects the file (PAT missing "workflow" scope), create the file in GitHub: Add file → Create new file → paste YAML below.
+3. Push to main; wait for the "Deploy GitHub Pages" workflow; open the site again (hard refresh).
+
+--- YAML (save as .github/workflows/deploy-github-pages.yml) ---
+
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          BASE_PATH: /my-team-space
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+--- end YAML ---
+
+OPTION B — Manual (no Actions)
+From repo root on your machine:
+  BASE_PATH=/my-team-space npm ci && BASE_PATH=/my-team-space npm run build
+Upload the contents of the "out" folder to the branch GitHub Pages uses (often gh-pages), or attach as artifact — Actions is easier.
+
+LOCAL PREVIEW OF STATIC BUILD
+  BASE_PATH=/my-team-space npm run build
+  npx serve out
+Open http://localhost:3000/my-team-space/
+
+If your repository name is NOT "my-team-space", change BASE_PATH to /your-repo-name (must match the path after github.io).
