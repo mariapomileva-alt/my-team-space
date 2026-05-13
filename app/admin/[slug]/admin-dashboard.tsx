@@ -23,24 +23,24 @@ import { motion } from "framer-motion";
 import { saveTeamPreviewLocal, clearTeamPreviewLocal } from "@/lib/preview-storage";
 
 const BLOCK_LABELS: Record<BlockInstance["type"], string> = {
-  hero: "Hero header",
-  announcement_bar: "Announcement bar",
-  calendar: "Calendar",
-  schedule: "Weekly schedule",
-  results: "Results & leaderboard",
-  achievements: "Achievements / trophies",
-  team_feed: "Team feed",
-  attendance: "Attendance",
-  camp_trip: "Camp & trip organizer",
-  contacts: "Contacts",
-  documents: "Documents",
-  polls: "Polls",
-  gallery: "Photo gallery",
-  sponsors: "Sponsors",
-  weather: "Weather",
-  countdown: "Countdown",
-  birthdays: "Birthdays",
-  quick_links: "Quick links",
+  hero: "Шапка страницы",
+  announcement_bar: "Бегущая строка / объявления",
+  calendar: "Календарь",
+  schedule: "Расписание на неделю",
+  results: "Результаты и доска",
+  achievements: "Награды и серии",
+  team_feed: "Лента команды",
+  attendance: "Посещаемость",
+  camp_trip: "Сбор / поездка",
+  contacts: "Контакты",
+  documents: "Документы",
+  polls: "Опросы",
+  gallery: "Фотогалерея",
+  sponsors: "Партнёры",
+  weather: "Погода",
+  countdown: "Обратный отсчёт",
+  birthdays: "Дни рождения",
+  quick_links: "Быстрые ссылки",
 };
 
 function SortableRow({
@@ -70,7 +70,7 @@ function SortableRow({
       <button
         type="button"
         className="touch-manipulation cursor-grab px-1 text-zinc-400 active:cursor-grabbing"
-        aria-label="Reorder"
+        aria-label="Перетащить"
         {...attributes}
         {...listeners}
       >
@@ -137,8 +137,14 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
       <header className="border-b border-zinc-200 bg-white px-4 py-4 sm:px-8">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Admin</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              Конструктор страницы
+            </p>
             <h1 className="text-xl font-bold">{team.name}</h1>
+            <p className="mt-1 max-w-xl text-sm text-zinc-600">
+              Это не приложение из стора — одна веб-страница по ссылке. Соберите её блоками и
+              отправьте родителям обычный URL.
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -148,14 +154,14 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
               }}
               className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
             >
-              Save preview (this device)
+              Сохранить черновик (этот браузер)
             </button>
             <button
               type="button"
               onClick={() => clearTeamPreviewLocal(team.slug)}
               className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700"
             >
-              Clear saved preview
+              Сбросить черновик
             </button>
             <Link
               href={`/${team.slug}`}
@@ -163,10 +169,10 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
               rel="noopener noreferrer"
               className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
             >
-              Open team page
+              Открыть страницу команды
             </Link>
             <Link href="/" className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold">
-              Home
+              На главную
             </Link>
           </div>
         </div>
@@ -174,9 +180,9 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
 
       <main className="mx-auto max-w-3xl space-y-10 px-4 py-8 sm:px-8">
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold">Color theme</h2>
+          <h2 className="text-lg font-bold">Цветовая тема страницы</h2>
           <p className="mt-1 text-sm text-zinc-600">
-            Five presets + pastel youth. Matches subscription tiers later.
+            Готовые палитры: можно сменить внешний вид всей веб-страницы одним выбором.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {THEMES.map((t) => (
@@ -208,10 +214,11 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
         </section>
 
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold">Page blocks</h2>
+          <h2 className="text-lg font-bold">Блоки на странице</h2>
           <p className="mt-1 text-sm text-zinc-600">
-            Drag to reorder. Toggle blocks, pick a theme, then <strong>Save preview</strong> and open the
-            team page — changes apply in this browser until you clear them. Supabase sync is next.
+            Перетащите порядок, включайте и выключайте блоки. Нажмите{" "}
+            <strong>Сохранить черновик</strong> и откройте страницу команды — увидите правки в этом
+            браузере. Позже всё будет сохраняться в облаке (Supabase).
           </p>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
             <SortableContext items={blocksSorted.map((b) => b.id)} strategy={verticalListSortingStrategy}>
@@ -225,8 +232,8 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
         </section>
 
         <p className="text-center text-xs text-zinc-500">
-          Preview uses localStorage on this device only. Production: wire <code className="rounded bg-zinc-100 px-1">teams</code>{" "}
-          table &amp; RLS in Supabase.
+          Черновик хранится в браузере (localStorage). В продакшене — таблица команд и RLS в
+          Supabase.
         </p>
       </main>
     </div>

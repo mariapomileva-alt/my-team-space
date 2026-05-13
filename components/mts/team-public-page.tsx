@@ -45,13 +45,13 @@ export function TeamPublicPage({ initialTeam }: { initialTeam: TeamSpace }) {
             href="/"
             className="text-xs font-semibold uppercase tracking-wider text-[color:var(--mts-muted)]"
           >
-            MyTeamSpace
+            О сервисе
           </Link>
           <Link
             href={`/admin/${team.slug}`}
             className="rounded-full border border-[color:var(--mts-card-border)] px-3 py-1.5 text-xs font-semibold text-[color:var(--mts-text)]"
           >
-            Coach admin
+            Редактор страницы
           </Link>
         </div>
       </header>

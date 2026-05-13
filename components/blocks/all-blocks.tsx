@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 export function BlockHero({ team }: { team: TeamSpace }) {
   const quote =
     (team.blocks.find((b) => b.type === "hero")?.settings?.quote as string) ||
-    "Show up. Cheer loud. Grow together.";
+    "Приходите. Болейте. Растите вместе.";
 
   return (
     <motion.section
@@ -22,7 +22,7 @@ export function BlockHero({ team }: { team: TeamSpace }) {
       >
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-3">
-            <MtsBadge>Your team space</MtsBadge>
+            <MtsBadge>Веб-страница команды</MtsBadge>
             <h1
               className="text-3xl font-bold tracking-tight sm:text-4xl"
               style={{ color: "var(--mts-text)" }}
@@ -53,7 +53,7 @@ export function BlockHero({ team }: { team: TeamSpace }) {
               href="tel:"
               className="inline-flex min-h-11 min-w-[44px] items-center justify-center rounded-2xl bg-[var(--mts-primary)] px-4 font-semibold text-white transition active:scale-[0.98]"
             >
-              Call coach
+              Позвонить тренеру
             </a>
           </div>
         </div>
@@ -65,7 +65,7 @@ export function BlockHero({ team }: { team: TeamSpace }) {
           }}
         >
           <p className="flex h-full items-center justify-center text-sm text-[color:var(--mts-muted)]">
-            Cover image or hero video — set in admin
+            Обложка или видео — загрузите в редакторе страницы
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export function BlockAnnouncementBar() {
     >
       <p className="text-center text-sm font-medium text-[color:var(--mts-text)]">
         <span className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-[var(--mts-accent)]" />
-        Training moved to 18:00 · Bus leaves 07:30 Saturday
+        Тренировка в 18:00 · автобус в субботу в 07:30
       </p>
     </div>
   );
@@ -91,11 +91,11 @@ export function BlockCalendar() {
   return (
     <MtsCard className="p-5 sm:p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-[color:var(--mts-text)]">Calendar</h2>
+        <h2 className="text-lg font-bold text-[color:var(--mts-text)]">Календарь</h2>
         <MtsBadge>Google</MtsBadge>
       </div>
       <p className="mb-4 text-sm text-[color:var(--mts-muted)]">
-        Trainings, meets, camps & travel — connect Google Calendar in admin.
+        Тренировки, старты, сборы — подключите Google Calendar в редакторе.
       </p>
       <div className="h-48 rounded-2xl border border-dashed border-[color:var(--mts-card-border)] bg-[var(--mts-accent-soft)]" />
     </MtsCard>
@@ -105,9 +105,9 @@ export function BlockCalendar() {
 export function BlockSchedule() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Weekly schedule</h2>
+      <h2 className="mb-4 text-lg font-bold">Расписание на неделю</h2>
       <ul className="space-y-2 text-sm">
-        {["Mon — pool", "Wed — run + bike", "Fri — team meet"].map((l) => (
+        {["Пн — бассейн", "Ср — бег + вело", "Пт — сбор команды"].map((l) => (
           <li
             key={l}
             className="flex min-h-12 items-center justify-between rounded-xl bg-[var(--mts-accent-soft)] px-3 py-2"
@@ -125,14 +125,14 @@ export function BlockResults() {
   return (
     <MtsCard className="p-5 sm:p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">Results & highlights</h2>
-        <MtsBadge>Live</MtsBadge>
+        <h2 className="text-lg font-bold">Результаты и яркие моменты</h2>
+        <MtsBadge>онлайн</MtsBadge>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          { t: "Gold", n: "Danik", e: "🥇" },
-          { t: "Silver", n: "Mark", e: "🥈" },
-          { t: "Team", n: "3rd", e: "🏅" },
+          { t: "Золото", n: "Даник", e: "🥇" },
+          { t: "Серебро", n: "Марк", e: "🥈" },
+          { t: "Команда", n: "3 место", e: "🏅" },
         ].map((x) => (
           <div
             key={x.n}
@@ -151,9 +151,9 @@ export function BlockResults() {
 export function BlockAchievements() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Trophies & streaks</h2>
+      <h2 className="mb-4 text-lg font-bold">Кубки и серии</h2>
       <div className="flex flex-wrap gap-2">
-        {["Athlete of the week", "7-day streak", "Fair play"].map((b) => (
+        {["Спортсмен недели", "7 дней подряд", "Честная игра"].map((b) => (
           <span
             key={b}
             className="rounded-full border border-[color:var(--mts-ring)] bg-[var(--mts-accent-soft)] px-3 py-1.5 text-xs font-semibold"
@@ -169,12 +169,12 @@ export function BlockAchievements() {
 export function BlockTeamFeed() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Team feed</h2>
+      <h2 className="mb-4 text-lg font-bold">Лента команды</h2>
       <div className="space-y-3">
         {[1, 2].map((i) => (
           <div key={i} className="rounded-2xl bg-[var(--mts-accent-soft)] p-4">
-            <p className="text-sm font-medium">Photo drop from weekend race ✨</p>
-            <p className="mt-1 text-xs text-[color:var(--mts-muted)]">Coach · 2h ago</p>
+            <p className="text-sm font-medium">Фото со стартов выходных ✨</p>
+            <p className="mt-1 text-xs text-[color:var(--mts-muted)]">Тренер · 2 ч назад</p>
           </div>
         ))}
       </div>
@@ -185,10 +185,10 @@ export function BlockTeamFeed() {
 export function BlockAttendance() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Attendance</h2>
+      <h2 className="mb-4 text-lg font-bold">Посещаемость</h2>
       <div className="flex items-end gap-2">
         <span className="text-4xl font-black text-[color:var(--mts-primary-bright)]">92%</span>
-        <span className="pb-1 text-sm text-[color:var(--mts-muted)]">this month</span>
+        <span className="pb-1 text-sm text-[color:var(--mts-muted)]">за месяц</span>
       </div>
     </MtsCard>
   );
@@ -197,16 +197,16 @@ export function BlockAttendance() {
 export function BlockCampTrip() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-2 text-lg font-bold">Camp & trip</h2>
+      <h2 className="mb-2 text-lg font-bold">Сбор и поездка</h2>
       <p className="mb-4 text-sm text-[color:var(--mts-muted)]">
-        Bus seats, rooms, documents & confirmations — manage in admin.
+        Места в автобусе, списки, документы и подтверждения родителей — настраивается в редакторе.
       </p>
       <div className="grid gap-2 sm:grid-cols-2">
         <div className="rounded-xl border border-[color:var(--mts-card-border)] p-3 text-sm">
-          Bus 12/15 seats
+          Автобус: 12 / 15 мест
         </div>
         <div className="rounded-xl border border-[color:var(--mts-card-border)] p-3 text-sm">
-          Checklist: 8/12 done
+          Чек-лист: 8 / 12
         </div>
       </div>
     </MtsCard>
@@ -216,17 +216,17 @@ export function BlockCampTrip() {
 export function BlockContacts() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Contacts</h2>
+      <h2 className="mb-4 text-lg font-bold">Контакты</h2>
       <ul className="space-y-3 text-sm">
         <li className="flex justify-between">
-          <span>Head coach</span>
+          <span>Главный тренер</span>
           <a className="font-semibold text-[color:var(--mts-primary-bright)]" href="tel:">
-            Call
+            Позвонить
           </a>
         </li>
         <li className="flex justify-between">
-          <span>Emergency</span>
-          <span className="text-[color:var(--mts-muted)]">On file</span>
+          <span>Экстренно</span>
+          <span className="text-[color:var(--mts-muted)]">В списке у тренера</span>
         </li>
       </ul>
     </MtsCard>
@@ -236,9 +236,9 @@ export function BlockContacts() {
 export function BlockDocuments() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Documents</h2>
+      <h2 className="mb-4 text-lg font-bold">Документы</h2>
       <div className="flex flex-col gap-2">
-        {["Rules PDF", "Nutrition tips", "Race info"].map((d) => (
+        {["Правила PDF", "Питание", "Инфо о старте"].map((d) => (
           <button
             key={d}
             type="button"
@@ -256,17 +256,17 @@ export function BlockDocuments() {
 export function BlockPolls() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Quick poll</h2>
-      <p className="mb-3 text-sm text-[color:var(--mts-muted)]">Who is coming Saturday?</p>
+      <h2 className="mb-4 text-lg font-bold">Быстрый опрос</h2>
+      <p className="mb-3 text-sm text-[color:var(--mts-muted)]">Кто едет в субботу?</p>
       <div className="flex gap-2">
         <button
           type="button"
           className="min-h-11 flex-1 rounded-2xl bg-[var(--mts-primary)] font-semibold text-white"
         >
-          In
+          Я в деле
         </button>
         <button type="button" className="min-h-11 flex-1 rounded-2xl border-2 font-semibold">
-          Out
+          Не смогу
         </button>
       </div>
     </MtsCard>
@@ -276,7 +276,7 @@ export function BlockPolls() {
 export function BlockGallery() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Gallery</h2>
+      <h2 className="mb-4 text-lg font-bold">Галерея</h2>
       <div className="grid grid-cols-3 gap-2">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
@@ -293,7 +293,7 @@ export function BlockSponsors() {
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-center text-sm font-semibold uppercase tracking-widest text-[color:var(--mts-muted)]">
-        Partners
+        Партнёры и спонсоры
       </h2>
       <div className="flex flex-wrap justify-center gap-6 opacity-80">
         {[1, 2, 3].map((i) => (
@@ -309,12 +309,12 @@ export function BlockWeather() {
     <MtsCard className="p-5 sm:p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">Outdoor session</h2>
-          <p className="text-sm text-[color:var(--mts-muted)]">Riga · today</p>
+          <h2 className="text-lg font-bold">Улица / зал</h2>
+          <p className="text-sm text-[color:var(--mts-muted)]">Рига · сегодня</p>
         </div>
         <div className="text-right">
           <div className="text-3xl font-bold">18°</div>
-          <div className="text-xs">Light wind</div>
+          <div className="text-xs">Лёгкий ветер</div>
         </div>
       </div>
     </MtsCard>
@@ -324,11 +324,11 @@ export function BlockWeather() {
 export function BlockCountdown() {
   return (
     <MtsCard className="p-5 sm:p-6 text-center">
-      <p className="text-sm font-medium text-[color:var(--mts-muted)]">Next race</p>
+      <p className="text-sm font-medium text-[color:var(--mts-muted)]">До старта</p>
       <p className="mt-2 text-3xl font-black tabular-nums text-[color:var(--mts-primary-bright)]">
         12 : 04 : 33
       </p>
-      <p className="mt-1 text-xs text-[color:var(--mts-muted)]">days · hrs · min</p>
+      <p className="mt-1 text-xs text-[color:var(--mts-muted)]">дни · часы · минуты</p>
     </MtsCard>
   );
 }
@@ -336,11 +336,11 @@ export function BlockCountdown() {
 export function BlockBirthdays() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Birthdays</h2>
+      <h2 className="mb-4 text-lg font-bold">Дни рождения</h2>
       <ul className="space-y-2 text-sm">
         <li className="flex justify-between rounded-xl bg-[var(--mts-accent-soft)] px-3 py-2">
-          <span>Anna</span>
-          <span className="text-[color:var(--mts-muted)]">Jun 22</span>
+          <span>Анна</span>
+          <span className="text-[color:var(--mts-muted)]">22 июня</span>
         </li>
       </ul>
     </MtsCard>
@@ -350,9 +350,9 @@ export function BlockBirthdays() {
 export function BlockQuickLinks() {
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Quick links</h2>
+      <h2 className="mb-4 text-lg font-bold">Быстрые ссылки</h2>
       <div className="grid gap-2 sm:grid-cols-2">
-        {["Registration", "Payment", "Maps", "Livestream"].map((l) => (
+        {["Регистрация", "Оплата", "Карта", "Трансляция"].map((l) => (
           <a
             key={l}
             href="#"
