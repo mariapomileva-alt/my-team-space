@@ -53,17 +53,19 @@ function LoginInner() {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-zinc-900">Coach sign in</h1>
-      <p className="mt-1 text-base font-medium text-zinc-800">Welcome back</p>
-      <p className="mt-2 text-sm text-zinc-600">
-        Use the email and password you chose at signup. Your team data stays in Supabase. This page is{" "}
-        <code className="rounded bg-zinc-100 px-1 text-xs text-zinc-700">/admin/login</code>.
+      <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Welcome back</h1>
+      <p className="mt-1 text-base font-medium text-zinc-700">Your team hub is right here.</p>
+      <p className="mt-3 text-sm leading-relaxed text-zinc-600">
+        Sign in with the email and password you used when you joined. In a few seconds you&apos;ll be back to
+        updating schedules, news, and everything families see—same place, same calm flow.
       </p>
 
       {registered ? (
         <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900 ring-1 ring-emerald-100">
-          Nice — your account is ready.{" "}
-          {mode === "password" ? "Enter your password below." : "Use a magic link from your email, or switch to the password tab."}
+          You&apos;re all set—account created.{" "}
+          {mode === "password"
+            ? "Pop in your password below and you&apos;re in."
+            : "Check your email for anything from us—or switch to Email & password to sign in now."}
         </p>
       ) : null}
 
@@ -95,7 +97,7 @@ function LoginInner() {
       {mode === "magic" ? (
         sent ? (
           <p className="mt-6 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900 ring-1 ring-emerald-100">
-            Check your inbox for the login link.
+            Almost there—open your inbox and tap the link we sent you.
           </p>
         ) : (
           <form onSubmit={sendLink} className="mt-6 space-y-4">
