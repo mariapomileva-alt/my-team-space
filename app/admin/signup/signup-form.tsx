@@ -3,12 +3,17 @@
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function AdminSignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/admin";
+  const [originHint, setOriginHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOriginHint(window.location.origin);
+  }, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,7 +41,8 @@ export function AdminSignupForm() {
       return;
     }
     setPending(true);
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+    // Always use the tab’s origin so email links match www vs non-www and Supabase Redirect URLs.
+    const appUrl = window.location.origin;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -54,6 +60,14 @@ export function AdminSignupForm() {
       router.refresh();
       return;
     }
+    // Email confirmations on: no session yet. Empty identities usually means this email is already registered.
+    const identities = data.user?.identities ?? [];
+    if (data.user && identities.length === 0) {
+      setErr(
+        "This email is already registered. Use Sign in below—or reset the password from the login page if you forgot it.",
+      );
+      return;
+    }
     setDone(true);
   }
 
@@ -68,6 +82,21 @@ export function AdminSignupForm() {
           Sign in here
         </Link>
         .
+      </p>
+
+      <p className="mt-4 rounded-lg bg-zinc-50 px-3 py-2 text-xs leading-relaxed text-zinc-600 ring-1 ring-zinc-100">
+        <span className="font-semibold text-zinc-700">Email link setup:</span> In Supabase go to{" "}
+        <span className="font-medium">Authentication → URL configuration</span> and add this exact URL to{" "}
+        <span className="font-medium">Redirect URLs</span>:{" "}
+        {originHint ? (
+          <code className="mt-1 block break-all rounded bg-white px-2 py-1 font-mono text-[11px] text-zinc-800">
+            {originHint}/auth/callback
+          </code>
+        ) : (
+          <span className="font-mono text-[11px]">https://your-domain/auth/callback</span>
+        )}{" "}
+        (and <span className="font-medium">Site URL</span> should match how you open the site, with or without{" "}
+        <code className="rounded bg-white px-1 font-mono text-[11px]">www</code>).
       </p>
 
       {done ? (

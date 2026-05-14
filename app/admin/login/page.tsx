@@ -28,7 +28,7 @@ function LoginInner() {
       );
       return;
     }
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+    const appUrl = window.location.origin;
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${appUrl}/auth/callback?next=/admin` },
