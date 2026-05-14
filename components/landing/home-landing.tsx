@@ -730,11 +730,27 @@ export function HomeLanding() {
 
   return (
     <div className={`min-h-screen bg-gradient-to-b ${accentSoft} to-[#f8fafc] text-neutral-900`}>
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-7 sm:px-8">
+      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-7 sm:px-8">
         <span className="text-[15px] font-semibold tracking-tight text-neutral-900">MyTeamSpace</span>
-        <div className="flex items-center gap-2">
-          <span className="hidden text-[12px] text-neutral-400 sm:inline">A digital home for your team</span>
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.25)]" title="All systems ready" />
+        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+          <span className="hidden text-[12px] text-neutral-400 lg:inline">A digital home for your team</span>
+          <span
+            className="hidden h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.25)] sm:inline"
+            title="All systems ready"
+            aria-hidden
+          />
+          <Link
+            href="/admin/login"
+            className="rounded-full border border-neutral-200/90 bg-white/90 px-3 py-2 text-[12px] font-semibold text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-indigo-200 hover:text-indigo-700 sm:px-4 sm:text-[13px]"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/admin/signup"
+            className="rounded-full bg-indigo-600 px-3 py-2 text-[12px] font-semibold text-white shadow-sm transition hover:bg-indigo-500 sm:px-4 sm:text-[13px]"
+          >
+            Create account
+          </Link>
         </div>
       </header>
 
@@ -758,6 +774,12 @@ export function HomeLanding() {
                   className={`inline-flex min-h-12 items-center justify-center rounded-full px-7 text-[15px] font-medium transition ${accentBtn}`}
                 >
                   View demo team
+                </Link>
+                <Link
+                  href="/admin"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-neutral-200/90 bg-white/90 px-7 text-[15px] font-medium text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-indigo-200 hover:text-indigo-700 active:scale-[0.99]"
+                >
+                  Open page editor
                 </Link>
               </div>
               <p className="mt-7 text-sm font-medium text-neutral-400">
