@@ -6,7 +6,7 @@ import Link from "next/link";
 export default async function AdminHomePage() {
   const { supabase, user } = await requireAuth();
 
-  const { data: rows } = await supabase
+  const { data: rows, error: teamsError } = await supabase
     .from("team_members")
     .select("team_id, teams (id, slug, name, subscription_status)")
     .eq("user_id", user.id);
@@ -27,6 +27,19 @@ export default async function AdminHomePage() {
   return (
     <div className="min-h-screen bg-zinc-50 px-4 py-10 text-zinc-900 sm:px-8">
       <div className="mx-auto max-w-lg space-y-8">
+        {teamsError ? (
+          <div
+            role="alert"
+            className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+          >
+            <p className="font-semibold">Couldn&apos;t load your teams</p>
+            <p className="mt-1 text-amber-900/90">
+              {teamsError.message}. If this is new after deploy, run the latest Supabase migration
+              <code className="mx-1 rounded bg-amber-100/80 px-1 text-xs">fix_team_members_rls_recursion</code>
+              in the SQL editor or via <code className="rounded bg-amber-100/80 px-1 text-xs">supabase db push</code>.
+            </p>
+          </div>
+        ) : null}
         <header>
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Coach</p>
           <h1 className="text-2xl font-bold">Your teams</h1>
@@ -35,8 +48,8 @@ export default async function AdminHomePage() {
             New here?{" "}
             <Link href="/admin/signup" className="font-medium text-indigo-600 underline">
               Create a coach account
-            </Link>{" "}
-            (email + password in Supabase).
+            </Link>
+            .
           </p>
         </header>
 
