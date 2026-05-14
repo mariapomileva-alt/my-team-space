@@ -8,6 +8,7 @@ import { Suspense, useState } from "react";
 function LoginInner() {
   const searchParams = useSearchParams();
   const registered = searchParams.get("registered") === "1";
+  const configError = searchParams.get("error") === "config";
 
   const [mode, setMode] = useState<"magic" | "password">("password");
   const [email, setEmail] = useState("");
@@ -59,6 +60,16 @@ function LoginInner() {
         Sign in with the email and password you used when you joined. In a few seconds you&apos;ll be back to
         updating schedules, news, and everything families see—same place, same calm flow.
       </p>
+
+      {configError ? (
+        <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
+          The app couldn&apos;t load your session on the server. In{" "}
+          <strong className="font-semibold text-amber-900">Vercel → Settings → Environment Variables</strong>, check
+          that <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+          <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> are set for{" "}
+          <strong>Production</strong>, then run a fresh deploy (Redeploy, optionally without cache).
+        </p>
+      ) : null}
 
       {registered ? (
         <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900 ring-1 ring-emerald-100">
