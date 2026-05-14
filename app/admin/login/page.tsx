@@ -21,7 +21,9 @@ function LoginInner() {
     setErr(null);
     const supabase = createBrowserSupabase();
     if (!supabase) {
-      setErr("Supabase is not configured (missing env).");
+      setErr(
+        "This build doesn’t include Supabase settings. In Vercel → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY for Production, then Redeploy (disable “Use existing Build Cache” if the message persists).",
+      );
       return;
     }
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
@@ -41,7 +43,9 @@ function LoginInner() {
     setErr(null);
     const supabase = createBrowserSupabase();
     if (!supabase) {
-      setErr("Supabase is not configured (missing env).");
+      setErr(
+        "This build doesn’t include Supabase settings. In Vercel → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY for Production, then Redeploy (disable “Use existing Build Cache” if the message persists).",
+      );
       return;
     }
     const { error } = await supabase.auth.signInWithPassword({ email, password });

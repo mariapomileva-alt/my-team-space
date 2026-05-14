@@ -30,7 +30,9 @@ export function AdminSignupForm() {
     }
     const supabase = createBrowserSupabase();
     if (!supabase) {
-      setErr("Supabase is not configured.");
+      setErr(
+        "This build doesn’t include Supabase settings. In Vercel → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY for Production, then Redeploy (disable “Use existing Build Cache” if the message persists).",
+      );
       return;
     }
     setPending(true);
