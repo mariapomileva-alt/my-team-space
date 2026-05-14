@@ -33,6 +33,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // Root must be listed explicitly — the catch‑all below often does not match pathname "/".
+    "/",
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
