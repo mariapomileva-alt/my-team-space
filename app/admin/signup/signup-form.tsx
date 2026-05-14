@@ -57,23 +57,24 @@ export function AdminSignupForm() {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-zinc-900">Create your coach account</h1>
-      <p className="mt-1 text-sm font-medium text-zinc-700">All you need is an email and a password.</p>
-      <p className="mt-2 text-sm text-zinc-600">
-        We use <strong className="text-zinc-800">Supabase Auth</strong> to keep your login safe. When you&apos;re ready, sign in anytime at{" "}
+      <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Create your coach account</h1>
+      <p className="mt-1 text-base font-medium text-zinc-700">One email, one password—that&apos;s your key to the editor.</p>
+      <p className="mt-3 text-sm leading-relaxed text-zinc-600">
+        You&apos;ll use these details every time you come back to update your team page. Your login is stored securely.
+        Already registered?{" "}
         <Link href="/admin/login" className="font-semibold text-indigo-600 underline">
-          /admin/login
+          Sign in here
         </Link>
         .
       </p>
 
       {done ? (
-        <p className="mt-6 rounded-xl bg-sky-50 px-4 py-3 text-sm text-sky-950 ring-1 ring-sky-100">
-          Check your email to confirm the account (if your project requires email confirmation). Then{" "}
+        <p className="mt-6 rounded-xl bg-sky-50 px-4 py-3 text-sm leading-relaxed text-sky-950 ring-1 ring-sky-100">
+          If we sent you a confirmation email, tap the link inside—then{" "}
           <Link href="/admin/login?registered=1" className="font-semibold underline">
             sign in
-          </Link>
-          .
+          </Link>{" "}
+          to open your dashboard. No email? You may already be in—try signing in.
         </p>
       ) : (
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
