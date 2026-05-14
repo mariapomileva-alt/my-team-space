@@ -13,6 +13,17 @@ export default async function MarketingHome({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
+  const code = firstString(sp.code);
+  if (code) {
+    const qs = new URLSearchParams();
+    qs.set("code", code);
+    const state = firstString(sp.state);
+    if (state) qs.set("state", state);
+    const next = firstString(sp.next);
+    if (next) qs.set("next", next);
+    redirect(`/auth/callback?${qs.toString()}`);
+  }
+
   const oidcError = firstString(sp.error);
   const errorCode = firstString(sp.error_code);
 

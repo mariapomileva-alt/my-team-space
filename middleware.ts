@@ -5,6 +5,20 @@ export async function middleware(request: NextRequest) {
   try {
     const { pathname, searchParams } = request.nextUrl;
 
+    // Magic link / email confirm with Site URL = origin "/": Supabase sends ?code= on "/", not /auth/callback.
+    if (pathname === "/") {
+      const code = searchParams.get("code");
+      if (code) {
+        const cb = new URL("/auth/callback", request.url);
+        cb.searchParams.set("code", code);
+        const state = searchParams.get("state");
+        if (state) cb.searchParams.set("state", state);
+        const next = searchParams.get("next");
+        if (next) cb.searchParams.set("next", next);
+        return NextResponse.redirect(cb);
+      }
+    }
+
     // Failed email confirm / magic link often lands on Site URL (e.g. "/") with OAuth-style query params.
     const oidcError = searchParams.get("error");
     const errorCode = searchParams.get("error_code");
