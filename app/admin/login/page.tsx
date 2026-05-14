@@ -53,18 +53,17 @@ function LoginInner() {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-zinc-900">Coach login</h1>
-      <p className="mt-1 text-base font-medium text-zinc-800">Вход для тренера</p>
+      <h1 className="text-2xl font-bold text-zinc-900">Coach sign in</h1>
+      <p className="mt-1 text-base font-medium text-zinc-800">Welcome back</p>
       <p className="mt-2 text-sm text-zinc-600">
-        Ниже — поля <strong className="text-zinc-800">почта</strong> и <strong className="text-zinc-800">пароль</strong> (вкладка уже выбрана). Данные команд хранятся в Supabase.
-      </p>
-      <p className="mt-1 text-xs text-zinc-500">
-        English: sign in with the email and password you used at registration. Path: <code className="rounded bg-zinc-100 px-1">/admin/login</code>
+        Use the email and password you chose at signup. Your team data stays in Supabase. This page is{" "}
+        <code className="rounded bg-zinc-100 px-1 text-xs text-zinc-700">/admin/login</code>.
       </p>
 
       {registered ? (
         <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900 ring-1 ring-emerald-100">
-          Аккаунт создан. {mode === "password" ? "Войдите паролем ниже." : "Используйте magic link или пароль."}
+          Nice — your account is ready.{" "}
+          {mode === "password" ? "Enter your password below." : "Use a magic link from your email, or switch to the password tab."}
         </p>
       ) : null}
 
@@ -78,7 +77,7 @@ function LoginInner() {
             setSent(false);
           }}
         >
-          Почта и пароль
+          Email & password
         </button>
         <button
           type="button"
@@ -89,7 +88,7 @@ function LoginInner() {
             setSent(false);
           }}
         >
-          Ссылка на почту
+          Magic link
         </button>
       </div>
 
@@ -117,7 +116,7 @@ function LoginInner() {
         <form onSubmit={signInPassword} className="mt-6 space-y-4">
           <div>
             <label htmlFor="coach-email" className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-              Email / Почта
+              Email
             </label>
             <input
               id="coach-email"
@@ -132,7 +131,7 @@ function LoginInner() {
           </div>
           <div>
             <label htmlFor="coach-password" className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-              Password / Пароль
+              Password
             </label>
             <input
               id="coach-password"
@@ -146,7 +145,7 @@ function LoginInner() {
             />
           </div>
           <button type="submit" className="w-full rounded-full bg-zinc-900 py-2.5 text-sm font-semibold text-white">
-            Войти / Sign in
+            Sign in
           </button>
         </form>
       )}
@@ -154,13 +153,9 @@ function LoginInner() {
       {err ? <p className="mt-4 text-sm text-red-600">{err}</p> : null}
 
       <p className="mt-8 text-center text-sm text-zinc-600">
-        Нет аккаунта?{" "}
+        New here?{" "}
         <Link href="/admin/signup" className="font-semibold text-indigo-700 underline">
-          Регистрация тренера
-        </Link>{" "}
-        <span className="text-zinc-400">·</span>{" "}
-        <Link href="/admin/signup" className="font-semibold text-zinc-900 underline">
-          Create account
+          Create an account
         </Link>
       </p>
       <p className="mt-4 text-center text-xs text-zinc-500">

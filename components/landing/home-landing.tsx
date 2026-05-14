@@ -730,22 +730,11 @@ export function HomeLanding() {
 
   return (
     <div className={`min-h-screen bg-gradient-to-b ${accentSoft} to-[#f8fafc] text-neutral-900`}>
-      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-7 sm:px-8">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-7 sm:px-8">
         <span className="text-[15px] font-semibold tracking-tight text-neutral-900">MyTeamSpace</span>
-        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-          <Link
-            href="/admin/login"
-            className="rounded-full border border-neutral-200/90 bg-white/90 px-3 py-2 text-[12px] font-semibold text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-indigo-200 hover:text-indigo-700 sm:px-4 sm:text-[13px]"
-          >
-            Coach sign in
-          </Link>
-          <Link
-            href="/admin/signup"
-            className="rounded-full bg-indigo-600 px-3 py-2 text-[12px] font-semibold text-white shadow-sm transition hover:bg-indigo-500 sm:px-4 sm:text-[13px]"
-          >
-            Create account
-          </Link>
-          <span className="hidden text-[12px] text-neutral-400 lg:inline">Вход тренера — почта и пароль</span>
+        <div className="flex items-center gap-2">
+          <span className="hidden text-[12px] text-neutral-400 sm:inline">A digital home for your team</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.25)]" title="All systems ready" />
         </div>
       </header>
 
@@ -770,30 +759,7 @@ export function HomeLanding() {
                 >
                   View demo team
                 </Link>
-                <Link
-                  href="/admin/login"
-                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-neutral-200/90 bg-white/90 px-7 text-[15px] font-medium text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-indigo-200 hover:text-indigo-700 active:scale-[0.99]"
-                >
-                  Coach login (email & password)
-                </Link>
-                <Link
-                  href="/admin/signup"
-                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-indigo-200/80 bg-indigo-50/90 px-6 text-[14px] font-semibold text-indigo-900 shadow-sm transition hover:bg-indigo-100 active:scale-[0.99]"
-                >
-                  New coach — register
-                </Link>
               </div>
-              <p className="mt-4 text-[13px] leading-snug text-neutral-500">
-                <span className="font-medium text-neutral-700">Где вводить логин:</span> открой{" "}
-                <Link href="/admin/login" className="font-semibold text-indigo-600 underline">
-                  /admin/login
-                </Link>{" "}
-                — там поля почты и пароля (или вкладка «Magic link»). Регистрация:{" "}
-                <Link href="/admin/signup" className="font-semibold text-indigo-600 underline">
-                  /admin/signup
-                </Link>
-                .
-              </p>
               <p className="mt-7 text-sm font-medium text-neutral-400">
                 Works in any browser. No login needed for parents.
               </p>
@@ -885,14 +851,6 @@ export function HomeLanding() {
           <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-neutral-400">
             A beautiful digital home for your team — so everyone feels a little more connected.
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
-            <Link href="/admin/login" className="font-semibold text-indigo-600 underline">
-              Coach login
-            </Link>
-            <Link href="/admin/signup" className="font-semibold text-indigo-600 underline">
-              Coach registration
-            </Link>
-          </div>
         </footer>
       </main>
     </div>
