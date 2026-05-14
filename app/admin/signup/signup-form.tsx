@@ -57,10 +57,14 @@ export function AdminSignupForm() {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-zinc-900">Coach account</h1>
+      <h1 className="text-2xl font-bold text-zinc-900">Регистрация тренера</h1>
+      <p className="mt-1 text-sm font-medium text-zinc-700">Coach account · почта и пароль</p>
       <p className="mt-2 text-sm text-zinc-600">
-        Email and password live in Supabase Auth. Use them to sign in at{" "}
-        <span className="font-medium">/admin</span> — team pages and schedules stay in Postgres under your account.
+        Задайте email и пароль — они сохраняются в <strong className="text-zinc-800">Supabase Auth</strong>. После регистрации вход:{" "}
+        <Link href="/admin/login" className="font-semibold text-indigo-600 underline">
+          /admin/login
+        </Link>
+        .
       </p>
 
       {done ? (
@@ -74,7 +78,7 @@ export function AdminSignupForm() {
       ) : (
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div>
-            <label className="text-xs font-semibold text-zinc-500">Email</label>
+            <label className="text-xs font-semibold text-zinc-500">Email / Почта</label>
             <input
               type="email"
               required
@@ -86,7 +90,7 @@ export function AdminSignupForm() {
             />
           </div>
           <div>
-            <label className="text-xs font-semibold text-zinc-500">Password</label>
+            <label className="text-xs font-semibold text-zinc-500">Пароль (мин. 8 символов)</label>
             <input
               type="password"
               required
@@ -99,7 +103,7 @@ export function AdminSignupForm() {
             />
           </div>
           <div>
-            <label className="text-xs font-semibold text-zinc-500">Confirm password</label>
+            <label className="text-xs font-semibold text-zinc-500">Повтор пароля</label>
             <input
               type="password"
               required
@@ -114,7 +118,7 @@ export function AdminSignupForm() {
             disabled={pending}
             className="w-full rounded-full bg-zinc-900 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
-            {pending ? "Creating…" : "Create account"}
+            {pending ? "Создаём…" : "Создать аккаунт"}
           </button>
         </form>
       )}
@@ -122,7 +126,11 @@ export function AdminSignupForm() {
       {err ? <p className="mt-4 text-sm text-red-600">{err}</p> : null}
 
       <p className="mt-8 text-center text-sm text-zinc-600">
-        Already have an account?{" "}
+        Уже есть аккаунт?{" "}
+        <Link href="/admin/login" className="font-semibold text-indigo-700 underline">
+          Войти
+        </Link>{" "}
+        <span className="text-zinc-400">·</span>{" "}
         <Link href="/admin/login" className="font-semibold text-zinc-900 underline">
           Sign in
         </Link>

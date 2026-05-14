@@ -65,7 +65,7 @@ export function TeamPublicPage({
             MyTeamSpace
           </Link>
           <Link
-            href="/admin"
+            href="/admin/login"
             className="rounded-full border border-[color:var(--mts-card-border)] px-3 py-1.5 text-xs font-semibold text-[color:var(--mts-text)]"
           >
             Coach login

@@ -54,11 +54,17 @@ function LoginInner() {
   return (
     <>
       <h1 className="text-2xl font-bold text-zinc-900">Coach login</h1>
-      <p className="mt-2 text-sm text-zinc-600">Sign in to edit your team pages. Data is stored in Supabase under your account.</p>
+      <p className="mt-1 text-base font-medium text-zinc-800">Вход для тренера</p>
+      <p className="mt-2 text-sm text-zinc-600">
+        Ниже — поля <strong className="text-zinc-800">почта</strong> и <strong className="text-zinc-800">пароль</strong> (вкладка уже выбрана). Данные команд хранятся в Supabase.
+      </p>
+      <p className="mt-1 text-xs text-zinc-500">
+        English: sign in with the email and password you used at registration. Path: <code className="rounded bg-zinc-100 px-1">/admin/login</code>
+      </p>
 
       {registered ? (
         <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900 ring-1 ring-emerald-100">
-          Account created. {mode === "password" ? "Sign in with your password below." : "Use magic link or password."}
+          Аккаунт создан. {mode === "password" ? "Войдите паролем ниже." : "Используйте magic link или пароль."}
         </p>
       ) : null}
 
@@ -72,7 +78,7 @@ function LoginInner() {
             setSent(false);
           }}
         >
-          Email & password
+          Почта и пароль
         </button>
         <button
           type="button"
@@ -83,7 +89,7 @@ function LoginInner() {
             setSent(false);
           }}
         >
-          Magic link
+          Ссылка на почту
         </button>
       </div>
 
@@ -109,26 +115,38 @@ function LoginInner() {
         )
       ) : (
         <form onSubmit={signInPassword} className="mt-6 space-y-4">
-          <input
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            className="w-full rounded-xl border border-zinc-200 px-3 py-2.5 text-sm"
-          />
-          <input
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            className="w-full rounded-xl border border-zinc-200 px-3 py-2.5 text-sm"
-          />
+          <div>
+            <label htmlFor="coach-email" className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              Email / Почта
+            </label>
+            <input
+              id="coach-email"
+              type="email"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="mt-1 w-full rounded-xl border border-zinc-200 px-3 py-2.5 text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="coach-password" className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              Password / Пароль
+            </label>
+            <input
+              id="coach-password"
+              type="password"
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="mt-1 w-full rounded-xl border border-zinc-200 px-3 py-2.5 text-sm"
+            />
+          </div>
           <button type="submit" className="w-full rounded-full bg-zinc-900 py-2.5 text-sm font-semibold text-white">
-            Sign in
+            Войти / Sign in
           </button>
         </form>
       )}
@@ -136,7 +154,11 @@ function LoginInner() {
       {err ? <p className="mt-4 text-sm text-red-600">{err}</p> : null}
 
       <p className="mt-8 text-center text-sm text-zinc-600">
-        New coach?{" "}
+        Нет аккаунта?{" "}
+        <Link href="/admin/signup" className="font-semibold text-indigo-700 underline">
+          Регистрация тренера
+        </Link>{" "}
+        <span className="text-zinc-400">·</span>{" "}
         <Link href="/admin/signup" className="font-semibold text-zinc-900 underline">
           Create account
         </Link>
