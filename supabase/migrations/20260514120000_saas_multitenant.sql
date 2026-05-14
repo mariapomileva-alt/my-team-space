@@ -3,7 +3,7 @@
 create extension if not exists "pgcrypto";
 
 -- ---------------------------------------------------------------------------
--- teams (no Stripe secrets here — only a denormalized status for public RLS)
+-- teams (no payment secrets here — only a denormalized status for public RLS)
 -- ---------------------------------------------------------------------------
 create table if not exists public.teams (
   id uuid primary key default gen_random_uuid(),
@@ -38,12 +38,12 @@ create table if not exists public.team_members (
 create index if not exists team_members_user_idx on public.team_members (user_id);
 
 -- ---------------------------------------------------------------------------
--- Billing (Stripe) — coach-only via RLS; never exposed to anonymous public API
+-- Billing (Lemon Squeezy) — coach-only via RLS; never exposed to anonymous public API
 -- ---------------------------------------------------------------------------
 create table if not exists public.team_billing (
   team_id uuid primary key references public.teams (id) on delete cascade,
-  stripe_customer_id text,
-  stripe_subscription_id text,
+  lemon_customer_id text,
+  lemon_subscription_id text,
   updated_at timestamptz not null default now()
 );
 
@@ -199,7 +199,7 @@ create policy team_billing_member on public.team_billing
     where m.team_id = team_billing.team_id and m.user_id = auth.uid()
   ));
 
--- Service role (Stripe webhook) bypasses RLS — use SUPABASE_SERVICE_ROLE_KEY in API route.
+-- Service role (Lemon Squeezy webhook) bypasses RLS — use SUPABASE_SERVICE_ROLE_KEY in API route.
 
 -- schedule_events: coaches full CRUD; anon read only for active subscription teams
 create policy schedule_events_coach_all on public.schedule_events
@@ -261,4 +261,4 @@ create policy achievements_public_read on public.achievements
   ));
 
 -- Storage bucket + RLS: see migration 20260515120000_storage_scale.sql
-comment on table public.teams is 'Tenant root; public slug routes; subscription_status mirrored from Stripe webhook.';
+comment on table public.teams is 'Tenant root; public slug routes; subscription_status mirrored from Lemon Squeezy webhooks.';

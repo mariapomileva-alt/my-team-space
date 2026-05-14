@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname.match(/^\/admin\/[^/]+$/) && pathname !== "/admin/login") {
     const seg = pathname.split("/")[2] ?? "";
-    if (seg && seg !== "team" && seg !== "login") {
+    if (seg && seg !== "team" && seg !== "login" && seg !== "signup") {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
   }

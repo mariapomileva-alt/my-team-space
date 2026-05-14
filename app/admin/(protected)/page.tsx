@@ -1,5 +1,5 @@
 import { createTeamAction } from "@/app/admin/actions";
-import { openBillingPortal, startCheckoutSession } from "@/app/admin/stripe-actions";
+import { openBillingPortal, startCheckoutSession } from "@/app/admin/lemon-actions";
 import { requireAuth } from "@/lib/auth/require-auth";
 import Link from "next/link";
 
@@ -31,6 +31,13 @@ export default async function AdminHomePage() {
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Coach</p>
           <h1 className="text-2xl font-bold">Your teams</h1>
           <p className="mt-2 text-sm text-zinc-600">Signed in as {user.email}</p>
+          <p className="mt-3 text-xs text-zinc-500">
+            New here?{" "}
+            <Link href="/admin/signup" className="font-medium text-indigo-600 underline">
+              Create a coach account
+            </Link>{" "}
+            (email + password in Supabase).
+          </p>
         </header>
 
         <ul className="space-y-3">
@@ -46,7 +53,7 @@ export default async function AdminHomePage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Link href={`/admin/team/${t.id}`} className="rounded-full bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white">
+                <Link href={`/admin/team/${t.id}/step-1`} className="rounded-full bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white">
                   Edit
                 </Link>
                 {t.subscription_status !== "active" && t.subscription_status !== "trialing" ? (
@@ -58,7 +65,7 @@ export default async function AdminHomePage() {
                 ) : (
                   <form action={openBillingPortal.bind(null, t.id)}>
                     <button type="submit" className="rounded-full border border-zinc-200 px-3 py-1.5 text-xs font-semibold">
-                      Billing portal
+                      Manage billing
                     </button>
                   </form>
                 )}

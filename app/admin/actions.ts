@@ -15,5 +15,5 @@ export async function createTeamAction(formData: FormData) {
   const normalized = slug.trim().toLowerCase();
   revalidatePath(`/team/${normalized}`);
   revalidateTag(publicTeamCacheTag(normalized), "default");
-  redirect(`/admin/team/${data as string}`);
+  redirect(`/admin/team/${data as string}/step-1`);
 }

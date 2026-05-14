@@ -2,6 +2,7 @@
 
 import type { TeamSpace, ThemeId, BlockInstance } from "@/lib/types";
 import { THEMES } from "@/lib/themes";
+import { ADMIN_BLOCK_LABELS } from "@/lib/mts/admin-block-labels";
 import {
   DndContext,
   PointerSensor,
@@ -23,27 +24,6 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { saveTeamContent } from "./server-actions";
 
-const BLOCK_LABELS: Record<BlockInstance["type"], string> = {
-  hero: "Hero header",
-  announcement_bar: "Announcement bar",
-  calendar: "Calendar",
-  schedule: "Weekly schedule",
-  results: "Results & board",
-  achievements: "Achievements & streaks",
-  team_feed: "Team feed",
-  attendance: "Attendance",
-  camp_trip: "Camp & trip",
-  contacts: "Contacts",
-  documents: "Documents",
-  polls: "Polls",
-  gallery: "Photo gallery",
-  sponsors: "Partners",
-  weather: "Weather",
-  countdown: "Countdown",
-  birthdays: "Birthdays",
-  quick_links: "Quick links",
-};
-
 function SortableRow({ block, onToggle }: { block: BlockInstance; onToggle: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: block.id,
@@ -59,7 +39,7 @@ function SortableRow({ block, onToggle }: { block: BlockInstance; onToggle: (id:
       style={style}
       layout
       className={`flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white px-3 py-3 shadow-sm ${
-        isDragging ? "z-10 opacity-90 shadow-lg ring-2 ring-sky-400" : ""
+        isDragging ? "z-10 opacity-90 shadow-lg ring-2 ring-indigo-400" : ""
       }`}
     >
       <button
@@ -76,16 +56,16 @@ function SortableRow({ block, onToggle }: { block: BlockInstance; onToggle: (id:
           type="checkbox"
           checked={block.enabled}
           onChange={() => onToggle(block.id)}
-          className="h-5 w-5 rounded border-zinc-300 text-sky-600 focus:ring-sky-500"
+          className="h-5 w-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
         />
-        <span className="font-medium text-zinc-900">{BLOCK_LABELS[block.type]}</span>
+        <span className="font-medium text-zinc-900">{ADMIN_BLOCK_LABELS[block.type]}</span>
       </label>
       <span className="hidden text-xs uppercase tracking-wider text-zinc-400 sm:inline">{block.type}</span>
     </motion.li>
   );
 }
 
-export function TeamAdminClient({
+export function TeamStep2Client({
   teamId,
   initialTeam,
   publicUrl,
@@ -154,21 +134,17 @@ export function TeamAdminClient({
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
       <header className="border-b border-zinc-200 bg-white px-4 py-4 sm:px-8">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Page editor</p>
-            <input
-              className="mt-1 w-full max-w-md border-b border-transparent text-xl font-bold outline-none focus:border-zinc-300"
-              value={team.name}
-              onChange={(e) => setTeam((t) => ({ ...t, name: e.target.value }))}
-              aria-label="Team name"
-            />
-            <textarea
-              className="mt-2 w-full max-w-xl resize-none border border-zinc-200 rounded-xl bg-zinc-50 px-3 py-2 text-sm text-zinc-700 outline-none focus:ring-2 focus:ring-sky-200"
-              rows={2}
-              placeholder="Tagline for families"
-              value={team.tagline ?? ""}
-              onChange={(e) => setTeam((t) => ({ ...t, tagline: e.target.value }))}
-            />
+          <div className="min-w-0 flex-1">
+            <nav className="flex flex-wrap items-center gap-2 text-sm" aria-label="Editor steps">
+              <Link href={`/admin/team/${teamId}/step-1`} className="text-zinc-500 hover:text-zinc-800">
+                1 · Basics
+              </Link>
+              <span className="text-zinc-300">→</span>
+              <span className="font-semibold text-indigo-700">2 · Layout & content</span>
+            </nav>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Page editor</p>
+            <p className="mt-1 truncate text-lg font-bold text-zinc-900">{team.name}</p>
+            <p className="mt-1 text-xs text-zinc-500">Reorder blocks, tweak theme again if needed, then save.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -208,7 +184,7 @@ export function TeamAdminClient({
       <main className="mx-auto max-w-3xl space-y-10 px-4 py-8 sm:px-8">
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold">Color theme</h2>
-          <p className="mt-1 text-sm text-zinc-600">Pick a palette — colors save with “Save to cloud”.</p>
+          <p className="mt-1 text-sm text-zinc-600">Optional tweaks — same palettes as step 1.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {THEMES.map((t) => (
               <button
@@ -238,7 +214,7 @@ export function TeamAdminClient({
 
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold">Page blocks</h2>
-          <p className="mt-1 text-sm text-zinc-600">Drag to reorder, toggle blocks, then save to cloud.</p>
+          <p className="mt-1 text-sm text-zinc-600">Drag to reorder, toggle visibility, then save to cloud.</p>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
             <SortableContext items={blocksSorted.map((b) => b.id)} strategy={verticalListSortingStrategy}>
               <ul className="mt-6 space-y-2">
