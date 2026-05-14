@@ -9,6 +9,8 @@ function LoginInner() {
   const searchParams = useSearchParams();
   const registered = searchParams.get("registered") === "1";
   const configError = searchParams.get("error") === "config";
+  const linkExpired = searchParams.get("error") === "link_expired";
+  const authDenied = searchParams.get("error") === "auth_denied";
 
   const [mode, setMode] = useState<"magic" | "password">("password");
   const [email, setEmail] = useState("");
@@ -22,7 +24,7 @@ function LoginInner() {
     const supabase = createBrowserSupabase();
     if (!supabase) {
       setErr(
-        "This build doesn’t include Supabase settings. In Vercel → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY for Production, then Redeploy (disable “Use existing Build Cache” if the message persists).",
+        "This page can’t reach your database from the browser. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your Supabase project URL and anon key, then redeploy. If the server already works but forms don’t, clear build cache on redeploy so those values are baked into the client bundle.",
       );
       return;
     }
@@ -44,7 +46,7 @@ function LoginInner() {
     const supabase = createBrowserSupabase();
     if (!supabase) {
       setErr(
-        "This build doesn’t include Supabase settings. In Vercel → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY for Production, then Redeploy (disable “Use existing Build Cache” if the message persists).",
+        "This page can’t reach your database from the browser. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your Supabase project URL and anon key, then redeploy. If the server already works but forms don’t, clear build cache on redeploy so those values are baked into the client bundle.",
       );
       return;
     }
@@ -65,13 +67,38 @@ function LoginInner() {
         updating schedules, news, and everything families see—same place, same calm flow.
       </p>
 
+      {linkExpired || authDenied ? (
+        <p className="mt-4 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm leading-relaxed text-sky-950">
+          {linkExpired ? (
+            <>
+              That email link has <strong className="font-semibold">expired</strong> or was already used. Request a
+              new confirmation from{" "}
+              <Link href="/admin/signup" className="font-semibold text-indigo-700 underline">
+                Create an account
+              </Link>
+              , or sign in below if you&apos;ve already confirmed.
+            </>
+          ) : (
+            <>
+              We couldn&apos;t finish signing you in from that link. Try{" "}
+              <strong className="font-semibold">Email &amp; password</strong> below, or use{" "}
+              <strong className="font-semibold">Magic link</strong> for a fresh email.
+            </>
+          )}
+        </p>
+      ) : null}
+
       {configError ? (
         <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
           The app couldn&apos;t load your session on the server. In{" "}
-          <strong className="font-semibold text-amber-900">Vercel → Settings → Environment Variables</strong>, check
-          that <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
-          <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> are set for{" "}
-          <strong>Production</strong>, then run a fresh deploy (Redeploy, optionally without cache).
+          <strong className="font-semibold text-amber-900">Vercel → Settings → Environment Variables</strong>, add{" "}
+          <code className="rounded bg-amber-100/90 px-1 text-xs">SUPABASE_URL</code> and{" "}
+          <code className="rounded bg-amber-100/90 px-1 text-xs">SUPABASE_ANON_KEY</code> (same values as in the
+          Supabase dashboard: project URL + anon public key) for <strong>Production</strong>, then redeploy—those are
+          read at runtime and fix this even when <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_*</code>{" "}
+          was baked in empty. Alternatively set <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_SUPABASE_URL</code>{" "}
+          and <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> and redeploy{" "}
+          <strong>without</strong> build cache.
         </p>
       ) : null}
 

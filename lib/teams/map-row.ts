@@ -1,6 +1,7 @@
 import type { BlockInstance, TeamSpace, ThemeId } from "@/lib/types";
 import { THEMES } from "@/lib/themes";
 import { createDefaultBlocks } from "@/lib/default-blocks";
+import { getSupabaseUrl } from "@/lib/supabase/env";
 
 export type TeamDbRow = {
   id: string;
@@ -64,7 +65,7 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
 
 export function publicLogoUrlFromPath(logoPath: string | null): string | undefined {
   if (!logoPath) return undefined;
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const base = getSupabaseUrl();
   if (!base) return undefined;
   return `${base}/storage/v1/object/public/team-assets/${logoPath}`;
 }

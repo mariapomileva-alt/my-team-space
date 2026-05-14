@@ -31,7 +31,7 @@ export function AdminSignupForm() {
     const supabase = createBrowserSupabase();
     if (!supabase) {
       setErr(
-        "This build doesn’t include Supabase settings. In Vercel → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY for Production, then Redeploy (disable “Use existing Build Cache” if the message persists).",
+        "This page can’t reach your database from the browser. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then redeploy without build cache so the sign-up form can load them.",
       );
       return;
     }
@@ -71,13 +71,22 @@ export function AdminSignupForm() {
       </p>
 
       {done ? (
-        <p className="mt-6 rounded-xl bg-sky-50 px-4 py-3 text-sm leading-relaxed text-sky-950 ring-1 ring-sky-100">
-          If we sent you a confirmation email, tap the link inside—then{" "}
-          <Link href="/admin/login?registered=1" className="font-semibold underline">
-            sign in
-          </Link>{" "}
-          to open your dashboard. No email? You may already be in—try signing in.
-        </p>
+        <div className="mt-6 space-y-3 rounded-xl bg-sky-50 px-4 py-3 text-sm leading-relaxed text-sky-950 ring-1 ring-sky-100">
+          <p>
+            If we sent you a confirmation email, tap the link inside—then{" "}
+            <Link href="/admin/login?registered=1" className="font-semibold underline">
+              sign in
+            </Link>{" "}
+            to open your dashboard. No email? You may already be in—try signing in.
+          </p>
+          <button
+            type="button"
+            onClick={() => setDone(false)}
+            className="text-left text-sm font-semibold text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-800"
+          >
+            Show the sign-up form again
+          </button>
+        </div>
       ) : (
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div>
