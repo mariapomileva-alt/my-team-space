@@ -14,5 +14,11 @@ export function formatAuthErrorMessage(raw: string): string {
   if (m.includes("already registered") || m.includes("user already exists")) {
     return "This email is already registered. Use Sign in instead.";
   }
+  if (m.includes("invalid login credentials")) {
+    return (
+      "That email and password don’t match an account we know. Check for typos, try the other email if you have two, " +
+      "or use Create an account. If you just registered, open the confirmation email first—until then, sign-in may fail."
+    );
+  }
   return raw;
 }
