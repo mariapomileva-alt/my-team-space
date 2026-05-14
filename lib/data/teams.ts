@@ -11,7 +11,7 @@ export const MOCK_TEAMS: TeamSpace[] = [
     logoUrl: undefined,
     primaryColor: "#0c4a6e",
     secondaryColor: "#0ea5e9",
-    themeId: "sharky_aqua",
+    themeId: "ocean_aqua",
     plan: "pro",
     tagline: "One browser page for parents, athletes, and coaches.",
     blocks: cityJuniorsBlocks.map((b) =>

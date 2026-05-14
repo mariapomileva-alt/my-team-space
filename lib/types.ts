@@ -1,7 +1,7 @@
 export type SubscriptionPlan = "free" | "pro" | "club";
 
 export type ThemeId =
-  | "sharky_aqua"
+  | "ocean_aqua"
   | "dark_athletic"
   | "energetic_orange"
   | "minimal_mono"

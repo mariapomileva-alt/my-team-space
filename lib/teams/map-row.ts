@@ -46,7 +46,8 @@ function normalizeBlocks(input: unknown, fallback: BlockInstance[]): BlockInstan
 
 export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): TeamSpace {
   const fallback = createDefaultBlocks();
-  const themeId = isThemeId(row.theme_id) ? row.theme_id : "sharky_aqua";
+  const normalizedThemeId = row.theme_id === "sharky_aqua" ? "ocean_aqua" : row.theme_id;
+  const themeId = isThemeId(normalizedThemeId) ? normalizedThemeId : "ocean_aqua";
   return {
     id: row.id,
     slug: row.slug,

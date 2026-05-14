@@ -15,7 +15,7 @@ export type ThemeDefinition = {
  */
 export const THEMES: ThemeDefinition[] = [
   {
-    id: "sharky_aqua",
+    id: "ocean_aqua",
     label: "Ocean aqua",
     description: "Deep blue, aqua, white — confident and clear",
     cssVars: {

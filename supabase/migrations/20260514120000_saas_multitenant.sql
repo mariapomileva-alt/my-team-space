@@ -12,7 +12,7 @@ create table if not exists public.teams (
   logo_path text,
   primary_color text not null default '#0c4a6e',
   secondary_color text not null default '#0ea5e9',
-  theme_id text not null default 'sharky_aqua',
+  theme_id text not null default 'ocean_aqua',
   tagline text,
   blocks jsonb not null default '[]'::jsonb,
   subscription_status text not null default 'inactive'

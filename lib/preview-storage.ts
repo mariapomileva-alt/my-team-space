@@ -42,13 +42,15 @@ export function mergeStoredPreview(fallback: TeamSpace): TeamSpace {
   const raw = window.localStorage.getItem(previewStorageKey(fallback.slug));
   if (!raw) return fallback;
   try {
-    const o = JSON.parse(raw) as Partial<TeamSpace>;
-    if (o.slug !== fallback.slug) return fallback;
+    const o = JSON.parse(raw) as Record<string, unknown>;
+    if (typeof o.slug !== "string" || o.slug !== fallback.slug) return fallback;
+    const rawTheme = typeof o.themeId === "string" ? o.themeId : "";
+    const storedTheme = rawTheme === "sharky_aqua" ? "ocean_aqua" : rawTheme;
     return {
       ...fallback,
       name: typeof o.name === "string" ? o.name.slice(0, 120) : fallback.name,
       tagline: typeof o.tagline === "string" ? o.tagline.slice(0, 220) : fallback.tagline,
-      themeId: isThemeId(o.themeId) ? o.themeId : fallback.themeId,
+      themeId: isThemeId(storedTheme) ? storedTheme : fallback.themeId,
       primaryColor:
         typeof o.primaryColor === "string" ? o.primaryColor.slice(0, 32) : fallback.primaryColor,
       secondaryColor:
