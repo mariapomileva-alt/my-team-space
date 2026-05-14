@@ -160,6 +160,10 @@ export function AdminSignupForm() {
         </div>
       ) : (
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
+          <p className="text-xs leading-relaxed text-zinc-500">
+            Need to avoid email entirely? Use <span className="font-semibold text-zinc-700">Sign up with Google</span>{" "}
+            at the top—this form always tries to send a confirmation if Supabase requires it.
+          </p>
           <div>
             <label className="text-xs font-semibold text-zinc-500">Email</label>
             <input

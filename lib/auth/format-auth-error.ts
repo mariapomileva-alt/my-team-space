@@ -19,6 +19,12 @@ export function formatAuthErrorMessage(raw: string): string {
       "We couldn’t send the magic-link email (SMTP or provider limits). Try Continue with Google, or Email & password—or fix SMTP under Supabase → Authentication → Emails."
     );
   }
+  if (m.includes("confirmation email") || m.includes("error sending confirmation")) {
+    return (
+      "We couldn’t send the confirmation email (SMTP misconfigured, limits, or provider blocking). " +
+      "Use Sign up with Google above—no email needed—or in Supabase turn off “Confirm email” under Authentication → Providers → Email, or fix SMTP under Authentication → Emails."
+    );
+  }
   if (m.includes("invalid login credentials")) {
     return (
       "That email and password don’t match an account we know. Check for typos, try the other email if you have two, " +
