@@ -8,9 +8,12 @@ export async function requireAuth() {
   } catch {
     redirect("/admin/login?error=config");
   }
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    redirect("/admin/login");
+  }
+  const user = data?.user ?? null;
   if (!user) redirect("/admin/login");
   return { supabase, user };
 }
