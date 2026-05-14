@@ -1,5 +1,6 @@
 "use client";
 
+import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,9 +11,24 @@ export function AdminSignupForm() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/admin";
   const [originHint, setOriginHint] = useState<string | null>(null);
+  const [alternateOrigin, setAlternateOrigin] = useState<string | null>(null);
 
   useEffect(() => {
-    setOriginHint(window.location.origin);
+    const o = window.location.origin;
+    setOriginHint(o);
+    try {
+      const u = new URL(o);
+      const host = u.hostname;
+      if (host.startsWith("www.") && host.length > 4) {
+        setAlternateOrigin(`${u.protocol}//${host.slice(4)}`);
+      } else if (!host.startsWith("www.")) {
+        setAlternateOrigin(`${u.protocol}//www.${host}`);
+      } else {
+        setAlternateOrigin(null);
+      }
+    } catch {
+      setAlternateOrigin(null);
+    }
   }, []);
 
   const [email, setEmail] = useState("");
@@ -52,7 +68,7 @@ export function AdminSignupForm() {
     });
     setPending(false);
     if (error) {
-      setErr(error.message);
+      setErr(formatAuthErrorMessage(error.message));
       return;
     }
     if (data.session) {
@@ -85,18 +101,27 @@ export function AdminSignupForm() {
       </p>
 
       <p className="mt-4 rounded-lg bg-zinc-50 px-3 py-2 text-xs leading-relaxed text-zinc-600 ring-1 ring-zinc-100">
-        <span className="font-semibold text-zinc-700">Email link setup:</span> In Supabase go to{" "}
-        <span className="font-medium">Authentication → URL configuration</span> and add this exact URL to{" "}
-        <span className="font-medium">Redirect URLs</span>:{" "}
+        <span className="font-semibold text-zinc-700">Email link setup:</span> In Supabase open{" "}
+        <span className="font-medium">Authentication → URL configuration</span>. Under{" "}
+        <span className="font-medium">Redirect URLs</span>, add every hostname you use, for example:{" "}
         {originHint ? (
-          <code className="mt-1 block break-all rounded bg-white px-2 py-1 font-mono text-[11px] text-zinc-800">
-            {originHint}/auth/callback
-          </code>
+          <>
+            <code className="mt-1 block break-all rounded bg-white px-2 py-1 font-mono text-[11px] text-zinc-800">
+              {originHint}/auth/callback
+            </code>
+            {alternateOrigin ? (
+              <code className="mt-1 block break-all rounded bg-white px-2 py-1 font-mono text-[11px] text-zinc-800">
+                {alternateOrigin}/auth/callback
+              </code>
+            ) : null}
+          </>
         ) : (
           <span className="font-mono text-[11px]">https://your-domain/auth/callback</span>
-        )}{" "}
-        (and <span className="font-medium">Site URL</span> should match how you open the site, with or without{" "}
-        <code className="rounded bg-white px-1 font-mono text-[11px]">www</code>).
+        )}
+        <span className="mt-1 block">
+          Set <span className="font-medium">Site URL</span> to the same host you usually open (with or without{" "}
+          <code className="rounded bg-white px-1 font-mono text-[11px]">www</code>).
+        </span>
       </p>
 
       {done ? (

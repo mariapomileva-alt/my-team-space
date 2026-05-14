@@ -1,5 +1,6 @@
 "use client";
 
+import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -34,7 +35,7 @@ function LoginInner() {
       options: { emailRedirectTo: `${appUrl}/auth/callback?next=/admin` },
     });
     if (error) {
-      setErr(error.message);
+      setErr(formatAuthErrorMessage(error.message));
       return;
     }
     setSent(true);
@@ -52,7 +53,7 @@ function LoginInner() {
     }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setErr(error.message);
+      setErr(formatAuthErrorMessage(error.message));
       return;
     }
     window.location.assign("/admin");
