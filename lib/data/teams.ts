@@ -1,20 +1,20 @@
 import type { TeamSpace } from "@/lib/types";
 import { createDefaultBlocks } from "@/lib/default-blocks";
 
-const sharkyBlocks = createDefaultBlocks();
+const cityJuniorsBlocks = createDefaultBlocks();
 
 export const MOCK_TEAMS: TeamSpace[] = [
   {
-    id: "team_sharky",
-    slug: "sharky",
-    name: "Sharky Triathlon Team",
+    id: "team_city_juniors",
+    slug: "city-juniors",
+    name: "City Juniors U12",
     logoUrl: undefined,
     primaryColor: "#0c4a6e",
     secondaryColor: "#0ea5e9",
     themeId: "sharky_aqua",
     plan: "pro",
     tagline: "One browser page for parents, athletes, and coaches.",
-    blocks: sharkyBlocks.map((b) =>
+    blocks: cityJuniorsBlocks.map((b) =>
       b.type === "hero"
         ? {
             ...b,

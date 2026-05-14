@@ -11,13 +11,13 @@ export type ThemeDefinition = {
 
 /**
  * CSS variables consumed by components under `.mts-shell`
- * Sharky theme aligned with triathlon-team-hub aesthetic.
+ * Default aqua palette for team pages.
  */
 export const THEMES: ThemeDefinition[] = [
   {
     id: "sharky_aqua",
-    label: "Sharky Aqua",
-    description: "Deep blue, aqua, white — triathlon energy",
+    label: "Ocean aqua",
+    description: "Deep blue, aqua, white — confident and clear",
     cssVars: {
       "--mts-page-bg":
         "linear-gradient(165deg, #e8f4fc 0%, #cfe8f5 35%, #b8dce8 100%)",

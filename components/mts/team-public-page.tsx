@@ -5,16 +5,32 @@ import { TeamPageBlocks } from "@/components/mts/team-page-blocks";
 import type { TeamSpace } from "@/lib/types";
 import { mergeStoredPreview, previewStorageKey } from "@/lib/preview-storage";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
-export function TeamPublicPage({ initialTeam }: { initialTeam: TeamSpace }) {
+export function TeamPublicPage({
+  initialTeam,
+  enableLocalPreview = true,
+  saasExtras,
+}: {
+  initialTeam: TeamSpace;
+  /** When false (live DB page), skip localStorage merge for coach drafts. */
+  enableLocalPreview?: boolean;
+  /** Optional DB-driven sections (schedule, updates, achievements). */
+  saasExtras?: ReactNode;
+}) {
   const [team, setTeam] = useState(initialTeam);
 
   useEffect(() => {
+    if (!enableLocalPreview) {
+      setTeam(initialTeam);
+      return;
+    }
     setTeam(mergeStoredPreview(initialTeam));
-  }, [initialTeam]);
+  }, [initialTeam, enableLocalPreview]);
 
   useEffect(() => {
+    if (!enableLocalPreview) return;
     const key = previewStorageKey(initialTeam.slug);
     function onStorage(e: StorageEvent) {
       if (e.key === key || e.key === null) {
@@ -23,9 +39,10 @@ export function TeamPublicPage({ initialTeam }: { initialTeam: TeamSpace }) {
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
-  }, [initialTeam]);
+  }, [initialTeam, enableLocalPreview]);
 
   useEffect(() => {
+    if (!enableLocalPreview) return;
     function refresh() {
       setTeam(mergeStoredPreview(initialTeam));
     }
@@ -35,7 +52,7 @@ export function TeamPublicPage({ initialTeam }: { initialTeam: TeamSpace }) {
       window.removeEventListener("mts-team-preview", refresh);
       window.removeEventListener("focus", refresh);
     };
-  }, [initialTeam]);
+  }, [initialTeam, enableLocalPreview]);
 
   return (
     <TeamShell themeId={team.themeId}>
@@ -48,14 +65,15 @@ export function TeamPublicPage({ initialTeam }: { initialTeam: TeamSpace }) {
             MyTeamSpace
           </Link>
           <Link
-            href={`/admin/${team.slug}`}
+            href="/admin"
             className="rounded-full border border-[color:var(--mts-card-border)] px-3 py-1.5 text-xs font-semibold text-[color:var(--mts-text)]"
           >
-            Page editor
+            Coach login
           </Link>
         </div>
       </header>
       <TeamPageBlocks team={team} />
+      {saasExtras}
     </TeamShell>
   );
 }

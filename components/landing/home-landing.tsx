@@ -68,7 +68,7 @@ function DesktopTeamPreview({ phase }: { phase: "simple" | "rich" }) {
         </div>
         <div className="mx-auto flex max-w-[55%] flex-1 items-center gap-1.5 rounded-lg bg-white px-2 py-1 ring-1 ring-neutral-100">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
-          <span className="truncate text-[10px] font-medium text-neutral-500">myteamspace.app/sharky</span>
+            <span className="truncate text-[10px] font-medium text-neutral-500">myteamspace.cc/team/city-juniors</span>
         </div>
       </div>
 
@@ -76,10 +76,10 @@ function DesktopTeamPreview({ phase }: { phase: "simple" | "rich" }) {
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-sm font-bold text-white shadow-sm">
-              S
+              C
             </div>
             <div>
-              <div className="text-sm font-semibold tracking-tight text-neutral-900">Sharks U12</div>
+              <div className="text-sm font-semibold tracking-tight text-neutral-900">City Juniors U12</div>
               <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] text-neutral-500">
                 <AvatarStack />
                 <span className="text-neutral-300">·</span>
@@ -173,10 +173,10 @@ function PhoneTeamPreview({ phase }: { phase: "simple" | "rich" }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-[10px] font-bold text-white">
-              S
+              C
             </div>
             <div>
-              <p className="text-[11px] font-semibold text-neutral-900">Sharks U12</p>
+              <p className="text-[11px] font-semibold text-neutral-900">City Juniors U12</p>
               <p className="text-[9px] text-indigo-600">Today · 18:00</p>
             </div>
           </div>
@@ -557,7 +557,7 @@ type ExploreDemo = {
 
 const EXPLORE_DEMOS: ExploreDemo[] = [
   {
-    href: "/sharky",
+    href: "/team/city-juniors",
     name: "Tigers Basketball Academy",
     category: "Basketball",
     headerBg: "bg-gradient-to-r from-amber-100/95 via-orange-50/90 to-amber-50/80",
@@ -571,7 +571,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/riga-swim",
+    href: "/team/riga-swim",
     name: "Blue Wave Swim Team",
     category: "Swimming",
     headerBg: "bg-gradient-to-r from-sky-100/95 via-cyan-50/90 to-blue-50/80",
@@ -585,7 +585,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/dance-kids",
+    href: "/team/dance-kids",
     name: "Little Stars Gymnastics",
     category: "Gymnastics",
     headerBg: "bg-gradient-to-r from-fuchsia-100/90 via-pink-50/85 to-violet-50/75",
@@ -599,7 +599,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/sharky",
+    href: "/team/city-juniors",
     name: "Future FC Academy",
     category: "Football",
     headerBg: "bg-gradient-to-r from-emerald-100/95 via-lime-50/80 to-green-50/75",
@@ -613,7 +613,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/riga-swim",
+    href: "/team/riga-swim",
     name: "North Tennis Club",
     category: "Tennis",
     headerBg: "bg-gradient-to-r from-slate-200/90 via-teal-50/85 to-cyan-50/70",
@@ -627,7 +627,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/dance-kids",
+    href: "/team/dance-kids",
     name: "Riga Dance Kids",
     category: "Dance",
     headerBg: "bg-gradient-to-r from-violet-100/90 via-rose-50/80 to-orange-50/65",
@@ -754,13 +754,13 @@ export function HomeLanding() {
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
-                  href="/sharky"
+                  href="/team/city-juniors"
                   className={`inline-flex min-h-12 items-center justify-center rounded-full px-7 text-[15px] font-medium transition ${accentBtn}`}
                 >
                   View demo team
                 </Link>
                 <Link
-                  href="/admin/sharky"
+                  href="/admin"
                   className="inline-flex min-h-12 items-center justify-center rounded-full border border-neutral-200/90 bg-white/90 px-7 text-[15px] font-medium text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-indigo-200 hover:text-indigo-700 active:scale-[0.99]"
                 >
                   Open page editor

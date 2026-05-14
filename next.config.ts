@@ -1,15 +1,20 @@
 import type { NextConfig } from "next";
 
-/** GitHub project Pages URL is /<repo>/ — set BASE_PATH=/my-team-space when building for Pages. */
-const basePath = process.env.BASE_PATH?.trim() || "";
-
+/**
+ * SaaS mode: full Next.js (SSR, API routes, Supabase auth, Stripe webhooks).
+ * Multi-tenant: one deployment, one Supabase project; team data keyed by team_id; public `/team/[slug]` uses ISR + tags.
+ * For legacy static GitHub Pages export, use BASE_PATH + `output: "export"` in a branch or script — not compatible with this stack.
+ */
 const nextConfig: NextConfig = {
-  output: "export",
   reactStrictMode: true,
-  basePath: basePath || undefined,
-  assetPrefix: basePath ? `${basePath}/` : undefined,
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
+      /* External video posters / embed thumbs — never store video files in Supabase Storage */
+      { protocol: "https", hostname: "i.ytimg.com", pathname: "/**" },
+      { protocol: "https", hostname: "img.youtube.com", pathname: "/**" },
+      { protocol: "https", hostname: "i.vimeocdn.com", pathname: "/**" },
+    ],
   },
   turbopack: {
     root: process.cwd(),

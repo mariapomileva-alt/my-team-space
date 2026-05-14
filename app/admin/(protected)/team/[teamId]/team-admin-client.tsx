@@ -18,9 +18,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { motion } from "framer-motion";
-import { saveTeamPreviewLocal, clearTeamPreviewLocal } from "@/lib/preview-storage";
+import { useRouter } from "next/navigation";
+import { saveTeamContent } from "./server-actions";
 
 const BLOCK_LABELS: Record<BlockInstance["type"], string> = {
   hero: "Hero header",
@@ -43,13 +44,7 @@ const BLOCK_LABELS: Record<BlockInstance["type"], string> = {
   quick_links: "Quick links",
 };
 
-function SortableRow({
-  block,
-  onToggle,
-}: {
-  block: BlockInstance;
-  onToggle: (id: string) => void;
-}) {
+function SortableRow({ block, onToggle }: { block: BlockInstance; onToggle: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: block.id,
   });
@@ -85,19 +80,29 @@ function SortableRow({
         />
         <span className="font-medium text-zinc-900">{BLOCK_LABELS[block.type]}</span>
       </label>
-      <span className="hidden text-xs uppercase tracking-wider text-zinc-400 sm:inline">
-        {block.type}
-      </span>
+      <span className="hidden text-xs uppercase tracking-wider text-zinc-400 sm:inline">{block.type}</span>
     </motion.li>
   );
 }
 
-export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
-  const [team, setTeam] = useState(initialTeam);
-  const blocksSorted = useMemo(
-    () => [...team.blocks].sort((a, b) => a.order - b.order),
-    [team.blocks]
-  );
+export function TeamAdminClient({
+  teamId,
+  initialTeam,
+  publicUrl,
+}: {
+  teamId: string;
+  initialTeam: TeamSpace;
+  publicUrl: string;
+}) {
+  const router = useRouter();
+  const [team, setTeam] = useState<TeamSpace>(initialTeam);
+  const [msg, setMsg] = useState<string | null>(null);
+  useEffect(() => {
+    setTeam(initialTeam);
+  }, [initialTeam]);
+  const [pending, startTransition] = useTransition();
+
+  const blocksSorted = useMemo(() => [...team.blocks].sort((a, b) => a.order - b.order), [team.blocks]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -132,58 +137,78 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
     }));
   }
 
+  function saveCloud() {
+    setMsg(null);
+    startTransition(async () => {
+      try {
+        await saveTeamContent(teamId, team);
+        setMsg("Saved to cloud.");
+        router.refresh();
+      } catch (e) {
+        setMsg(e instanceof Error ? e.message : "Save failed");
+      }
+    });
+  }
+
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
       <header className="border-b border-zinc-200 bg-white px-4 py-4 sm:px-8">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              Page editor
-            </p>
-            <h1 className="text-xl font-bold">{team.name}</h1>
-            <p className="mt-1 max-w-xl text-sm text-zinc-600">
-              Not an app store download — one public webpage per link. Stack blocks here and share
-              the URL with families.
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Page editor</p>
+            <input
+              className="mt-1 w-full max-w-md border-b border-transparent text-xl font-bold outline-none focus:border-zinc-300"
+              value={team.name}
+              onChange={(e) => setTeam((t) => ({ ...t, name: e.target.value }))}
+              aria-label="Team name"
+            />
+            <textarea
+              className="mt-2 w-full max-w-xl resize-none border border-zinc-200 rounded-xl bg-zinc-50 px-3 py-2 text-sm text-zinc-700 outline-none focus:ring-2 focus:ring-sky-200"
+              rows={2}
+              placeholder="Tagline for families"
+              value={team.tagline ?? ""}
+              onChange={(e) => setTeam((t) => ({ ...t, tagline: e.target.value }))}
+            />
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => {
-                saveTeamPreviewLocal(team);
-              }}
-              className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
+              disabled={pending}
+              onClick={saveCloud}
+              className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm disabled:opacity-50"
             >
-              Save draft (this browser)
+              {pending ? "Saving…" : "Save to cloud"}
             </button>
             <button
               type="button"
-              onClick={() => clearTeamPreviewLocal(team.slug)}
               className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700"
+              onClick={() => {
+                void navigator.clipboard.writeText(publicUrl);
+                setMsg("Public link copied.");
+              }}
             >
-              Clear saved draft
+              Copy public link
             </button>
             <Link
-              href={`/${team.slug}`}
+              href={`/team/${team.slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm"
             >
-              Open team page
+              Preview public page
             </Link>
-            <Link href="/" className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold">
-              Home
+            <Link href="/admin" className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold">
+              All teams
             </Link>
           </div>
         </div>
+        {msg ? <p className="mx-auto mt-3 max-w-3xl text-center text-xs text-zinc-600">{msg}</p> : null}
       </header>
 
       <main className="mx-auto max-w-3xl space-y-10 px-4 py-8 sm:px-8">
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold">Color theme</h2>
-          <p className="mt-1 text-sm text-zinc-600">
-            Ready-made palettes — change the whole page look with one click.
-          </p>
+          <p className="mt-1 text-sm text-zinc-600">Pick a palette — colors save with “Save to cloud”.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {THEMES.map((t) => (
               <button
@@ -191,9 +216,7 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
                 type="button"
                 onClick={() => setTheme(t.id)}
                 className={`rounded-2xl border p-4 text-left transition ${
-                  team.themeId === t.id
-                    ? "border-sky-500 ring-2 ring-sky-200"
-                    : "border-zinc-200 hover:border-zinc-300"
+                  team.themeId === t.id ? "border-sky-500 ring-2 ring-sky-200" : "border-zinc-200 hover:border-zinc-300"
                 }`}
               >
                 <div className="flex gap-2">
@@ -215,11 +238,7 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
 
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold">Page blocks</h2>
-          <p className="mt-1 text-sm text-zinc-600">
-            Drag to reorder, toggle blocks on or off, then <strong>Save draft</strong> and open the
-            team page — you&apos;ll see changes in this browser. Cloud save with Supabase comes
-            next.
-          </p>
+          <p className="mt-1 text-sm text-zinc-600">Drag to reorder, toggle blocks, then save to cloud.</p>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
             <SortableContext items={blocksSorted.map((b) => b.id)} strategy={verticalListSortingStrategy}>
               <ul className="mt-6 space-y-2">
@@ -230,11 +249,6 @@ export function AdminDashboard({ initialTeam }: { initialTeam: TeamSpace }) {
             </SortableContext>
           </DndContext>
         </section>
-
-        <p className="text-center text-xs text-zinc-500">
-          Draft is stored in the browser (localStorage). In production — teams table and RLS in
-          Supabase.
-        </p>
       </main>
     </div>
   );

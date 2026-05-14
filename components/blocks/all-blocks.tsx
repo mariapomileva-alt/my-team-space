@@ -64,8 +64,8 @@ export function BlockHero({ team }: { team: TeamSpace }) {
               "linear-gradient(120deg, rgba(14,165,233,0.15) 0%, rgba(255,107,45,0.1) 100%)",
           }}
         >
-          <p className="flex h-full items-center justify-center text-sm text-[color:var(--mts-muted)]">
-            Cover image or video — set in the page editor
+          <p className="flex h-full items-center justify-center px-4 text-center text-sm text-[color:var(--mts-muted)]">
+            Cover image (Storage) or embed video from YouTube/Vimeo — not uploaded to Supabase
           </p>
         </div>
       </div>
