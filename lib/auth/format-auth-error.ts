@@ -14,6 +14,11 @@ export function formatAuthErrorMessage(raw: string): string {
   if (m.includes("already registered") || m.includes("user already exists")) {
     return "This email is already registered. Use Sign in instead.";
   }
+  if (m.includes("error sending magic link") || m.includes("sending magic link")) {
+    return (
+      "We couldn’t send the magic-link email (SMTP or provider limits). Try Continue with Google, or Email & password—or fix SMTP under Supabase → Authentication → Emails."
+    );
+  }
   if (m.includes("invalid login credentials")) {
     return (
       "That email and password don’t match an account we know. Check for typos, try the other email if you have two, " +

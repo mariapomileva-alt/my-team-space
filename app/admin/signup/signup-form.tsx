@@ -1,6 +1,7 @@
 "use client";
 
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
+import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -99,6 +100,22 @@ export function AdminSignupForm() {
         </Link>
         .
       </p>
+
+      <div className="mt-5 space-y-2">
+        <GoogleAuthButton nextPath={next} onError={setErr} label="Sign up with Google" />
+        <p className="text-center text-xs leading-relaxed text-zinc-500">
+          No confirmation email—enable Google under Supabase → Authentication → Providers.
+        </p>
+      </div>
+
+      <div className="relative my-5" aria-hidden>
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-zinc-200" />
+        </div>
+        <div className="relative flex justify-center text-xs font-medium uppercase tracking-wide text-zinc-400">
+          <span className="bg-white px-3">or email</span>
+        </div>
+      </div>
 
       <p className="mt-4 rounded-lg bg-zinc-50 px-3 py-2 text-xs leading-relaxed text-zinc-600 ring-1 ring-zinc-100">
         <span className="font-semibold text-zinc-700">Email link setup:</span> In Supabase open{" "}

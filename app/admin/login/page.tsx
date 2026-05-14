@@ -1,6 +1,7 @@
 "use client";
 
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
+import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -82,8 +83,9 @@ function LoginInner() {
           ) : (
             <>
               We couldn&apos;t finish signing you in from that link. Try{" "}
-              <strong className="font-semibold">Email &amp; password</strong> below, or use{" "}
-              <strong className="font-semibold">Magic link</strong> for a fresh email.
+              <strong className="font-semibold">Continue with Google</strong>,{" "}
+              <strong className="font-semibold">Email &amp; password</strong>, or a fresh{" "}
+              <strong className="font-semibold">Magic link</strong>.
             </>
           )}
         </p>
@@ -108,11 +110,27 @@ function LoginInner() {
           You&apos;re all set—account created.{" "}
           {mode === "password"
             ? "Pop in your password below and you&apos;re in."
-            : "Check your email for anything from us—or switch to Email & password to sign in now."}
+            : "Use Continue with Google above, check your email for a link—or switch to Email & password."}
         </p>
       ) : null}
 
-      <div className="mt-6 flex rounded-full bg-zinc-100 p-1 text-sm font-medium text-zinc-600">
+      <div className="mt-6 space-y-2">
+        <GoogleAuthButton nextPath="/admin" onError={setErr} />
+        <p className="text-center text-xs leading-relaxed text-zinc-500">
+          Fastest way in—no magic-link email. Enable Google under Supabase → Authentication → Providers if needed.
+        </p>
+      </div>
+
+      <div className="relative my-6" aria-hidden>
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-zinc-200" />
+        </div>
+        <div className="relative flex justify-center text-xs font-medium uppercase tracking-wide text-zinc-400">
+          <span className="bg-white px-3">or</span>
+        </div>
+      </div>
+
+      <div className="mt-0 flex rounded-full bg-zinc-100 p-1 text-sm font-medium text-zinc-600">
         <button
           type="button"
           className={`flex-1 rounded-full py-2 transition ${mode === "password" ? "bg-white text-zinc-900 shadow-sm" : ""}`}
