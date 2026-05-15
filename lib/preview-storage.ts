@@ -16,12 +16,17 @@ function isThemeId(x: unknown): x is ThemeId {
 function normalizeBlocks(input: unknown, fallback: BlockInstance[]): BlockInstance[] {
   if (!Array.isArray(input)) return fallback;
   const byId = new Map(fallback.map((b) => [b.id, b]));
+  const byType = new Map(fallback.map((b) => [b.type, b]));
   const merged: BlockInstance[] = [];
+  const usedIds = new Set<string>();
   for (const item of input) {
     if (!item || typeof item !== "object") continue;
     const row = item as Partial<BlockInstance>;
-    const base = byId.get(String(row.id ?? ""));
+    const id = String(row.id ?? "");
+    let base = id ? byId.get(id) : undefined;
+    if (!base && row.type) base = byType.get(row.type as BlockInstance["type"]);
     if (!base) continue;
+    usedIds.add(base.id);
     merged.push({
       ...base,
       enabled: typeof row.enabled === "boolean" ? row.enabled : base.enabled,
@@ -32,7 +37,9 @@ function normalizeBlocks(input: unknown, fallback: BlockInstance[]): BlockInstan
           : base.settings,
     });
   }
-  if (merged.length !== fallback.length) return fallback;
+  for (const base of fallback) {
+    if (!usedIds.has(base.id)) merged.push({ ...base });
+  }
   return merged.sort((a, b) => a.order - b.order);
 }
 

@@ -32,34 +32,61 @@ function isThemeId(x: string): x is ThemeId {
   return THEME_IDS.has(x as ThemeId);
 }
 
+function mergeBlockRow(row: Partial<BlockInstance>, base: BlockInstance): BlockInstance {
+  const layoutRaw = row.layout;
+  const layout =
+    typeof layoutRaw === "string" && LAYOUTS.has(layoutRaw as BlockLayout)
+      ? (layoutRaw as BlockLayout)
+      : base.layout;
+  const defaults = defaultSettingsForType(base.type);
+  return {
+    ...base,
+    enabled: typeof row.enabled === "boolean" ? row.enabled : base.enabled,
+    order: typeof row.order === "number" && Number.isFinite(row.order) ? row.order : base.order,
+    layout: layout ?? base.layout,
+    settings:
+      row.settings && typeof row.settings === "object"
+        ? { ...defaults, ...base.settings, ...row.settings }
+        : { ...defaults, ...base.settings },
+  };
+}
+
+/** Merge stored blocks with defaults — never wipe coach data when block count/ids drift. */
 function normalizeBlocks(input: unknown, fallback: BlockInstance[]): BlockInstance[] {
   if (!Array.isArray(input)) return fallback;
   const byId = new Map(fallback.map((b) => [b.id, b]));
+  const byType = new Map(fallback.map((b) => [b.type, b]));
   const merged: BlockInstance[] = [];
+  const usedIds = new Set<string>();
+
   for (const item of input) {
     if (!item || typeof item !== "object") continue;
     const row = item as Partial<BlockInstance>;
-    const base = byId.get(String(row.id ?? ""));
+    const id = String(row.id ?? "");
+    let base = id ? byId.get(id) : undefined;
+    if (!base && row.type) base = byType.get(row.type as BlockInstance["type"]);
     if (!base) continue;
-    const layoutRaw = row.layout;
-    const layout =
-      typeof layoutRaw === "string" && LAYOUTS.has(layoutRaw as BlockLayout)
-        ? (layoutRaw as BlockLayout)
-        : base.layout;
-    const defaults = defaultSettingsForType(base.type);
-    merged.push({
-      ...base,
-      enabled: typeof row.enabled === "boolean" ? row.enabled : base.enabled,
-      order: typeof row.order === "number" && Number.isFinite(row.order) ? row.order : base.order,
-      layout: layout ?? base.layout,
-      settings:
-        row.settings && typeof row.settings === "object"
-          ? { ...defaults, ...base.settings, ...row.settings }
-          : { ...defaults, ...base.settings },
-    });
+    usedIds.add(base.id);
+    merged.push(mergeBlockRow(row, base));
   }
-  if (merged.length !== fallback.length) return fallback;
+
+  for (const base of fallback) {
+    if (!usedIds.has(base.id)) merged.push({ ...base });
+  }
+
   return merged.sort((a, b) => a.order - b.order);
+}
+
+function logoFromRawBlocks(input: unknown): string | undefined {
+  if (!Array.isArray(input)) return undefined;
+  for (const item of input) {
+    if (!item || typeof item !== "object") continue;
+    const row = item as { type?: string; settings?: { teamPhotoUrl?: string; logoUrl?: string } };
+    if (row.type !== "hero" || !row.settings) continue;
+    const url = row.settings.teamPhotoUrl?.trim() || row.settings.logoUrl?.trim();
+    if (url) return url;
+  }
+  return undefined;
 }
 
 function logoFromHeroBlock(blocks: BlockInstance[]): string | undefined {
@@ -74,11 +101,12 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
   const normalizedThemeId = row.theme_id === "sharky_aqua" ? "ocean_aqua" : row.theme_id;
   const themeId = isThemeId(normalizedThemeId) ? normalizedThemeId : "ocean_aqua";
   const pageSettings = (row.page_settings as TeamPageSettings) ?? {};
-  const blocks = normalizeBlocks(row.blocks, fallback);
   const fromColumn = row.logo_url?.trim();
   const fromSettings = pageSettings.logoUrl?.trim();
+  const fromHeroRaw = logoFromRawBlocks(row.blocks);
+  const blocks = normalizeBlocks(row.blocks, fallback);
   const fromHero = logoFromHeroBlock(blocks);
-  const logoUrl = fromColumn || fromSettings || fromHero || logoPublicUrl;
+  const logoUrl = fromColumn || fromSettings || fromHeroRaw || fromHero || logoPublicUrl;
   return {
     id: row.id,
     slug: row.slug,

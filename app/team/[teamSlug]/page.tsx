@@ -10,7 +10,7 @@ import { notFound } from "next/navigation";
 type Props = { params: Promise<{ teamSlug: string }> };
 
 /** Public reads are cached (see `loadPublicTeamBySlug`); coaches call `revalidatePath` / `revalidateTag` on writes. */
-export const revalidate = 120;
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { teamSlug } = await params;
