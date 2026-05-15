@@ -1,6 +1,7 @@
 import { TeamPublicPage } from "@/components/mts/team-public-page";
 import { TeamSaaSExtras } from "@/components/mts/team-saas-extras";
 import { getTeamBySlug } from "@/lib/data/teams";
+import { isCurrentUserTeamCoach } from "@/lib/teams/is-team-coach";
 import { bundleToTeamSpace, loadPublicTeamBySlug } from "@/lib/teams/public";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -24,6 +25,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${bundle.team.name} · MyTeamSpace`,
     description: bundle.team.tagline ?? bundle.team.name,
   };
+}
+
+function CoachPreviewBanner() {
+  return (
+    <div
+      className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-center text-sm text-amber-950"
+      role="status"
+    >
+      <span className="font-semibold">Coach preview</span>
+      <span className="text-amber-900/80"> — subscribe to publish this page for everyone.</span>
+      <Link href="/admin" className="ml-2 font-semibold underline underline-offset-2">
+        Open admin
+      </Link>
+    </div>
+  );
 }
 
 function InactiveTeamPage({ name }: { name: string }) {
@@ -55,18 +71,24 @@ export default async function TeamPublicRoute({ params }: Props) {
   if (!bundle) notFound();
 
   const status = bundle.team.subscription_status;
-  if (status !== "active" && status !== "trialing") {
+  const isPublic = status === "active" || status === "trialing";
+  const coachPreview = !isPublic && (await isCurrentUserTeamCoach(bundle.team.id));
+
+  if (!isPublic && !coachPreview) {
     return <InactiveTeamPage name={bundle.team.name} />;
   }
 
   const teamSpace = bundleToTeamSpace(bundle);
   return (
-    <TeamPublicPage
-      initialTeam={teamSpace}
-      enableLocalPreview={false}
-      saasExtras={
-        <TeamSaaSExtras schedule={bundle.schedule} updates={bundle.updates} achievements={bundle.achievements} />
-      }
-    />
+    <>
+      {coachPreview ? <CoachPreviewBanner /> : null}
+      <TeamPublicPage
+        initialTeam={teamSpace}
+        enableLocalPreview={false}
+        saasExtras={
+          <TeamSaaSExtras schedule={bundle.schedule} updates={bundle.updates} achievements={bundle.achievements} />
+        }
+      />
+    </>
   );
 }
