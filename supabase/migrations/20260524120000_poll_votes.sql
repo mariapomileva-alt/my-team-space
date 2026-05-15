@@ -34,7 +34,10 @@ security definer
 set search_path = public
 as $$
 declare
-  t public.teams%rowtype;
+  v_team_id uuid;
+  v_team_name text;
+  v_status text;
+  v_coach_phone text := '';
   vid uuid;
   nm text := left(trim(coalesce(p_voter_name, '')), 80);
   ch text := lower(trim(p_choice));
@@ -46,27 +49,34 @@ begin
     raise exception 'name required';
   end if;
 
-  select * into t from public.teams
+  select id, name, subscription_status
+  into v_team_id, v_team_name, v_status
+  from public.teams
   where slug = lower(trim(p_slug))
   limit 1;
 
-  if t.id is null then
+  if v_team_id is null then
     raise exception 'team not found';
   end if;
 
-  if t.subscription_status not in ('active', 'trialing') then
+  if v_status not in ('active', 'trialing') then
     raise exception 'team not available';
   end if;
 
+  select coalesce(page_settings->>'coachWhatsapp', '')
+  into v_coach_phone
+  from public.teams
+  where id = v_team_id;
+
   insert into public.poll_votes (team_id, block_id, voter_name, choice)
-  values (t.id, left(trim(p_block_id), 64), nm, ch)
+  values (v_team_id, left(trim(p_block_id), 64), nm, ch)
   returning id into vid;
 
   return jsonb_build_object(
     'vote_id', vid,
-    'team_id', t.id,
-    'team_name', t.name,
-    'coach_phone', coalesce(t.page_settings->>'coachWhatsapp', '')
+    'team_id', v_team_id,
+    'team_name', v_team_name,
+    'coach_phone', v_coach_phone
   );
 end;
 $$;

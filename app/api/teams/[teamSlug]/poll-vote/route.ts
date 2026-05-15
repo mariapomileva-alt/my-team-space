@@ -44,8 +44,11 @@ export async function POST(
   if (error) {
     const raw = error.message ?? "Vote failed";
     const msg =
-      raw.includes("page_settings") || raw.includes("poll_votes")
-        ? "Voting is not set up yet. Ask your coach to run the latest database update in Supabase."
+      raw.includes("page_settings") ||
+      raw.includes("poll_votes") ||
+      raw.includes("record_poll_vote") ||
+      raw.includes("does not exist")
+        ? "Voting is not set up yet. Your coach needs to run supabase/RUN_POLL_SETUP.sql in Supabase SQL Editor."
         : raw.includes("name required")
           ? "Please enter your name."
           : raw.includes("invalid choice")

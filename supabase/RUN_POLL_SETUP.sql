@@ -1,20 +1,14 @@
--- Fix poll vote RPC when teams.page_settings was not migrated yet.
+-- Run this entire file once in Supabase → SQL Editor → Run
+-- Fixes poll voting + adds missing team columns (page_settings, logo_url, privacy)
 
-alter table public.teams
-  add column if not exists page_visibility text not null default 'public';
+-- 1) Team columns (safe if already applied)
+alter table public.teams add column if not exists page_visibility text not null default 'public';
+alter table public.teams add column if not exists access_code text;
+alter table public.teams add column if not exists invite_token text;
+alter table public.teams add column if not exists page_settings jsonb not null default '{}'::jsonb;
+alter table public.teams add column if not exists logo_url text;
 
-alter table public.teams
-  add column if not exists access_code text;
-
-alter table public.teams
-  add column if not exists invite_token text;
-
-alter table public.teams
-  add column if not exists page_settings jsonb not null default '{}'::jsonb;
-
-alter table public.teams
-  add column if not exists logo_url text;
-
+-- 2) Poll votes table
 create table if not exists public.poll_votes (
   id uuid primary key default gen_random_uuid(),
   team_id uuid not null references public.teams (id) on delete cascade,
@@ -37,6 +31,7 @@ create policy poll_votes_select_coach on public.poll_votes
     where m.team_id = poll_votes.team_id and m.user_id = auth.uid()
   ));
 
+-- 3) Vote RPC (does not require page_settings on teams row type)
 create or replace function public.record_poll_vote(
   p_slug text,
   p_block_id text,
