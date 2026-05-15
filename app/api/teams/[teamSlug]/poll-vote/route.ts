@@ -42,8 +42,20 @@ export async function POST(
   });
 
   if (error) {
-    const msg = error.message ?? "Vote failed";
-    const status = msg.includes("not found") ? 404 : msg.includes("not available") ? 403 : 400;
+    const raw = error.message ?? "Vote failed";
+    const msg =
+      raw.includes("page_settings") || raw.includes("poll_votes")
+        ? "Voting is not set up yet. Ask your coach to run the latest database update in Supabase."
+        : raw.includes("name required")
+          ? "Please enter your name."
+          : raw.includes("invalid choice")
+            ? "Invalid vote option."
+            : raw.includes("not found")
+              ? "Team not found."
+              : raw.includes("not available")
+                ? "This team page is not active."
+                : "Could not submit your vote. Please try again.";
+    const status = raw.includes("not found") ? 404 : raw.includes("not available") ? 403 : 400;
     return NextResponse.json({ error: msg }, { status });
   }
 
