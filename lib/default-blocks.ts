@@ -1,3 +1,5 @@
+import { BLOCK_META } from "./blocks/meta";
+import { defaultSettingsForType } from "./blocks/settings";
 import type { BlockInstance, BlockType } from "./types";
 
 const ORDERED_BLOCKS: BlockType[] = [
@@ -35,5 +37,7 @@ export function createDefaultBlocks(): BlockInstance[] {
       "quick_links",
     ].includes(type),
     order: i,
+    layout: BLOCK_META[type].defaultLayout,
+    settings: defaultSettingsForType(type),
   }));
 }

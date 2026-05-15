@@ -28,12 +28,16 @@ export type BlockType =
   | "birthdays"
   | "quick_links";
 
+export type BlockLayout = "full" | "half" | "card" | "featured";
+
 export type BlockInstance = {
   id: string;
   type: BlockType;
   enabled: boolean;
   order: number;
-  /** Block-specific config (future Supabase JSON) */
+  /** Visual width / emphasis on the public page */
+  layout?: BlockLayout;
+  /** Block-specific content — see lib/blocks/settings.ts */
   settings?: Record<string, unknown>;
 };
 

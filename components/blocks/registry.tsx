@@ -1,4 +1,4 @@
-import type { TeamSpace } from "@/lib/types";
+import type { BlockInstance, TeamSpace } from "@/lib/types";
 import {
   BlockAchievements,
   BlockAnnouncementBar,
@@ -20,20 +20,20 @@ import {
   BlockWeather,
 } from "./all-blocks";
 
-export function renderBlock(team: TeamSpace, type: TeamSpace["blocks"][0]["type"]) {
-  switch (type) {
+export function renderBlock(team: TeamSpace, block: BlockInstance) {
+  switch (block.type) {
     case "hero":
-      return <BlockHero team={team} />;
+      return <BlockHero team={team} block={block} />;
     case "announcement_bar":
-      return <BlockAnnouncementBar />;
+      return <BlockAnnouncementBar team={team} block={block} />;
     case "calendar":
       return <BlockCalendar />;
     case "schedule":
-      return <BlockSchedule />;
+      return <BlockSchedule team={team} block={block} />;
     case "results":
       return <BlockResults />;
     case "achievements":
-      return <BlockAchievements />;
+      return <BlockAchievements team={team} block={block} />;
     case "team_feed":
       return <BlockTeamFeed />;
     case "attendance":
@@ -47,7 +47,7 @@ export function renderBlock(team: TeamSpace, type: TeamSpace["blocks"][0]["type"
     case "polls":
       return <BlockPolls />;
     case "gallery":
-      return <BlockGallery />;
+      return <BlockGallery team={team} block={block} />;
     case "sponsors":
       return <BlockSponsors />;
     case "weather":
@@ -57,7 +57,7 @@ export function renderBlock(team: TeamSpace, type: TeamSpace["blocks"][0]["type"
     case "birthdays":
       return <BlockBirthdays />;
     case "quick_links":
-      return <BlockQuickLinks />;
+      return <BlockQuickLinks team={team} block={block} />;
     default:
       return null;
   }

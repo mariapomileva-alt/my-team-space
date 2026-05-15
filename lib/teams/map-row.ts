@@ -1,6 +1,10 @@
-import type { BlockInstance, TeamSpace, ThemeId } from "@/lib/types";
+import { BLOCK_META } from "@/lib/blocks/meta";
+import { defaultSettingsForType } from "@/lib/blocks/settings";
+import type { BlockInstance, BlockLayout, TeamSpace, ThemeId } from "@/lib/types";
 import { THEMES } from "@/lib/themes";
 import { createDefaultBlocks } from "@/lib/default-blocks";
+
+const LAYOUTS = new Set<BlockLayout>(["full", "half", "card", "featured"]);
 import { getSupabaseUrl } from "@/lib/supabase/env";
 
 export type TeamDbRow = {
@@ -31,14 +35,21 @@ function normalizeBlocks(input: unknown, fallback: BlockInstance[]): BlockInstan
     const row = item as Partial<BlockInstance>;
     const base = byId.get(String(row.id ?? ""));
     if (!base) continue;
+    const layoutRaw = row.layout;
+    const layout =
+      typeof layoutRaw === "string" && LAYOUTS.has(layoutRaw as BlockLayout)
+        ? (layoutRaw as BlockLayout)
+        : base.layout;
+    const defaults = defaultSettingsForType(base.type);
     merged.push({
       ...base,
       enabled: typeof row.enabled === "boolean" ? row.enabled : base.enabled,
       order: typeof row.order === "number" && Number.isFinite(row.order) ? row.order : base.order,
+      layout: layout ?? base.layout,
       settings:
         row.settings && typeof row.settings === "object"
-          ? { ...base.settings, ...row.settings }
-          : base.settings,
+          ? { ...defaults, ...base.settings, ...row.settings }
+          : { ...defaults, ...base.settings },
     });
   }
   if (merged.length !== fallback.length) return fallback;

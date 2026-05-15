@@ -1,3 +1,4 @@
+import { blockLayoutClass } from "@/lib/blocks/layout-classes";
 import type { TeamSpace } from "@/lib/types";
 import { renderBlock } from "@/components/blocks/registry";
 
@@ -7,7 +8,9 @@ export function TeamPageBlocks({ team }: { team: TeamSpace }) {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-5 px-4 pb-24 pt-6 sm:px-6">
       {sorted.map((block) => (
-        <div key={block.id}>{renderBlock(team, block.type)}</div>
+        <div key={block.id} className={blockLayoutClass(block.layout)}>
+          {renderBlock(team, block)}
+        </div>
       ))}
     </div>
   );
