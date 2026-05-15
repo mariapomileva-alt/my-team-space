@@ -42,7 +42,7 @@ export function GoogleAuthButton({ nextPath = "/admin", onError, label = "Contin
     const supabase = await getBrowserSupabase();
     if (!supabase) {
       onError(
-        "This page can’t reach your database. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or SUPABASE_URL + SUPABASE_ANON_KEY), then redeploy.",
+        "Couldn’t connect to Supabase. Hard-refresh the page and try again, or open /api/auth/public-config in a new tab.",
       );
       setPending(false);
       return;

@@ -1,3 +1,4 @@
+import { getBrowserSupabaseConfig } from "@/lib/supabase/browser-config-inject";
 import { createBrowserClient } from "@supabase/ssr";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 
@@ -9,7 +10,11 @@ let runtimeConfigPromise: Promise<{ url: string; anonKey: string } | null> | nul
 async function loadRuntimeConfig(): Promise<{ url: string; anonKey: string } | null> {
   if (runtimeConfig) return runtimeConfig;
   if (!runtimeConfigPromise) {
-    runtimeConfigPromise = fetch("/api/auth/public-config")
+    const endpoint =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/api/auth/public-config`
+        : "/api/auth/public-config";
+    runtimeConfigPromise = fetch(endpoint, { cache: "no-store" })
       .then(async (res) => {
         if (!res.ok) return null;
         const data = (await res.json()) as { url?: string; anonKey?: string };
@@ -26,6 +31,9 @@ async function loadRuntimeConfig(): Promise<{ url: string; anonKey: string } | n
 export async function getBrowserSupabase(): Promise<BrowserSupabase | null> {
   const direct = createBrowserSupabase();
   if (direct) return direct;
+
+  const injected = getBrowserSupabaseConfig();
+  if (injected) return createBrowserClient(injected.url, injected.anonKey);
 
   const cfg = await loadRuntimeConfig();
   if (!cfg) return null;

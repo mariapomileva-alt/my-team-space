@@ -64,7 +64,7 @@ export function AdminSignupForm() {
     const supabase = await getBrowserSupabase();
     if (!supabase) {
       setErr(
-        "This page can’t reach your database. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or SUPABASE_URL + SUPABASE_ANON_KEY), then redeploy.",
+        "Couldn’t connect to Supabase from this page. Hard-refresh (Cmd+Shift+R), then try Sign up with Google. If it persists, open /api/auth/public-config — you should see url and anonKey.",
       );
       return;
     }
