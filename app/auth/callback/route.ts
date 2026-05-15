@@ -1,3 +1,4 @@
+import { safeNextPath } from "@/lib/auth/safe-next-path";
 import { createServerClient } from "@supabase/ssr";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 import { NextResponse, type NextRequest } from "next/server";
@@ -5,7 +6,7 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/admin";
+  const next = safeNextPath(searchParams.get("next"));
   const oidcError = searchParams.get("error");
   const errorCode = searchParams.get("error_code");
 

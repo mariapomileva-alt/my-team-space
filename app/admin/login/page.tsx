@@ -1,5 +1,6 @@
 "use client";
 
+import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
@@ -33,7 +34,7 @@ function LoginInner() {
     const appUrl = window.location.origin;
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${appUrl}/auth/callback?next=/admin` },
+      options: { emailRedirectTo: authCallbackUrl(appUrl, "/admin") },
     });
     if (error) {
       setErr(formatAuthErrorMessage(error.message));

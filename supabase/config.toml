@@ -1,0 +1,18 @@
+# Local Supabase CLI defaults. Hosted project: mirror these in Dashboard → Authentication.
+# Email signup without confirmation: Authentication → Providers → Email → disable "Confirm email".
+# Google: Authentication → Providers → Google → enable + Client ID/secret from Google Cloud.
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = [
+  "http://localhost:3000/auth/callback",
+  "https://www.myteamspace.cc/auth/callback",
+  "https://myteamspace.cc/auth/callback",
+]
+
+[auth.email]
+enable_signup = true
+# For production coaches: set enable_confirmations = false in Dashboard if you skip SMTP.
+enable_confirmations = false
+double_confirm_changes = false
