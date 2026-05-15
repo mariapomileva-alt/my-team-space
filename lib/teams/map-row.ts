@@ -13,6 +13,7 @@ export type TeamDbRow = {
   slug: string;
   name: string;
   logo_path: string | null;
+  logo_url?: string | null;
   primary_color: string;
   secondary_color: string;
   theme_id: string;
@@ -61,13 +62,23 @@ function normalizeBlocks(input: unknown, fallback: BlockInstance[]): BlockInstan
   return merged.sort((a, b) => a.order - b.order);
 }
 
+function logoFromHeroBlock(blocks: BlockInstance[]): string | undefined {
+  const hero = blocks.find((b) => b.type === "hero");
+  if (!hero?.settings || typeof hero.settings !== "object") return undefined;
+  const url = (hero.settings as { teamPhotoUrl?: string }).teamPhotoUrl?.trim();
+  return url || undefined;
+}
+
 export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): TeamSpace {
   const fallback = createDefaultBlocks();
   const normalizedThemeId = row.theme_id === "sharky_aqua" ? "ocean_aqua" : row.theme_id;
   const themeId = isThemeId(normalizedThemeId) ? normalizedThemeId : "ocean_aqua";
   const pageSettings = (row.page_settings as TeamPageSettings) ?? {};
-  const customLogo = pageSettings.logoUrl?.trim();
-  const logoUrl = customLogo || logoPublicUrl;
+  const blocks = normalizeBlocks(row.blocks, fallback);
+  const fromColumn = row.logo_url?.trim();
+  const fromSettings = pageSettings.logoUrl?.trim();
+  const fromHero = logoFromHeroBlock(blocks);
+  const logoUrl = fromColumn || fromSettings || fromHero || logoPublicUrl;
   return {
     id: row.id,
     slug: row.slug,
@@ -78,7 +89,7 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
     themeId,
     plan: "pro",
     tagline: row.tagline ?? undefined,
-    blocks: normalizeBlocks(row.blocks, fallback),
+    blocks,
     pageVisibility: parseVisibility(row.page_visibility ?? undefined),
     accessCode: row.access_code ?? undefined,
     inviteToken: row.invite_token ?? undefined,

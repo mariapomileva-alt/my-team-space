@@ -40,15 +40,26 @@ export async function saveTeamContent(teamId: string, team: TeamSpace) {
     logoUrl,
   };
 
+  const blocks = team.blocks.map((block) => {
+    if (block.type !== "hero") return block;
+    const settings =
+      block.settings && typeof block.settings === "object"
+        ? { ...block.settings }
+        : {};
+    if (logoUrl) settings.teamPhotoUrl = logoUrl;
+    return { ...block, settings };
+  });
+
   const { error } = await supabase
     .from("teams")
     .update({
       name: team.name.slice(0, 200),
       tagline: team.tagline?.slice(0, 220) ?? null,
+      logo_url: logoUrl,
       theme_id: team.themeId,
       primary_color: team.primaryColor.slice(0, 32),
       secondary_color: team.secondaryColor.slice(0, 32),
-      blocks: team.blocks as unknown as object,
+      blocks: blocks as unknown as object,
       page_visibility: team.pageVisibility ?? "public",
       access_code: team.accessCode?.slice(0, 64) ?? null,
       invite_token: team.inviteToken?.slice(0, 64) ?? null,

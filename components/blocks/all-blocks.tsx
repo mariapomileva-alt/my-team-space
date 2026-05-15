@@ -28,11 +28,13 @@ type HeroSettings = {
   quote: string;
   city: string;
   coverImageUrl: string;
+  teamPhotoUrl?: string;
   social: Partial<Record<SocialKey, string>>;
 };
 
 export function BlockHero({ team, block }: { team: TeamSpace; block: BlockInstance }) {
   const s = getBlockSettings<HeroSettings>(block);
+  const logoSrc = team.logoUrl?.trim() || s.teamPhotoUrl?.trim();
   const quote = s.quote || "Show up. Cheer loud. Grow together.";
   const socialEntries = (Object.keys(SOCIAL_LABELS) as SocialKey[]).filter((k) => s.social?.[k]?.trim());
 
@@ -56,9 +58,9 @@ export function BlockHero({ team, block }: { team: TeamSpace; block: BlockInstan
         }}
       >
         <div className={`mb-4 flex justify-center ${s.coverImageUrl ? "-mt-12 sm:-mt-14" : ""} sm:justify-start`}>
-          {team.logoUrl ? (
+          {logoSrc ? (
             <img
-              src={team.logoUrl}
+              src={logoSrc}
               alt=""
               className="h-20 w-20 rounded-full border-4 border-[color:var(--mts-card)] object-cover shadow-lg sm:h-24 sm:w-24"
             />

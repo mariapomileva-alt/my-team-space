@@ -59,7 +59,7 @@ export const loadPublicTeamBySlug = cache((slug: string) => {
   return unstable_cache(
     async () => loadPublicTeamBySlugImpl(normalized),
     ["public-team-bundle", normalized],
-    { revalidate: 120, tags: [publicTeamCacheTag(normalized)] }
+    { revalidate: 60, tags: [publicTeamCacheTag(normalized)] }
   )();
 });
 
