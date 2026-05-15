@@ -3,7 +3,7 @@
 import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { getBrowserSupabase } from "@/lib/supabase/get-browser-supabase";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -24,10 +24,10 @@ function LoginInner() {
   async function sendLink(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    const supabase = createBrowserSupabase();
+    const supabase = await getBrowserSupabase();
     if (!supabase) {
       setErr(
-        "This page can’t reach your database from the browser. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your Supabase project URL and anon key, then redeploy. If the server already works but forms don’t, clear build cache on redeploy so those values are baked into the client bundle.",
+        "This page can’t reach your database. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or SUPABASE_URL + SUPABASE_ANON_KEY), then redeploy.",
       );
       return;
     }
@@ -46,10 +46,10 @@ function LoginInner() {
   async function signInPassword(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    const supabase = createBrowserSupabase();
+    const supabase = await getBrowserSupabase();
     if (!supabase) {
       setErr(
-        "This page can’t reach your database from the browser. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your Supabase project URL and anon key, then redeploy. If the server already works but forms don’t, clear build cache on redeploy so those values are baked into the client bundle.",
+        "This page can’t reach your database. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or SUPABASE_URL + SUPABASE_ANON_KEY), then redeploy.",
       );
       return;
     }

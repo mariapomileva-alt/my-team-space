@@ -4,7 +4,7 @@ import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { OwnerSetupChecklist } from "@/components/auth/owner-setup-checklist";
 import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { getBrowserSupabase } from "@/lib/supabase/get-browser-supabase";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -61,10 +61,10 @@ export function AdminSignupForm() {
       setErr("Passwords do not match.");
       return;
     }
-    const supabase = createBrowserSupabase();
+    const supabase = await getBrowserSupabase();
     if (!supabase) {
       setErr(
-        "This page can’t reach your database from the browser. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, then redeploy without build cache.",
+        "This page can’t reach your database. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or SUPABASE_URL + SUPABASE_ANON_KEY), then redeploy.",
       );
       return;
     }

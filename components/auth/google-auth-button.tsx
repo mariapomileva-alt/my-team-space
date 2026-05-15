@@ -2,7 +2,7 @@
 
 import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { getBrowserSupabase } from "@/lib/supabase/get-browser-supabase";
 import { useState } from "react";
 
 function GoogleMark({ className = "h-5 w-5" }: { className?: string }) {
@@ -39,10 +39,10 @@ export function GoogleAuthButton({ nextPath = "/admin", onError, label = "Contin
 
   async function onClick() {
     setPending(true);
-    const supabase = createBrowserSupabase();
+    const supabase = await getBrowserSupabase();
     if (!supabase) {
       onError(
-        "This page can’t reach your database from the browser. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel, then redeploy.",
+        "This page can’t reach your database. In Vercel → Environment Variables (Production), set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or SUPABASE_URL + SUPABASE_ANON_KEY), then redeploy.",
       );
       setPending(false);
       return;
