@@ -23,11 +23,11 @@ function TeamPublicBody({
     <>
       <header className="border-b border-[color:var(--mts-card-border)] bg-white/40 px-4 py-3 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
-          <Link
-            href="/"
-            className="text-xs font-semibold uppercase tracking-wider text-[color:var(--mts-muted)]"
-          >
-            MyTeamSpace
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/brand/logo-mark.svg" alt="" width={24} height={24} className="h-6 w-6" />
+            <span className="font-[family-name:var(--font-brand)] text-sm font-bold text-[color:var(--mts-text)]">
+              MyTeamSpace
+            </span>
           </Link>
           <Link
             href="/admin/login"

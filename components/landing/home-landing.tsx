@@ -1,15 +1,16 @@
 "use client";
 
+import { BrandLogo } from "@/components/brand/brand-logo";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState, type ReactNode } from "react";
 
 const accentBtn =
-  "bg-indigo-600 text-white shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_-6px_rgba(79,70,229,0.45)] hover:bg-indigo-500 active:scale-[0.99]";
-const accentRing = "ring-indigo-500/15";
-const accentBorder = "border-indigo-100/80";
-const accentSoft = "from-indigo-50/90 via-white to-violet-50/40";
-const accentGlow = "shadow-[0_0_80px_-20px_rgba(79,70,229,0.25)]";
+  "bg-[#6C5CE7] text-white shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_-6px_rgba(108,92,231,0.45)] hover:bg-[#5b4bd6] active:scale-[0.99]";
+const accentRing = "ring-[#6C5CE7]/15";
+const accentBorder = "border-[#6C5CE7]/20";
+const accentSoft = "from-[#6C5CE7]/8 via-white to-[#FF6B9D]/6";
+const accentGlow = "shadow-[0_0_80px_-20px_rgba(108,92,231,0.28)]";
 
 const FLOATING: { text: string; className: string; hideOnMobile?: boolean }[] = [
   { text: "Training today · 18:00", className: "left-0 top-[10%] sm:left-[-2%]" },
@@ -722,8 +723,8 @@ export function HomeLanding() {
 
   return (
     <div className={`min-h-screen bg-gradient-to-b ${accentSoft} to-[#f8fafc] text-neutral-900`}>
-      <header className="relative z-50 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 bg-gradient-to-b from-[#f8fafc] via-[#f8fafc]/95 to-transparent px-6 py-7 sm:px-8">
-        <span className="text-[15px] font-semibold tracking-tight text-neutral-900">MyTeamSpace</span>
+      <header className="relative z-50 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 bg-gradient-to-b from-[#F2F4F7] via-[#F2F4F7]/95 to-transparent px-6 py-6 sm:px-8">
+        <BrandLogo href="/" size="md" />
         <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
           <span className="hidden text-[12px] text-neutral-400 lg:inline">A digital home for your team</span>
           <span
@@ -733,13 +734,13 @@ export function HomeLanding() {
           />
           <Link
             href="/admin/login"
-            className="rounded-full border border-neutral-200/90 bg-white/90 px-3 py-2 text-[12px] font-semibold text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-indigo-200 hover:text-indigo-700 sm:px-4 sm:text-[13px]"
+            className="rounded-full border border-neutral-200/90 bg-white/90 px-3 py-2 text-[12px] font-semibold text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-[#6C5CE7]/30 hover:text-[#6C5CE7] sm:px-4 sm:text-[13px]"
           >
             Sign in
           </Link>
           <Link
             href="/admin/signup"
-            className="rounded-full bg-indigo-600 px-3 py-2 text-[12px] font-semibold text-white shadow-sm transition hover:bg-indigo-500 sm:px-4 sm:text-[13px]"
+            className="rounded-full bg-[#6C5CE7] px-3 py-2 text-[12px] font-semibold text-white shadow-sm transition hover:bg-[#5b4bd6] sm:px-4 sm:text-[13px]"
           >
             Create account
           </Link>
@@ -753,12 +754,15 @@ export function HomeLanding() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
                 No app download • just one link
               </p>
-              <h1 className="mt-4 text-[2.15rem] font-semibold leading-[1.1] tracking-tight text-neutral-900 sm:text-4xl lg:text-[2.85rem]">
-                Your team, finally in one space.
+              <h1 className="mt-4 font-[family-name:var(--font-brand)] text-[2.15rem] font-bold leading-[1.08] tracking-tight text-[#1A1C23] sm:text-4xl lg:text-[2.85rem]">
+                Everything your team needs.
+                <span className="mt-1 block bg-[linear-gradient(135deg,#6C5CE7,#FF6B9D,#FFA94D)] bg-clip-text text-transparent">
+                  In one space.
+                </span>
               </h1>
               <p className="mt-5 text-lg leading-relaxed text-neutral-500 sm:text-[1.06rem]">
-                Schedules, announcements, achievements, trips, and gamification — beautifully organized for coaches,
-                parents, and kids.
+                Schedules, announcements, achievements, trips — beautifully organized for coaches, parents, and kids. No
+                app download.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
@@ -769,7 +773,7 @@ export function HomeLanding() {
                 </Link>
                 <Link
                   href="/admin"
-                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-neutral-200/90 bg-white/90 px-7 text-[15px] font-medium text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-indigo-200 hover:text-indigo-700 active:scale-[0.99]"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-neutral-200/90 bg-white/90 px-7 text-[15px] font-medium text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-[#6C5CE7]/30 hover:text-[#6C5CE7] active:scale-[0.99]"
                 >
                   Open page editor
                 </Link>
@@ -860,11 +864,13 @@ export function HomeLanding() {
 
         <ExploreTeamSpacesSection />
 
-        <footer className="border-t border-neutral-100 py-12 text-center">
-          <p className="text-sm font-medium text-neutral-600">MyTeamSpace</p>
-          <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-neutral-400">
-            A beautiful digital home for your team — so everyone feels a little more connected.
-          </p>
+        <footer className="border-t border-neutral-100 py-12">
+          <div className="flex flex-col items-center text-center">
+            <BrandLogo size="sm" showTagline />
+            <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-neutral-400">
+              A beautiful digital home for your team — so everyone feels a little more connected.
+            </p>
+          </div>
         </footer>
       </main>
     </div>

@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+:root {
+  --mts-brand: #6c5ce7;
+  --mts-brand-pink: #ff6b9d;
+  --mts-brand-orange: #ffa94d;
+  --mts-brand-bg: #f2f4f7;
+  --mts-brand-text: #1a1c23;
+  --mts-brand-gradient: linear-gradient(135deg, #6c5ce7 0%, #ff6b9d 52%, #ffa94d 100%);
+}
+
 /* Theme tokens applied via `.mts-shell` inline vars from lib/themes.ts */
 .mts-shell {
   min-height: 100vh;
