@@ -2,6 +2,7 @@
 
 import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
+import { LoginConfigNotice } from "@/components/auth/login-config-notice";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { getBrowserSupabase } from "@/lib/supabase/get-browser-supabase";
 import Link from "next/link";
@@ -11,7 +12,6 @@ import { Suspense, useState } from "react";
 function LoginInner() {
   const searchParams = useSearchParams();
   const registered = searchParams.get("registered") === "1";
-  const configError = searchParams.get("error") === "config";
   const linkExpired = searchParams.get("error") === "link_expired";
   const authDenied = searchParams.get("error") === "auth_denied";
 
@@ -92,19 +92,7 @@ function LoginInner() {
         </p>
       ) : null}
 
-      {configError ? (
-        <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
-          The app couldn&apos;t load your session on the server. In{" "}
-          <strong className="font-semibold text-amber-900">Vercel → Settings → Environment Variables</strong>, add{" "}
-          <code className="rounded bg-amber-100/90 px-1 text-xs">SUPABASE_URL</code> and{" "}
-          <code className="rounded bg-amber-100/90 px-1 text-xs">SUPABASE_ANON_KEY</code> (same values as in the
-          Supabase dashboard: project URL + anon public key) for <strong>Production</strong>, then redeploy—those are
-          read at runtime and fix this even when <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_*</code>{" "}
-          was baked in empty. Alternatively set <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_SUPABASE_URL</code>{" "}
-          and <code className="rounded bg-amber-100/90 px-1 text-xs">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> and redeploy{" "}
-          <strong>without</strong> build cache.
-        </p>
-      ) : null}
+      <LoginConfigNotice />
 
       {registered ? (
         <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900 ring-1 ring-emerald-100">
