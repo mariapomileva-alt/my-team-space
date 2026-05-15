@@ -46,12 +46,12 @@ export function PollsEditor({
         />
       </div>
       <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-3">
-        <p className="text-xs font-semibold text-indigo-900">Уведомления тренеру</p>
+        <p className="text-xs font-semibold text-indigo-900">Coach notifications</p>
         <p className="mt-1 text-xs text-indigo-800/80">
-          Бесплатно: после голоса откроется WhatsApp с готовым текстом — родитель нажимает «Отправить».
-          Авто-SMS возможен через Twilio (платно, есть пробный кредит). Код страны: +371…
+          Free: after a vote, WhatsApp opens with a pre-filled message — the parent taps Send. Auto-SMS is available
+          via Twilio (paid; trial credit available). Use country code, e.g. +371…
         </p>
-        <label className="mt-2 block text-xs font-semibold text-zinc-500">Ваш WhatsApp / телефон</label>
+        <label className="mt-2 block text-xs font-semibold text-zinc-500">Your WhatsApp / phone</label>
         <input
           className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm"
           placeholder="+371 …"

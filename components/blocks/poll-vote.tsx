@@ -35,7 +35,7 @@ export function PollVote({
   async function vote(choice: "yes" | "no", label: string) {
     const voterName = name.trim();
     if (!voterName) {
-      setHint("Введите имя — тренеру будет понятно, кто голосовал.");
+      setHint("Enter your name so the coach knows who voted.");
       return;
     }
     setHint(null);
@@ -62,7 +62,7 @@ export function PollVote({
       };
       if (!res.ok || !data.ok) {
         setStatus("error");
-        setHint(data.error ?? "Не удалось отправить. Попробуйте ещё раз.");
+        setHint(data.error ?? "Could not submit. Please try again.");
         return;
       }
       localStorage.setItem(`mts_poll_${blockId}`, label);
@@ -76,7 +76,7 @@ export function PollVote({
       }
     } catch {
       setStatus("error");
-      setHint("Нет сети. Проверьте интернет и попробуйте снова.");
+      setHint("No connection. Check your internet and try again.");
     }
   }
 
@@ -85,16 +85,16 @@ export function PollVote({
   if (status === "done") {
     return (
       <div className="space-y-3 rounded-2xl bg-emerald-50 px-4 py-3 text-center">
-        <p className="text-sm font-semibold text-emerald-800">Спасибо, {name.trim()}!</p>
+        <p className="text-sm font-semibold text-emerald-800">Thanks, {name.trim()}!</p>
         <p className="text-xs text-emerald-700">
-          Ваш ответ: <strong>{choiceLabel}</strong>
+          Your answer: <strong>{choiceLabel}</strong>
         </p>
         {autoNotified ? (
-          <p className="text-xs text-emerald-700">Тренер получил SMS/WhatsApp.</p>
+          <p className="text-xs text-emerald-700">The coach received an SMS/WhatsApp.</p>
         ) : whatsappUrl ? (
           <>
             <p className="text-xs text-emerald-800">
-              Голос сохранён. Нажмите «Отправить» в WhatsApp — это бесплатно.
+              Vote saved. Tap Send in WhatsApp — it&apos;s free.
             </p>
             <a
               href={whatsappUrl}
@@ -102,11 +102,11 @@ export function PollVote({
               rel="noopener noreferrer"
               className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-[#25D366] px-5 text-sm font-semibold text-white"
             >
-              Написать тренеру в WhatsApp
+              Message coach on WhatsApp
             </a>
           </>
         ) : (
-          <p className="text-xs text-emerald-700">Голос сохранён — тренер увидит ответ в админке.</p>
+          <p className="text-xs text-emerald-700">Vote saved — the coach will see your answer in the admin.</p>
         )}
       </div>
     );
@@ -115,10 +115,10 @@ export function PollVote({
   return (
     <div className="space-y-3">
       <p className="text-sm text-[color:var(--mts-muted)]">{q}</p>
-      <label className="block text-xs font-semibold text-[color:var(--mts-muted)]">Ваше имя</label>
+      <label className="block text-xs font-semibold text-[color:var(--mts-muted)]">Your name</label>
       <input
         className="w-full rounded-xl border border-[color:var(--mts-card-border)] px-3 py-2.5 text-sm"
-        placeholder="например, мама Эммы"
+        placeholder="e.g. Emma's mom"
         value={name}
         onChange={(e) => setName(e.target.value)}
         disabled={status === "loading"}

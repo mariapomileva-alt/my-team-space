@@ -34,6 +34,12 @@ function revalidatePublicTeamBySlug(slug: string) {
 export async function saveTeamContent(teamId: string, team: TeamSpace) {
   const { supabase, user } = await getCoachContext();
   await assertCoach(supabase, user.id, teamId);
+  const logoUrl = team.logoUrl?.trim().slice(0, 2048) || null;
+  const pageSettings = {
+    ...(team.pageSettings ?? {}),
+    logoUrl,
+  };
+
   const { error } = await supabase
     .from("teams")
     .update({
@@ -46,7 +52,7 @@ export async function saveTeamContent(teamId: string, team: TeamSpace) {
       page_visibility: team.pageVisibility ?? "public",
       access_code: team.accessCode?.slice(0, 64) ?? null,
       invite_token: team.inviteToken?.slice(0, 64) ?? null,
-      page_settings: (team.pageSettings ?? {}) as object,
+      page_settings: pageSettings as object,
     })
     .eq("id", teamId);
   if (error) throw new Error(error.message);

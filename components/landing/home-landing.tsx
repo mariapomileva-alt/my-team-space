@@ -1,9 +1,9 @@
 "use client";
 
-import { BrandLogo } from "@/components/brand/brand-logo";
+import { FeatureWidgetsGrid } from "@/components/landing/feature-widgets-grid";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 const accentBtn =
   "bg-[#6C5CE7] text-white shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_-6px_rgba(108,92,231,0.45)] hover:bg-[#5b4bd6] active:scale-[0.99]";
@@ -266,176 +266,6 @@ function HeroProductVisual({ phase }: { phase: "simple" | "rich" }) {
   );
 }
 
-function ModuleCard({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <div
-      className={`group flex flex-col overflow-hidden rounded-2xl border border-neutral-100/90 bg-white shadow-[0_4px_24px_-14px_rgba(15,23,42,0.08)] transition hover:border-indigo-200/60 hover:shadow-[0_12px_40px_-18px_rgba(79,70,229,0.12)] ${accentRing}`}
-    >
-      <div className="min-h-[128px] flex-1 p-3">{children}</div>
-      <div className="border-t border-neutral-50 bg-neutral-50/40 px-3 py-2.5">
-        <p className="text-[13px] font-semibold tracking-tight text-neutral-900">{title}</p>
-        <p className="text-[11px] text-neutral-400">Tap-ready on phones</p>
-      </div>
-    </div>
-  );
-}
-
-function EverythingGrid() {
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      <ModuleCard title="Schedule">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between rounded-lg bg-indigo-50/80 px-2 py-1.5 ring-1 ring-indigo-100/60">
-            <span className="text-[11px] font-medium text-neutral-700">Tue</span>
-            <span className="text-[11px] font-bold text-indigo-600">18:00</span>
-          </div>
-          <div className="flex justify-between rounded-lg bg-neutral-50 px-2 py-1.5 text-[11px] text-neutral-600">
-            <span>Thu match</span>
-            <span className="font-medium">19:30</span>
-          </div>
-          <div className="flex justify-between rounded-lg bg-neutral-50 px-2 py-1.5 text-[11px] text-neutral-600">
-            <span>Sun trip</span>
-            <span className="font-medium">08:00</span>
-          </div>
-        </div>
-      </ModuleCard>
-
-      <ModuleCard title="Announcements">
-        <div className="rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 p-2.5 text-white">
-          <p className="text-[9px] font-semibold uppercase tracking-wider text-white/70">New</p>
-          <p className="mt-0.5 text-[11px] font-medium leading-snug">Photos from last game are up!</p>
-        </div>
-        <div className="mt-2 flex gap-1">
-          <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-[10px]">❤️ 14</span>
-          <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-[10px]">👏 9</span>
-        </div>
-      </ModuleCard>
-
-      <ModuleCard title="Results">
-        <div className="flex items-center justify-between rounded-xl bg-neutral-50 px-2 py-2 ring-1 ring-neutral-100">
-          <div>
-            <p className="text-[10px] text-neutral-500">Last match</p>
-            <p className="text-sm font-bold text-neutral-900">3 – 1</p>
-            <p className="text-[10px] text-emerald-600">Win vs Lions</p>
-          </div>
-          <div className="text-2xl" aria-hidden>
-            ⚽
-          </div>
-        </div>
-      </ModuleCard>
-
-      <ModuleCard title="Team gallery">
-        <div className="grid grid-cols-3 gap-1">
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="aspect-square rounded-md bg-gradient-to-br from-indigo-100/80 to-amber-100/60 ring-1 ring-white"
-            />
-          ))}
-        </div>
-      </ModuleCard>
-
-      <ModuleCard title="Trips">
-        <div className="flex gap-2 rounded-lg bg-emerald-50/90 p-2 ring-1 ring-emerald-100/70">
-          <span className="text-lg">🚌</span>
-          <div>
-            <p className="text-[11px] font-semibold text-emerald-900">Regional cup</p>
-            <p className="text-[10px] text-emerald-700/90">Sat · depart 07:30</p>
-          </div>
-        </div>
-      </ModuleCard>
-
-      <ModuleCard title="Achievements">
-        <div className="flex flex-wrap gap-1">
-          {["⭐ First goal", "🎯 Streak x5", "🏅 Team player"].map((t) => (
-            <span
-              key={t}
-              className="rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-medium text-amber-900 ring-1 ring-amber-100"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-neutral-100">
-          <div className="h-full w-[72%] rounded-full bg-indigo-500" />
-        </div>
-        <p className="mt-1 text-[10px] text-neutral-500">Level 4 · 720 XP</p>
-      </ModuleCard>
-
-      <ModuleCard title="Team rules">
-        <ol className="space-y-1 text-[10px] leading-relaxed text-neutral-600">
-          <li>
-            <span className="font-semibold text-indigo-600">1.</span> Respect coaches & refs
-          </li>
-          <li>
-            <span className="font-semibold text-indigo-600">2.</span> Arrive 15 min early
-          </li>
-          <li>
-            <span className="font-semibold text-indigo-600">3.</span> Hydrate always
-          </li>
-        </ol>
-      </ModuleCard>
-
-      <ModuleCard title="Attendance">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="text-2xl font-bold text-neutral-900">18</p>
-            <p className="text-[10px] text-neutral-500">of 24 present</p>
-          </div>
-          <div className="h-14 w-10 rounded-t-lg bg-gradient-to-t from-indigo-600 to-indigo-400" />
-        </div>
-        <p className="mt-2 text-[10px] font-medium text-emerald-600">+3 vs last week</p>
-      </ModuleCard>
-
-      <ModuleCard title="MVP player">
-        <div className="flex items-center gap-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-violet-200 to-indigo-200 text-sm font-bold text-indigo-900 ring-2 ring-amber-300/80">
-            MK
-          </div>
-          <div>
-            <p className="text-[12px] font-semibold text-neutral-900">Maya K.</p>
-            <p className="text-[10px] text-amber-700">Player of the week</p>
-          </div>
-        </div>
-      </ModuleCard>
-
-      <ModuleCard title="Sponsors">
-        <div className="flex flex-wrap items-center justify-center gap-2 opacity-80">
-          <span className="rounded-md bg-neutral-200 px-2 py-1 text-[9px] font-bold tracking-tight text-neutral-600">
-            LOCAL
-          </span>
-          <span className="rounded-md bg-neutral-800 px-2 py-1 text-[9px] font-bold text-white">SPORT+</span>
-        </div>
-      </ModuleCard>
-
-      <ModuleCard title="Coach contacts">
-        <div className="flex items-center gap-2 rounded-lg bg-neutral-50 p-2 ring-1 ring-neutral-100">
-          <div className="h-9 w-9 rounded-full bg-indigo-100" />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[11px] font-semibold text-neutral-900">Coach Anna</p>
-            <p className="text-[10px] text-indigo-600">Message · Call</p>
-          </div>
-        </div>
-      </ModuleCard>
-
-      <ModuleCard title="Team leaderboard">
-        <div className="space-y-1.5">
-          {[
-            { n: "1", name: "Maya", xp: "420", c: "bg-amber-200" },
-            { n: "2", name: "Leo", xp: "380", c: "bg-neutral-200" },
-            { n: "3", name: "Sofia", xp: "355", c: "bg-orange-200/80" },
-          ].map((row) => (
-            <div key={row.n} className="flex items-center gap-2 rounded-md bg-neutral-50/90 px-2 py-1 ring-1 ring-neutral-100/80">
-              <span className={`flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-bold ${row.c}`}>{row.n}</span>
-              <span className="flex-1 text-[11px] font-medium text-neutral-800">{row.name}</span>
-              <span className="text-[10px] font-semibold text-indigo-600">{row.xp} XP</span>
-            </div>
-          ))}
-        </div>
-      </ModuleCard>
-    </div>
-  );
-}
 
 function SetupSection() {
   const [step, setStep] = useState(0);
@@ -722,64 +552,36 @@ export function HomeLanding() {
   }, [cycle]);
 
   return (
-    <div className={`min-h-screen bg-gradient-to-b ${accentSoft} to-[#f8fafc] text-neutral-900`}>
-      <header className="relative z-50 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 bg-gradient-to-b from-[#F2F4F7] via-[#F2F4F7]/95 to-transparent px-6 py-6 sm:px-8">
-        <BrandLogo href="/" size="md" />
-        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-          <span className="hidden text-[12px] text-neutral-400 lg:inline">A digital home for your team</span>
-          <span
-            className="hidden h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.25)] sm:inline"
-            title="All systems ready"
-            aria-hidden
-          />
-          <Link
-            href="/admin/login"
-            className="rounded-full border border-neutral-200/90 bg-white/90 px-3 py-2 text-[12px] font-semibold text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-[#6C5CE7]/30 hover:text-[#6C5CE7] sm:px-4 sm:text-[13px]"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/admin/signup"
-            className="rounded-full bg-[#6C5CE7] px-3 py-2 text-[12px] font-semibold text-white shadow-sm transition hover:bg-[#5b4bd6] sm:px-4 sm:text-[13px]"
-          >
-            Create account
-          </Link>
-        </div>
-      </header>
-
-      <main>
-        <section className="mx-auto max-w-6xl px-6 pb-16 sm:px-8 lg:pb-24">
+    <div className={`bg-gradient-to-b ${accentSoft} to-[#f8fafc] text-neutral-900`}>
+        <section className="mx-auto max-w-6xl px-6 pb-16 pt-4 sm:px-8 lg:pb-24">
           <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-10 xl:gap-14">
             <div className="max-w-xl lg:max-w-none">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
-                No app download • just one link
-              </p>
-              <h1 className="mt-4 font-[family-name:var(--font-brand)] text-[2.15rem] font-bold leading-[1.08] tracking-tight text-[#1A1C23] sm:text-4xl lg:text-[2.85rem]">
-                Everything your team needs.
+              <h1 className="font-[family-name:var(--font-brand)] text-[2.15rem] font-bold leading-[1.08] tracking-tight text-[#1A1C23] sm:text-4xl lg:text-[2.85rem]">
+                Your Team.
                 <span className="mt-1 block bg-[linear-gradient(135deg,#6C5CE7,#FF6B9D,#FFA94D)] bg-clip-text text-transparent">
-                  In one space.
+                  One Space.
                 </span>
               </h1>
               <p className="mt-5 text-lg leading-relaxed text-neutral-500 sm:text-[1.06rem]">
-                Schedules, announcements, achievements, trips — beautifully organized for coaches, parents, and kids. No
-                app download.
+                Schedules, announcements, achievements, and updates — beautifully organized for coaches, parents, and
+                kids. One link. No app download.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
-                  href="/team/city-juniors"
+                  href="/admin/signup"
                   className={`inline-flex min-h-12 items-center justify-center rounded-full px-7 text-[15px] font-medium transition ${accentBtn}`}
                 >
-                  View demo team
+                  Create Your Team Space
                 </Link>
                 <Link
-                  href="/admin"
+                  href="/team/city-juniors"
                   className="inline-flex min-h-12 items-center justify-center rounded-full border border-neutral-200/90 bg-white/90 px-7 text-[15px] font-medium text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-[#6C5CE7]/30 hover:text-[#6C5CE7] active:scale-[0.99]"
                 >
-                  Open page editor
+                  View Demo
                 </Link>
               </div>
               <p className="mt-7 text-sm font-medium text-neutral-400">
-                Works in any browser. No login needed for parents.
+                No coding required. Setup in minutes.
               </p>
             </div>
 
@@ -829,15 +631,19 @@ export function HomeLanding() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 lg:py-24">
+        <section id="features" className="mx-auto max-w-6xl px-6 py-20 sm:px-8 lg:py-24">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">Everything your team needs.</h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-neutral-500">
-              Real building blocks — each designed for quick scanning on a phone, calm reading on a tablet.
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">Your digital team home</p>
+            <h2 className="mt-3 font-[family-name:var(--font-brand)] text-3xl font-bold tracking-tight text-[#1A1C23] sm:text-4xl">
+              Everything your team needs. In one beautiful place.
+            </h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
+              Live widgets for coaches, parents, and kids — schedules, wins, photos, and proud moments. Mobile-first,
+              calm, and alive.
             </p>
           </div>
-          <div className="mt-14">
-            <EverythingGrid />
+          <div className="mt-12 sm:mt-14">
+            <FeatureWidgetsGrid />
           </div>
         </section>
 
@@ -863,16 +669,6 @@ export function HomeLanding() {
         </section>
 
         <ExploreTeamSpacesSection />
-
-        <footer className="border-t border-neutral-100 py-12">
-          <div className="flex flex-col items-center text-center">
-            <BrandLogo size="sm" showTagline />
-            <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-neutral-400">
-              A beautiful digital home for your team — so everyone feels a little more connected.
-            </p>
-          </div>
-        </footer>
-      </main>
     </div>
   );
 }

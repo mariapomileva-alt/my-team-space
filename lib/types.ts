@@ -20,6 +20,8 @@ export type TeamPageSettings = {
   coachWhatsapp?: string;
   pollNotifications?: boolean;
   payments?: PaymentTrackerRow[];
+  /** External logo URL (builder); falls back to Storage logo_path when unset */
+  logoUrl?: string;
 };
 
 export type ThemeId =

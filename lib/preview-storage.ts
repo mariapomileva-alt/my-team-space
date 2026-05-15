@@ -46,10 +46,16 @@ export function mergeStoredPreview(fallback: TeamSpace): TeamSpace {
     if (typeof o.slug !== "string" || o.slug !== fallback.slug) return fallback;
     const rawTheme = typeof o.themeId === "string" ? o.themeId : "";
     const storedTheme = rawTheme === "sharky_aqua" ? "ocean_aqua" : rawTheme;
+    const logoUrl =
+      typeof o.logoUrl === "string" && o.logoUrl.trim()
+        ? o.logoUrl.trim().slice(0, 2048)
+        : fallback.logoUrl;
+
     return {
       ...fallback,
       name: typeof o.name === "string" ? o.name.slice(0, 120) : fallback.name,
       tagline: typeof o.tagline === "string" ? o.tagline.slice(0, 220) : fallback.tagline,
+      logoUrl,
       themeId: isThemeId(storedTheme) ? storedTheme : fallback.themeId,
       primaryColor:
         typeof o.primaryColor === "string" ? o.primaryColor.slice(0, 32) : fallback.primaryColor,

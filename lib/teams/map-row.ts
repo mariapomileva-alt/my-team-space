@@ -65,11 +65,14 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
   const fallback = createDefaultBlocks();
   const normalizedThemeId = row.theme_id === "sharky_aqua" ? "ocean_aqua" : row.theme_id;
   const themeId = isThemeId(normalizedThemeId) ? normalizedThemeId : "ocean_aqua";
+  const pageSettings = (row.page_settings as TeamPageSettings) ?? {};
+  const customLogo = pageSettings.logoUrl?.trim();
+  const logoUrl = customLogo || logoPublicUrl;
   return {
     id: row.id,
     slug: row.slug,
     name: row.name,
-    logoUrl: logoPublicUrl,
+    logoUrl,
     primaryColor: row.primary_color?.slice(0, 32) || "#0c4a6e",
     secondaryColor: row.secondary_color?.slice(0, 32) || "#0ea5e9",
     themeId,
@@ -79,7 +82,7 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
     pageVisibility: parseVisibility(row.page_visibility ?? undefined),
     accessCode: row.access_code ?? undefined,
     inviteToken: row.invite_token ?? undefined,
-    pageSettings: (row.page_settings as TeamPageSettings) ?? {},
+    pageSettings,
   };
 }
 

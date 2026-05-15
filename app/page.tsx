@@ -1,4 +1,5 @@
 import { HomeLanding } from "@/components/landing/home-landing";
+import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { redirect } from "next/navigation";
 
 function firstString(v: string | string[] | undefined): string | undefined {
@@ -34,5 +35,9 @@ export default async function MarketingHome({
     redirect("/admin/login?error=auth_denied");
   }
 
-  return <HomeLanding />;
+  return (
+    <MarketingLayout>
+      <HomeLanding />
+    </MarketingLayout>
+  );
 }
