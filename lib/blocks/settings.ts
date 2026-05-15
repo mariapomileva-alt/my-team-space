@@ -39,6 +39,20 @@ export type GalleryImage = {
   caption?: string;
 };
 
+/** Generic row for results, contacts, feed posts, etc. */
+export type ContentItem = {
+  id: string;
+  [key: string]: string;
+};
+
+export type ListBlockSettings = { items: ContentItem[] };
+
+export type PollSettings = { question: string; optionYes: string; optionNo: string };
+
+export type CountdownSettings = { label: string; targetDate: string };
+
+export type WeatherSettings = { temp: string; note: string; location: string };
+
 function uid(prefix: string) {
   return `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
 }
@@ -64,7 +78,7 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
     case "achievements":
       return { cards: [] as AchievementCard[] };
     case "attendance":
-      return { enabledFeatures: { streaks: true, history: true } };
+      return { enabledFeatures: { streaks: true, history: true }, roster: [] as RosterPlayer[] };
     case "quick_links":
       return {
         whatsapp: "",
@@ -73,9 +87,26 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
         customLabel: "",
         customUrl: "",
       };
+    case "results":
+    case "contacts":
+    case "documents":
+    case "team_feed":
+    case "camp_trip":
+    case "sponsors":
+      return { items: [] as ContentItem[] };
+    case "polls":
+      return { question: "", optionYes: "I'm in", optionNo: "Can't make it" };
+    case "countdown":
+      return { label: "Next event", targetDate: "" };
+    case "weather":
+      return { temp: "", note: "", location: "" };
     default:
       return {};
   }
+}
+
+export function newContentItem(partial?: Partial<ContentItem>): ContentItem {
+  return { id: uid("row"), emoji: "", name: "", subtitle: "", title: "", body: "", url: "", ...partial };
 }
 
 export function getBlockSettings<T extends Record<string, unknown>>(
@@ -126,6 +157,30 @@ export function newRosterPlayer(): RosterPlayer {
 
 export function newGalleryImage(): GalleryImage {
   return { id: uid("img"), url: "", caption: "" };
+}
+
+export function newResultItem(): ContentItem {
+  return newContentItem({ emoji: "🏆", name: "", subtitle: "" });
+}
+
+export function newContactItem(): ContentItem {
+  return newContentItem({ name: "", role: "", url: "" });
+}
+
+export function newDocumentItem(): ContentItem {
+  return newContentItem({ title: "", url: "" });
+}
+
+export function newFeedPost(): ContentItem {
+  return newContentItem({ title: "", body: "" });
+}
+
+export function newCampItem(): ContentItem {
+  return newContentItem({ title: "", body: "" });
+}
+
+export function newSponsorItem(): ContentItem {
+  return newContentItem({ name: "", url: "" });
 }
 
 export const ACHIEVEMENT_ICONS = ["🏆", "🥇", "🥈", "🥉", "⭐", "🎖", "📜", "🔥", "❤️"] as const;

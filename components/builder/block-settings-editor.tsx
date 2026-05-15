@@ -6,10 +6,10 @@ import { AchievementsEditor } from "./editors/achievements-editor";
 import { GalleryEditor } from "./editors/gallery-editor";
 import { HeroIdentityEditor } from "./editors/hero-identity-editor";
 import { LayoutPicker } from "./editors/layout-picker";
-import { PlaceholderEditor } from "./editors/placeholder-editor";
-import { QuickLinksEditor } from "./editors/quick-links-editor";
 import { RosterEditor } from "./editors/roster-editor";
 import { ScheduleEditor } from "./editors/schedule-editor";
+import { SimpleBlocksEditor } from "./editors/simple-blocks-editor";
+import { QuickLinksEditor } from "./editors/quick-links-editor";
 
 type Props = {
   block: BlockInstance;
@@ -18,16 +18,16 @@ type Props = {
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
 };
 
-const RICH_EDITORS = new Set([
-  "announcement_bar",
-  "hero",
-  "quick_links",
-  "schedule",
-  "calendar",
-  "gallery",
-  "achievements",
-  "attendance",
-  "birthdays",
+const SIMPLE_TYPES = new Set([
+  "results",
+  "contacts",
+  "documents",
+  "team_feed",
+  "camp_trip",
+  "sponsors",
+  "polls",
+  "countdown",
+  "weather",
 ]);
 
 export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam }: Props) {
@@ -55,8 +55,7 @@ export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam }: 
       {block.type === "attendance" || block.type === "birthdays" ? (
         <RosterEditor block={block} team={team} onPatchBlock={onPatchBlock} />
       ) : null}
-
-      {!RICH_EDITORS.has(block.type) ? <PlaceholderEditor type={block.type} /> : null}
+      {SIMPLE_TYPES.has(block.type) ? <SimpleBlocksEditor block={block} onPatchBlock={onPatchBlock} /> : null}
     </div>
   );
 }

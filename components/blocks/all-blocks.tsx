@@ -1,5 +1,14 @@
+import { BlockEmpty } from "@/components/blocks/block-empty";
 import { MtsBadge, MtsCard } from "@/components/mts/card";
-import { getBlockSettings, type SocialKey } from "@/lib/blocks/settings";
+import {
+  getBlockSettings,
+  type ContentItem,
+  type CountdownSettings,
+  type ListBlockSettings,
+  type PollSettings,
+  type SocialKey,
+  type WeatherSettings,
+} from "@/lib/blocks/settings";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
 
@@ -107,17 +116,23 @@ export function BlockAnnouncementBar({ team, block }: { team: TeamSpace; block: 
   );
 }
 
-export function BlockCalendar() {
+
+export function BlockCalendar({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<{ externalUrl: string }>(block);
+  const url = s.externalUrl?.trim();
   return (
     <MtsCard className="p-5 sm:p-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold text-[color:var(--mts-text)]">Calendar</h2>
-        <MtsBadge>Google</MtsBadge>
+        {url ? <MtsBadge>Linked</MtsBadge> : null}
       </div>
-      <p className="mb-4 text-sm text-[color:var(--mts-muted)]">
-        Trainings, meets, camps — connect Google Calendar in the editor.
-      </p>
-      <div className="h-48 rounded-2xl border border-dashed border-[color:var(--mts-card-border)] bg-[var(--mts-accent-soft)]" />
+      {url ? (
+        <a href={url} className="text-sm font-semibold text-[color:var(--mts-primary-bright)] underline">
+          Open team calendar
+        </a>
+      ) : (
+        <BlockEmpty message="Calendar link coming soon." />
+      )}
     </MtsCard>
   );
 }
@@ -132,7 +147,7 @@ export function BlockSchedule({ team, block }: { team: TeamSpace; block: BlockIn
       {s.mode === "external" && s.externalUrl ? (
         <p className="text-sm text-[color:var(--mts-muted)]"><a href={s.externalUrl} className="font-semibold text-[color:var(--mts-primary-bright)] underline">Open full calendar</a></p>
       ) : events.length === 0 ? (
-        <p className="text-sm text-[color:var(--mts-muted)]">Add trainings in the page builder.</p>
+        <BlockEmpty message="Weekly schedule will be posted here soon." />
       ) : (
         <ul className="space-y-2 text-sm">
           {events.map((ev) => (
@@ -147,29 +162,26 @@ export function BlockSchedule({ team, block }: { team: TeamSpace; block: BlockIn
   );
 }
 
-export function BlockResults() {
+
+export function BlockResults({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<ListBlockSettings>(block);
+  const items = (s.items ?? []).filter((row) => row.name?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">Results & highlights</h2>
-        <MtsBadge>Live</MtsBadge>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-3">
-        {[
-          { t: "Gold", n: "Danik", e: "🥇" },
-          { t: "Silver", n: "Mark", e: "🥈" },
-          { t: "Team", n: "3rd", e: "🏅" },
-        ].map((x) => (
-          <div
-            key={x.n}
-            className="rounded-2xl border border-[color:var(--mts-card-border)] p-4 text-center"
-          >
-            <div className="text-2xl">{x.e}</div>
-            <div className="font-semibold">{x.n}</div>
-            <div className="text-xs text-[color:var(--mts-muted)]">{x.t}</div>
-          </div>
-        ))}
-      </div>
+      <h2 className="mb-4 text-lg font-bold">Results & highlights</h2>
+      {items.length === 0 ? (
+        <BlockEmpty message="Results and highlights will appear here." />
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-3">
+          {items.map((x) => (
+            <div key={x.id} className="rounded-2xl border border-[color:var(--mts-card-border)] p-4 text-center">
+              {x.emoji ? <div className="text-2xl">{x.emoji}</div> : null}
+              <div className="font-semibold">{x.name}</div>
+              {x.subtitle ? <div className="text-xs text-[color:var(--mts-muted)]">{x.subtitle}</div> : null}
+            </div>
+          ))}
+        </div>
+      )}
     </MtsCard>
   );
 }
@@ -181,7 +193,7 @@ export function BlockAchievements({ team, block }: { team: TeamSpace; block: Blo
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Trophies & highlights</h2>
       {cards.length === 0 ? (
-        <p className="text-sm text-[color:var(--mts-muted)]">Achievement cards appear here.</p>
+        <BlockEmpty message="Team achievements will be celebrated here." />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {cards.map((c) => (
@@ -198,109 +210,144 @@ export function BlockAchievements({ team, block }: { team: TeamSpace; block: Blo
   );
 }
 
-export function BlockTeamFeed() {
+export function BlockTeamFeed({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<ListBlockSettings>(block);
+  const posts = (s.items ?? []).filter((row) => row.title?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Team feed</h2>
-      <div className="space-y-3">
-        {[1, 2].map((i) => (
-          <div key={i} className="rounded-2xl bg-[var(--mts-accent-soft)] p-4">
-            <p className="text-sm font-medium">Photos from the weekend race ✨</p>
-            <p className="mt-1 text-xs text-[color:var(--mts-muted)]">Coach · 2h ago</p>
-          </div>
-        ))}
-      </div>
+      {posts.length === 0 ? (
+        <BlockEmpty message="News and photos from the team will show up here." />
+      ) : (
+        <div className="space-y-3">
+          {posts.map((post) => (
+            <div key={post.id} className="rounded-2xl bg-[var(--mts-accent-soft)] p-4">
+              <p className="text-sm font-medium">{post.title}</p>
+              {post.body ? <p className="mt-1 text-xs text-[color:var(--mts-muted)]">{post.body}</p> : null}
+            </div>
+          ))}
+        </div>
+      )}
     </MtsCard>
   );
 }
 
-export function BlockAttendance() {
+export function BlockAttendance({ team, block }: { team: TeamSpace; block: BlockInstance }) {
+  const att = team.blocks.find((b) => b.type === "attendance") ?? block;
+  const roster = getBlockSettings<{ roster: { name: string }[] }>(att).roster ?? [];
+  const names = roster.filter((p) => p.name?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Attendance</h2>
-      <div className="flex items-end gap-2">
-        <span className="text-4xl font-black text-[color:var(--mts-primary-bright)]">92%</span>
-        <span className="pb-1 text-sm text-[color:var(--mts-muted)]">this month</span>
-      </div>
+      {names.length === 0 ? (
+        <BlockEmpty message="Attendance tracking starts once the coach adds a roster." />
+      ) : (
+        <p className="text-sm text-[color:var(--mts-muted)]">Tracking for {names.length} athletes — full stats coming soon.</p>
+      )}
     </MtsCard>
   );
 }
 
-export function BlockCampTrip() {
+export function BlockCampTrip({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<ListBlockSettings>(block);
+  const items = (s.items ?? []).filter((row) => row.title?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-2 text-lg font-bold">Camp & trip</h2>
-      <p className="mb-4 text-sm text-[color:var(--mts-muted)]">
-        Bus seats, lists, documents, and parent confirmations — configure in the editor.
-      </p>
-      <div className="grid gap-2 sm:grid-cols-2">
-        <div className="rounded-xl border border-[color:var(--mts-card-border)] p-3 text-sm">
-          Bus 12 / 15 seats
+      {items.length === 0 ? (
+        <BlockEmpty message="Trip details will be shared here before travel." />
+      ) : (
+        <div className="grid gap-2 sm:grid-cols-2">
+          {items.map((row) => (
+            <div key={row.id} className="rounded-xl border border-[color:var(--mts-card-border)] p-3 text-sm">
+              <p className="font-semibold">{row.title}</p>
+              {row.body ? <p className="mt-1 text-[color:var(--mts-muted)]">{row.body}</p> : null}
+            </div>
+          ))}
         </div>
-        <div className="rounded-xl border border-[color:var(--mts-card-border)] p-3 text-sm">
-          Checklist 8 / 12
-        </div>
-      </div>
+      )}
     </MtsCard>
   );
 }
 
-export function BlockContacts() {
+export function BlockContacts({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<ListBlockSettings>(block);
+  const items = (s.items ?? []).filter((row) => row.name?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Contacts</h2>
-      <ul className="space-y-3 text-sm">
-        <li className="flex justify-between">
-          <span>Head coach</span>
-          <a className="font-semibold text-[color:var(--mts-primary-bright)]" href="tel:">
-            Call
-          </a>
-        </li>
-        <li className="flex justify-between">
-          <span>Emergency</span>
-          <span className="text-[color:var(--mts-muted)]">On file with coach</span>
-        </li>
-      </ul>
+      {items.length === 0 ? (
+        <BlockEmpty message="Coach contacts will be listed here." />
+      ) : (
+        <ul className="space-y-3 text-sm">
+          {items.map((c) => (
+            <li key={c.id} className="flex justify-between gap-3">
+              <span>
+                {c.name}
+                {c.role ? <span className="block text-xs text-[color:var(--mts-muted)]">{c.role}</span> : null}
+              </span>
+              {c.url?.trim() ? (
+                <a className="font-semibold text-[color:var(--mts-primary-bright)]" href={c.url}>
+                  Contact
+                </a>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      )}
     </MtsCard>
   );
 }
 
-export function BlockDocuments() {
+export function BlockDocuments({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<ListBlockSettings>(block);
+  const docs = (s.items ?? []).filter((row) => row.title?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Documents</h2>
-      <div className="flex flex-col gap-2">
-        {["Rules PDF", "Nutrition tips", "Race info"].map((d) => (
-          <button
-            key={d}
-            type="button"
-            className="flex min-h-12 items-center justify-between rounded-xl border border-[color:var(--mts-card-border)] px-4 text-left text-sm font-medium transition hover:bg-[var(--mts-accent-soft)]"
-          >
-            {d}
-            <span>↓</span>
-          </button>
-        ))}
-      </div>
+      {docs.length === 0 ? (
+        <BlockEmpty message="Team documents and PDFs will appear here." />
+      ) : (
+        <div className="flex flex-col gap-2">
+          {docs.map((d) => (
+            <a
+              key={d.id}
+              href={d.url?.trim() || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-h-12 items-center justify-between rounded-xl border border-[color:var(--mts-card-border)] px-4 text-sm font-medium transition hover:bg-[var(--mts-accent-soft)]"
+            >
+              {d.title}
+              <span>↓</span>
+            </a>
+          ))}
+        </div>
+      )}
     </MtsCard>
   );
 }
 
-export function BlockPolls() {
+export function BlockPolls({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<PollSettings>(block);
+  const q = s.question?.trim();
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Quick poll</h2>
-      <p className="mb-3 text-sm text-[color:var(--mts-muted)]">Who is coming Saturday?</p>
-      <div className="flex gap-2">
-        <button
-          type="button"
-          className="min-h-11 flex-1 rounded-2xl bg-[var(--mts-primary)] font-semibold text-white"
-        >
-          I&apos;m in
-        </button>
-        <button type="button" className="min-h-11 flex-1 rounded-2xl border-2 font-semibold">
-          Can&apos;t make it
-        </button>
-      </div>
+      {!q ? (
+        <BlockEmpty message="Quick polls for parents coming soon." />
+      ) : (
+        <>
+          <p className="mb-3 text-sm text-[color:var(--mts-muted)]">{q}</p>
+          <div className="flex gap-2">
+            <button type="button" className="min-h-11 flex-1 rounded-2xl bg-[var(--mts-primary)] font-semibold text-white">
+              {s.optionYes || "Yes"}
+            </button>
+            <button type="button" className="min-h-11 flex-1 rounded-2xl border-2 font-semibold">
+              {s.optionNo || "No"}
+            </button>
+          </div>
+        </>
+      )}
     </MtsCard>
   );
 }
@@ -314,7 +361,7 @@ export function BlockGallery({ block }: { team: TeamSpace; block: BlockInstance 
       {s.mode === "external" && s.externalUrl ? (
         <a href={s.externalUrl} className="text-sm font-semibold underline text-[color:var(--mts-primary-bright)]">View album</a>
       ) : images.length === 0 ? (
-        <p className="text-sm text-[color:var(--mts-muted)]">Photos from trainings & events.</p>
+        <BlockEmpty message="Photos from trainings and events will appear here." />
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {images.map((img, i) => (
@@ -326,60 +373,113 @@ export function BlockGallery({ block }: { team: TeamSpace; block: BlockInstance 
   );
 }
 
-export function BlockSponsors() {
+export function BlockSponsors({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<ListBlockSettings>(block);
+  const sponsors = (s.items ?? []).filter((row) => row.name?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-center text-sm font-semibold uppercase tracking-widest text-[color:var(--mts-muted)]">
         Partners & sponsors
       </h2>
-      <div className="flex flex-wrap justify-center gap-6 opacity-80">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-10 w-24 rounded-lg bg-[var(--mts-accent-soft)]" />
-        ))}
-      </div>
+      {sponsors.length === 0 ? (
+        <BlockEmpty message="Partner logos will appear here." />
+      ) : (
+        <div className="flex flex-wrap justify-center gap-6">
+          {sponsors.map((sp) =>
+            sp.url?.trim() ? (
+              <a key={sp.id} href={sp.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold underline">
+                {sp.name}
+              </a>
+            ) : (
+              <span key={sp.id} className="text-sm font-semibold">
+                {sp.name}
+              </span>
+            ),
+          )}
+        </div>
+      )}
     </MtsCard>
   );
 }
 
-export function BlockWeather() {
+function countdownParts(targetIso: string) {
+  const target = new Date(targetIso);
+  if (Number.isNaN(target.getTime())) return null;
+  const diff = Math.max(0, target.getTime() - Date.now());
+  const days = Math.floor(diff / 86400000);
+  const hrs = Math.floor((diff % 86400000) / 3600000);
+  const min = Math.floor((diff % 3600000) / 60000);
+  return { days, hrs, min };
+}
+
+export function BlockWeather({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<WeatherSettings>(block);
+  const hasData = Boolean(s.temp?.trim() || s.note?.trim() || s.location?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold">Outdoor / hall</h2>
-          <p className="text-sm text-[color:var(--mts-muted)]">Riga · today</p>
+      {hasData ? (
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold">Outdoor / hall</h2>
+            {s.location?.trim() ? (
+              <p className="text-sm text-[color:var(--mts-muted)]">{s.location}</p>
+            ) : null}
+          </div>
+          <div className="text-right">
+            {s.temp?.trim() ? <div className="text-3xl font-bold">{s.temp}</div> : null}
+            {s.note?.trim() ? <div className="text-xs text-[color:var(--mts-muted)]">{s.note}</div> : null}
+          </div>
         </div>
-        <div className="text-right">
-          <div className="text-3xl font-bold">18°</div>
-          <div className="text-xs">Light wind</div>
-        </div>
-      </div>
+      ) : (
+        <BlockEmpty message="Weather and venue notes will show here." />
+      )}
     </MtsCard>
   );
 }
 
-export function BlockCountdown() {
+export function BlockCountdown({ block }: { team: TeamSpace; block: BlockInstance }) {
+  const s = getBlockSettings<CountdownSettings>(block);
+  const parts = s.targetDate?.trim() ? countdownParts(s.targetDate) : null;
   return (
     <MtsCard className="p-5 sm:p-6 text-center">
-      <p className="text-sm font-medium text-[color:var(--mts-muted)]">Next race</p>
-      <p className="mt-2 text-3xl font-black tabular-nums text-[color:var(--mts-primary-bright)]">
-        12 : 04 : 33
-      </p>
-      <p className="mt-1 text-xs text-[color:var(--mts-muted)]">days · hrs · min</p>
+      <p className="text-sm font-medium text-[color:var(--mts-muted)]">{s.label?.trim() || "Countdown"}</p>
+      {parts ? (
+        <>
+          <p className="mt-2 text-3xl font-black tabular-nums text-[color:var(--mts-primary-bright)]">
+            {parts.days} : {String(parts.hrs).padStart(2, "0")} : {String(parts.min).padStart(2, "0")}
+          </p>
+          <p className="mt-1 text-xs text-[color:var(--mts-muted)]">days · hrs · min</p>
+        </>
+      ) : (
+        <BlockEmpty message="Set a target date in the page builder." />
+      )}
     </MtsCard>
   );
 }
 
-export function BlockBirthdays() {
+function rosterFromTeam(team: TeamSpace) {
+  const att = team.blocks.find((b) => b.type === "attendance");
+  if (!att) return [];
+  return getBlockSettings<{ roster: { id: string; name: string; birthday?: string }[] }>(att).roster ?? [];
+}
+
+export function BlockBirthdays({ team }: { team: TeamSpace; block: BlockInstance }) {
+  const upcoming = rosterFromTeam(team).filter((p) => p.name?.trim() && p.birthday?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Birthdays</h2>
-      <ul className="space-y-2 text-sm">
-        <li className="flex justify-between rounded-xl bg-[var(--mts-accent-soft)] px-3 py-2">
-          <span>Anna</span>
-          <span className="text-[color:var(--mts-muted)]">Jun 22</span>
-        </li>
-      </ul>
+      {upcoming.length === 0 ? (
+        <BlockEmpty message="Add birthdays in the roster editor." />
+      ) : (
+        <ul className="space-y-2 text-sm">
+          {upcoming.map((p) => (
+            <li key={p.id} className="flex justify-between rounded-xl bg-[var(--mts-accent-soft)] px-3 py-2">
+              <span>{p.name}</span>
+              <span className="text-[color:var(--mts-muted)]">{p.birthday}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </MtsCard>
   );
 }
@@ -396,7 +496,7 @@ export function BlockQuickLinks({ block }: { team: TeamSpace; block: BlockInstan
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Quick links</h2>
       {links.length === 0 ? (
-        <p className="text-sm text-[color:var(--mts-muted)]">Add links in the builder.</p>
+        <BlockEmpty message="Add WhatsApp, Telegram, or phone links in the builder." />
       ) : (
         <div className="grid gap-2 sm:grid-cols-2">
           {links.map((l) => (

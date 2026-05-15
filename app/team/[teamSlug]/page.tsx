@@ -79,6 +79,10 @@ export default async function TeamPublicRoute({ params }: Props) {
   }
 
   const teamSpace = bundleToTeamSpace(bundle);
+  const enabledTypes = new Set(teamSpace.blocks.filter((b) => b.enabled).map((b) => b.type));
+  const showDbSchedule = !enabledTypes.has("schedule") && !enabledTypes.has("calendar");
+  const showDbUpdates = !enabledTypes.has("team_feed");
+  const showDbAchievements = !enabledTypes.has("achievements");
   return (
     <>
       {coachPreview ? <CoachPreviewBanner /> : null}
@@ -86,7 +90,11 @@ export default async function TeamPublicRoute({ params }: Props) {
         initialTeam={teamSpace}
         enableLocalPreview={false}
         saasExtras={
-          <TeamSaaSExtras schedule={bundle.schedule} updates={bundle.updates} achievements={bundle.achievements} />
+          <TeamSaaSExtras
+            schedule={showDbSchedule ? bundle.schedule : []}
+            updates={showDbUpdates ? bundle.updates : []}
+            achievements={showDbAchievements ? bundle.achievements : []}
+          />
         }
       />
     </>

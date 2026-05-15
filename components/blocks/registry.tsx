@@ -27,35 +27,35 @@ export function renderBlock(team: TeamSpace, block: BlockInstance) {
     case "announcement_bar":
       return <BlockAnnouncementBar team={team} block={block} />;
     case "calendar":
-      return <BlockCalendar />;
+      return <BlockCalendar team={team} block={block} />;
     case "schedule":
       return <BlockSchedule team={team} block={block} />;
     case "results":
-      return <BlockResults />;
+      return <BlockResults team={team} block={block} />;
     case "achievements":
       return <BlockAchievements team={team} block={block} />;
     case "team_feed":
-      return <BlockTeamFeed />;
+      return <BlockTeamFeed team={team} block={block} />;
     case "attendance":
-      return <BlockAttendance />;
+      return <BlockAttendance team={team} block={block} />;
     case "camp_trip":
-      return <BlockCampTrip />;
+      return <BlockCampTrip team={team} block={block} />;
     case "contacts":
-      return <BlockContacts />;
+      return <BlockContacts team={team} block={block} />;
     case "documents":
-      return <BlockDocuments />;
+      return <BlockDocuments team={team} block={block} />;
     case "polls":
-      return <BlockPolls />;
+      return <BlockPolls team={team} block={block} />;
     case "gallery":
       return <BlockGallery team={team} block={block} />;
     case "sponsors":
-      return <BlockSponsors />;
+      return <BlockSponsors team={team} block={block} />;
     case "weather":
-      return <BlockWeather />;
+      return <BlockWeather team={team} block={block} />;
     case "countdown":
-      return <BlockCountdown />;
+      return <BlockCountdown team={team} block={block} />;
     case "birthdays":
-      return <BlockBirthdays />;
+      return <BlockBirthdays team={team} block={block} />;
     case "quick_links":
       return <BlockQuickLinks team={team} block={block} />;
     default:

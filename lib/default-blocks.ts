@@ -27,15 +27,7 @@ export function createDefaultBlocks(): BlockInstance[] {
   return ORDERED_BLOCKS.map((type, i) => ({
     id: `blk_${type}_${i}`,
     type,
-    enabled: [
-      "announcement_bar",
-      "hero",
-      "calendar",
-      "results",
-      "camp_trip",
-      "contacts",
-      "quick_links",
-    ].includes(type),
+    enabled: ["announcement_bar", "hero", "quick_links"].includes(type),
     order: i,
     layout: BLOCK_META[type].defaultLayout,
     settings: defaultSettingsForType(type),
