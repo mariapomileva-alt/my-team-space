@@ -1,5 +1,6 @@
 import { BlockEmpty } from "@/components/blocks/block-empty";
 import { CampTripConfirm } from "@/components/blocks/camp-trip-confirm";
+import { PollVote } from "@/components/blocks/poll-vote";
 import { galleryEmbedSrc, isGooglePhotosAlbumUrl } from "@/lib/gallery-embed";
 import { MtsBadge, MtsCard } from "@/components/mts/card";
 import {
@@ -347,26 +348,16 @@ export function BlockDocuments({ block }: { team: TeamSpace; block: BlockInstanc
   );
 }
 
-export function BlockPolls({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockPolls({ team, block }: { team: TeamSpace; block: BlockInstance }) {
   const s = getBlockSettings<PollSettings>(block);
   const q = s.question?.trim();
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Quick poll</h2>
       {!q ? (
-        <BlockEmpty message="Quick polls for parents coming soon." />
+        <BlockEmpty message="Add a poll question in the page builder." />
       ) : (
-        <>
-          <p className="mb-3 text-sm text-[color:var(--mts-muted)]">{q}</p>
-          <div className="flex gap-2">
-            <button type="button" className="min-h-11 flex-1 rounded-2xl bg-[var(--mts-primary)] font-semibold text-white">
-              {s.optionYes || "Yes"}
-            </button>
-            <button type="button" className="min-h-11 flex-1 rounded-2xl border-2 font-semibold">
-              {s.optionNo || "No"}
-            </button>
-          </div>
-        </>
+        <PollVote teamSlug={team.slug} blockId={block.id} settings={s} />
       )}
     </MtsCard>
   );

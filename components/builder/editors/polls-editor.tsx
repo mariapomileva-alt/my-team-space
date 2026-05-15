@@ -1,5 +1,6 @@
 "use client";
 
+import { PollVotesList } from "@/components/builder/editors/poll-votes-list";
 import { getBlockSettings, type PollSettings } from "@/lib/blocks/settings";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 
@@ -45,11 +46,11 @@ export function PollsEditor({
         />
       </div>
       <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-3">
-        <p className="text-xs font-semibold text-indigo-900">WhatsApp summaries (coming soon)</p>
+        <p className="text-xs font-semibold text-indigo-900">Notify coach on each vote</p>
         <p className="mt-1 text-xs text-indigo-800/80">
-          We&apos;ll send digest summaries — not every tap — to your number.
+          SMS or WhatsApp (via Twilio). Include country code, e.g. +371 2xxxxxxx
         </p>
-        <label className="mt-2 block text-xs font-semibold text-zinc-500">Your WhatsApp number</label>
+        <label className="mt-2 block text-xs font-semibold text-zinc-500">Your phone (SMS / WhatsApp)</label>
         <input
           className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm"
           placeholder="+371 …"
@@ -58,17 +59,8 @@ export function PollsEditor({
             onPatchTeam({ pageSettings: { ...settings, coachWhatsapp: e.target.value } })
           }
         />
-        <label className="mt-2 flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={Boolean(settings.pollNotifications)}
-            onChange={(e) =>
-              onPatchTeam({ pageSettings: { ...settings, pollNotifications: e.target.checked } })
-            }
-            className="rounded"
-          />
-          Notify me when poll ends (beta)
-        </label>
+        <p className="mt-3 text-xs font-semibold text-zinc-500">Recent answers</p>
+        <PollVotesList teamId={team.id} blockId={block.id} />
       </div>
     </div>
   );
