@@ -1,26 +1,47 @@
 import type { BlockInstance, BlockType } from "@/lib/types";
 
-export type BlockCategory = "identity" | "updates" | "schedule" | "community" | "extras";
+/** Builder sections — simple mental model for coaches */
+export type BuilderSection = "essential" | "engagement" | "advanced";
+
+export type BlockPreviewShape = "bar" | "hero" | "grid" | "list" | "stat" | "card" | "links";
 
 export type BlockMeta = {
   type: BlockType;
   title: string;
   emoji: string;
   description: string;
-  category: BlockCategory;
-  /** Shown first in builder (announcement, identity, etc.) */
+  section: BuilderSection;
+  previewShape: BlockPreviewShape;
   priority: number;
   canDisable: boolean;
   defaultLayout: BlockInstance["layout"];
 };
+
+export const BUILDER_SECTION_LABELS: Record<BuilderSection, { title: string; hint: string }> = {
+  essential: {
+    title: "Essential",
+    hint: "Identity, calendar, contacts — what every family needs first.",
+  },
+  engagement: {
+    title: "Engagement",
+    hint: "Gallery, polls, results — keep the community excited.",
+  },
+  advanced: {
+    title: "Advanced",
+    hint: "Attendance, trips, documents — optional power tools.",
+  },
+};
+
+export const BUILDER_SECTION_ORDER: BuilderSection[] = ["essential", "engagement", "advanced"];
 
 export const BLOCK_META: Record<BlockType, BlockMeta> = {
   announcement_bar: {
     type: "announcement_bar",
     title: "Announcement bar",
     emoji: "📣",
-    description: "Pin urgent news at the top — trainings, camps, deadlines.",
-    category: "updates",
+    description: "Sticky updates — trainings, buses, deadlines.",
+    section: "essential",
+    previewShape: "bar",
     priority: 0,
     canDisable: true,
     defaultLayout: "full",
@@ -29,29 +50,21 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
     type: "hero",
     title: "Team identity",
     emoji: "✨",
-    description: "Logo, cover, motto, and social links families see first.",
-    category: "identity",
+    description: "Logo, cover, motto, social links — this is OUR team.",
+    section: "essential",
+    previewShape: "hero",
     priority: 1,
     canDisable: false,
     defaultLayout: "featured",
-  },
-  quick_links: {
-    type: "quick_links",
-    title: "Quick links",
-    emoji: "🔗",
-    description: "WhatsApp, Telegram, forms — one tap for parents.",
-    category: "identity",
-    priority: 2,
-    canDisable: true,
-    defaultLayout: "half",
   },
   calendar: {
     type: "calendar",
     title: "Calendar",
     emoji: "📅",
-    description: "Google Calendar or iCal embed.",
-    category: "schedule",
-    priority: 3,
+    description: "Google Calendar embed or iCal link.",
+    section: "essential",
+    previewShape: "card",
+    priority: 2,
     canDisable: true,
     defaultLayout: "full",
   },
@@ -59,19 +72,54 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
     type: "schedule",
     title: "Weekly schedule",
     emoji: "🗓️",
-    description: "Recurring trainings & meets — like Google Calendar.",
-    category: "schedule",
-    priority: 4,
+    description: "Recurring trainings & meets.",
+    section: "essential",
+    previewShape: "list",
+    priority: 3,
     canDisable: true,
     defaultLayout: "full",
   },
-  results: {
-    type: "results",
-    title: "Results board",
-    emoji: "🏁",
-    description: "Scores, placements, and meet outcomes.",
-    category: "community",
+  contacts: {
+    type: "contacts",
+    title: "Contacts",
+    emoji: "📞",
+    description: "Coaches and club contacts.",
+    section: "essential",
+    previewShape: "list",
+    priority: 4,
+    canDisable: true,
+    defaultLayout: "half",
+  },
+  quick_links: {
+    type: "quick_links",
+    title: "Quick links",
+    emoji: "🔗",
+    description: "WhatsApp, Telegram, Instagram — one tap.",
+    section: "essential",
+    previewShape: "links",
     priority: 5,
+    canDisable: true,
+    defaultLayout: "half",
+  },
+  gallery: {
+    type: "gallery",
+    title: "Photo gallery",
+    emoji: "📸",
+    description: "Photos grid — paste album links or image URLs.",
+    section: "engagement",
+    previewShape: "grid",
+    priority: 6,
+    canDisable: true,
+    defaultLayout: "card",
+  },
+  polls: {
+    type: "polls",
+    title: "Polls",
+    emoji: "📊",
+    description: "Quick parent votes with optional WhatsApp summaries.",
+    section: "engagement",
+    previewShape: "card",
+    priority: 7,
     canDisable: true,
     defaultLayout: "half",
   },
@@ -79,38 +127,20 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
     type: "achievements",
     title: "Achievements",
     emoji: "🏆",
-    description: "Trophies & MVP cards kids love to collect.",
-    category: "community",
-    priority: 6,
-    canDisable: true,
-    defaultLayout: "card",
-  },
-  gallery: {
-    type: "gallery",
-    title: "Photo gallery",
-    emoji: "📸",
-    description: "Upload photos or link Google Photos / Dropbox.",
-    category: "community",
-    priority: 7,
-    canDisable: true,
-    defaultLayout: "card",
-  },
-  attendance: {
-    type: "attendance",
-    title: "Attendance",
-    emoji: "✅",
-    description: "Track who showed up — needs a roster.",
-    category: "community",
+    description: "Trophies & highlights kids love.",
+    section: "engagement",
+    previewShape: "grid",
     priority: 8,
     canDisable: true,
-    defaultLayout: "half",
+    defaultLayout: "card",
   },
-  birthdays: {
-    type: "birthdays",
-    title: "Birthdays",
-    emoji: "🎂",
-    description: "Celebrate players — uses roster birthdays.",
-    category: "community",
+  results: {
+    type: "results",
+    title: "Results board",
+    emoji: "🏁",
+    description: "Scores and meet outcomes.",
+    section: "engagement",
+    previewShape: "grid",
     priority: 9,
     canDisable: true,
     defaultLayout: "half",
@@ -119,48 +149,53 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
     type: "team_feed",
     title: "Team feed",
     emoji: "💬",
-    description: "News and reactions in one stream.",
-    category: "updates",
+    description: "News and photos in one stream.",
+    section: "engagement",
+    previewShape: "list",
     priority: 10,
     canDisable: true,
     defaultLayout: "full",
   },
-  camp_trip: {
-    type: "camp_trip",
-    title: "Camp & trip",
-    emoji: "🚌",
-    description: "Away trips, packing lists, bus times.",
-    category: "extras",
+  attendance: {
+    type: "attendance",
+    title: "Attendance",
+    emoji: "✅",
+    description: "Who showed up — uses roster.",
+    section: "advanced",
+    previewShape: "stat",
     priority: 11,
     canDisable: true,
-    defaultLayout: "featured",
+    defaultLayout: "half",
   },
-  contacts: {
-    type: "contacts",
-    title: "Contacts",
-    emoji: "📞",
-    description: "Coaches and club contacts.",
-    category: "extras",
+  camp_trip: {
+    type: "camp_trip",
+    title: "Camp & logistics",
+    emoji: "🚌",
+    description: "Trips, buses, checklists, confirmations.",
+    section: "advanced",
+    previewShape: "list",
     priority: 12,
     canDisable: true,
-    defaultLayout: "half",
+    defaultLayout: "featured",
   },
   documents: {
     type: "documents",
     title: "Documents",
     emoji: "📄",
     description: "PDFs, waivers, handbooks.",
-    category: "extras",
+    section: "advanced",
+    previewShape: "list",
     priority: 13,
     canDisable: true,
     defaultLayout: "half",
   },
-  polls: {
-    type: "polls",
-    title: "Polls",
-    emoji: "📊",
-    description: "Quick parent votes.",
-    category: "extras",
+  birthdays: {
+    type: "birthdays",
+    title: "Birthdays",
+    emoji: "🎂",
+    description: "Celebrate players from roster.",
+    section: "advanced",
+    previewShape: "list",
     priority: 14,
     canDisable: true,
     defaultLayout: "half",
@@ -170,7 +205,8 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
     title: "Partners",
     emoji: "🤝",
     description: "Sponsor logos and thanks.",
-    category: "extras",
+    section: "advanced",
+    previewShape: "grid",
     priority: 15,
     canDisable: true,
     defaultLayout: "card",
@@ -180,7 +216,8 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
     title: "Weather",
     emoji: "🌤️",
     description: "Field conditions at a glance.",
-    category: "extras",
+    section: "advanced",
+    previewShape: "stat",
     priority: 16,
     canDisable: true,
     defaultLayout: "half",
@@ -190,12 +227,16 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
     title: "Countdown",
     emoji: "⏱️",
     description: "Days until the next big event.",
-    category: "extras",
+    section: "advanced",
+    previewShape: "stat",
     priority: 17,
     canDisable: true,
     defaultLayout: "half",
   },
 };
+
+/** @deprecated use section */
+export type BlockCategory = BuilderSection;
 
 export function builderSortBlocks(blocks: BlockInstance[]): BlockInstance[] {
   return [...blocks].sort((a, b) => {
@@ -204,4 +245,17 @@ export function builderSortBlocks(blocks: BlockInstance[]): BlockInstance[] {
     if (pa !== pb) return pa - pb;
     return a.order - b.order;
   });
+}
+
+export function groupBlocksBySection(blocks: BlockInstance[]): Record<BuilderSection, BlockInstance[]> {
+  const groups: Record<BuilderSection, BlockInstance[]> = {
+    essential: [],
+    engagement: [],
+    advanced: [],
+  };
+  for (const b of builderSortBlocks(blocks)) {
+    const section = BLOCK_META[b.type]?.section ?? "advanced";
+    groups[section].push(b);
+  }
+  return groups;
 }

@@ -1,6 +1,7 @@
 import { BLOCK_META } from "@/lib/blocks/meta";
 import { defaultSettingsForType } from "@/lib/blocks/settings";
-import type { BlockInstance, BlockLayout, TeamSpace, ThemeId } from "@/lib/types";
+import { parseVisibility } from "@/lib/team-access";
+import type { BlockInstance, BlockLayout, TeamPageSettings, TeamSpace, ThemeId } from "@/lib/types";
 import { THEMES } from "@/lib/themes";
 import { createDefaultBlocks } from "@/lib/default-blocks";
 
@@ -18,6 +19,10 @@ export type TeamDbRow = {
   tagline: string | null;
   blocks: unknown;
   subscription_status: string;
+  page_visibility?: string | null;
+  access_code?: string | null;
+  invite_token?: string | null;
+  page_settings?: unknown;
 };
 
 const THEME_IDS = new Set(THEMES.map((t) => t.id));
@@ -71,6 +76,10 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
     plan: "pro",
     tagline: row.tagline ?? undefined,
     blocks: normalizeBlocks(row.blocks, fallback),
+    pageVisibility: parseVisibility(row.page_visibility ?? undefined),
+    accessCode: row.access_code ?? undefined,
+    inviteToken: row.invite_token ?? undefined,
+    pageSettings: (row.page_settings as TeamPageSettings) ?? {},
   };
 }
 

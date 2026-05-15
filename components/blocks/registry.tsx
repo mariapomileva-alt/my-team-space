@@ -20,7 +20,9 @@ import {
   BlockWeather,
 } from "./all-blocks";
 
-export function renderBlock(team: TeamSpace, block: BlockInstance) {
+export type RenderBlockOptions = { hideChildNames?: boolean };
+
+export function renderBlock(team: TeamSpace, block: BlockInstance, _options?: RenderBlockOptions) {
   switch (block.type) {
     case "hero":
       return <BlockHero team={team} block={block} />;

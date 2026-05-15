@@ -37,7 +37,13 @@ export function HeroIdentityEditor({
   }
   return (
     <div className="space-y-4">
-      <p className="text-xs text-zinc-500">Logo uploads via Storage coming soon — paste image URLs for now.</p>
+      <label className="block text-xs font-semibold text-zinc-500">Team logo URL</label>
+      <input
+        className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
+        placeholder="https://… (round avatar on page)"
+        value={team.logoUrl ?? ""}
+        onChange={(e) => onPatchTeam({ logoUrl: e.target.value || undefined })}
+      />
       <label className="block text-xs font-semibold text-zinc-500">Team name</label>
       <input className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm font-semibold" value={team.name} onChange={(e) => onPatchTeam({ name: e.target.value })} />
       <label className="block text-xs font-semibold text-zinc-500">Short description</label>

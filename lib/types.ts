@@ -1,5 +1,27 @@
 export type SubscriptionPlan = "free" | "pro" | "club";
 
+export type TeamVisibility = "public" | "private" | "mixed";
+
+export type BlockAudience = "public" | "private";
+
+export type PaymentStatus = "paid" | "pending" | "unpaid";
+
+export type PaymentTrackerRow = {
+  id: string;
+  label: string;
+  month: string;
+  status: PaymentStatus;
+  note?: string;
+};
+
+export type TeamPageSettings = {
+  parentConsent?: boolean;
+  hideChildNames?: boolean;
+  coachWhatsapp?: string;
+  pollNotifications?: boolean;
+  payments?: PaymentTrackerRow[];
+};
+
 export type ThemeId =
   | "ocean_aqua"
   | "dark_athletic"
@@ -52,4 +74,8 @@ export type TeamSpace = {
   plan: SubscriptionPlan;
   tagline?: string;
   blocks: BlockInstance[];
+  pageVisibility?: TeamVisibility;
+  accessCode?: string;
+  inviteToken?: string;
+  pageSettings?: TeamPageSettings;
 };

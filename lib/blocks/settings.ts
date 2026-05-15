@@ -60,7 +60,7 @@ function uid(prefix: string) {
 export function defaultSettingsForType(type: BlockType): Record<string, unknown> {
   switch (type) {
     case "announcement_bar":
-      return { message: "", urgent: false, accent: "theme", pinned: true };
+      return { message: "", tone: "info" as "info" | "urgent" | "confirm", accent: "theme", pinned: true };
     case "hero":
       return {
         quote: "Show up. Cheer loud. Grow together.",
@@ -92,6 +92,7 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
     case "documents":
     case "team_feed":
     case "camp_trip":
+      return { items: [] as ContentItem[], confirmationsEnabled: true };
     case "sponsors":
       return { items: [] as ContentItem[] };
     case "polls":

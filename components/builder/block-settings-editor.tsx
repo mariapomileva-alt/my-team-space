@@ -1,11 +1,14 @@
 "use client";
 
+import { BlockAudiencePicker } from "@/components/builder/block-audience-picker";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { AnnouncementBarEditor } from "./editors/announcement-bar-editor";
 import { AchievementsEditor } from "./editors/achievements-editor";
 import { GalleryEditor } from "./editors/gallery-editor";
 import { HeroIdentityEditor } from "./editors/hero-identity-editor";
 import { LayoutPicker } from "./editors/layout-picker";
+import { LogisticsEditor } from "./editors/logistics-editor";
+import { PollsEditor } from "./editors/polls-editor";
 import { RosterEditor } from "./editors/roster-editor";
 import { ScheduleEditor } from "./editors/schedule-editor";
 import { SimpleBlocksEditor } from "./editors/simple-blocks-editor";
@@ -23,9 +26,7 @@ const SIMPLE_TYPES = new Set([
   "contacts",
   "documents",
   "team_feed",
-  "camp_trip",
   "sponsors",
-  "polls",
   "countdown",
   "weather",
 ]);
@@ -33,10 +34,8 @@ const SIMPLE_TYPES = new Set([
 export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam }: Props) {
   return (
     <div className="space-y-4 border-t border-zinc-100 bg-gradient-to-b from-indigo-50/30 to-white px-4 py-4 sm:px-5">
-      <LayoutPicker
-        layout={block.layout ?? "full"}
-        onChange={(layout) => onPatchBlock(block.id, { layout })}
-      />
+      <BlockAudiencePicker team={team} block={block} onPatchBlock={onPatchBlock} />
+      <LayoutPicker layout={block.layout ?? "full"} onChange={(layout) => onPatchBlock(block.id, { layout })} />
 
       {block.type === "announcement_bar" ? (
         <AnnouncementBarEditor block={block} onPatchBlock={onPatchBlock} />
@@ -54,6 +53,10 @@ export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam }: 
       ) : null}
       {block.type === "attendance" || block.type === "birthdays" ? (
         <RosterEditor block={block} team={team} onPatchBlock={onPatchBlock} />
+      ) : null}
+      {block.type === "camp_trip" ? <LogisticsEditor block={block} onPatchBlock={onPatchBlock} /> : null}
+      {block.type === "polls" ? (
+        <PollsEditor block={block} team={team} onPatchBlock={onPatchBlock} onPatchTeam={onPatchTeam} />
       ) : null}
       {SIMPLE_TYPES.has(block.type) ? <SimpleBlocksEditor block={block} onPatchBlock={onPatchBlock} /> : null}
     </div>

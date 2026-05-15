@@ -43,6 +43,10 @@ export async function saveTeamContent(teamId: string, team: TeamSpace) {
       primary_color: team.primaryColor.slice(0, 32),
       secondary_color: team.secondaryColor.slice(0, 32),
       blocks: team.blocks as unknown as object,
+      page_visibility: team.pageVisibility ?? "public",
+      access_code: team.accessCode?.slice(0, 64) ?? null,
+      invite_token: team.inviteToken?.slice(0, 64) ?? null,
+      page_settings: (team.pageSettings ?? {}) as object,
     })
     .eq("id", teamId);
   if (error) throw new Error(error.message);

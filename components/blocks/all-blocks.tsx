@@ -1,4 +1,6 @@
 import { BlockEmpty } from "@/components/blocks/block-empty";
+import { CampTripConfirm } from "@/components/blocks/camp-trip-confirm";
+import { galleryEmbedSrc, isGooglePhotosAlbumUrl } from "@/lib/gallery-embed";
 import { MtsBadge, MtsCard } from "@/components/mts/card";
 import {
   getBlockSettings,
@@ -39,6 +41,12 @@ export function BlockHero({ team, block }: { team: TeamSpace; block: BlockInstan
       animate={{ opacity: 1, y: 0 }}
       className="relative overflow-hidden"
     >
+      {s.coverImageUrl ? (
+        <div className="relative mb-4 h-36 overflow-hidden rounded-[var(--mts-radius)] sm:h-44">
+          <img src={s.coverImageUrl} alt="" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        </div>
+      ) : null}
       <div
         className="rounded-[var(--mts-radius)] border border-[color:var(--mts-card-border)] p-6 sm:p-8"
         style={{
@@ -46,9 +54,24 @@ export function BlockHero({ team, block }: { team: TeamSpace; block: BlockInstan
           boxShadow: "var(--mts-shadow)",
         }}
       >
+        <div className={`mb-4 flex justify-center ${s.coverImageUrl ? "-mt-12 sm:-mt-14" : ""} sm:justify-start`}>
+          {team.logoUrl ? (
+            <img
+              src={team.logoUrl}
+              alt=""
+              className="h-20 w-20 rounded-full border-4 border-[color:var(--mts-card)] object-cover shadow-lg sm:h-24 sm:w-24"
+            />
+          ) : (
+            <div
+              className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-[color:var(--mts-card)] bg-[var(--mts-primary)] text-2xl font-bold text-white shadow-lg sm:h-24 sm:w-24"
+            >
+              {team.name.slice(0, 1).toUpperCase()}
+            </div>
+          )}
+        </div>
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-3">
-            <MtsBadge>Team webpage</MtsBadge>
+          <div className="space-y-3 text-center sm:text-left">
+            <MtsBadge>Our team</MtsBadge>
             <h1
               className="text-3xl font-bold tracking-tight sm:text-4xl"
               style={{ color: "var(--mts-text)" }}
@@ -79,38 +102,32 @@ export function BlockHero({ team, block }: { team: TeamSpace; block: BlockInstan
             </div>
           ) : null}
         </div>
-        {s.coverImageUrl ? (
-          <img src={s.coverImageUrl} alt="" className="mt-6 h-40 w-full rounded-2xl object-cover sm:h-48" />
-        ) : (
-          <div
-            className="mt-6 h-32 rounded-2xl border border-dashed border-[color:var(--mts-card-border)] sm:h-40"
-            style={{
-              background:
-                "linear-gradient(120deg, rgba(14,165,233,0.15) 0%, rgba(255,107,45,0.1) 100%)",
-            }}
-          />
-        )}
-
       </div>
     </motion.section>
   );
 }
 
 export function BlockAnnouncementBar({ team, block }: { team: TeamSpace; block: BlockInstance }) {
-  const s = getBlockSettings<{ message: string; urgent: boolean }>(block);
+  const s = getBlockSettings<{ message: string; urgent?: boolean; tone?: "info" | "urgent" | "confirm" }>(block);
+  const tone = s.tone ?? (s.urgent ? "urgent" : "info");
   const text = s.message?.trim() || "Welcome to our team page!";
+  const bg =
+    tone === "urgent"
+      ? "color-mix(in srgb, var(--mts-accent) 28%, transparent)"
+      : tone === "confirm"
+        ? "color-mix(in srgb, var(--mts-primary) 18%, transparent)"
+        : "color-mix(in srgb, var(--mts-primary) 10%, transparent)";
   return (
     <div
       className="sticky top-0 z-40 border-b border-[color:var(--mts-card-border)] px-4 py-3 backdrop-blur-md"
-      style={{
-        background: s.urgent
-          ? "color-mix(in srgb, var(--mts-accent) 22%, transparent)"
-          : "color-mix(in srgb, var(--mts-primary) 12%, transparent)",
-      }}
+      style={{ background: bg }}
     >
-      <p className={`text-center text-sm font-medium ${s.urgent ? "font-bold text-[color:var(--mts-text)]" : "text-[color:var(--mts-text)]"}`}>
+      <p className={`text-center text-sm ${tone === "urgent" ? "font-bold" : "font-medium"} text-[color:var(--mts-text)]`}>
         <span className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-[var(--mts-accent)]" />
         {text}
+        {tone === "confirm" ? (
+          <span className="mt-1 block text-xs text-[color:var(--mts-muted)]">Please confirm with your coach</span>
+        ) : null}
       </p>
     </div>
   );
@@ -249,19 +266,22 @@ export function BlockAttendance({ team, block }: { team: TeamSpace; block: Block
 }
 
 export function BlockCampTrip({ block }: { team: TeamSpace; block: BlockInstance }) {
-  const s = getBlockSettings<ListBlockSettings>(block);
+  const s = getBlockSettings<ListBlockSettings & { confirmationsEnabled?: boolean }>(block);
   const items = (s.items ?? []).filter((row) => row.title?.trim());
   return (
     <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-2 text-lg font-bold">Camp & trip</h2>
+      <h2 className="mb-2 text-lg font-bold">Camp & logistics</h2>
       {items.length === 0 ? (
         <BlockEmpty message="Trip details will be shared here before travel." />
       ) : (
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           {items.map((row) => (
             <div key={row.id} className="rounded-xl border border-[color:var(--mts-card-border)] p-3 text-sm">
               <p className="font-semibold">{row.title}</p>
               {row.body ? <p className="mt-1 text-[color:var(--mts-muted)]">{row.body}</p> : null}
+              {s.confirmationsEnabled !== false ? (
+                <CampTripConfirm eventId={row.id} title={row.title ?? ""} />
+              ) : null}
             </div>
           ))}
         </div>
@@ -355,11 +375,34 @@ export function BlockPolls({ block }: { team: TeamSpace; block: BlockInstance })
 export function BlockGallery({ block }: { team: TeamSpace; block: BlockInstance }) {
   const s = getBlockSettings<{ mode: string; images: { url: string }[]; externalUrl: string }>(block);
   const images = (s.images ?? []).filter((i) => i.url?.trim());
+  const external = s.externalUrl?.trim() ?? "";
+  const embed = galleryEmbedSrc(external);
   return (
     <MtsCard className="p-5 sm:p-6">
       <h2 className="mb-4 text-lg font-bold">Gallery</h2>
-      {s.mode === "external" && s.externalUrl ? (
-        <a href={s.externalUrl} className="text-sm font-semibold underline text-[color:var(--mts-primary-bright)]">View album</a>
+      {s.mode === "external" && external ? (
+        embed ? (
+          <iframe
+            title="Team photo album"
+            src={embed}
+            className="h-72 w-full rounded-2xl border border-[color:var(--mts-card-border)] bg-white"
+          />
+        ) : isGooglePhotosAlbumUrl(external) ? (
+          <div className="space-y-3">
+            <div className="grid grid-cols-3 gap-2">
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="aspect-square rounded-xl bg-[var(--mts-accent-soft)]" />
+              ))}
+            </div>
+            <a href={external} className="text-sm font-semibold underline text-[color:var(--mts-primary-bright)]">
+              Open Google Photos album
+            </a>
+          </div>
+        ) : (
+          <a href={external} className="text-sm font-semibold underline text-[color:var(--mts-primary-bright)]">
+            View album
+          </a>
+        )
       ) : images.length === 0 ? (
         <BlockEmpty message="Photos from trainings and events will appear here." />
       ) : (
@@ -485,10 +528,22 @@ export function BlockBirthdays({ team }: { team: TeamSpace; block: BlockInstance
 }
 
 export function BlockQuickLinks({ block }: { team: TeamSpace; block: BlockInstance }) {
-  const s = getBlockSettings<{ whatsapp: string; telegram: string; phone: string; customLabel: string; customUrl: string }>(block);
+  const s = getBlockSettings<{
+    whatsapp: string;
+    telegram: string;
+    instagram: string;
+    tiktok: string;
+    website: string;
+    phone: string;
+    customLabel: string;
+    customUrl: string;
+  }>(block);
   const links = [
     s.whatsapp?.trim() ? { label: "WhatsApp", href: s.whatsapp } : null,
     s.telegram?.trim() ? { label: "Telegram", href: s.telegram } : null,
+    s.instagram?.trim() ? { label: "Instagram", href: s.instagram } : null,
+    s.tiktok?.trim() ? { label: "TikTok", href: s.tiktok } : null,
+    s.website?.trim() ? { label: "Website", href: s.website } : null,
     s.phone?.trim() ? { label: "Call coach", href: `tel:${s.phone}` } : null,
     s.customUrl?.trim() ? { label: s.customLabel || "Link", href: s.customUrl } : null,
   ].filter(Boolean) as { label: string; href: string }[];

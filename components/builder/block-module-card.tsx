@@ -1,12 +1,12 @@
 "use client";
 
 import { BlockSettingsEditor } from "@/components/builder/block-settings-editor";
+import { BlockShapePreview } from "@/components/builder/block-shape-preview";
 import { BLOCK_META } from "@/lib/blocks/meta";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
 
 type Props = {
   block: BlockInstance;
@@ -34,17 +34,7 @@ export function BlockModuleCard({
   });
   const style = { transform: CSS.Transform.toString(transform), transition };
 
-  const [justEnabled, setJustEnabled] = useState(false);
-
-  useEffect(() => {
-    if (block.enabled && justEnabled) {
-      onToggleExpand();
-      setJustEnabled(false);
-    }
-  }, [block.enabled, justEnabled, onToggleExpand]);
-
   function onEnableChange() {
-    if (!block.enabled) setJustEnabled(true);
     onToggleEnabled();
   }
 
@@ -67,12 +57,14 @@ export function BlockModuleCard({
         >
           ⋮⋮
         </button>
+        <BlockShapePreview shape={meta.previewShape} />
         <button
           type="button"
           onClick={onToggleExpand}
-          className="flex min-w-0 flex-1 items-start gap-3 text-left"
+          disabled={!block.enabled}
+          className="flex min-w-0 flex-1 items-start gap-2 text-left disabled:opacity-50"
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-xl">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-xl sm:hidden">
             {meta.emoji}
           </span>
           <span className="min-w-0 flex-1">
@@ -80,7 +72,7 @@ export function BlockModuleCard({
             <span className="mt-0.5 block text-xs leading-snug text-zinc-500">{meta.description}</span>
           </span>
           <span className="shrink-0 text-zinc-400" aria-hidden>
-            {expanded ? "▾" : "▸"}
+            {expanded && block.enabled ? "▾" : "▸"}
           </span>
         </button>
         <label className="flex shrink-0 items-center gap-2">

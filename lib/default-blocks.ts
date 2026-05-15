@@ -2,25 +2,26 @@ import { BLOCK_META } from "./blocks/meta";
 import { defaultSettingsForType } from "./blocks/settings";
 import type { BlockInstance, BlockType } from "./types";
 
+/** Order matches builder sections (essential → engagement → advanced) */
 const ORDERED_BLOCKS: BlockType[] = [
   "announcement_bar",
   "hero",
   "calendar",
   "schedule",
-  "results",
+  "contacts",
+  "quick_links",
+  "gallery",
+  "polls",
   "achievements",
+  "results",
   "team_feed",
   "attendance",
   "camp_trip",
-  "contacts",
   "documents",
-  "polls",
-  "gallery",
+  "birthdays",
   "sponsors",
   "weather",
   "countdown",
-  "birthdays",
-  "quick_links",
 ];
 
 export function createDefaultBlocks(): BlockInstance[] {
