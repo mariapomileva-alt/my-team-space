@@ -12,8 +12,8 @@ const accentSoft = "from-indigo-50/90 via-white to-violet-50/40";
 const accentGlow = "shadow-[0_0_80px_-20px_rgba(79,70,229,0.25)]";
 
 const FLOATING: { text: string; className: string; hideOnMobile?: boolean }[] = [
-  { text: "Training today · 18:00", className: "left-0 top-[4%] sm:left-[-2%]" },
-  { text: "+1 trophy unlocked", className: "right-0 top-[12%] sm:right-[-4%]" },
+  { text: "Training today · 18:00", className: "left-0 top-[10%] sm:left-[-2%]" },
+  { text: "+1 trophy unlocked", className: "right-0 top-[16%] sm:right-[-4%]" },
   { text: "12 parents viewed update", className: "left-[-6%] top-[38%] sm:left-[-8%]", hideOnMobile: true },
   { text: "Coach Anna updated the schedule", className: "right-[-4%] top-[44%] sm:right-[-6%]", hideOnMobile: true },
   { text: "New tournament results added", className: "left-0 bottom-[26%] sm:left-[-2%]" },
@@ -40,14 +40,10 @@ function AvatarStack({ className = "" }: { className?: string }) {
 function FloatingLiveCard({ text, className, delay, hideOnMobile }: { text: string; className: string; delay: number; hideOnMobile?: boolean }) {
   return (
     <motion.div
-      className={`pointer-events-none absolute z-20 max-w-[210px] rounded-2xl border ${accentBorder} bg-white/95 px-3.5 py-2.5 text-[12px] font-medium leading-snug text-neutral-800 shadow-[0_12px_40px_-12px_rgba(79,70,229,0.2),0_0_0_1px_rgba(255,255,255,0.9)_inset] backdrop-blur-md ${hideOnMobile ? "hidden md:block" : ""} ${className}`}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{
-        opacity: 1,
-        y: [0, -4, 0],
-      }}
+      className={`pointer-events-none absolute z-10 max-w-[210px] rounded-2xl border ${accentBorder} bg-white/95 px-3.5 py-2.5 text-[12px] font-medium leading-snug text-neutral-800 shadow-[0_12px_40px_-12px_rgba(79,70,229,0.2),0_0_0_1px_rgba(255,255,255,0.9)_inset] backdrop-blur-md ${hideOnMobile ? "hidden md:block" : ""} ${className}`}
+      initial={false}
+      animate={{ y: [0, -4, 0] }}
       transition={{
-        opacity: { delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
         y: { delay: delay + 0.35, duration: 6, repeat: Infinity, ease: "easeInOut" },
       }}
     >
@@ -213,18 +209,15 @@ function PhoneTeamPreview({ phase }: { phase: "simple" | "rich" }) {
   );
 }
 
-function HeroProductVisual({ phase, cycle }: { phase: "simple" | "rich"; cycle: number }) {
+function HeroProductVisual({ phase }: { phase: "simple" | "rich" }) {
   return (
     <motion.div
-      key={cycle}
-      className={`relative mx-auto w-full max-w-[520px] ${accentGlow}`}
-      initial={{ opacity: 0.9 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.45 }}
+      className={`relative mx-auto w-full max-w-[520px] min-h-[400px] pt-10 sm:min-h-[420px] sm:pt-12 ${accentGlow}`}
+      initial={false}
     >
       {FLOATING.map((f, i) => (
         <FloatingLiveCard
-          key={`${f.text}-${cycle}`}
+          key={f.text}
           text={f.text}
           className={f.className}
           delay={0.1 * i}
@@ -232,16 +225,15 @@ function HeroProductVisual({ phase, cycle }: { phase: "simple" | "rich"; cycle: 
         />
       ))}
 
-      <div className="relative z-10 pt-8 sm:pt-4">
+      <motion.div className="relative z-10 pt-2 sm:pt-0">
         <div className="rounded-[1.75rem] border border-neutral-200/80 bg-gradient-to-b from-neutral-100/60 to-neutral-50/80 p-2.5 shadow-[0_40px_80px_-32px_rgba(15,23,42,0.35)]">
           <DesktopTeamPreview phase={phase} />
         </div>
 
         <motion.div
           className="absolute -right-1 bottom-2 z-20 w-[34%] max-w-[158px] sm:-right-2 sm:bottom-4 sm:max-w-[172px]"
-          initial={{ opacity: 0, y: 16, rotate: 0 }}
-          animate={{ opacity: 1, y: 0, rotate: -2 }}
-          transition={{ delay: 0.5, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          initial={false}
+          style={{ rotate: -2 }}
         >
           <motion.div
             className="rounded-[2.15rem] border-[7px] border-neutral-900 bg-neutral-900 p-[5px] shadow-[0_24px_50px_-12px_rgba(0,0,0,0.45)]"
@@ -268,7 +260,7 @@ function HeroProductVisual({ phase, cycle }: { phase: "simple" | "rich"; cycle: 
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           aria-hidden
         />
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -730,7 +722,7 @@ export function HomeLanding() {
 
   return (
     <div className={`min-h-screen bg-gradient-to-b ${accentSoft} to-[#f8fafc] text-neutral-900`}>
-      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-7 sm:px-8">
+      <header className="relative z-50 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 bg-gradient-to-b from-[#f8fafc] via-[#f8fafc]/95 to-transparent px-6 py-7 sm:px-8">
         <span className="text-[15px] font-semibold tracking-tight text-neutral-900">MyTeamSpace</span>
         <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
           <span className="hidden text-[12px] text-neutral-400 lg:inline">A digital home for your team</span>
@@ -756,7 +748,7 @@ export function HomeLanding() {
 
       <main>
         <section className="mx-auto max-w-6xl px-6 pb-16 sm:px-8 lg:pb-24">
-          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-10 xl:gap-14">
+          <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-10 xl:gap-14">
             <div className="max-w-xl lg:max-w-none">
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
                 No app download • just one link
@@ -787,8 +779,8 @@ export function HomeLanding() {
               </p>
             </div>
 
-            <div className="relative mx-auto min-h-[420px] w-full max-w-lg lg:mx-0 lg:max-w-none lg:min-h-[480px]">
-              <HeroProductVisual phase={phase} cycle={cycle} />
+            <div className="relative isolate mx-auto w-full max-w-lg lg:mx-0 lg:max-w-none">
+              <HeroProductVisual phase={phase} />
             </div>
           </div>
         </section>
