@@ -1,5 +1,6 @@
 import { notifyCoachByPhone } from "@/lib/notify/twilio";
 import { createPublicSupabase } from "@/lib/supabase/public-client";
+import { buildPollNotifyMessage, whatsappClickToChatUrl } from "@/lib/whatsapp-link";
 import { NextResponse } from "next/server";
 
 type Body = {
@@ -61,11 +62,17 @@ export async function POST(
     month: "short",
   });
 
+  const label = optionLabel || (choice === "yes" ? "Yes" : "No");
+  const message = `${buildPollNotifyMessage(teamName, question, voterName, label)}\n${time} (MSK)`;
+
   let notify: { sent: boolean; channel?: string } = { sent: false };
+  let whatsappUrl: string | null = null;
+
   if (coachPhone) {
-    const qPart = question ? `"${question}"` : "Quick poll";
-    const message = `MyTeamSpace · ${teamName}\n${qPart}\n${voterName} → ${optionLabel || (choice === "yes" ? "Yes" : "No")}\n${time} (MSK)`;
     notify = await notifyCoachByPhone(coachPhone, message);
+    if (!notify.sent) {
+      whatsappUrl = whatsappClickToChatUrl(coachPhone, message);
+    }
   }
 
   return NextResponse.json({
@@ -73,5 +80,6 @@ export async function POST(
     saved: true,
     notified: notify.sent,
     notifyChannel: notify.channel ?? null,
+    whatsappUrl,
   });
 }
