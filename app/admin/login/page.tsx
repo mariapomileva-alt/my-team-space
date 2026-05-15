@@ -1,5 +1,6 @@
 "use client";
 
+import { getAppOrigin } from "@/lib/auth/app-origin";
 import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
 import { LoginConfigNotice } from "@/components/auth/login-config-notice";
@@ -31,10 +32,9 @@ function LoginInner() {
       );
       return;
     }
-    const appUrl = window.location.origin;
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: authCallbackUrl(appUrl, "/admin") },
+      options: { emailRedirectTo: authCallbackUrl(getAppOrigin(), "/admin") },
     });
     if (error) {
       setErr(formatAuthErrorMessage(error.message));

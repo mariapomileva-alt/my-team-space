@@ -1,5 +1,6 @@
 "use client";
 
+import { getAppOrigin } from "@/lib/auth/app-origin";
 import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { supabaseAuthProvidersUrl, supabaseAuthUrlConfigUrl } from "@/lib/auth/supabase-dashboard";
 import { useEffect, useState } from "react";
@@ -11,7 +12,7 @@ export function OwnerSetupChecklist() {
   const urlConfigUrl = supabaseAuthUrlConfigUrl();
 
   useEffect(() => {
-    const o = window.location.origin;
+    const o = getAppOrigin();
     const list = [authCallbackUrl(o)];
     try {
       const u = new URL(o);

@@ -1,8 +1,12 @@
+import { canonicalRedirectIfNeeded } from "@/lib/auth/app-origin";
 import { updateSession } from "@/lib/supabase/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   try {
+    const canonical = canonicalRedirectIfNeeded(request);
+    if (canonical) return canonical;
+
     const { pathname, searchParams } = request.nextUrl;
 
     // Magic link / email confirm with Site URL = origin "/": Supabase sends ?code= on "/", not /auth/callback.

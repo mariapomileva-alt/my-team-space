@@ -1,10 +1,12 @@
+import { getAppOrigin } from "@/lib/auth/app-origin";
 import { safeNextPath } from "@/lib/auth/safe-next-path";
 import { createServerClient } from "@supabase/ssr";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const origin = getAppOrigin(request.url) || new URL(request.url).origin;
   const code = searchParams.get("code");
   const next = safeNextPath(searchParams.get("next"));
   const oidcError = searchParams.get("error");

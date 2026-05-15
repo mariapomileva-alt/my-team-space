@@ -2,6 +2,7 @@
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { OwnerSetupChecklist } from "@/components/auth/owner-setup-checklist";
+import { getAppOrigin } from "@/lib/auth/app-origin";
 import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
 import { getBrowserSupabase } from "@/lib/supabase/get-browser-supabase";
@@ -73,7 +74,7 @@ export function AdminSignupForm() {
       email,
       password,
       options: {
-        emailRedirectTo: authCallbackUrl(window.location.origin, next),
+        emailRedirectTo: authCallbackUrl(getAppOrigin(), next),
       },
     });
     setPending(false);

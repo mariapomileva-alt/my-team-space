@@ -1,5 +1,6 @@
 "use client";
 
+import { getAppOrigin } from "@/lib/auth/app-origin";
 import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
 import { getBrowserSupabase } from "@/lib/supabase/get-browser-supabase";
@@ -47,7 +48,7 @@ export function GoogleAuthButton({ nextPath = "/admin", onError, label = "Contin
       setPending(false);
       return;
     }
-    const redirectTo = authCallbackUrl(window.location.origin, nextPath);
+    const redirectTo = authCallbackUrl(getAppOrigin(), nextPath);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
