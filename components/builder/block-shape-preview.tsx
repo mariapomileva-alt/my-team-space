@@ -42,6 +42,8 @@ function ShapeInner({
   if (blockType === "contacts") return <ContactsIllustration large={large} />;
   if (blockType === "results" || blockType === "achievements") return <TrophyIllustration large={large} />;
   if (blockType === "polls") return <PollIllustration large={large} />;
+  if (blockType === "integrations") return <LinksIllustration large={large} />;
+  if (blockType === "resources") return <DocsIllustration large={large} />;
   if (blockType === "attendance") return <AttendanceIllustration large={large} />;
 
   switch (shape) {
@@ -155,6 +157,26 @@ function PollIllustration({ large }: { large?: boolean }) {
     <div className="flex h-full w-full flex-col justify-center gap-1 px-1">
       <div className={`rounded-full bg-violet-300/90 ${large ? "h-2" : "h-1"}`} style={{ width: "85%" }} />
       <div className={`rounded-full bg-violet-200/80 ${large ? "h-2" : "h-1"}`} style={{ width: "60%" }} />
+    </div>
+  );
+}
+
+function LinksIllustration({ large }: { large?: boolean }) {
+  const cell = large ? "h-3 w-8" : "h-2 w-6";
+  return (
+    <div className="flex h-full flex-col justify-center gap-1 p-1">
+      <div className={`rounded-md bg-indigo-400 ${cell}`} />
+      <div className={`rounded-md bg-violet-300 ${cell}`} style={{ width: "70%" }} />
+      <div className={`rounded-md bg-pink-300 ${cell}`} style={{ width: "55%" }} />
+    </div>
+  );
+}
+
+function DocsIllustration({ large }: { large?: boolean }) {
+  return (
+    <div className="flex h-full items-center justify-center gap-1 p-1">
+      <span className={large ? "text-xl" : "text-sm"}>📄</span>
+      <span className={large ? "text-xl" : "text-sm"}>🎵</span>
     </div>
   );
 }

@@ -13,6 +13,8 @@ import { RosterEditor } from "./editors/roster-editor";
 import { ScheduleEditor } from "./editors/schedule-editor";
 import { SimpleBlocksEditor } from "./editors/simple-blocks-editor";
 import { QuickLinksEditor } from "./editors/quick-links-editor";
+import { EmbedEditor } from "./editors/embed-editor";
+import { ResourcesEditor } from "./editors/resources-editor";
 
 type Props = {
   block: BlockInstance;
@@ -47,7 +49,13 @@ export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam }: 
       {block.type === "schedule" || block.type === "calendar" ? (
         <ScheduleEditor block={block} onPatchBlock={onPatchBlock} />
       ) : null}
-      {block.type === "gallery" ? <GalleryEditor block={block} onPatchBlock={onPatchBlock} /> : null}
+      {block.type === "gallery" ? (
+        <GalleryEditor block={block} teamId={team.id} onPatchBlock={onPatchBlock} />
+      ) : null}
+      {block.type === "integrations" ? <EmbedEditor block={block} onPatchBlock={onPatchBlock} /> : null}
+      {block.type === "resources" ? (
+        <ResourcesEditor block={block} teamId={team.id} onPatchBlock={onPatchBlock} />
+      ) : null}
       {block.type === "achievements" ? (
         <AchievementsEditor block={block} team={team} onPatchBlock={onPatchBlock} />
       ) : null}
@@ -58,7 +66,9 @@ export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam }: 
       {block.type === "polls" ? (
         <PollsEditor block={block} team={team} onPatchBlock={onPatchBlock} onPatchTeam={onPatchTeam} />
       ) : null}
-      {SIMPLE_TYPES.has(block.type) ? <SimpleBlocksEditor block={block} onPatchBlock={onPatchBlock} /> : null}
+      {SIMPLE_TYPES.has(block.type) ? (
+        <SimpleBlocksEditor block={block} teamId={team.id} onPatchBlock={onPatchBlock} />
+      ) : null}
     </div>
   );
 }

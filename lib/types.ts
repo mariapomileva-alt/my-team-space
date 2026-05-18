@@ -50,7 +50,9 @@ export type BlockType =
   | "weather"
   | "countdown"
   | "birthdays"
-  | "quick_links";
+  | "quick_links"
+  | "integrations"
+  | "resources";
 
 export type BlockLayout = "full" | "half" | "card" | "featured";
 

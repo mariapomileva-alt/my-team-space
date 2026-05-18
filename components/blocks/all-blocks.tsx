@@ -4,12 +4,14 @@ import { CampTripConfirm } from "@/components/blocks/camp-trip-confirm";
 import { PollVote } from "@/components/blocks/poll-vote";
 import { galleryEmbedSrc, isGooglePhotosAlbumUrl } from "@/lib/gallery-embed";
 import { MtsBadge } from "@/components/mts/card";
+import { IntegrationLinkCard, type IntegrationLink } from "@/components/integrations/integration-link-card";
 import {
   getBlockSettings,
   type ContentItem,
   type CountdownSettings,
   type ListBlockSettings,
   type PollSettings,
+  type ResourceItem,
   type SocialKey,
   type WeatherSettings,
 } from "@/lib/blocks/settings";
@@ -303,13 +305,23 @@ export function BlockContacts({ block, embedded }: BlockProps) {
       ) : (
         <ul className="space-y-3 text-sm">
           {items.map((c) => (
-            <li key={c.id} className="flex justify-between gap-3">
-              <span>
-                {c.name}
-                {c.role ? <span className="block text-xs text-[color:var(--mts-muted)]">{c.role}</span> : null}
+            <li key={c.id} className="flex items-center justify-between gap-3">
+              <span className="flex min-w-0 items-center gap-3">
+                {c.photoUrl?.trim() ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.photoUrl} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm" />
+                ) : (
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--mts-accent-soft)] text-lg">
+                    👤
+                  </span>
+                )}
+                <span className="min-w-0">
+                  {c.name}
+                  {c.role ? <span className="block text-xs text-[color:var(--mts-muted)]">{c.role}</span> : null}
+                </span>
               </span>
               {c.url?.trim() ? (
-                <a className="font-semibold text-[color:var(--mts-primary-bright)]" href={c.url}>
+                <a className="shrink-0 font-semibold text-[color:var(--mts-primary-bright)]" href={c.url}>
                   Contact
                 </a>
               ) : null}
@@ -420,17 +432,24 @@ export function BlockSponsors({ block, embedded }: BlockProps) {
         <BlockEmpty message="Partner logos will appear here." />
       ) : (
         <div className="flex flex-wrap justify-center gap-6">
-          {sponsors.map((sp) =>
-            sp.url?.trim() ? (
-              <a key={sp.id} href={sp.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold underline">
-                {sp.name}
+          {sponsors.map((sp) => {
+            const logo = sp.logoUrl?.trim();
+            const inner = logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logo} alt={sp.name} className="h-12 max-w-[120px] object-contain" />
+            ) : (
+              <span className="text-sm font-semibold">{sp.name}</span>
+            );
+            return sp.url?.trim() ? (
+              <a key={sp.id} href={sp.url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/80 p-3 shadow-sm">
+                {inner}
               </a>
             ) : (
-              <span key={sp.id} className="text-sm font-semibold">
-                {sp.name}
+              <span key={sp.id} className="rounded-xl bg-white/80 p-3 shadow-sm">
+                {inner}
               </span>
-            ),
-          )}
+            );
+          })}
         </div>
       )}
     </BlockSurface>
@@ -551,6 +570,81 @@ export function BlockQuickLinks({ block, embedded }: BlockProps) {
           {links.map((l) => (
             <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center rounded-2xl border border-[color:var(--mts-card-border)] font-medium transition hover:bg-[var(--mts-accent-soft)]">{l.label}</a>
           ))}
+        </div>
+      )}
+    </BlockSurface>
+  );
+}
+
+const RESOURCE_KIND_EMOJI: Record<ResourceItem["kind"], string> = {
+  pdf: "📄",
+  link: "🔗",
+  audio: "🎵",
+  video: "🎬",
+  image: "🖼️",
+  plan: "📋",
+  other: "📦",
+};
+
+export function BlockIntegrations({ block, embedded }: BlockProps) {
+  const s = getBlockSettings<{ sectionTitle?: string; links: IntegrationLink[] }>(block);
+  const links = (s.links ?? []).filter((l) => l.url?.trim());
+  const title = s.sectionTitle?.trim() || "Team tools";
+  return (
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>{title}</BlockHeading>
+      {links.length === 0 ? (
+        <BlockEmpty message="Connect Strava, Garmin, YouTube, calendars, and more." />
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {links.map((link) => (
+            <IntegrationLinkCard key={link.id} link={link} compact={embedded} />
+          ))}
+        </div>
+      )}
+    </BlockSurface>
+  );
+}
+
+export function BlockResources({ block, embedded }: BlockProps) {
+  const s = getBlockSettings<{ sectionTitle?: string; items: ResourceItem[] }>(block);
+  const items = (s.items ?? []).filter((r) => r.title?.trim());
+  const title = s.sectionTitle?.trim() || "Team resources";
+  return (
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>{title}</BlockHeading>
+      {items.length === 0 ? (
+        <BlockEmpty message="PDFs, plans, and files for your team will appear here." />
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {items.map((item) => {
+            const href = (item.fileUrl || item.url)?.trim();
+            const emoji = RESOURCE_KIND_EMOJI[item.kind] ?? "📦";
+            return (
+              <a
+                key={item.id}
+                href={href || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex gap-3 rounded-2xl border border-[color:var(--mts-card-border)] bg-white p-4 shadow-[0_4px_20px_-10px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--mts-accent-soft)] text-2xl">
+                  {emoji}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-bold text-[color:var(--mts-text)]">{item.title}</span>
+                  {item.description?.trim() ? (
+                    <span className="mt-0.5 line-clamp-2 block text-xs text-[color:var(--mts-muted)]">
+                      {item.description}
+                    </span>
+                  ) : null}
+                  <span className="mt-2 inline-block text-[10px] font-bold uppercase tracking-wide text-[color:var(--mts-primary-bright)]">
+                    Open
+                  </span>
+                </span>
+              </a>
+            );
+          })}
         </div>
       )}
     </BlockSurface>

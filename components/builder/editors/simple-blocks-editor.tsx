@@ -17,9 +17,11 @@ import { ListItemsEditor } from "./list-items-editor";
 
 export function SimpleBlocksEditor({
   block,
+  teamId,
   onPatchBlock,
 }: {
   block: BlockInstance;
+  teamId: string;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
 }) {
   switch (block.type) {
@@ -42,6 +44,10 @@ export function SimpleBlocksEditor({
       return (
         <ListItemsEditor
           block={block}
+          teamId={teamId}
+          imageFieldKey="photoUrl"
+          imageFolder="contacts"
+          imageLabel="Coach photo"
           onPatchBlock={onPatchBlock}
           fields={[
             { key: "name", label: "Name", placeholder: "Coach Anna" },
@@ -99,13 +105,17 @@ export function SimpleBlocksEditor({
       return (
         <ListItemsEditor
           block={block}
+          teamId={teamId}
+          imageFieldKey="logoUrl"
+          imageFolder="sponsors"
+          imageLabel="Sponsor logo"
           onPatchBlock={onPatchBlock}
           fields={[
             { key: "name", label: "Partner", placeholder: "Local shop" },
             { key: "url", label: "Website", placeholder: "https://..." },
           ]}
           addLabel="+ Add partner"
-          emptyHint="Thank sponsors — name only if no link."
+          emptyHint="Upload a logo or type the partner name."
           makeItem={newSponsorItem}
         />
       );

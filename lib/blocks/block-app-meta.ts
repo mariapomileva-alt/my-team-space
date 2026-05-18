@@ -87,6 +87,18 @@ export const BLOCK_APP_META: Record<BlockType, BlockAppMeta> = {
     subtitle: "Chat & follow us",
     tileClass: "bg-fuchsia-100 text-fuchsia-700",
   },
+  integrations: {
+    emoji: "🧩",
+    title: "Team tools",
+    subtitle: "Strava, Garmin & more",
+    tileClass: "bg-indigo-100 text-indigo-700",
+  },
+  resources: {
+    emoji: "📚",
+    title: "Resources",
+    subtitle: "PDFs, plans & files",
+    tileClass: "bg-teal-100 text-teal-800",
+  },
   polls: {
     emoji: "🗳️",
     title: "Quick poll",

@@ -45,6 +45,17 @@ export type ContentItem = {
   [key: string]: string;
 };
 
+export type ResourceKind = "pdf" | "link" | "audio" | "video" | "image" | "plan" | "other";
+
+export type ResourceItem = {
+  id: string;
+  title: string;
+  description?: string;
+  url?: string;
+  fileUrl?: string;
+  kind: ResourceKind;
+};
+
 export type ListBlockSettings = { items: ContentItem[] };
 
 export type PollSettings = { question: string; optionYes: string; optionNo: string };
@@ -101,6 +112,10 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
       return { label: "Next event", targetDate: "" };
     case "weather":
       return { temp: "", note: "", location: "" };
+    case "integrations":
+      return { sectionTitle: "Team tools & links", links: [] as { id: string; url: string; label?: string; providerId?: string }[] };
+    case "resources":
+      return { sectionTitle: "Team resources", items: [] as ResourceItem[] };
     default:
       return {};
   }
@@ -165,7 +180,7 @@ export function newResultItem(): ContentItem {
 }
 
 export function newContactItem(): ContentItem {
-  return newContentItem({ name: "", role: "", url: "" });
+  return newContentItem({ name: "", role: "", url: "", photoUrl: "" });
 }
 
 export function newDocumentItem(): ContentItem {
@@ -181,7 +196,11 @@ export function newCampItem(): ContentItem {
 }
 
 export function newSponsorItem(): ContentItem {
-  return newContentItem({ name: "", url: "" });
+  return newContentItem({ name: "", url: "", logoUrl: "" });
+}
+
+export function newResourceItem(): ResourceItem {
+  return { id: uid("res"), title: "", description: "", url: "", kind: "pdf" };
 }
 
 export const ACHIEVEMENT_ICONS = ["🏆", "🥇", "🥈", "🥉", "⭐", "🎖", "📜", "🔥", "❤️"] as const;
