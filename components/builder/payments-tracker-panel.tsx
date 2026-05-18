@@ -41,10 +41,10 @@ export function PaymentsTrackerPanel({
   }
 
   return (
-    <section className="rounded-3xl border border-amber-200/80 bg-gradient-to-br from-amber-50/50 to-white p-5 shadow-sm">
+    <section className="overflow-hidden rounded-[1.75rem] border border-amber-200/50 bg-gradient-to-br from-orange-50/40 via-amber-50/30 to-white p-6 shadow-[0_4px_32px_-16px_rgba(251,146,60,0.12)]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold">Payments tracker</h2>
+          <h2 className="text-sm font-bold tracking-tight text-zinc-900">Payments tracker</h2>
           <p className="mt-1 text-sm text-zinc-500">
             Coach-only. Track paid / pending — paste Revolut or Stripe links in messages, not here.
           </p>

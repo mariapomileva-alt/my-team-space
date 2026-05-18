@@ -26,3 +26,9 @@ export function supabaseAuthEmailsUrl(): string | null {
   const ref = supabaseProjectRef();
   return ref ? `https://supabase.com/dashboard/project/${ref}/auth/templates` : null;
 }
+
+/** SMTP + built-in mailer settings (magic link / confirm emails). */
+export function supabaseAuthSmtpUrl(): string | null {
+  const ref = supabaseProjectRef();
+  return ref ? `https://supabase.com/dashboard/project/${ref}/auth/smtp` : null;
+}

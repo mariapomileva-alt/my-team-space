@@ -358,14 +358,15 @@ function SetupSection() {
   );
 }
 
-const COMMUNITIES = [
+const COMMUNITY_PILLS = [
   "Football academies",
   "Dance schools",
   "Swimming clubs",
   "Cheer teams",
   "School clubs",
-  "Camps",
 ] as const;
+
+const COMMUNITY_PLUS_LABEL = "+ Your community";
 
 type ExploreDemo = {
   href: string;
@@ -649,23 +650,29 @@ export function HomeLanding() {
 
         <SetupSection />
 
-        <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 lg:py-24">
-          <h2 className="text-center text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
-            Built for modern youth communities
-          </h2>
-          <p className="mx-auto mt-3 max-w-lg text-center text-[15px] text-neutral-500">
-            One calm home for the chaos of schedules, feelings, and big little wins.
-          </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            {COMMUNITIES.map((name) => (
-              <div
-                key={name}
-                className="rounded-2xl border border-neutral-100 bg-white/90 px-5 py-2.5 text-sm font-medium text-neutral-800 shadow-sm ring-1 ring-neutral-50 transition hover:border-indigo-200/80 hover:shadow-md"
-              >
-                {name}
-              </div>
-            ))}
+        <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28 lg:py-32">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-[family-name:var(--font-brand)] text-2xl font-bold tracking-tight text-[#1A1C23] sm:text-3xl lg:text-[2rem]">
+              Built for modern teams and communities
+            </h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-neutral-500 sm:text-base">
+              One calm home for the chaos of schedules, feelings, and big little wins.
+            </p>
           </div>
+          <ul className="mx-auto mt-12 flex max-w-3xl flex-wrap justify-center gap-3 sm:mt-14 sm:gap-4">
+            {COMMUNITY_PILLS.map((name) => (
+              <li key={name}>
+                <span className="inline-flex min-h-11 items-center rounded-full border border-black/[0.06] bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 shadow-[0_2px_12px_-4px_rgba(15,23,42,0.08)] transition duration-300 ease-out hover:-translate-y-0.5 hover:border-[#6C5CE7]/20 hover:shadow-[0_8px_24px_-8px_rgba(108,92,231,0.15)]">
+                  {name}
+                </span>
+              </li>
+            ))}
+            <li>
+              <span className="inline-flex min-h-11 items-center rounded-full border border-[#6C5CE7]/30 bg-gradient-to-r from-[#6C5CE7]/10 via-white to-[#FF6B9D]/10 px-6 py-2.5 text-sm font-semibold text-[#6C5CE7] shadow-[0_4px_20px_-6px_rgba(108,92,231,0.2)] ring-1 ring-[#6C5CE7]/10 transition duration-300 ease-out hover:-translate-y-0.5 hover:border-[#6C5CE7]/45 hover:from-[#6C5CE7]/15 hover:to-[#FF6B9D]/15 hover:shadow-[0_12px_32px_-10px_rgba(108,92,231,0.28)]">
+                {COMMUNITY_PLUS_LABEL}
+              </span>
+            </li>
+          </ul>
         </section>
 
         <ExploreTeamSpacesSection />

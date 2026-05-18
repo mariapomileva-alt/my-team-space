@@ -33,7 +33,7 @@ const SIMPLE_TYPES = new Set([
 
 export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam }: Props) {
   return (
-    <div className="space-y-4 border-t border-zinc-100 bg-gradient-to-b from-indigo-50/30 to-white px-4 py-4 sm:px-5">
+    <div className="space-y-4 border-t border-indigo-100/60 bg-gradient-to-b from-indigo-50/25 via-white to-white px-4 py-5 sm:px-5">
       <BlockAudiencePicker team={team} block={block} onPatchBlock={onPatchBlock} />
       <LayoutPicker layout={block.layout ?? "full"} onChange={(layout) => onPatchBlock(block.id, { layout })} />
 

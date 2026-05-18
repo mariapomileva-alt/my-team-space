@@ -12,8 +12,56 @@
 /* Theme tokens applied via `.mts-shell` inline vars from lib/themes.ts */
 .mts-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--mts-page-bg);
   color: var(--mts-text);
+}
+
+/* Public team app — landing-style neutral canvas on light themes */
+.mts-shell:has(.team-app-page) {
+  background: #f5f5f7;
+  background: linear-gradient(180deg, #fafafa 0%, #f5f5f7 42%, #eef2ff 100%);
+}
+
+.team-app-page {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.team-app-detail-content {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.team-app-detail-content .mts-card {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.team-app-detail-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.team-app-chrome .mts-card {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.team-app-dashboard .dashboard-rail {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.team-app-dashboard .dashboard-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.team-app-dashboard .dashboard-rail-item {
+  scroll-snap-align: start;
 }
 
 .mts-card {

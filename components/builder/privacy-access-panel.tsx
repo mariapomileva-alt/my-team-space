@@ -30,8 +30,8 @@ export function PrivacyAccessPanel({
   }
 
   return (
-    <section className="rounded-3xl border border-zinc-200/80 bg-white p-5 shadow-sm">
-      <h2 className="text-base font-bold">Privacy & access</h2>
+    <section className="overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/90 p-6 shadow-[0_4px_32px_-16px_rgba(15,23,42,0.1)] backdrop-blur-sm">
+      <h2 className="text-sm font-bold tracking-tight text-zinc-900">Privacy & access</h2>
       <p className="mt-1 text-sm text-zinc-500">
         No parent passwords. Use a team code or magic link — like a private clubhouse door.
       </p>

@@ -16,7 +16,8 @@ export function formatAuthErrorMessage(raw: string): string {
   }
   if (m.includes("error sending magic link") || m.includes("sending magic link")) {
     return (
-      "We couldn’t send the magic-link email (SMTP or provider limits). Try Continue with Google, or Email & password—or fix SMTP under Supabase → Authentication → Emails."
+      "Supabase could not send the magic-link email. Usually custom SMTP is misconfigured, or the project hit the default mail limit (~2–4/hour). " +
+      "Open the checklist below, or sign in with Google / email & password."
     );
   }
   if (m.includes("provider is not enabled") || m.includes("unsupported provider")) {

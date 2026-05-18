@@ -2,14 +2,16 @@
 
 import { BlockModuleCard } from "@/components/builder/block-module-card";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
+import { BuilderSectionPanel } from "@/components/builder/builder-section-panel";
+import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
 import { PrivacyAccessPanel } from "@/components/builder/privacy-access-panel";
 import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
 import {
-  BUILDER_SECTION_LABELS,
   BUILDER_SECTION_ORDER,
   groupBlocksBySection,
 } from "@/lib/blocks/meta";
+import { formatBuilderSaveLabel } from "@/lib/builder/save-status";
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
 import { THEMES } from "@/lib/themes";
 import type { BlockInstance, TeamSpace, ThemeId } from "@/lib/types";
@@ -21,10 +23,10 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import Link from "next/link";
+import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 const AUTOSAVE_MS = 2500;
 
@@ -45,6 +47,7 @@ export function TeamPageBuilder({
   });
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveTick, setSaveTick] = useState(0);
   const [msg, setMsg] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const dirtyRef = useRef(false);
@@ -54,6 +57,11 @@ export function TeamPageBuilder({
   useEffect(() => {
     setTeam(initialTeam);
   }, [initialTeam]);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setSaveTick((t) => t + 1), 8000);
+    return () => window.clearInterval(id);
+  }, []);
 
   const sectionGroups = useMemo(() => groupBlocksBySection(team.blocks), [team.blocks]);
   const allPublicBlocks = useMemo(
@@ -161,121 +169,116 @@ export function TeamPageBuilder({
     window.open(`/team/${team.slug}`, "_blank", "noopener,noreferrer");
   }
 
-  const savedLabel =
-    saveState === "saving"
-      ? "Saving…"
-      : lastSaved
-        ? `Last saved ${lastSaved.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-        : "Draft — edits autosave";
+  const savedLabel = useMemo(
+    () => formatBuilderSaveLabel(saveState, lastSaved),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- saveTick refreshes relative time
+    [saveState, lastSaved, saveTick],
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50/40 via-zinc-50 to-white text-zinc-900">
-      <header className="sticky top-0 z-40 border-b border-zinc-200/80 bg-white/90 px-4 py-4 backdrop-blur-md sm:px-8">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">Page builder</p>
-            <h1 className="truncate text-xl font-bold">{team.name}</h1>
-            <p className="text-xs text-zinc-500">{savedLabel}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              disabled={pending}
-              onClick={publish}
-              className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm disabled:opacity-50"
-            >
-              {pending ? "Publishing…" : "Publish"}
-            </button>
-            <button
-              type="button"
-              onClick={previewAsParent}
-              className="rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-800"
-            >
-              Preview as parent
-            </button>
-            <Link
-              href={publicUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700"
-            >
-              Open page
-            </Link>
-          </div>
-        </div>
-        {msg ? <p className="mx-auto mt-2 max-w-6xl text-center text-xs text-emerald-700">{msg}</p> : null}
-      </header>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen scroll-smooth bg-gradient-to-b from-violet-50/30 via-zinc-50/80 to-white text-zinc-900"
+    >
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(139,92,246,0.08),transparent)]" />
 
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 lg:grid-cols-[1fr_340px] sm:px-8">
-        <main className="min-w-0 space-y-8">
-          <section className="rounded-3xl border border-zinc-200/80 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-bold">Color theme</h2>
-            <p className="mt-1 text-sm text-zinc-500">Soft team colors — Apple-simple.</p>
-            <div className="mt-4 grid gap-2 sm:grid-cols-3">
+      <div className="px-2 pt-4 sm:px-4">
+        <BuilderToolbar
+          teamName={team.name}
+          saveLabel={savedLabel}
+          saveState={saveState}
+          pending={pending}
+          publicUrl={publicUrl}
+          onPublish={publish}
+          onPreview={previewAsParent}
+        />
+      </div>
+
+      {msg ? (
+        <motion.p
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-auto mb-2 max-w-lg px-4 text-center text-xs font-medium text-emerald-700"
+        >
+          {msg}
+        </motion.p>
+      ) : null}
+
+      <div className="mx-auto grid max-w-[1280px] gap-10 px-4 pb-16 pt-2 lg:grid-cols-[1fr_380px] sm:px-6">
+        <main className="min-w-0 space-y-10">
+          <motion.section
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/90 p-6 shadow-[0_4px_32px_-16px_rgba(15,23,42,0.1)] backdrop-blur-sm"
+          >
+            <h2 className="text-sm font-bold tracking-tight text-zinc-900">Team colors</h2>
+            <p className="mt-1 text-sm text-zinc-500">Pick a palette — your app updates instantly.</p>
+            <motion.div className="mt-5 grid gap-3 sm:grid-cols-3">
               {THEMES.map((t) => (
                 <button
                   key={t.id}
                   type="button"
                   onClick={() => setTheme(t.id)}
-                  className={`rounded-2xl border p-3 text-left text-xs transition ${
-                    team.themeId === t.id ? "border-indigo-500 ring-2 ring-indigo-100" : "border-zinc-200"
+                  className={`rounded-2xl border p-4 text-left text-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+                    team.themeId === t.id
+                      ? "border-indigo-400 bg-indigo-50/50 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
+                      : "border-zinc-200/90 bg-white"
                   }`}
                 >
-                  <div className="flex gap-1">
+                  <div className="flex gap-1.5">
                     <span
-                      className="h-6 w-6 rounded-full border border-black/10"
+                      className="h-7 w-7 rounded-full border border-black/5 shadow-sm"
                       style={{ background: (t.cssVars as Record<string, string>)["--mts-primary"] }}
                     />
                     <span
-                      className="h-6 w-6 rounded-full border border-black/10"
+                      className="h-7 w-7 rounded-full border border-black/5 shadow-sm"
                       style={{ background: (t.cssVars as Record<string, string>)["--mts-accent"] }}
                     />
                   </div>
-                  <span className="mt-2 block font-semibold">{t.label}</span>
+                  <span className="mt-2.5 block font-bold text-zinc-800">{t.label}</span>
                 </button>
               ))}
-            </div>
-          </section>
+            </motion.div>
+          </motion.section>
 
           <PrivacyAccessPanel team={team} siteUrl={siteUrl} onPatchTeam={patchTeam} />
-
           <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
 
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-            <SortableContext items={allPublicBlocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-              {BUILDER_SECTION_ORDER.map((section) => {
-                const blocks = sectionGroups[section];
-                if (!blocks.length) return null;
-                const meta = BUILDER_SECTION_LABELS[section];
-                return (
-                  <section key={section}>
-                    <h2 className="text-base font-bold">{meta.title}</h2>
-                    <p className="mt-1 text-sm text-zinc-500">{meta.hint}</p>
-                    <ul className="mt-4 space-y-3">
-                      {blocks.map((block) => (
-                        <BlockModuleCard
-                          key={block.id}
-                          block={block}
-                          team={team}
-                          expanded={expanded.has(block.id)}
-                          onToggleExpand={() => toggleExpand(block.id)}
-                          onToggleEnabled={() => toggleBlock(block.id)}
-                          onPatchBlock={patchBlock}
-                          onPatchTeam={patchTeam}
-                        />
-                      ))}
-                    </ul>
-                  </section>
-                );
-              })}
+            <SortableContext items={allPublicBlocks.map((b) => b.id)} strategy={rectSortingStrategy}>
+              <motion.div layout className="space-y-12">
+                {BUILDER_SECTION_ORDER.map((section) => {
+                  const blocks = sectionGroups[section];
+                  if (!blocks.length) return null;
+                  return (
+                    <BuilderSectionPanel key={section} section={section} blockCount={blocks.length}>
+                      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                        {blocks.map((block) => (
+                          <BlockModuleCard
+                            key={block.id}
+                            block={block}
+                            team={team}
+                            expanded={expanded.has(block.id)}
+                            onToggleExpand={() => toggleExpand(block.id)}
+                            onToggleEnabled={() => toggleBlock(block.id)}
+                            onPatchBlock={patchBlock}
+                            onPatchTeam={patchTeam}
+                          />
+                        ))}
+                      </ul>
+                    </BuilderSectionPanel>
+                  );
+                })}
+              </motion.div>
             </SortableContext>
           </DndContext>
         </main>
 
-        <aside className="hidden lg:block">
+        <aside className="relative hidden lg:block">
           <BuilderLivePreview team={team} />
         </aside>
       </div>
-    </div>
+    </motion.div>
   );
 }

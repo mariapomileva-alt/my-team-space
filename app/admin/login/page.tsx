@@ -4,6 +4,7 @@ import { getAppOrigin } from "@/lib/auth/app-origin";
 import { authCallbackUrl } from "@/lib/auth/callback-url";
 import { formatAuthErrorMessage } from "@/lib/auth/format-auth-error";
 import { LoginConfigNotice } from "@/components/auth/login-config-notice";
+import { MagicLinkEmailHelp } from "@/components/auth/magic-link-email-help";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { getBrowserSupabase } from "@/lib/supabase/get-browser-supabase";
 import Link from "next/link";
@@ -34,7 +35,10 @@ function LoginInner() {
     }
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: authCallbackUrl(getAppOrigin(), "/admin") },
+      options: {
+        emailRedirectTo: authCallbackUrl(getAppOrigin(), "/admin"),
+        shouldCreateUser: true,
+      },
     });
     if (error) {
       setErr(formatAuthErrorMessage(error.message));
@@ -147,22 +151,27 @@ function LoginInner() {
       {mode === "magic" ? (
         sent ? (
           <p className="mt-6 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-900 ring-1 ring-emerald-100">
-            Almost there—open your inbox and tap the link we sent you.
+            Almost there—open your inbox and tap the link we sent you. Check spam if nothing arrives in a few minutes.
           </p>
         ) : (
-          <form onSubmit={sendLink} className="mt-6 space-y-4">
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full rounded-xl border border-zinc-200 px-3 py-2.5 text-sm"
-            />
-            <button type="submit" className="w-full rounded-full bg-zinc-900 py-2.5 text-sm font-semibold text-white">
-              Send magic link
-            </button>
-          </form>
+          <>
+            <form onSubmit={sendLink} className="mt-6 space-y-4">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full rounded-xl border border-zinc-200 px-3 py-2.5 text-sm"
+              />
+              <button type="submit" className="w-full rounded-full bg-zinc-900 py-2.5 text-sm font-semibold text-white">
+                Send magic link
+              </button>
+            </form>
+            <div className="mt-4">
+              <MagicLinkEmailHelp compact />
+            </div>
+          </>
         )
       ) : (
         <form onSubmit={signInPassword} className="mt-6 space-y-4">
@@ -202,7 +211,14 @@ function LoginInner() {
         </form>
       )}
 
-      {err ? <p className="mt-4 text-sm text-red-600">{err}</p> : null}
+      {err ? (
+        <div className="mt-4 space-y-3">
+          <p className="text-sm text-red-600">{err}</p>
+          {mode === "magic" && (err.includes("magic-link") || err.includes("SMTP") || err.includes("mail limit")) ? (
+            <MagicLinkEmailHelp />
+          ) : null}
+        </div>
+      ) : null}
 
       <p className="mt-8 text-center text-sm text-zinc-600">
         New here?{" "}

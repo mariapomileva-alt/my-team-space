@@ -20,46 +20,47 @@ import {
   BlockWeather,
 } from "./all-blocks";
 
-export type RenderBlockOptions = { hideChildNames?: boolean };
+export type RenderBlockOptions = { hideChildNames?: boolean; embedded?: boolean };
 
-export function renderBlock(team: TeamSpace, block: BlockInstance, _options?: RenderBlockOptions) {
+export function renderBlock(team: TeamSpace, block: BlockInstance, options?: RenderBlockOptions) {
+  const embedded = options?.embedded;
   switch (block.type) {
     case "hero":
-      return <BlockHero team={team} block={block} />;
+      return <BlockHero team={team} block={block} embedded={embedded} />;
     case "announcement_bar":
-      return <BlockAnnouncementBar team={team} block={block} />;
+      return <BlockAnnouncementBar team={team} block={block} embedded={embedded} />;
     case "calendar":
-      return <BlockCalendar team={team} block={block} />;
+      return <BlockCalendar team={team} block={block} embedded={embedded} />;
     case "schedule":
-      return <BlockSchedule team={team} block={block} />;
+      return <BlockSchedule team={team} block={block} embedded={embedded} />;
     case "results":
-      return <BlockResults team={team} block={block} />;
+      return <BlockResults team={team} block={block} embedded={embedded} />;
     case "achievements":
-      return <BlockAchievements team={team} block={block} />;
+      return <BlockAchievements team={team} block={block} embedded={embedded} />;
     case "team_feed":
-      return <BlockTeamFeed team={team} block={block} />;
+      return <BlockTeamFeed team={team} block={block} embedded={embedded} />;
     case "attendance":
-      return <BlockAttendance team={team} block={block} />;
+      return <BlockAttendance team={team} block={block} embedded={embedded} />;
     case "camp_trip":
-      return <BlockCampTrip team={team} block={block} />;
+      return <BlockCampTrip team={team} block={block} embedded={embedded} />;
     case "contacts":
-      return <BlockContacts team={team} block={block} />;
+      return <BlockContacts team={team} block={block} embedded={embedded} />;
     case "documents":
-      return <BlockDocuments team={team} block={block} />;
+      return <BlockDocuments team={team} block={block} embedded={embedded} />;
     case "polls":
-      return <BlockPolls team={team} block={block} />;
+      return <BlockPolls team={team} block={block} embedded={embedded} />;
     case "gallery":
-      return <BlockGallery team={team} block={block} />;
+      return <BlockGallery team={team} block={block} embedded={embedded} />;
     case "sponsors":
-      return <BlockSponsors team={team} block={block} />;
+      return <BlockSponsors team={team} block={block} embedded={embedded} />;
     case "weather":
-      return <BlockWeather team={team} block={block} />;
+      return <BlockWeather team={team} block={block} embedded={embedded} />;
     case "countdown":
-      return <BlockCountdown team={team} block={block} />;
+      return <BlockCountdown team={team} block={block} embedded={embedded} />;
     case "birthdays":
-      return <BlockBirthdays team={team} block={block} />;
+      return <BlockBirthdays team={team} block={block} embedded={embedded} />;
     case "quick_links":
-      return <BlockQuickLinks team={team} block={block} />;
+      return <BlockQuickLinks team={team} block={block} embedded={embedded} />;
     default:
       return null;
   }

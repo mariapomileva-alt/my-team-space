@@ -1,8 +1,9 @@
 import { BlockEmpty } from "@/components/blocks/block-empty";
+import { BlockHeading, BlockSurface } from "@/components/blocks/block-surface";
 import { CampTripConfirm } from "@/components/blocks/camp-trip-confirm";
 import { PollVote } from "@/components/blocks/poll-vote";
 import { galleryEmbedSrc, isGooglePhotosAlbumUrl } from "@/lib/gallery-embed";
-import { MtsBadge, MtsCard } from "@/components/mts/card";
+import { MtsBadge } from "@/components/mts/card";
 import {
   getBlockSettings,
   type ContentItem,
@@ -32,72 +33,64 @@ type HeroSettings = {
   social: Partial<Record<SocialKey, string>>;
 };
 
-export function BlockHero({ team, block }: { team: TeamSpace; block: BlockInstance }) {
+type BlockProps = { team: TeamSpace; block: BlockInstance; embedded?: boolean };
+
+export function BlockHero({ team, block, embedded }: BlockProps) {
+  if (embedded) return null;
   const s = getBlockSettings<HeroSettings>(block);
   const logoSrc = team.logoUrl?.trim() || s.teamPhotoUrl?.trim();
   const quote = s.quote || "Show up. Cheer loud. Grow together.";
   const socialEntries = (Object.keys(SOCIAL_LABELS) as SocialKey[]).filter((k) => s.social?.[k]?.trim());
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden"
-    >
-      {s.coverImageUrl ? (
-        <div className="relative mb-4 h-36 overflow-hidden rounded-[var(--mts-radius)] sm:h-44">
-          <img src={s.coverImageUrl} alt="" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-        </div>
-      ) : null}
-      <div
-        className="rounded-[var(--mts-radius)] border border-[color:var(--mts-card-border)] p-6 sm:p-8"
-        style={{
-          background: `radial-gradient(120% 80% at 20% 0%, var(--mts-accent-soft), transparent 55%), var(--mts-card)`,
-          boxShadow: "var(--mts-shadow)",
-        }}
-      >
-        <div className={`mb-4 flex justify-center ${s.coverImageUrl ? "-mt-12 sm:-mt-14" : ""} sm:justify-start`}>
-          {logoSrc ? (
-            <img
-              src={logoSrc}
-              alt=""
-              className="h-20 w-20 rounded-full border-4 border-[color:var(--mts-card)] object-cover shadow-lg sm:h-24 sm:w-24"
-            />
-          ) : (
-            <div
-              className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-[color:var(--mts-card)] bg-[var(--mts-primary)] text-2xl font-bold text-white shadow-lg sm:h-24 sm:w-24"
-            >
-              {team.name.slice(0, 1).toUpperCase()}
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-3 text-center sm:text-left">
-            <MtsBadge>Our team</MtsBadge>
-            <h1
-              className="text-3xl font-bold tracking-tight sm:text-4xl"
-              style={{ color: "var(--mts-text)" }}
-            >
-              {team.name}
-            </h1>
-            <p className="max-w-lg text-base leading-relaxed text-[color:var(--mts-muted)]">
-              {team.tagline}
-              {s.city ? <span className="mt-1 block text-sm">📍 {s.city}</span> : null}
-            </p>
-            <p className="text-lg font-medium italic text-[color:var(--mts-primary-bright)]">
-              “{quote}”
-            </p>
+    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative overflow-hidden">
+      <motion.div className="overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
+        {s.coverImageUrl ? (
+          <div className="relative h-28 sm:h-32">
+            <img src={s.coverImageUrl} alt="" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
           </div>
+        ) : (
+          <div className="h-2 bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-400" />
+        )}
+        <div className={`px-4 pb-4 pt-3 ${s.coverImageUrl ? "-mt-8" : "pt-4"}`}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              {logoSrc ? (
+                <img
+                  src={logoSrc}
+                  alt=""
+                  className="h-14 w-14 shrink-0 rounded-2xl border-4 border-white object-cover shadow-md"
+                />
+              ) : (
+                <motion.div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-indigo-600 text-xl font-bold text-white shadow-md">
+                  {team.name.slice(0, 1).toUpperCase()}
+                </motion.div>
+              )}
+              <div className="min-w-0 pt-1">
+                <MtsBadge>Our team</MtsBadge>
+                <h1 className="mt-1 text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">{team.name}</h1>
+                {team.tagline ? (
+                  <p className="mt-0.5 line-clamp-2 text-[13px] text-neutral-500">{team.tagline}</p>
+                ) : null}
+                {s.city ? <p className="mt-0.5 text-[12px] text-neutral-400">📍 {s.city}</p> : null}
+              </div>
+            </div>
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
+              Live
+            </span>
+          </div>
+          <p className="mt-3 text-[14px] font-medium leading-snug text-indigo-700/90">“{quote}”</p>
           {socialEntries.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               {socialEntries.map((key) => (
                 <a
                   key={key}
                   href={s.social![key]!}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-[var(--mts-primary)] px-4 text-sm font-semibold text-white"
+                  className="inline-flex min-h-10 items-center justify-center rounded-full bg-neutral-900 px-3.5 text-[12px] font-semibold text-white transition active:scale-[0.98]"
                 >
                   {SOCIAL_LABELS[key]}
                 </a>
@@ -105,31 +98,33 @@ export function BlockHero({ team, block }: { team: TeamSpace; block: BlockInstan
             </div>
           ) : null}
         </div>
-      </div>
+      </motion.div>
     </motion.section>
   );
 }
 
-export function BlockAnnouncementBar({ team, block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockAnnouncementBar({ team: _team, block, embedded }: BlockProps) {
   const s = getBlockSettings<{ message: string; urgent?: boolean; tone?: "info" | "urgent" | "confirm" }>(block);
   const tone = s.tone ?? (s.urgent ? "urgent" : "info");
   const text = s.message?.trim() || "Welcome to our team page!";
-  const bg =
+  if (embedded) return null;
+  const shell =
     tone === "urgent"
-      ? "color-mix(in srgb, var(--mts-accent) 28%, transparent)"
+      ? "border-rose-200/90 bg-gradient-to-r from-rose-50 to-orange-50 text-rose-950"
       : tone === "confirm"
-        ? "color-mix(in srgb, var(--mts-primary) 18%, transparent)"
-        : "color-mix(in srgb, var(--mts-primary) 10%, transparent)";
+        ? "border-emerald-200/90 bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-950"
+        : "border-indigo-200/80 bg-gradient-to-r from-indigo-600 to-violet-600 text-white";
   return (
-    <div
-      className="sticky top-0 z-40 border-b border-[color:var(--mts-card-border)] px-4 py-3 backdrop-blur-md"
-      style={{ background: bg }}
-    >
-      <p className={`text-center text-sm ${tone === "urgent" ? "font-bold" : "font-medium"} text-[color:var(--mts-text)]`}>
-        <span className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-[var(--mts-accent)]" />
+    <div className={`rounded-[1.25rem] border px-4 py-3.5 shadow-sm ${shell}`}>
+      <p className={`text-center text-[13px] leading-snug ${tone === "urgent" ? "font-bold" : "font-semibold"}`}>
+        <span className="mr-1.5" aria-hidden>
+          {tone === "urgent" ? "⚠️" : "📣"}
+        </span>
         {text}
         {tone === "confirm" ? (
-          <span className="mt-1 block text-xs text-[color:var(--mts-muted)]">Please confirm with your coach</span>
+          <span className={`mt-1 block text-xs ${tone === "confirm" ? "opacity-80" : ""}`}>
+            Please confirm with your coach
+          </span>
         ) : null}
       </p>
     </div>
@@ -137,13 +132,15 @@ export function BlockAnnouncementBar({ team, block }: { team: TeamSpace; block: 
 }
 
 
-export function BlockCalendar({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockCalendar({ block, embedded }: BlockProps) {
   const s = getBlockSettings<{ externalUrl: string }>(block);
   const url = s.externalUrl?.trim();
   return (
-    <MtsCard className="p-5 sm:p-6">
+    <BlockSurface embedded={embedded}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-[color:var(--mts-text)]">Calendar</h2>
+        <BlockHeading embedded={embedded} className="mb-0">
+          Calendar
+        </BlockHeading>
         {url ? <MtsBadge>Linked</MtsBadge> : null}
       </div>
       {url ? (
@@ -153,17 +150,17 @@ export function BlockCalendar({ block }: { team: TeamSpace; block: BlockInstance
       ) : (
         <BlockEmpty message="Calendar link coming soon." />
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockSchedule({ team, block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockSchedule({ team, block, embedded }: BlockProps) {
   const s = getBlockSettings<{ mode: string; events: { title: string; dayOfWeek: number; time: string; location: string; eventType: string }[]; externalUrl: string }>(block);
   const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const events = s.events ?? [];
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Weekly schedule</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Weekly schedule</BlockHeading>
       {s.mode === "external" && s.externalUrl ? (
         <p className="text-sm text-[color:var(--mts-muted)]"><a href={s.externalUrl} className="font-semibold text-[color:var(--mts-primary-bright)] underline">Open full calendar</a></p>
       ) : events.length === 0 ? (
@@ -178,17 +175,17 @@ export function BlockSchedule({ team, block }: { team: TeamSpace; block: BlockIn
           ))}
         </ul>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
 
-export function BlockResults({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockResults({ block, embedded }: BlockProps) {
   const s = getBlockSettings<ListBlockSettings>(block);
   const items = (s.items ?? []).filter((row) => row.name?.trim());
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Results & highlights</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Results & highlights</BlockHeading>
       {items.length === 0 ? (
         <BlockEmpty message="Results and highlights will appear here." />
       ) : (
@@ -202,16 +199,16 @@ export function BlockResults({ block }: { team: TeamSpace; block: BlockInstance 
           ))}
         </div>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockAchievements({ team, block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockAchievements({ team, block, embedded }: BlockProps) {
   const s = getBlockSettings<{ cards: { id: string; icon: string; title: string; player: string; description: string }[] }>(block);
   const cards = s.cards ?? [];
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Trophies & highlights</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Trophies & highlights</BlockHeading>
       {cards.length === 0 ? (
         <BlockEmpty message="Team achievements will be celebrated here." />
       ) : (
@@ -226,16 +223,16 @@ export function BlockAchievements({ team, block }: { team: TeamSpace; block: Blo
           ))}
         </div>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockTeamFeed({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockTeamFeed({ block, embedded }: BlockProps) {
   const s = getBlockSettings<ListBlockSettings>(block);
   const posts = (s.items ?? []).filter((row) => row.title?.trim());
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Team feed</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Team feed</BlockHeading>
       {posts.length === 0 ? (
         <BlockEmpty message="News and photos from the team will show up here." />
       ) : (
@@ -248,32 +245,34 @@ export function BlockTeamFeed({ block }: { team: TeamSpace; block: BlockInstance
           ))}
         </div>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockAttendance({ team, block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockAttendance({ team, block, embedded }: BlockProps) {
   const att = team.blocks.find((b) => b.type === "attendance") ?? block;
   const roster = getBlockSettings<{ roster: { name: string }[] }>(att).roster ?? [];
   const names = roster.filter((p) => p.name?.trim());
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Attendance</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Attendance</BlockHeading>
       {names.length === 0 ? (
         <BlockEmpty message="Attendance tracking starts once the coach adds a roster." />
       ) : (
         <p className="text-sm text-[color:var(--mts-muted)]">Tracking for {names.length} athletes — full stats coming soon.</p>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockCampTrip({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockCampTrip({ block, embedded }: BlockProps) {
   const s = getBlockSettings<ListBlockSettings & { confirmationsEnabled?: boolean }>(block);
   const items = (s.items ?? []).filter((row) => row.title?.trim());
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-2 text-lg font-bold">Camp & logistics</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded} className="mb-2">
+        Camp & logistics
+      </BlockHeading>
       {items.length === 0 ? (
         <BlockEmpty message="Trip details will be shared here before travel." />
       ) : (
@@ -289,16 +288,16 @@ export function BlockCampTrip({ block }: { team: TeamSpace; block: BlockInstance
           ))}
         </div>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockContacts({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockContacts({ block, embedded }: BlockProps) {
   const s = getBlockSettings<ListBlockSettings>(block);
   const items = (s.items ?? []).filter((row) => row.name?.trim());
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Contacts</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Contacts</BlockHeading>
       {items.length === 0 ? (
         <BlockEmpty message="Coach contacts will be listed here." />
       ) : (
@@ -318,16 +317,16 @@ export function BlockContacts({ block }: { team: TeamSpace; block: BlockInstance
           ))}
         </ul>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockDocuments({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockDocuments({ block, embedded }: BlockProps) {
   const s = getBlockSettings<ListBlockSettings>(block);
   const docs = (s.items ?? []).filter((row) => row.title?.trim());
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Documents</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Documents</BlockHeading>
       {docs.length === 0 ? (
         <BlockEmpty message="Team documents and PDFs will appear here." />
       ) : (
@@ -346,33 +345,33 @@ export function BlockDocuments({ block }: { team: TeamSpace; block: BlockInstanc
           ))}
         </div>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockPolls({ team, block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockPolls({ team, block, embedded }: BlockProps) {
   const s = getBlockSettings<PollSettings>(block);
   const q = s.question?.trim();
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Quick poll</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Quick poll</BlockHeading>
       {!q ? (
         <BlockEmpty message="Add a poll question in the page builder." />
       ) : (
         <PollVote teamSlug={team.slug} blockId={block.id} settings={s} />
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockGallery({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockGallery({ block, embedded }: BlockProps) {
   const s = getBlockSettings<{ mode: string; images: { url: string }[]; externalUrl: string }>(block);
   const images = (s.images ?? []).filter((i) => i.url?.trim());
   const external = s.externalUrl?.trim() ?? "";
   const embed = galleryEmbedSrc(external);
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Gallery</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Gallery</BlockHeading>
       {s.mode === "external" && external ? (
         embed ? (
           <iframe
@@ -405,18 +404,18 @@ export function BlockGallery({ block }: { team: TeamSpace; block: BlockInstance 
           ))}
         </div>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockSponsors({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockSponsors({ block, embedded }: BlockProps) {
   const s = getBlockSettings<ListBlockSettings>(block);
   const sponsors = (s.items ?? []).filter((row) => row.name?.trim());
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-center text-sm font-semibold uppercase tracking-widest text-[color:var(--mts-muted)]">
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded} className="text-center text-sm font-semibold uppercase tracking-widest text-[color:var(--mts-muted)]">
         Partners & sponsors
-      </h2>
+      </BlockHeading>
       {sponsors.length === 0 ? (
         <BlockEmpty message="Partner logos will appear here." />
       ) : (
@@ -434,7 +433,7 @@ export function BlockSponsors({ block }: { team: TeamSpace; block: BlockInstance
           )}
         </div>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
@@ -448,15 +447,17 @@ function countdownParts(targetIso: string) {
   return { days, hrs, min };
 }
 
-export function BlockWeather({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockWeather({ block, embedded }: BlockProps) {
   const s = getBlockSettings<WeatherSettings>(block);
   const hasData = Boolean(s.temp?.trim() || s.note?.trim() || s.location?.trim());
   return (
-    <MtsCard className="p-5 sm:p-6">
+    <BlockSurface embedded={embedded}>
       {hasData ? (
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold">Outdoor / hall</h2>
+            <BlockHeading embedded={embedded} className="mb-0">
+              Outdoor / hall
+            </BlockHeading>
             {s.location?.trim() ? (
               <p className="text-sm text-[color:var(--mts-muted)]">{s.location}</p>
             ) : null}
@@ -469,15 +470,15 @@ export function BlockWeather({ block }: { team: TeamSpace; block: BlockInstance 
       ) : (
         <BlockEmpty message="Weather and venue notes will show here." />
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockCountdown({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockCountdown({ block, embedded }: BlockProps) {
   const s = getBlockSettings<CountdownSettings>(block);
   const parts = s.targetDate?.trim() ? countdownParts(s.targetDate) : null;
   return (
-    <MtsCard className="p-5 sm:p-6 text-center">
+    <BlockSurface embedded={embedded} className="text-center">
       <p className="text-sm font-medium text-[color:var(--mts-muted)]">{s.label?.trim() || "Countdown"}</p>
       {parts ? (
         <>
@@ -489,7 +490,7 @@ export function BlockCountdown({ block }: { team: TeamSpace; block: BlockInstanc
       ) : (
         <BlockEmpty message="Set a target date in the page builder." />
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
@@ -499,11 +500,11 @@ function rosterFromTeam(team: TeamSpace) {
   return getBlockSettings<{ roster: { id: string; name: string; birthday?: string }[] }>(att).roster ?? [];
 }
 
-export function BlockBirthdays({ team }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockBirthdays({ team, block, embedded }: BlockProps) {
   const upcoming = rosterFromTeam(team).filter((p) => p.name?.trim() && p.birthday?.trim());
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Birthdays</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Birthdays</BlockHeading>
       {upcoming.length === 0 ? (
         <BlockEmpty message="Add birthdays in the roster editor." />
       ) : (
@@ -516,11 +517,11 @@ export function BlockBirthdays({ team }: { team: TeamSpace; block: BlockInstance
           ))}
         </ul>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }
 
-export function BlockQuickLinks({ block }: { team: TeamSpace; block: BlockInstance }) {
+export function BlockQuickLinks({ block, embedded }: BlockProps) {
   const s = getBlockSettings<{
     whatsapp: string;
     telegram: string;
@@ -541,8 +542,8 @@ export function BlockQuickLinks({ block }: { team: TeamSpace; block: BlockInstan
     s.customUrl?.trim() ? { label: s.customLabel || "Link", href: s.customUrl } : null,
   ].filter(Boolean) as { label: string; href: string }[];
   return (
-    <MtsCard className="p-5 sm:p-6">
-      <h2 className="mb-4 text-lg font-bold">Quick links</h2>
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>Quick links</BlockHeading>
       {links.length === 0 ? (
         <BlockEmpty message="Add WhatsApp, Telegram, or phone links in the builder." />
       ) : (
@@ -552,6 +553,6 @@ export function BlockQuickLinks({ block }: { team: TeamSpace; block: BlockInstan
           ))}
         </div>
       )}
-    </MtsCard>
+    </BlockSurface>
   );
 }

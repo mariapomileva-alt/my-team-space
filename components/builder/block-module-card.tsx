@@ -2,6 +2,10 @@
 
 import { BlockSettingsEditor } from "@/components/builder/block-settings-editor";
 import { BlockShapePreview } from "@/components/builder/block-shape-preview";
+import {
+  builderCardGridClass,
+  builderCardSizeClass,
+} from "@/lib/blocks/builder-section-styles";
 import { BLOCK_META } from "@/lib/blocks/meta";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { useSortable } from "@dnd-kit/sortable";
@@ -18,6 +22,8 @@ type Props = {
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
 };
 
+const RESULTS_TYPES = new Set(["results", "achievements"]);
+
 export function BlockModuleCard({
   block,
   team,
@@ -28,77 +34,123 @@ export function BlockModuleCard({
   onPatchTeam,
 }: Props) {
   const meta = BLOCK_META[block.type];
+  const isGallery = block.type === "gallery";
+  const isResults = RESULTS_TYPES.has(block.type);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: block.id,
     disabled: !block.enabled,
   });
   const style = { transform: CSS.Transform.toString(transform), transition };
 
-  function onEnableChange() {
-    onToggleEnabled();
-  }
-
   return (
     <motion.li
       ref={setNodeRef}
       style={style}
       layout
-      className={`list-none overflow-hidden rounded-2xl border bg-white shadow-sm transition-shadow ${
-        block.enabled ? "border-indigo-200/80 ring-1 ring-indigo-50" : "border-zinc-200 opacity-80"
-      } ${isDragging ? "z-20 shadow-lg ring-2 ring-indigo-400" : ""}`}
+      className={`list-none ${builderCardGridClass(block)} ${builderCardSizeClass(block.type)}`}
     >
-      <div className="flex items-start gap-2 px-3 py-3 sm:px-4">
-        <button
-          type="button"
-          className="mt-1 touch-manipulation cursor-grab px-1 text-zinc-400 active:cursor-grabbing"
-          aria-label="Drag to reorder"
-          {...attributes}
-          {...listeners}
-        >
-          ⋮⋮
-        </button>
-        <BlockShapePreview shape={meta.previewShape} />
-        <button
-          type="button"
-          onClick={onToggleExpand}
-          disabled={!block.enabled}
-          className="flex min-w-0 flex-1 items-start gap-2 text-left disabled:opacity-50"
-        >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-xl sm:hidden">
-            {meta.emoji}
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="font-semibold text-zinc-900">{meta.title}</span>
-            <span className="mt-0.5 block text-xs leading-snug text-zinc-500">{meta.description}</span>
-          </span>
-          <span className="shrink-0 text-zinc-400" aria-hidden>
-            {expanded && block.enabled ? "▾" : "▸"}
-          </span>
-        </button>
-        <label className="flex shrink-0 items-center gap-2">
-          <span className="sr-only">Show on page</span>
-          <input
-            type="checkbox"
-            checked={block.enabled}
-            onChange={onEnableChange}
-            disabled={!meta.canDisable}
-            className="h-5 w-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
-          />
-        </label>
-      </div>
+      <motion.article
+        whileHover={block.enabled ? { y: -3, scale: 1.005 } : undefined}
+        transition={{ type: "spring", stiffness: 420, damping: 28 }}
+        className={`group relative flex h-full flex-col overflow-hidden rounded-[1.35rem] border bg-white/95 transition-[box-shadow,border-color] duration-300 ${
+          block.enabled
+            ? expanded
+              ? "border-indigo-300/90 shadow-[0_0_0_3px_rgba(99,102,241,0.18),0_12px_40px_-16px_rgba(99,102,241,0.35)]"
+              : "border-white/90 shadow-[0_4px_24px_-12px_rgba(15,23,42,0.12)] hover:shadow-[0_16px_48px_-20px_rgba(99,102,241,0.28)]"
+            : "border-zinc-200/80 opacity-75 shadow-sm"
+        } ${isDragging ? "z-30 scale-[1.02] shadow-2xl ring-2 ring-indigo-400" : ""} ${
+          isResults ? "ring-1 ring-orange-100/80" : ""
+        }`}
+      >
+        <motion.div
+          className={`pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${
+            isGallery
+              ? "bg-gradient-to-br from-rose-50/50 via-transparent to-indigo-50/40"
+              : isResults
+                ? "bg-gradient-to-br from-orange-50/60 via-transparent to-amber-50/30"
+                : "bg-gradient-to-br from-indigo-50/40 via-transparent to-violet-50/30"
+          }`}
+        />
 
-      <AnimatePresence initial={false}>
-        {expanded && block.enabled ? (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <BlockSettingsEditor block={block} team={team} onPatchBlock={onPatchBlock} onPatchTeam={onPatchTeam} />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+        <motion.div className="relative flex flex-1 flex-col p-3.5 sm:p-4">
+          <div className="flex items-start gap-3">
+            <button
+              type="button"
+              className="mt-1 flex h-8 w-6 shrink-0 cursor-grab touch-manipulation flex-col items-center justify-center gap-0.5 rounded-lg text-zinc-300 transition hover:bg-zinc-100 hover:text-zinc-500 active:cursor-grabbing"
+              aria-label="Drag to reorder"
+              {...attributes}
+              {...listeners}
+            >
+              <span className="block h-0.5 w-3 rounded-full bg-current" />
+              <span className="block h-0.5 w-3 rounded-full bg-current" />
+              <span className="block h-0.5 w-3 rounded-full bg-current" />
+            </button>
+
+            <BlockShapePreview
+              shape={meta.previewShape}
+              blockType={block.type}
+              large={isGallery || block.type === "hero"}
+            />
+
+            <button
+              type="button"
+              onClick={onToggleExpand}
+              disabled={!block.enabled}
+              className="flex min-w-0 flex-1 flex-col gap-1 text-left disabled:opacity-50"
+            >
+              <div className="flex items-center gap-2">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-50 to-violet-100 text-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                  {meta.emoji}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold tracking-tight text-zinc-900">{meta.title}</span>
+                  <span className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-zinc-500">
+                    {meta.description}
+                  </span>
+                </span>
+                <motion.span
+                  animate={{ rotate: expanded && block.enabled ? 180 : 0 }}
+                  transition={{ duration: 0.22 }}
+                  className="shrink-0 text-sm text-zinc-400"
+                  aria-hidden
+                >
+                  ▾
+                </motion.span>
+              </div>
+            </button>
+
+            <label className="flex shrink-0 flex-col items-center gap-1">
+              <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400">On</span>
+              <input
+                type="checkbox"
+                checked={block.enabled}
+                onChange={onToggleEnabled}
+                disabled={!meta.canDisable}
+                className="h-5 w-5 rounded-md border-zinc-300 text-indigo-600 focus:ring-indigo-500"
+              />
+            </label>
+          </div>
+        </motion.div>
+
+        <AnimatePresence initial={false}>
+          {expanded && block.enabled ? (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden"
+            >
+              <BlockSettingsEditor
+                block={block}
+                team={team}
+                onPatchBlock={onPatchBlock}
+                onPatchTeam={onPatchTeam}
+              />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.article>
     </motion.li>
   );
 }
