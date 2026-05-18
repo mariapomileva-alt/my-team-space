@@ -65,7 +65,12 @@ export async function POST(
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const msg = error.message ?? "Upload failed";
+    const friendly =
+      /bucket not found/i.test(msg)
+        ? "Storage bucket “team-assets” is missing. In Supabase SQL Editor, run supabase/RUN_TEAM_ASSETS_STORAGE.sql, then try again."
+        : msg;
+    return NextResponse.json({ error: friendly }, { status: 500 });
   }
 
   return NextResponse.json({

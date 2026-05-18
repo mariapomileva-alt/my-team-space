@@ -43,33 +43,37 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   const logoSrc = team.logoUrl?.trim() || s.teamPhotoUrl?.trim();
   const quote = s.quote || "Show up. Cheer loud. Grow together.";
   const socialEntries = (Object.keys(SOCIAL_LABELS) as SocialKey[]).filter((k) => s.social?.[k]?.trim());
+  const hasCover = Boolean(s.coverImageUrl?.trim());
+  const logoOverlap = hasCover ? "-mt-10" : "";
 
   return (
-    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative overflow-hidden">
-      <motion.div className="overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
-        {s.coverImageUrl ? (
-          <div className="relative h-28 sm:h-32">
+    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
+      <div className="overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
+        {hasCover ? (
+          <div className="relative z-0 h-28 sm:h-32">
             <img src={s.coverImageUrl} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
           </div>
         ) : (
           <div className="h-2 bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-400" />
         )}
-        <div className={`px-4 pb-4 pt-3 ${s.coverImageUrl ? "-mt-8" : "pt-4"}`}>
+        <div className={`relative z-10 bg-white px-4 pb-4 ${hasCover ? "pt-1" : "pt-4"}`}>
           <div className="flex items-start justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-3">
+            <div className="flex min-w-0 items-start gap-3">
               {logoSrc ? (
                 <img
                   src={logoSrc}
                   alt=""
-                  className="h-14 w-14 shrink-0 rounded-2xl border-4 border-white object-cover shadow-md"
+                  className={`relative z-20 h-14 w-14 shrink-0 rounded-2xl border-4 border-white object-cover shadow-md ${logoOverlap}`}
                 />
               ) : (
-                <motion.div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-indigo-600 text-xl font-bold text-white shadow-md">
+                <div
+                  className={`relative z-20 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-indigo-600 text-xl font-bold text-white shadow-md ${logoOverlap}`}
+                >
                   {team.name.slice(0, 1).toUpperCase()}
-                </motion.div>
+                </div>
               )}
-              <div className="min-w-0 pt-1">
+              <div className="min-w-0 pt-2">
                 <MtsBadge>Our team</MtsBadge>
                 <h1 className="mt-1 text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">{team.name}</h1>
                 {team.tagline ? (
@@ -78,7 +82,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
                 {s.city ? <p className="mt-0.5 text-[12px] text-neutral-400">📍 {s.city}</p> : null}
               </div>
             </div>
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
+            <span className="relative z-10 mt-2 flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
               Live
             </span>
@@ -100,7 +104,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
             </div>
           ) : null}
         </div>
-      </motion.div>
+      </div>
     </motion.section>
   );
 }
