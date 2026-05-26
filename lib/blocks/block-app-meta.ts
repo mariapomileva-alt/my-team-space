@@ -59,8 +59,8 @@ export const BLOCK_APP_META: Record<BlockType, BlockAppMeta> = {
   },
   results: {
     emoji: "🏅",
-    title: "Results",
-    subtitle: "Places & highlights",
+    title: "Results board",
+    subtitle: "Leaderboard, medals & season story",
     tileClass: "bg-yellow-100 text-yellow-800",
   },
   achievements: {

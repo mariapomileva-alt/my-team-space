@@ -23,6 +23,7 @@ import {
 } from "@/lib/blocks/meta";
 import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
+import { magicInviteUrl } from "@/lib/team-access";
 import { THEMES } from "@/lib/themes";
 import type { BlockInstance, TeamSpace, ThemeId } from "@/lib/types";
 import {
@@ -75,6 +76,23 @@ export function TeamPageBuilder({
     const id = window.setInterval(() => setSaveTick((t) => t + 1), 8000);
     return () => window.clearInterval(id);
   }, []);
+
+  const parentShareUrl = useMemo(() => {
+    const visibility = team.pageVisibility ?? "public";
+    if (visibility !== "public" && team.inviteToken) {
+      return magicInviteUrl(siteUrl, team.slug, team.inviteToken);
+    }
+    return publicUrl;
+  }, [team.pageVisibility, team.inviteToken, team.slug, siteUrl, publicUrl]);
+
+  const shareHint = useMemo(() => {
+    const visibility = team.pageVisibility ?? "public";
+    if (visibility === "public") return undefined;
+    if (team.inviteToken) {
+      return "Private team — this magic invite link opens the page without typing a code.";
+    }
+    return "Private team — generate a magic link under Privacy & access, or parents can use your team code.";
+  }, [team.pageVisibility, team.inviteToken]);
 
   const sectionGroups = useMemo(() => groupBlocksBySection(team.blocks), [team.blocks]);
   const allPublicBlocks = useMemo(
@@ -221,6 +239,8 @@ export function TeamPageBuilder({
           saveError={saveError}
           pending={pending}
           publicUrl={publicUrl}
+          parentShareUrl={parentShareUrl}
+          shareHint={shareHint}
           onPublish={publish}
           onPreview={previewAsParent}
         />

@@ -113,6 +113,8 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
         mode: "season",
         blockTitle: "Results board",
         seasonName: `${new Date().getFullYear()} Season`,
+        seasonTimeline: false,
+        timelineTitle: "Season memories",
         categories: [],
         usePointsRating: true,
         medalsOnly: false,

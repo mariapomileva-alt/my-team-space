@@ -1,5 +1,6 @@
 "use client";
 
+import { ResultsBoardTeaser } from "@/components/results/results-board-teaser";
 import { DashboardCard, DashboardChevron, DashboardLabel } from "@/components/mts/team-app/dashboard-card";
 import { getDashboardData } from "@/lib/blocks/block-dashboard-data";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
@@ -344,38 +345,7 @@ export function ResultsRail({
   onOpen: () => void;
   index: number;
 }) {
-  const d = getDashboardData(team, block).results!;
-  return (
-    <motion.section
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.03 }}
-      className="col-span-1 sm:col-span-2"
-    >
-      <div className="mb-2 flex items-center justify-between px-0.5">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Results</p>
-        <button type="button" onClick={onOpen} className="text-[11px] font-semibold text-indigo-600">
-          All results ›
-        </button>
-      </div>
-      <motion.div className="dashboard-rail flex gap-2 overflow-x-auto pb-1">
-        {d.items.map((item, i) => (
-          <button
-            key={`${item.name}-${i}`}
-            type="button"
-            onClick={onOpen}
-            className="dashboard-rail-item flex min-w-[120px] shrink-0 snap-start flex-col items-center rounded-2xl border border-neutral-100 bg-white px-3 py-2.5 shadow-sm ring-1 ring-neutral-100/80 active:scale-[0.98]"
-          >
-            <span className="text-2xl">{item.emoji || "🏅"}</span>
-            <p className="mt-1 line-clamp-2 text-center text-[11px] font-bold text-neutral-900">{item.name}</p>
-            {item.subtitle ? (
-              <p className="mt-0.5 line-clamp-1 text-center text-[10px] text-neutral-500">{item.subtitle}</p>
-            ) : null}
-          </button>
-        ))}
-      </motion.div>
-    </motion.section>
-  );
+  return <ResultsBoardTeaser team={team} block={block} onOpen={onOpen} index={index} />;
 }
 
 export function CompactStatCard({

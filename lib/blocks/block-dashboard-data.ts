@@ -205,31 +205,12 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
     case "results": {
       const settings = getResultsBoardSettings(block);
       const computed = computeResultsBoard(settings);
-      const items =
-        computed.leaderboard.length > 0
-          ? computed.leaderboard.slice(0, 6).map((r) => ({
-              name: r.athleteName,
-              subtitle: `${r.totalPoints} pts`,
-              emoji: r.rank === 1 ? "🏆" : r.rank === 2 ? "🥈" : r.rank === 3 ? "🥉" : "🏅",
-            }))
-          : settings.mode === "simple"
-            ? settings.simpleResults.slice(0, 6).map((r) => ({
-                name: r.athleteName,
-                subtitle: r.competitionName || `#${r.place}`,
-                emoji: r.medal,
-              }))
-            : [];
-      return {
-        results: {
-          items:
-            items.length > 0
-              ? items
-              : [
-                  { name: "Season board", subtitle: "Add competitions", emoji: "🏆" },
-                  { name: "Leaderboard", subtitle: "Auto points", emoji: "📊" },
-                ],
-        },
-      };
+      const items = computed.leaderboard.slice(0, 6).map((r) => ({
+        name: r.athleteName,
+        subtitle: `${r.totalPoints} pts`,
+        emoji: r.rank === 1 ? "🏆" : r.rank === 2 ? "🥈" : r.rank === 3 ? "🥉" : "🏅",
+      }));
+      return { results: { items } };
     }
     case "contacts": {
       const s = getBlockSettings<ListBlockSettings>(block);

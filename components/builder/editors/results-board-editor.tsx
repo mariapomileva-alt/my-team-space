@@ -141,6 +141,33 @@ export function ResultsBoardEditor({
               </div>
             </>
           ) : null}
+          <div className="rounded-xl border border-violet-100 bg-violet-50/40 p-3">
+            <label className="flex items-start gap-2 text-sm text-zinc-800">
+              <input
+                type="checkbox"
+                className="mt-1 rounded"
+                checked={draft.seasonTimeline}
+                onChange={(e) => save({ seasonTimeline: e.target.checked })}
+              />
+              <span>
+                <span className="font-semibold">Season timeline</span>
+                <span className="mt-0.5 block text-xs font-normal text-zinc-600">
+                  Optional “season memories” tab — chronological story of competitions, medals, and rank changes.
+                </span>
+              </span>
+            </label>
+            {draft.seasonTimeline ? (
+              <div className="mt-3">
+                <FieldLabel>Timeline title</FieldLabel>
+                <input
+                  className={inputClass()}
+                  placeholder="Season memories"
+                  value={draft.timelineTitle}
+                  onChange={(e) => save({ timelineTitle: e.target.value })}
+                />
+              </div>
+            ) : null}
+          </div>
         </div>
       ) : null}
 
@@ -174,7 +201,7 @@ export function ResultsBoardEditor({
         <div className="rounded-2xl border border-indigo-100 bg-gradient-to-b from-indigo-50/40 to-white p-3 sm:p-4">
           <p className="mb-3 text-xs text-zinc-500">Live preview — same layout as the published team page.</p>
           <div className="max-h-[min(70vh,640px)] overflow-y-auto rounded-xl bg-[color:var(--mts-bg,#f8fafc)] p-3 ring-1 ring-zinc-100">
-            <ResultsBoardView block={previewBlock} team={team} />
+            <ResultsBoardView block={previewBlock} team={team} celebrate={false} />
           </div>
         </div>
       ) : null}

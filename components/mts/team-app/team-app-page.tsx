@@ -1,6 +1,7 @@
 "use client";
 
 import { renderBlock } from "@/components/blocks/registry";
+import { getResultsBoardSettings } from "@/lib/blocks/results-board";
 import { TeamAppDetailSheet } from "@/components/mts/team-app/team-app-detail-sheet";
 import { TeamAppHeader } from "@/components/mts/team-app/team-app-header";
 import { TeamAppDashboard } from "@/components/mts/team-app/team-app-dashboard";
@@ -37,6 +38,14 @@ export function TeamAppPage({
   const gridBlocks = enabled.filter((b) => !APP_CHROME_BLOCK_TYPES.has(b.type));
   const hasHero = chrome.some((b) => b.type === "hero");
   const openBlock = gridBlocks.find((b) => b.id === openBlockId) ?? null;
+  const openResultsSettings =
+    openBlock?.type === "results" ? getResultsBoardSettings(openBlock) : null;
+  const detailMeta = openResultsSettings
+    ? {
+        title: openResultsSettings.blockTitle?.trim() || "Results",
+        subtitle: openResultsSettings.seasonName || "Season rankings & memories",
+      }
+    : undefined;
 
   return (
     <motion.div
@@ -72,7 +81,12 @@ export function TeamAppPage({
 
       {saasExtras ? <div className="mt-1">{saasExtras}</div> : null}
 
-      <TeamAppDetailSheet block={openBlock} open={Boolean(openBlock)} onClose={() => setOpenBlockId(null)}>
+      <TeamAppDetailSheet
+        block={openBlock}
+        open={Boolean(openBlock)}
+        onClose={() => setOpenBlockId(null)}
+        metaOverride={detailMeta}
+      >
         {openBlock ? renderBlock(team, openBlock, { hideChildNames: hideNames, embedded: true }) : null}
       </TeamAppDetailSheet>
     </motion.div>

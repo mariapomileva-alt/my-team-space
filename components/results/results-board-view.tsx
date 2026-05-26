@@ -4,11 +4,17 @@ import { athletePhotoMap } from "@/lib/blocks/roster";
 import {
   computeResultsBoard,
   getResultsBoardSettings,
+  resultsBoardHasContent,
   type LeaderboardRow,
   type ResultsFilter,
 } from "@/lib/blocks/results-board";
+import { getCelebration, type AthleteCelebration } from "@/lib/results/celebrations";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { useMemo, useState } from "react";
+import { SeasonTimelineSection } from "@/components/results/season-timeline";
+import { useResultsCelebrations } from "@/components/results/use-results-celebrations";
+
+type BoardView = "rankings" | "memories";
 
 const PERIODS: { id: ResultsFilter["period"]; label: string }[] = [
   { id: "season", label: "Full season" },
@@ -21,11 +27,13 @@ function AthleteAvatar({
   photoUrl,
   size = "md",
   hero = false,
+  pulse = false,
 }: {
   name: string;
   photoUrl?: string;
   size?: "sm" | "md" | "lg" | "xl";
   hero?: boolean;
+  pulse?: boolean;
 }) {
   const sz =
     size === "xl"
@@ -39,16 +47,20 @@ function AthleteAvatar({
   const shadow = hero
     ? "shadow-[0_12px_40px_-8px_rgba(251,191,36,0.55)]"
     : "shadow-md";
-  if (photoUrl) {
-    return <img src={photoUrl} alt="" className={`${sz} shrink-0 rounded-full object-cover ${ring} ${shadow}`} />;
-  }
-  return (
+  const avatar = photoUrl ? (
+    <img src={photoUrl} alt="" className={`${sz} shrink-0 rounded-full object-cover ${ring} ${shadow}`} />
+  ) : (
     <span
       className={`${sz} flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 font-bold text-white ${ring} ${shadow}`}
     >
       {name.slice(0, 1).toUpperCase()}
     </span>
   );
+
+  if (pulse) {
+    return <span className="results-celebrate-pulse inline-flex shrink-0">{avatar}</span>;
+  }
+  return avatar;
 }
 
 function FilterChip({
@@ -75,12 +87,26 @@ function FilterChip({
   );
 }
 
-function RankDelta({ delta }: { delta: number | null }) {
+function RankDelta({ delta, celebrate }: { delta: number | null; celebrate?: boolean }) {
   if (delta == null || delta === 0) return null;
   if (delta > 0) {
-    return <span className="text-[11px] font-bold text-emerald-600">↑ {delta}</span>;
+    return (
+      <span
+        className={`text-[11px] font-bold text-emerald-600 ${celebrate ? "results-celebrate-rank-up inline-flex rounded-full bg-emerald-50/90 px-1.5 py-0.5 ring-1 ring-emerald-100" : ""}`}
+      >
+        ↑ {delta}
+      </span>
+    );
   }
   return <span className="text-[11px] font-bold text-rose-500">↓ {Math.abs(delta)}</span>;
+}
+
+function CelebrationNotice({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="results-celebrate-notice mx-auto mt-4 max-w-sm rounded-full border border-amber-200/70 bg-white/90 px-4 py-2 text-center text-[12px] font-semibold text-amber-900 shadow-[0_4px_20px_-10px_rgba(251,191,36,0.35)] backdrop-blur-sm">
+      {children}
+    </p>
+  );
 }
 
 function PodiumCard({
@@ -88,21 +114,30 @@ function PodiumCard({
   place,
   photoUrl,
   maxPoints,
+  celebrate,
 }: {
   row: LeaderboardRow;
   place: 1 | 2 | 3;
   photoUrl?: string;
   maxPoints: number;
+  celebrate?: AthleteCelebration;
 }) {
   const isFirst = place === 1;
   const medals = { 1: "🏆", 2: "🥈", 3: "🥉" } as const;
   const placeLabels = { 1: "1st", 2: "2nd", 3: "3rd" } as const;
 
+  const celebrateClass = [
+    celebrate?.newLeader ? "results-celebrate-new-leader" : "",
+    celebrate?.firstMedal ? "results-celebrate-first-medal" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   const cardClass = isFirst
-    ? "results-podium-card results-podium-card--champion relative z-20 order-1 border-amber-200/70 bg-gradient-to-b from-white via-amber-50/90 to-amber-100/50 px-4 pb-5 pt-5 shadow-[0_24px_60px_-16px_rgba(251,191,36,0.45),0_8px_24px_-8px_rgba(15,23,42,0.12)] sm:order-none sm:col-start-2 sm:min-h-[220px]"
+    ? `results-podium-card results-podium-card--champion relative z-20 order-1 border-amber-200/70 bg-gradient-to-b from-white via-amber-50/90 to-amber-100/50 px-4 pb-5 pt-5 shadow-[0_24px_60px_-16px_rgba(251,191,36,0.45),0_8px_24px_-8px_rgba(15,23,42,0.12)] sm:order-none sm:col-start-2 sm:min-h-[220px] ${celebrateClass}`
     : place === 2
-      ? "results-podium-card results-podium-card--side relative z-10 order-2 border-zinc-200/60 bg-white/95 px-3 pb-4 pt-4 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.18)] sm:order-none sm:col-start-1 sm:min-h-[168px]"
-      : "results-podium-card results-podium-card--side relative z-10 order-3 border-zinc-200/60 bg-white/95 px-3 pb-4 pt-4 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.18)] sm:order-none sm:col-start-3 sm:min-h-[168px]";
+      ? `results-podium-card results-podium-card--side relative z-10 order-2 border-zinc-200/60 bg-white/95 px-3 pb-4 pt-4 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.18)] sm:order-none sm:col-start-1 sm:min-h-[168px] ${celebrateClass}`
+      : `results-podium-card results-podium-card--side relative z-10 order-3 border-zinc-200/60 bg-white/95 px-3 pb-4 pt-4 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.18)] sm:order-none sm:col-start-3 sm:min-h-[168px] ${celebrateClass}`;
 
   return (
     <div
@@ -125,6 +160,7 @@ function PodiumCard({
           photoUrl={photoUrl}
           size={isFirst ? "xl" : "md"}
           hero={isFirst}
+          pulse={Boolean(celebrate?.personalBest)}
         />
       </div>
       <p
@@ -164,11 +200,15 @@ function PodiumSection({
   photos,
   maxPoints,
   badgeLabels,
+  celebrations,
+  heroNewLeader,
 }: {
   podium: LeaderboardRow[];
   photos: Record<string, string>;
   maxPoints: number;
   badgeLabels: Record<string, string>;
+  celebrations: Record<string, AthleteCelebration>;
+  heroNewLeader: boolean;
 }) {
   if (podium.length === 0) return null;
   const first = podium.find((r) => r.rank === 1);
@@ -179,7 +219,9 @@ function PodiumSection({
     r ? photos[r.athleteId] ?? photos[r.athleteName.toLowerCase()] : undefined;
 
   return (
-    <section className="results-podium-hero relative overflow-hidden rounded-[1.75rem] px-4 py-8 sm:px-8 sm:py-10">
+    <section
+      className={`results-podium-hero relative overflow-hidden rounded-[1.75rem] px-4 py-8 sm:px-8 sm:py-10 ${heroNewLeader ? "results-podium-hero--new-leader" : ""}`}
+    >
       <div className="results-podium-hero__spotlight pointer-events-none absolute inset-0" aria-hidden />
       <div className="results-podium-hero__glow pointer-events-none absolute inset-0" aria-hidden />
 
@@ -202,19 +244,42 @@ function PodiumSection({
             {first.totalPoints} points · {first.gold + first.silver + first.bronze} medals earned
           </p>
         ) : null}
+        {heroNewLeader && first ? (
+          <CelebrationNotice>✨ New season leader — {first.athleteName}</CelebrationNotice>
+        ) : null}
       </header>
 
       <div className="relative z-10">
         <div className="results-podium-stage pointer-events-none absolute bottom-0 left-1/2 h-8 w-[92%] -translate-x-1/2 rounded-[100%] sm:h-10" aria-hidden />
         <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-3 sm:gap-5 sm:px-2">
           {second ? (
-            <PodiumCard row={second} place={2} photoUrl={photo(second)} maxPoints={maxPoints} />
+            <PodiumCard
+              row={second}
+              place={2}
+              photoUrl={photo(second)}
+              maxPoints={maxPoints}
+              celebrate={getCelebration(second.athleteKey, celebrations)}
+            />
           ) : (
             <div className="hidden sm:block" />
           )}
-          {first ? <PodiumCard row={first} place={1} photoUrl={photo(first)} maxPoints={maxPoints} /> : null}
+          {first ? (
+            <PodiumCard
+              row={first}
+              place={1}
+              photoUrl={photo(first)}
+              maxPoints={maxPoints}
+              celebrate={getCelebration(first.athleteKey, celebrations)}
+            />
+          ) : null}
           {third ? (
-            <PodiumCard row={third} place={3} photoUrl={photo(third)} maxPoints={maxPoints} />
+            <PodiumCard
+              row={third}
+              place={3}
+              photoUrl={photo(third)}
+              maxPoints={maxPoints}
+              celebrate={getCelebration(third.athleteKey, celebrations)}
+            />
           ) : (
             <div className="hidden sm:block" />
           )}
@@ -223,14 +288,18 @@ function PodiumSection({
 
       {first?.badges.length ? (
         <div className="relative z-10 mt-8 flex flex-wrap justify-center gap-2">
-          {first.badges.slice(0, 3).map((b) => (
-            <span
-              key={b}
-              className="rounded-full border border-amber-200/60 bg-white/80 px-3 py-1 text-[11px] font-semibold text-zinc-800 shadow-[0_4px_16px_-8px_rgba(251,191,36,0.35)] backdrop-blur-sm"
-            >
-              {badgeLabels[b] ?? b}
-            </span>
-          ))}
+          {first.badges.slice(0, 3).map((b) => {
+            const c = getCelebration(first.athleteKey, celebrations);
+            const isNew = c.newBadges.includes(b);
+            return (
+              <span
+                key={b}
+                className={`rounded-full border border-amber-200/60 bg-white/80 px-3 py-1 text-[11px] font-semibold text-zinc-800 shadow-[0_4px_16px_-8px_rgba(251,191,36,0.35)] backdrop-blur-sm ${isNew ? "results-celebrate-badge" : ""}`}
+              >
+                {badgeLabels[b] ?? b}
+              </span>
+            );
+          })}
         </div>
       ) : null}
     </section>
@@ -241,21 +310,37 @@ function LeaderboardCard({
   row,
   photoUrl,
   badgeLabels,
+  celebrate,
 }: {
   row: LeaderboardRow;
   photoUrl?: string;
   badgeLabels: Record<string, string>;
+  celebrate?: AthleteCelebration;
 }) {
+  const cardFx = [
+    celebrate?.firstMedal ? "results-celebrate-first-medal" : "",
+    celebrate?.newLeader ? "results-celebrate-new-leader" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-zinc-100/90 bg-white p-3 shadow-[0_4px_20px_-14px_rgba(15,23,42,0.12)] ring-1 ring-zinc-50">
+    <div
+      className={`flex items-center gap-3 rounded-2xl border border-zinc-100/90 bg-white p-3 shadow-[0_4px_20px_-14px_rgba(15,23,42,0.12)] ring-1 ring-zinc-50 ${cardFx}`}
+    >
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-zinc-100 text-sm font-extrabold tabular-nums text-zinc-600">
         {row.rank}
       </span>
-      <AthleteAvatar name={row.athleteName} photoUrl={photoUrl} size="md" />
+      <AthleteAvatar
+        name={row.athleteName}
+        photoUrl={photoUrl}
+        size="md"
+        pulse={Boolean(celebrate?.personalBest)}
+      />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className="truncate text-[14px] font-bold text-zinc-900">{row.athleteName}</p>
-          <RankDelta delta={row.rankDelta} />
+          <RankDelta delta={row.rankDelta} celebrate={celebrate?.rankUp} />
         </div>
         <p className="mt-0.5 text-[12px] font-semibold text-[color:var(--mts-primary)]">{row.totalPoints} points</p>
         <p className="mt-0.5 text-[11px] text-zinc-500">
@@ -271,7 +356,12 @@ function LeaderboardCard({
         {row.badges.length > 0 ? (
           <div className="mt-2 flex flex-wrap gap-1">
             {row.badges.slice(0, 2).map((b) => (
-              <span key={b} className="rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-semibold text-amber-900 ring-1 ring-amber-100">
+              <span
+                key={b}
+                className={`rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-semibold text-amber-900 ring-1 ring-amber-100 ${
+                  celebrate?.newBadges.includes(b) ? "results-celebrate-badge" : ""
+                }`}
+              >
                 {badgeLabels[b] ?? b}
               </span>
             ))}
@@ -378,27 +468,42 @@ export function ResultsBoardView({
   block,
   team,
   compact = false,
+  celebrate = true,
 }: {
   block: BlockInstance;
   team?: TeamSpace;
   compact?: boolean;
+  /** Animate milestones when results change (off in builder preview). */
+  celebrate?: boolean;
 }) {
   const settings = getResultsBoardSettings(block);
   const photos = team ? athletePhotoMap(team) : {};
   const [categoryId, setCategoryId] = useState<string>("all");
   const [period, setPeriod] = useState<ResultsFilter["period"]>("season");
   const [showAllComps, setShowAllComps] = useState(false);
+  const [boardView, setBoardView] = useState<BoardView>("rankings");
+
+  const timelineEnabled = settings.seasonTimeline;
 
   const filter: ResultsFilter = { categoryId, period };
   const data = useMemo(() => computeResultsBoard(settings, filter), [settings, categoryId, period]);
+
+  const celebrationsEnabled = celebrate && Boolean(team?.slug) && !compact;
+  const { celebrations, heroNewLeader, ready: celebrationsReady } = useResultsCelebrations({
+    enabled: celebrationsEnabled,
+    teamSlug: team?.slug,
+    blockId: block.id,
+    categoryId,
+    period,
+    leaderboard: data.leaderboard,
+  });
+  const fx = celebrationsReady ? celebrations : {};
 
   const title = settings.blockTitle?.trim() || "Results board";
   const categories = data.filterCategories;
   const comps = showAllComps ? data.competitions : data.competitions.slice(0, 4);
 
-  const isEmpty =
-    (settings.mode === "simple" && settings.simpleResults.length === 0) ||
-    (settings.mode === "season" && settings.competitions.length === 0);
+  const isEmpty = !resultsBoardHasContent(settings);
 
   if (isEmpty) {
     return (
@@ -443,25 +548,64 @@ export function ResultsBoardView({
         ))}
       </div>
 
-      {data.podium.length > 0 ? (
+      {timelineEnabled ? (
+        <div className="flex rounded-2xl bg-zinc-100/80 p-1 ring-1 ring-zinc-200/60">
+          <button
+            type="button"
+            onClick={() => setBoardView("rankings")}
+            className={`flex-1 rounded-xl px-3 py-2 text-[12px] font-semibold transition ${
+              boardView === "rankings" ? "bg-white text-indigo-700 shadow-sm" : "text-zinc-600"
+            }`}
+          >
+            Rankings
+          </button>
+          <button
+            type="button"
+            onClick={() => setBoardView("memories")}
+            className={`flex-1 rounded-xl px-3 py-2 text-[12px] font-semibold transition ${
+              boardView === "memories" ? "bg-white text-violet-700 shadow-sm" : "text-zinc-600"
+            }`}
+          >
+            {settings.timelineTitle?.trim() || "Season memories"}
+          </button>
+        </div>
+      ) : null}
+
+      {boardView === "memories" && timelineEnabled ? (
+        <SeasonTimelineSection
+          months={data.timeline}
+          title={settings.timelineTitle?.trim() || "Season memories"}
+          seasonName={settings.seasonName}
+        />
+      ) : null}
+
+      {boardView === "rankings" && data.podium.length > 0 ? (
         <PodiumSection
           podium={data.podium}
           photos={photos}
           maxPoints={data.maxPoints}
           badgeLabels={data.badgeLabels}
+          celebrations={fx}
+          heroNewLeader={celebrationsReady && heroNewLeader}
         />
       ) : null}
 
-      {!compact && data.leaderboard.length > 0 ? (
+      {boardView === "rankings" && !compact && data.leaderboard.length > 0 ? (
         <section className="space-y-2">
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-400">Leaderboard</p>
           {data.leaderboard.map((row) => (
-            <LeaderboardCard key={row.athleteKey} row={row} photoUrl={photoFor(row)} badgeLabels={data.badgeLabels} />
+            <LeaderboardCard
+              key={row.athleteKey}
+              row={row}
+              photoUrl={photoFor(row)}
+              badgeLabels={data.badgeLabels}
+              celebrate={getCelebration(row.athleteKey, fx)}
+            />
           ))}
         </section>
       ) : null}
 
-      {!compact && comps.length > 0 ? (
+      {boardView === "rankings" && !compact && comps.length > 0 ? (
         <section className="space-y-2">
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-400">Latest competitions</p>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -481,7 +625,9 @@ export function ResultsBoardView({
         </section>
       ) : null}
 
-      {!compact ? <MonthlySection monthly={data.monthly} insights={data.insights} /> : null}
+      {boardView === "rankings" && !compact ? (
+        <MonthlySection monthly={data.monthly} insights={data.insights} />
+      ) : null}
     </div>
   );
 }

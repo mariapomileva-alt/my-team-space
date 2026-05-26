@@ -1,5 +1,6 @@
 "use client";
 
+import { TeamShareBar } from "@/components/builder/team-share-bar";
 import { BUILDER_TOOLBAR_SURFACE } from "@/lib/builder/layout";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -11,6 +12,8 @@ export function BuilderToolbar({
   saveError,
   pending,
   publicUrl,
+  parentShareUrl,
+  shareHint,
   onPublish,
   onPreview,
 }: {
@@ -20,6 +23,8 @@ export function BuilderToolbar({
   saveError?: string | null;
   pending: boolean;
   publicUrl: string;
+  parentShareUrl: string;
+  shareHint?: string;
   onPublish: () => void;
   onPreview: () => void;
 }) {
@@ -29,7 +34,8 @@ export function BuilderToolbar({
       animate={{ opacity: 1, y: 0 }}
       className="sticky top-3 z-50 mb-6 w-full"
     >
-      <motion.div className={BUILDER_TOOLBAR_SURFACE}>
+      <motion.div className={`${BUILDER_TOOLBAR_SURFACE} flex-col !items-stretch`}>
+        <div className="flex w-full flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-indigo-600">Building your team app</p>
           <h1 className="truncate text-lg font-bold tracking-tight text-zinc-900 sm:text-xl">{teamName}</h1>
@@ -77,6 +83,8 @@ export function BuilderToolbar({
             {pending ? "Publishing…" : "Publish ✦"}
           </button>
         </div>
+        </div>
+        <TeamShareBar url={parentShareUrl} hint={shareHint} />
       </motion.div>
     </motion.div>
   );

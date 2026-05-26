@@ -49,11 +49,39 @@ export type Competition = {
   results: CompetitionAthleteResult[];
 };
 
+export type SeasonTimelineEventKind = "season_start" | "competition" | "medal" | "personal_best" | "rank_up";
+
+export type SeasonTimelineEvent = {
+  id: string;
+  kind: SeasonTimelineEventKind;
+  date: string;
+  monthKey: string;
+  monthLabel: string;
+  competitionId?: string;
+  competitionName?: string;
+  categoryLabel?: string;
+  athleteName?: string;
+  medal?: string;
+  place?: number;
+  story: string;
+  rankFrom?: number;
+  rankTo?: number;
+};
+
+export type SeasonTimelineMonth = {
+  monthKey: string;
+  label: string;
+  events: SeasonTimelineEvent[];
+};
+
 export type ResultsBoardSettings = {
   enabled: boolean;
   mode: ResultsBoardMode;
   blockTitle: string;
   seasonName: string;
+  /** Optional story-driven chronological view for families */
+  seasonTimeline: boolean;
+  timelineTitle: string;
   categories: TeamCategory[];
   usePointsRating: boolean;
   medalsOnly: boolean;
@@ -109,6 +137,7 @@ export type ResultsBoardComputed = {
   podium: LeaderboardRow[];
   competitions: CompetitionSummary[];
   monthly: MonthlyProgressRow[];
+  timeline: SeasonTimelineMonth[];
   insights: ResultsInsights;
   badgeLabels: Record<string, string>;
   maxPoints: number;
@@ -149,6 +178,8 @@ export function defaultResultsBoardSettings(): ResultsBoardSettings {
     mode: "season",
     blockTitle: "Results board",
     seasonName: `${new Date().getFullYear()} Season`,
+    seasonTimeline: false,
+    timelineTitle: "Season memories",
     categories: [],
     usePointsRating: true,
     medalsOnly: false,
@@ -328,6 +359,8 @@ export function getResultsBoardSettings(block: BlockInstance): ResultsBoardSetti
     mode: raw.mode === "simple" ? "simple" : "season",
     blockTitle: str(raw.blockTitle, defaults.blockTitle),
     seasonName: str(raw.seasonName, defaults.seasonName),
+    seasonTimeline: raw.seasonTimeline === true,
+    timelineTitle: str(raw.timelineTitle, defaults.timelineTitle),
     categories: normalizeCategories(raw.categories),
     usePointsRating: raw.usePointsRating !== false,
     medalsOnly: Boolean(raw.medalsOnly),
@@ -491,6 +524,234 @@ function monthLabel(key: string): string {
   const [y, m] = key.split("-");
   const d = new Date(Number(y), Number(m) - 1, 1);
   return d.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+}
+
+function timelineMonthLabel(key: string): string {
+  if (key === "unknown") return "Season";
+  const [y, m] = key.split("-");
+  const d = new Date(Number(y), Number(m) - 1, 1);
+  return d.toLocaleDateString(undefined, { month: "long" });
+}
+
+function categoryEmoji(label: string): string {
+  const l = label.toLowerCase();
+  if (l.includes("swim")) return "🏊";
+  if (l.includes("run") || l.includes("triathlon")) return "🏃";
+  if (l.includes("bike") || l.includes("cycl")) return "🚴";
+  if (l.includes("dance") || l.includes("hip")) return "💃";
+  if (l.includes("karate") || l.includes("kumite") || l.includes("kata")) return "🥋";
+  if (l.includes("tennis")) return "🎾";
+  if (l.includes("gym") || l.includes("fit")) return "🤸";
+  return "🏅";
+}
+
+function medalStory(medal: string, name: string, place: number): string {
+  if (place === 1) return `${medal} ${name} won gold`;
+  if (place === 2) return `${medal} ${name} got silver`;
+  if (place === 3) return `${medal} ${name} took bronze`;
+  return `${medal} ${name} placed #${place}`;
+}
+
+type PointsRow = { name: string; points: number };
+
+function buildRankMap(points: Map<string, PointsRow>): Map<string, number> {
+  const sorted = [...points.entries()].sort((a, b) => {
+    if (b[1].points !== a[1].points) return b[1].points - a[1].points;
+    return a[1].name.localeCompare(b[1].name);
+  });
+  const ranks = new Map<string, number>();
+  sorted.forEach(([key], i) => ranks.set(key, i + 1));
+  return ranks;
+}
+
+function groupTimelineByMonth(events: SeasonTimelineEvent[]): SeasonTimelineMonth[] {
+  const byMonth = new Map<string, SeasonTimelineMonth>();
+  for (const e of events) {
+    if (!byMonth.has(e.monthKey)) {
+      byMonth.set(e.monthKey, { monthKey: e.monthKey, label: e.monthLabel, events: [] });
+    }
+    byMonth.get(e.monthKey)!.events.push(e);
+  }
+  return [...byMonth.values()].sort((a, b) => {
+    if (a.monthKey === "unknown") return 1;
+    if (b.monthKey === "unknown") return -1;
+    return a.monthKey.localeCompare(b.monthKey);
+  });
+}
+
+function timelinePassesPeriod(date: string, competitionId: string, filter: ResultsFilter, settings: ResultsBoardSettings): boolean {
+  if (filter.period === "month" && !isThisMonth(date)) return false;
+  if (filter.period === "recent" && !recentCompetitionIds(settings).has(competitionId)) return false;
+  return true;
+}
+
+export function buildSeasonTimeline(
+  settings: ResultsBoardSettings,
+  filter: ResultsFilter,
+): SeasonTimelineMonth[] {
+  const scoring = settings.scoring;
+  const events: SeasonTimelineEvent[] = [];
+  const points = new Map<string, PointsRow>();
+  const hadMedal = new Set<string>();
+  const hadWin = new Set<string>();
+
+  type CompBatch = {
+    id: string;
+    name: string;
+    date: string;
+    categoryId: string;
+    results: { athleteId: string; athleteName: string; place: number; medal: string; points: number }[];
+  };
+
+  const batches: CompBatch[] = [];
+
+  if (settings.mode === "simple") {
+    const byComp = new Map<string, CompBatch>();
+    for (const r of settings.simpleResults) {
+      if (!r.competitionName?.trim() || !r.athleteName?.trim() || r.place <= 0) continue;
+      const key = `${r.competitionName}::${r.date}`;
+      const batch = byComp.get(key) ?? {
+        id: key,
+        name: r.competitionName,
+        date: r.date,
+        categoryId: r.categoryId ?? "",
+        results: [],
+      };
+      batch.results.push({
+        athleteId: "",
+        athleteName: r.athleteName,
+        place: r.place,
+        medal: r.medal || medalForPlace(r.place),
+        points: pointsForPlace(r.place, scoring),
+      });
+      byComp.set(key, batch);
+    }
+    batches.push(...byComp.values());
+  } else {
+    for (const c of settings.competitions) {
+      if (!c.name?.trim()) continue;
+      if (filter.categoryId !== "all" && c.categoryId !== filter.categoryId) continue;
+      batches.push({
+        id: c.id,
+        name: c.name,
+        date: c.date,
+        categoryId: c.categoryId,
+        results: c.results
+          .filter((r) => r.status === "participated" && r.place > 0 && r.athleteName?.trim())
+          .map((r) => ({
+            athleteId: r.athleteId,
+            athleteName: r.athleteName,
+            place: r.place,
+            medal: r.medal || medalForPlace(r.place),
+            points:
+              typeof r.points === "number" ? r.points : pointsForPlace(r.place, scoring),
+          })),
+      });
+    }
+  }
+
+  batches.sort((a, b) => (a.date || "9999-12-31").localeCompare(b.date || "9999-12-31"));
+
+  if (batches.length > 0) {
+    const firstMk = monthKey(batches[0]!.date);
+    events.push({
+      id: "season_start",
+      kind: "season_start",
+      date: batches[0]!.date,
+      monthKey: firstMk,
+      monthLabel: timelineMonthLabel(firstMk),
+      story: `✨ ${settings.seasonName.trim() || "Our season"} begins`,
+    });
+  }
+
+  for (const comp of batches) {
+    if (filter.categoryId !== "all" && comp.categoryId !== filter.categoryId) continue;
+    if (!timelinePassesPeriod(comp.date, comp.id, filter, settings)) continue;
+
+    const mk = monthKey(comp.date);
+    const ml = timelineMonthLabel(mk);
+    const cat = categoryLabel(settings, comp.categoryId);
+    const emoji = categoryEmoji(cat);
+
+    events.push({
+      id: `comp_${comp.id}`,
+      kind: "competition",
+      date: comp.date,
+      monthKey: mk,
+      monthLabel: ml,
+      competitionId: comp.id,
+      competitionName: comp.name,
+      categoryLabel: cat,
+      story: `${emoji} ${comp.name}`,
+    });
+
+    const prevRanks = buildRankMap(points);
+    const sortedResults = [...comp.results].sort((a, b) => a.place - b.place);
+
+    for (const r of sortedResults) {
+      const key = athleteKey(r.athleteId, r.athleteName);
+      const cur = points.get(key) ?? { name: r.athleteName, points: 0 };
+      points.set(key, { name: r.athleteName, points: cur.points + r.points });
+
+      if (r.place <= 3) {
+        if (!hadMedal.has(key)) {
+          hadMedal.add(key);
+        }
+        events.push({
+          id: `medal_${comp.id}_${key}`,
+          kind: "medal",
+          date: comp.date,
+          monthKey: mk,
+          monthLabel: ml,
+          competitionId: comp.id,
+          competitionName: comp.name,
+          athleteName: r.athleteName,
+          medal: r.medal,
+          place: r.place,
+          story: medalStory(r.medal, r.athleteName, r.place),
+        });
+      }
+
+      if (r.place === 1 && !hadWin.has(key)) {
+        hadWin.add(key);
+        events.push({
+          id: `pb_${comp.id}_${key}`,
+          kind: "personal_best",
+          date: comp.date,
+          monthKey: mk,
+          monthLabel: ml,
+          competitionId: comp.id,
+          competitionName: comp.name,
+          athleteName: r.athleteName,
+          story: `🎯 ${r.athleteName} — first win this season`,
+        });
+      }
+    }
+
+    const newRanks = buildRankMap(points);
+    for (const r of sortedResults) {
+      const key = athleteKey(r.athleteId, r.athleteName);
+      const from = prevRanks.get(key);
+      const to = newRanks.get(key);
+      if (from != null && to != null && to < from) {
+        events.push({
+          id: `rank_${comp.id}_${key}`,
+          kind: "rank_up",
+          date: comp.date,
+          monthKey: mk,
+          monthLabel: ml,
+          competitionId: comp.id,
+          competitionName: comp.name,
+          athleteName: r.athleteName,
+          rankFrom: from,
+          rankTo: to,
+          story: `↑ ${r.athleteName} moved up to #${to} in the season`,
+        });
+      }
+    }
+  }
+
+  return groupTimelineByMonth(events);
 }
 
 function isThisMonth(dateStr: string): boolean {
@@ -785,6 +1046,8 @@ export function computeResultsBoard(
     filterEvents(allEvents, { categoryId: filter.categoryId, period: "season" }, synced),
   );
 
+  const timeline = synced.seasonTimeline ? buildSeasonTimeline(synced, filter) : [];
+
   return {
     settings: synced,
     filterCategories: mergeCategoryList(synced),
@@ -792,6 +1055,7 @@ export function computeResultsBoard(
     podium: leaderboard.slice(0, 3),
     competitions: buildCompetitionSummaries(synced, filter),
     monthly,
+    timeline,
     insights: buildInsights(events, monthly),
     badgeLabels: BADGE_LABELS,
     maxPoints: leaderboard[0]?.totalPoints ?? 1,
@@ -800,6 +1064,18 @@ export function computeResultsBoard(
 
 export function getResultsBoardForBlock(block: BlockInstance, filter?: ResultsFilter): ResultsBoardComputed {
   return computeResultsBoard(getResultsBoardSettings(block), filter);
+}
+
+/** True when coach has saved at least one meaningful result row. */
+export function resultsBoardHasContent(settings: ResultsBoardSettings): boolean {
+  if (settings.mode === "simple") {
+    return settings.simpleResults.some((r) => r.athleteName?.trim() && r.place > 0);
+  }
+  return settings.competitions.some(
+    (c) =>
+      c.name?.trim() &&
+      c.results.some((r) => r.status === "participated" && r.athleteName?.trim() && r.place > 0),
+  );
 }
 
 export function duplicateCompetition(comp: Competition): Competition {
