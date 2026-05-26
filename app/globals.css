@@ -158,10 +158,47 @@
   --font-sans: var(--font-mts), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Results board — Season leaders hero */
+.results-podium-hero {
+  background: linear-gradient(
+    165deg,
+    #fffbeb 0%,
+    #fff 38%,
+    #faf5ff 72%,
+    #f8fafc 100%
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 24px 48px -28px rgba(99, 102, 241, 0.18),
+    0 8px 24px -12px rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.15);
+}
+
+.results-podium-hero__spotlight {
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 18%,
+    rgba(251, 191, 36, 0.22) 0%,
+    rgba(255, 255, 255, 0) 68%
+  );
+}
+
+.results-podium-hero__glow {
+  background: radial-gradient(
+    ellipse 90% 40% at 50% 100%,
+    rgba(139, 92, 246, 0.08) 0%,
+    transparent 70%
+  );
+}
+
+.results-podium-stage {
+  background: linear-gradient(180deg, rgba(228, 228, 231, 0.35) 0%, rgba(244, 244, 245, 0.15) 100%);
+  box-shadow: 0 -2px 20px rgba(15, 23, 42, 0.06);
+}
+
 @keyframes results-podium-rise {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.96);
+    transform: translateY(20px) scale(0.94);
   }
   to {
     opacity: 1;
@@ -169,12 +206,29 @@
   }
 }
 
+@keyframes results-podium-float {
+  0%,
+  100% {
+    transform: translateY(-5px);
+  }
+  50% {
+    transform: translateY(-11px);
+  }
+}
+
 .results-podium-card {
-  animation: results-podium-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: results-podium-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.results-podium-card--champion {
+  animation:
+    results-podium-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both,
+    results-podium-float 4.5s ease-in-out 0.9s infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .results-podium-card {
+  .results-podium-card,
+  .results-podium-card--champion {
     animation: none;
   }
 }

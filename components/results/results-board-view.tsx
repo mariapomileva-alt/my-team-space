@@ -20,18 +20,31 @@ function AthleteAvatar({
   name,
   photoUrl,
   size = "md",
+  hero = false,
 }: {
   name: string;
   photoUrl?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
+  hero?: boolean;
 }) {
-  const sz = size === "lg" ? "h-16 w-16 text-xl" : size === "md" ? "h-11 w-11 text-base" : "h-9 w-9 text-sm";
+  const sz =
+    size === "xl"
+      ? "h-24 w-24 text-3xl"
+      : size === "lg"
+        ? "h-16 w-16 text-xl"
+        : size === "md"
+          ? "h-11 w-11 text-base"
+          : "h-9 w-9 text-sm";
+  const ring = hero ? "ring-4 ring-amber-200/90" : "ring-2 ring-white";
+  const shadow = hero
+    ? "shadow-[0_12px_40px_-8px_rgba(251,191,36,0.55)]"
+    : "shadow-md";
   if (photoUrl) {
-    return <img src={photoUrl} alt="" className={`${sz} shrink-0 rounded-full object-cover ring-2 ring-white shadow-md`} />;
+    return <img src={photoUrl} alt="" className={`${sz} shrink-0 rounded-full object-cover ${ring} ${shadow}`} />;
   }
   return (
     <span
-      className={`${sz} flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 font-bold text-white shadow-md ring-2 ring-white`}
+      className={`${sz} flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 font-bold text-white ${ring} ${shadow}`}
     >
       {name.slice(0, 1).toUpperCase()}
     </span>
@@ -82,32 +95,63 @@ function PodiumCard({
   maxPoints: number;
 }) {
   const isFirst = place === 1;
-  const heights = { 1: "min-h-[148px]", 2: "min-h-[120px]", 3: "min-h-[120px]" } as const;
   const medals = { 1: "🏆", 2: "🥈", 3: "🥉" } as const;
-  const glow =
-    place === 1
-      ? "border-amber-300/80 bg-gradient-to-b from-amber-50 via-white to-amber-50/40 shadow-[0_0_32px_-8px_rgba(251,191,36,0.65)]"
-      : "border-zinc-100 bg-white shadow-[0_8px_28px_-12px_rgba(15,23,42,0.12)]";
+  const placeLabels = { 1: "1st", 2: "2nd", 3: "3rd" } as const;
+
+  const cardClass = isFirst
+    ? "results-podium-card results-podium-card--champion relative z-20 order-1 border-amber-200/70 bg-gradient-to-b from-white via-amber-50/90 to-amber-100/50 px-4 pb-5 pt-5 shadow-[0_24px_60px_-16px_rgba(251,191,36,0.45),0_8px_24px_-8px_rgba(15,23,42,0.12)] sm:order-none sm:col-start-2 sm:min-h-[220px]"
+    : place === 2
+      ? "results-podium-card results-podium-card--side relative z-10 order-2 border-zinc-200/60 bg-white/95 px-3 pb-4 pt-4 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.18)] sm:order-none sm:col-start-1 sm:min-h-[168px]"
+      : "results-podium-card results-podium-card--side relative z-10 order-3 border-zinc-200/60 bg-white/95 px-3 pb-4 pt-4 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.18)] sm:order-none sm:col-start-3 sm:min-h-[168px]";
 
   return (
     <div
-      className={`results-podium-card flex flex-col items-center justify-end rounded-2xl border px-2 pb-3 pt-3 text-center ${heights[place]} ${glow} ${
-        isFirst ? "z-10 -mt-2 sm:col-start-2" : place === 2 ? "sm:col-start-1" : "sm:col-start-3"
-      }`}
-      style={{ animationDelay: `${place * 80}ms` }}
+      className={`flex flex-col items-center justify-end rounded-[1.25rem] border text-center backdrop-blur-sm ${cardClass}`}
+      style={{ animationDelay: `${place * 100}ms` }}
     >
-      <span className="text-2xl">{medals[place]}</span>
-      <div className="mt-2">
-        <AthleteAvatar name={row.athleteName} photoUrl={photoUrl} size={isFirst ? "lg" : "md"} />
+      <span
+        className={`inline-flex items-center justify-center rounded-full font-bold tabular-nums ${
+          isFirst
+            ? "mb-1 h-7 min-w-7 bg-amber-400/20 px-2 text-[11px] text-amber-900 ring-1 ring-amber-300/50"
+            : "mb-1 h-6 min-w-6 bg-zinc-100 text-[10px] text-zinc-600"
+        }`}
+      >
+        {placeLabels[place]}
+      </span>
+      <span className={isFirst ? "text-4xl drop-shadow-sm" : "text-2xl"}>{medals[place]}</span>
+      <div className={isFirst ? "mt-3" : "mt-2"}>
+        <AthleteAvatar
+          name={row.athleteName}
+          photoUrl={photoUrl}
+          size={isFirst ? "xl" : "md"}
+          hero={isFirst}
+        />
       </div>
-      <p className="mt-2 line-clamp-2 w-full text-[13px] font-bold leading-tight text-zinc-900">{row.athleteName}</p>
-      <p className="mt-0.5 text-[15px] font-extrabold tabular-nums text-[color:var(--mts-primary)]">{row.totalPoints} pts</p>
-      <p className="text-[10px] font-medium text-zinc-500">
-        🥇{row.gold} · 🥈{row.silver} · 🥉{row.bronze}
+      <p
+        className={`mt-3 line-clamp-2 w-full font-bold leading-tight text-zinc-900 ${
+          isFirst ? "text-base sm:text-lg" : "text-[13px]"
+        }`}
+      >
+        {row.athleteName}
       </p>
-      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-zinc-100">
+      <p
+        className={`mt-1 font-extrabold tabular-nums ${
+          isFirst ? "text-xl text-amber-700 sm:text-2xl" : "text-[15px] text-[color:var(--mts-primary)]"
+        }`}
+      >
+        {row.totalPoints}
+        <span className={isFirst ? "ml-1 text-sm font-semibold text-amber-600/90" : " text-xs"}> pts</span>
+      </p>
+      <p className={`font-medium text-zinc-500 ${isFirst ? "mt-1 text-[11px]" : "text-[10px]"}`}>
+        🥇 {row.gold} · 🥈 {row.silver} · 🥉 {row.bronze}
+      </p>
+      <div className={`w-full overflow-hidden rounded-full bg-zinc-100/90 ${isFirst ? "mt-3 h-2" : "mt-2 h-1.5"}`}>
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[color:var(--mts-primary)] to-violet-400 transition-all duration-500"
+          className={`h-full rounded-full transition-all duration-700 ${
+            isFirst
+              ? "bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200"
+              : "bg-gradient-to-r from-[color:var(--mts-primary)] to-violet-400"
+          }`}
           style={{ width: `${maxPoints > 0 ? (row.totalPoints / maxPoints) * 100 : 0}%` }}
         />
       </div>
@@ -135,19 +179,55 @@ function PodiumSection({
     r ? photos[r.athleteId] ?? photos[r.athleteName.toLowerCase()] : undefined;
 
   return (
-    <section className="results-podium rounded-[1.35rem] bg-gradient-to-b from-amber-50/50 via-white to-violet-50/30 p-3 ring-1 ring-amber-100/60 sm:p-4">
-      <p className="mb-3 text-center text-[11px] font-bold uppercase tracking-[0.14em] text-amber-800/80">
-        Season leaders
-      </p>
-      <div className="grid grid-cols-1 items-end gap-2 sm:grid-cols-3 sm:gap-3">
-        {second ? <PodiumCard row={second} place={2} photoUrl={photo(second)} maxPoints={maxPoints} /> : <div className="hidden sm:block" />}
-        {first ? <PodiumCard row={first} place={1} photoUrl={photo(first)} maxPoints={maxPoints} /> : null}
-        {third ? <PodiumCard row={third} place={3} photoUrl={photo(third)} maxPoints={maxPoints} /> : <div className="hidden sm:block" />}
+    <section className="results-podium-hero relative overflow-hidden rounded-[1.75rem] px-4 py-8 sm:px-8 sm:py-10">
+      <div className="results-podium-hero__spotlight pointer-events-none absolute inset-0" aria-hidden />
+      <div className="results-podium-hero__glow pointer-events-none absolute inset-0" aria-hidden />
+
+      <header className="relative z-10 mb-8 text-center sm:mb-10">
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-amber-800/70">Season leaders</p>
+        <h4 className="mt-2 text-2xl font-extrabold tracking-tight text-zinc-900 sm:text-3xl">
+          {first ? (
+            <>
+              <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 bg-clip-text text-transparent">
+                {first.athleteName}
+              </span>
+              <span className="mt-1 block text-lg font-semibold text-zinc-600 sm:text-xl">leads the season</span>
+            </>
+          ) : (
+            "Top athletes"
+          )}
+        </h4>
+        {first ? (
+          <p className="mx-auto mt-3 max-w-xs text-[13px] leading-relaxed text-zinc-500">
+            {first.totalPoints} points · {first.gold + first.silver + first.bronze} medals earned
+          </p>
+        ) : null}
+      </header>
+
+      <div className="relative z-10">
+        <div className="results-podium-stage pointer-events-none absolute bottom-0 left-1/2 h-8 w-[92%] -translate-x-1/2 rounded-[100%] sm:h-10" aria-hidden />
+        <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-3 sm:gap-5 sm:px-2">
+          {second ? (
+            <PodiumCard row={second} place={2} photoUrl={photo(second)} maxPoints={maxPoints} />
+          ) : (
+            <div className="hidden sm:block" />
+          )}
+          {first ? <PodiumCard row={first} place={1} photoUrl={photo(first)} maxPoints={maxPoints} /> : null}
+          {third ? (
+            <PodiumCard row={third} place={3} photoUrl={photo(third)} maxPoints={maxPoints} />
+          ) : (
+            <div className="hidden sm:block" />
+          )}
+        </div>
       </div>
+
       {first?.badges.length ? (
-        <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+        <div className="relative z-10 mt-8 flex flex-wrap justify-center gap-2">
           {first.badges.slice(0, 3).map((b) => (
-            <span key={b} className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-zinc-700 ring-1 ring-zinc-100">
+            <span
+              key={b}
+              className="rounded-full border border-amber-200/60 bg-white/80 px-3 py-1 text-[11px] font-semibold text-zinc-800 shadow-[0_4px_16px_-8px_rgba(251,191,36,0.35)] backdrop-blur-sm"
+            >
               {badgeLabels[b] ?? b}
             </span>
           ))}
