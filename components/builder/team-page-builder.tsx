@@ -50,6 +50,7 @@ export function TeamPageBuilder({
   const [saveTick, setSaveTick] = useState(0);
   const [msg, setMsg] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [focusBlockId, setFocusBlockId] = useState<string | null>(null);
   const dirtyRef = useRef(false);
   const teamRef = useRef(team);
   teamRef.current = team;
@@ -133,8 +134,13 @@ export function TeamPageBuilder({
   function toggleExpand(id: string) {
     setExpanded((prev) => {
       const s = new Set(prev);
-      if (s.has(id)) s.delete(id);
-      else s.add(id);
+      if (s.has(id)) {
+        s.delete(id);
+        setFocusBlockId((cur) => (cur === id ? null : cur));
+      } else {
+        s.add(id);
+        setFocusBlockId(id);
+      }
       return s;
     });
   }
@@ -205,49 +211,55 @@ export function TeamPageBuilder({
         </motion.p>
       ) : null}
 
-      <div className="mx-auto grid max-w-[1280px] gap-10 px-4 pb-16 pt-2 lg:grid-cols-[1fr_380px] sm:px-6">
-        <main className="min-w-0 space-y-10">
-          <motion.section
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/90 p-6 shadow-[0_4px_32px_-16px_rgba(15,23,42,0.1)] backdrop-blur-sm"
-          >
-            <h2 className="text-sm font-bold tracking-tight text-zinc-900">Team colors</h2>
-            <p className="mt-1 text-sm text-zinc-500">Pick a palette — your app updates instantly.</p>
-            <motion.div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {THEMES.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setTheme(t.id)}
-                  className={`rounded-2xl border p-4 text-left text-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
-                    team.themeId === t.id
-                      ? "border-indigo-400 bg-indigo-50/50 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
-                      : "border-zinc-200/90 bg-white"
-                  }`}
-                >
-                  <div className="flex gap-1.5">
-                    <span
-                      className="h-7 w-7 rounded-full border border-black/5 shadow-sm"
-                      style={{ background: (t.cssVars as Record<string, string>)["--mts-primary"] }}
-                    />
-                    <span
-                      className="h-7 w-7 rounded-full border border-black/5 shadow-sm"
-                      style={{ background: (t.cssVars as Record<string, string>)["--mts-accent"] }}
-                    />
-                  </div>
-                  <span className="mt-2.5 block font-bold text-zinc-800">{t.label}</span>
-                </button>
-              ))}
-            </motion.div>
-          </motion.section>
+      <div className="mx-auto flex justify-center px-4 pb-4 lg:hidden">
+        <BuilderLivePreview team={team} focusBlockId={focusBlockId} />
+      </div>
 
-          <PrivacyAccessPanel team={team} siteUrl={siteUrl} onPatchTeam={patchTeam} />
-          <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
+      <div className="mx-auto max-w-[1320px] px-4 pb-16 pt-2 sm:px-6">
+        <main className="min-w-0">
+          <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-8 xl:gap-10">
+            <div className="min-w-0 flex-1 space-y-10">
+              <motion.section
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/90 p-6 shadow-[0_4px_32px_-16px_rgba(15,23,42,0.1)] backdrop-blur-sm"
+              >
+                <h2 className="text-sm font-bold tracking-tight text-zinc-900">Team colors</h2>
+                <p className="mt-1 text-sm text-zinc-500">Pick a palette — your app updates instantly.</p>
+                <motion.div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  {THEMES.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setTheme(t.id)}
+                      className={`rounded-2xl border p-4 text-left text-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+                        team.themeId === t.id
+                          ? "border-indigo-400 bg-indigo-50/50 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
+                          : "border-zinc-200/90 bg-white"
+                      }`}
+                    >
+                      <div className="flex gap-1.5">
+                        <span
+                          className="h-7 w-7 rounded-full border border-black/5 shadow-sm"
+                          style={{ background: (t.cssVars as Record<string, string>)["--mts-primary"] }}
+                        />
+                        <span
+                          className="h-7 w-7 rounded-full border border-black/5 shadow-sm"
+                          style={{ background: (t.cssVars as Record<string, string>)["--mts-accent"] }}
+                        />
+                      </div>
+                      <span className="mt-2.5 block font-bold text-zinc-800">{t.label}</span>
+                    </button>
+                  ))}
+                </motion.div>
+              </motion.section>
 
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-            <SortableContext items={allPublicBlocks.map((b) => b.id)} strategy={rectSortingStrategy}>
-              <motion.div layout className="space-y-12">
+              <PrivacyAccessPanel team={team} siteUrl={siteUrl} onPatchTeam={patchTeam} />
+              <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
+
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+                <SortableContext items={allPublicBlocks.map((b) => b.id)} strategy={rectSortingStrategy}>
+                  <motion.div layout className="space-y-12">
                 {BUILDER_SECTION_ORDER.map((section) => {
                   const blocks = sectionGroups[section];
                   if (!blocks.length) return null;
@@ -270,14 +282,16 @@ export function TeamPageBuilder({
                     </BuilderSectionPanel>
                   );
                 })}
-              </motion.div>
-            </SortableContext>
-          </DndContext>
-        </main>
+                  </motion.div>
+                </SortableContext>
+              </DndContext>
+            </div>
 
-        <aside className="relative hidden lg:block">
-          <BuilderLivePreview team={team} />
-        </aside>
+            <aside className="mx-auto hidden w-full max-w-[380px] shrink-0 lg:sticky lg:top-[5.75rem] lg:z-20 lg:mx-0 lg:block lg:w-[380px] lg:self-start">
+              <BuilderLivePreview team={team} focusBlockId={focusBlockId} />
+            </aside>
+          </div>
+        </main>
       </div>
     </motion.div>
   );

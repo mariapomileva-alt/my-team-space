@@ -14,6 +14,7 @@ import {
 } from "@/components/mts/team-app/dashboard-widgets";
 import { buildDashboardRows, type DashboardRow } from "@/lib/blocks/dashboard-layout";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
+import type { ReactNode } from "react";
 
 function SoloWidget({
   team,
@@ -83,6 +84,14 @@ function PairCell({
   );
 }
 
+function PreviewAnchor({ blockId, children }: { blockId: string; children: React.ReactNode }) {
+  return (
+    <div data-preview-block-id={blockId} className="h-full rounded-[inherit]">
+      {children}
+    </div>
+  );
+}
+
 function DashboardRowView({
   row,
   team,
@@ -99,44 +108,66 @@ function DashboardRowView({
   if (row.kind === "pair") {
     return (
       <div className="grid grid-cols-2 gap-2.5">
-        <div className="min-h-[148px]">
-          <PairCell team={team} block={row.left} variant={row.variant} side="left" onOpen={onOpen} index={base} />
-        </div>
-        <div className="min-h-[148px]">
-          <PairCell team={team} block={row.right} variant={row.variant} side="right" onOpen={onOpen} index={base + 1} />
-        </div>
+        <PreviewAnchor blockId={row.left.id}>
+          <div className="min-h-[148px]">
+            <PairCell team={team} block={row.left} variant={row.variant} side="left" onOpen={onOpen} index={base} />
+          </div>
+        </PreviewAnchor>
+        <PreviewAnchor blockId={row.right.id}>
+          <div className="min-h-[148px]">
+            <PairCell team={team} block={row.right} variant={row.variant} side="right" onOpen={onOpen} index={base + 1} />
+          </div>
+        </PreviewAnchor>
       </div>
     );
   }
 
   if (row.kind === "wide") {
     if (row.variant === "achievements") {
-      return <AchievementsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />;
+      return (
+        <PreviewAnchor blockId={row.block.id}>
+          <AchievementsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
+        </PreviewAnchor>
+      );
     }
     if (row.variant === "gallery") {
-      return <GalleryStackCard team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />;
+      return (
+        <PreviewAnchor blockId={row.block.id}>
+          <GalleryStackCard team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
+        </PreviewAnchor>
+      );
     }
-    return <ResultsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />;
+    return (
+      <PreviewAnchor blockId={row.block.id}>
+        <ResultsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
+      </PreviewAnchor>
+    );
   }
 
   if (row.kind === "pair-compact") {
     return (
       <div className="grid grid-cols-2 gap-2.5">
-        <div className="min-h-[108px]">
-          <SoloWidget team={team} block={row.left} onOpen={onOpen} index={base} compact />
-        </div>
-        <div className="min-h-[108px]">
-          <SoloWidget team={team} block={row.right} onOpen={onOpen} index={base + 1} compact />
-        </div>
+        <PreviewAnchor blockId={row.left.id}>
+          <div className="min-h-[108px]">
+            <SoloWidget team={team} block={row.left} onOpen={onOpen} index={base} compact />
+          </div>
+        </PreviewAnchor>
+        <PreviewAnchor blockId={row.right.id}>
+          <div className="min-h-[108px]">
+            <SoloWidget team={team} block={row.right} onOpen={onOpen} index={base + 1} compact />
+          </div>
+        </PreviewAnchor>
       </div>
     );
   }
 
   return (
     <div className={row.size === "half" ? "grid grid-cols-2 gap-2.5" : ""}>
-      <div className={row.size === "half" ? "min-h-[148px]" : "min-h-[120px]"}>
-        <SoloWidget team={team} block={row.block} onOpen={onOpen} index={base} compact={row.size === "half"} />
-      </div>
+      <PreviewAnchor blockId={row.block.id}>
+        <div className={row.size === "half" ? "min-h-[148px]" : "min-h-[120px]"}>
+          <SoloWidget team={team} block={row.block} onOpen={onOpen} index={base} compact={row.size === "half"} />
+        </div>
+      </PreviewAnchor>
     </div>
   );
 }
@@ -149,6 +180,7 @@ export function TeamAppDashboard({
   team: TeamSpace;
   blocks: BlockInstance[];
   onOpenBlock: (id: string) => void;
+  previewBlockId?: string | null;
 }) {
   const rows = buildDashboardRows(blocks);
 

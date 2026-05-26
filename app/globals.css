@@ -10,9 +10,12 @@
 }
 
 /* Theme tokens applied via `.mts-shell` inline vars from lib/themes.ts */
-.mts-shell {
+.mts-shell:not(.mts-shell--preview) {
   min-height: 100vh;
   min-height: 100dvh;
+}
+
+.mts-shell {
   background: var(--mts-page-bg);
   color: var(--mts-text);
 }
@@ -62,6 +65,81 @@
 
 .team-app-dashboard .dashboard-rail-item {
   scroll-snap-align: start;
+}
+
+.integrations-scroll-rail,
+.integrations-pills-rail {
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.integrations-scroll-rail::-webkit-scrollbar,
+.integrations-pills-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.integrations-scroll-rail > * {
+  scroll-snap-align: start;
+}
+
+.integration-card {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.builder-live-preview {
+  flex: none;
+  width: 360px;
+  max-width: 100%;
+}
+
+.builder-live-preview .builder-phone-frame {
+  width: 360px !important;
+  height: 612px !important;
+  min-height: 612px !important;
+  max-height: 612px !important;
+  flex: none !important;
+  contain: strict;
+  overflow: hidden !important;
+}
+
+.builder-live-preview .builder-preview-viewport {
+  height: 560px !important;
+  max-height: 560px !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.builder-live-preview .mts-shell,
+.builder-live-preview .mts-shell--preview {
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.builder-live-preview .team-app-page {
+  min-height: 0 !important;
+  padding-bottom: 2rem;
+}
+
+.builder-live-preview .builder-preview-viewport [data-preview-block-id].preview-block-focus {
+  outline: 2px solid rgba(99, 102, 241, 0.85);
+  outline-offset: 3px;
+  border-radius: 1rem;
+  transition: outline-color 0.2s ease;
+}
+
+.builder-live-preview .builder-preview-viewport::-webkit-scrollbar {
+  width: 4px;
+}
+
+.builder-live-preview .builder-preview-viewport::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .mts-card {

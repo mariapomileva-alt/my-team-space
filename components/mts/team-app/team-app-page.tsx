@@ -18,10 +18,12 @@ export function TeamAppPage({
   team,
   hasAccess = true,
   saasExtras,
+  previewBlockId,
 }: {
   team: TeamSpace;
   hasAccess?: boolean;
   saasExtras?: ReactNode;
+  previewBlockId?: string | null;
 }) {
   const [openBlockId, setOpenBlockId] = useState<string | null>(null);
   const hideNames = Boolean(team.pageSettings?.hideChildNames) && !hasAccess;
@@ -49,14 +51,23 @@ export function TeamAppPage({
 
       <motion.div className="space-y-3">
         {chrome.map((block) => (
-          <div key={block.id} className="team-app-chrome">
+          <div
+            key={block.id}
+            className="team-app-chrome"
+            data-preview-block-id={block.id}
+          >
             {renderBlock(team, block, { hideChildNames: hideNames })}
           </div>
         ))}
       </motion.div>
 
       {gridBlocks.length > 0 ? (
-        <TeamAppDashboard team={team} blocks={gridBlocks} onOpenBlock={setOpenBlockId} />
+        <TeamAppDashboard
+          team={team}
+          blocks={gridBlocks}
+          onOpenBlock={setOpenBlockId}
+          previewBlockId={previewBlockId}
+        />
       ) : null}
 
       {saasExtras ? <div className="mt-1">{saasExtras}</div> : null}

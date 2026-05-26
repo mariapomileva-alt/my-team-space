@@ -6,10 +6,15 @@ export function TeamPageBlocks({
   team,
   hasAccess = true,
   saasExtras,
+  previewBlockId,
 }: {
   team: TeamSpace;
   hasAccess?: boolean;
   saasExtras?: ReactNode;
+  /** Builder: highlight this block in live preview */
+  previewBlockId?: string | null;
 }) {
-  return <TeamAppPage team={team} hasAccess={hasAccess} saasExtras={saasExtras} />;
+  return (
+    <TeamAppPage team={team} hasAccess={hasAccess} saasExtras={saasExtras} previewBlockId={previewBlockId} />
+  );
 }

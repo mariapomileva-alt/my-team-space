@@ -19,6 +19,6 @@ export const ADMIN_BLOCK_LABELS: Record<BlockInstance["type"], string> = {
   countdown: "Countdown",
   birthdays: "Birthdays",
   quick_links: "Quick links",
-  integrations: "Tools & integrations",
+  integrations: "Smart integrations",
   resources: "Team resources",
 };

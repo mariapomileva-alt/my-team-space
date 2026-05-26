@@ -45,7 +45,16 @@ export type ContentItem = {
   [key: string]: string;
 };
 
-export type ResourceKind = "pdf" | "link" | "audio" | "video" | "image" | "plan" | "other";
+export type ResourceKind =
+  | "pdf"
+  | "link"
+  | "audio"
+  | "video"
+  | "image"
+  | "plan"
+  | "nutrition"
+  | "choreography"
+  | "other";
 
 export type ResourceItem = {
   id: string;
@@ -113,7 +122,18 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
     case "weather":
       return { temp: "", note: "", location: "" };
     case "integrations":
-      return { sectionTitle: "Team tools & links", links: [] as { id: string; url: string; label?: string; providerId?: string }[] };
+      return {
+        sectionTitle: "Smart integrations",
+        links: [] as {
+          id: string;
+          url: string;
+          label?: string;
+          description?: string;
+          providerId?: string;
+          variant?: "compact" | "featured" | "tile";
+          featured?: boolean;
+        }[],
+      };
     case "resources":
       return { sectionTitle: "Team resources", items: [] as ResourceItem[] };
     default:

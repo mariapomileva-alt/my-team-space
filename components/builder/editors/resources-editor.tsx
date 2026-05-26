@@ -1,6 +1,7 @@
 "use client";
 
 import type { BlockInstance } from "@/lib/types";
+import { ResourceCard } from "@/components/integrations/resource-card";
 import { getBlockSettings, newResourceItem, type ResourceItem, type ResourceKind } from "@/lib/blocks/settings";
 import { useState } from "react";
 
@@ -9,8 +10,10 @@ const KINDS: { value: ResourceKind; label: string; emoji: string }[] = [
   { value: "link", label: "Web link", emoji: "🔗" },
   { value: "audio", label: "Music / audio", emoji: "🎵" },
   { value: "video", label: "Video", emoji: "🎬" },
-  { value: "image", label: "Image", emoji: "🖼️" },
-  { value: "plan", label: "Plan / choreography", emoji: "📋" },
+  { value: "image", label: "Gallery", emoji: "🖼️" },
+  { value: "plan", label: "Travel plan", emoji: "✈️" },
+  { value: "nutrition", label: "Nutrition guide", emoji: "🥗" },
+  { value: "choreography", label: "Choreography", emoji: "💃" },
   { value: "other", label: "Other", emoji: "📦" },
 ];
 
@@ -141,6 +144,11 @@ function ResourceRow({
       </label>
       {fileUrl ? (
         <p className="truncate text-[11px] text-teal-700">✓ {fileUrl}</p>
+      ) : null}
+      {item.title?.trim() && fileUrl ? (
+        <div className="pointer-events-none max-w-sm origin-top-left scale-[0.9] opacity-95">
+          <ResourceCard item={{ ...item, url: fileUrl }} variant="compact" />
+        </div>
       ) : null}
       {err ? <p className="text-xs text-red-600">{err}</p> : null}
       <button type="button" className="text-xs font-semibold text-red-600" onClick={onRemove}>

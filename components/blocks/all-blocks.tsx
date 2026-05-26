@@ -4,7 +4,11 @@ import { CampTripConfirm } from "@/components/blocks/camp-trip-confirm";
 import { PollVote } from "@/components/blocks/poll-vote";
 import { galleryEmbedSrc, isGooglePhotosAlbumUrl } from "@/lib/gallery-embed";
 import { MtsBadge } from "@/components/mts/card";
-import { IntegrationLinkCard, type IntegrationLink } from "@/components/integrations/integration-link-card";
+import { IntegrationsHub } from "@/components/integrations/integrations-hub";
+import { ResourcesHub } from "@/components/integrations/resource-card";
+import { SmartIntegrationCard } from "@/components/integrations/smart-integration-card";
+import { enrichIntegrationLink } from "@/lib/integrations/build-preview";
+import type { IntegrationLink } from "@/lib/integrations/types";
 import {
   getBlockSettings,
   type ContentItem,
@@ -580,31 +584,42 @@ export function BlockQuickLinks({ block, embedded }: BlockProps) {
   );
 }
 
-const RESOURCE_KIND_EMOJI: Record<ResourceItem["kind"], string> = {
-  pdf: "📄",
-  link: "🔗",
-  audio: "🎵",
-  video: "🎬",
-  image: "🖼️",
-  plan: "📋",
-  other: "📦",
-};
-
 export function BlockIntegrations({ block, embedded }: BlockProps) {
   const s = getBlockSettings<{ sectionTitle?: string; links: IntegrationLink[] }>(block);
-  const links = (s.links ?? []).filter((l) => l.url?.trim());
-  const title = s.sectionTitle?.trim() || "Team tools";
+  const links = s.links ?? [];
+  const title = s.sectionTitle?.trim() || "Smart integrations";
+  const valid = links.filter((l) => l.url?.trim());
+
   return (
     <BlockSurface embedded={embedded}>
-      <BlockHeading embedded={embedded}>{title}</BlockHeading>
-      {links.length === 0 ? (
-        <BlockEmpty message="Connect Strava, Garmin, YouTube, calendars, and more." />
+      {valid.length === 0 ? (
+        <>
+          <BlockHeading embedded={embedded}>{title}</BlockHeading>
+          <BlockEmpty message="Connect Strava, Garmin, YouTube, calendars, and more." />
+        </>
+      ) : embedded ? (
+        <>
+          <BlockHeading embedded={embedded}>{title}</BlockHeading>
+          <div className="space-y-2">
+            {valid.map((link, i) => {
+              const e = enrichIntegrationLink(link, i, valid.length);
+              return (
+                <SmartIntegrationCard
+                  key={link.id}
+                  url={e.url}
+                  provider={e.provider}
+                  title={e.label!}
+                  description={e.description!}
+                  cta={e.cta}
+                  preview={e.preview}
+                  variant="compact"
+                />
+              );
+            })}
+          </div>
+        </>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {links.map((link) => (
-            <IntegrationLinkCard key={link.id} link={link} compact={embedded} />
-          ))}
-        </div>
+        <IntegrationsHub links={links} sectionTitle={title} />
       )}
     </BlockSurface>
   );
@@ -612,44 +627,18 @@ export function BlockIntegrations({ block, embedded }: BlockProps) {
 
 export function BlockResources({ block, embedded }: BlockProps) {
   const s = getBlockSettings<{ sectionTitle?: string; items: ResourceItem[] }>(block);
-  const items = (s.items ?? []).filter((r) => r.title?.trim());
+  const items = (s.items ?? []).filter((r) => r.title?.trim() && (r.fileUrl || r.url)?.trim());
   const title = s.sectionTitle?.trim() || "Team resources";
+
   return (
     <BlockSurface embedded={embedded}>
-      <BlockHeading embedded={embedded}>{title}</BlockHeading>
       {items.length === 0 ? (
-        <BlockEmpty message="PDFs, plans, and files for your team will appear here." />
+        <>
+          <BlockHeading embedded={embedded}>{title}</BlockHeading>
+          <BlockEmpty message="PDFs, travel plans, nutrition guides, and choreography references." />
+        </>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {items.map((item) => {
-            const href = (item.fileUrl || item.url)?.trim();
-            const emoji = RESOURCE_KIND_EMOJI[item.kind] ?? "📦";
-            return (
-              <a
-                key={item.id}
-                href={href || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex gap-3 rounded-2xl border border-[color:var(--mts-card-border)] bg-white p-4 shadow-[0_4px_20px_-10px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:shadow-md"
-              >
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--mts-accent-soft)] text-2xl">
-                  {emoji}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block font-bold text-[color:var(--mts-text)]">{item.title}</span>
-                  {item.description?.trim() ? (
-                    <span className="mt-0.5 line-clamp-2 block text-xs text-[color:var(--mts-muted)]">
-                      {item.description}
-                    </span>
-                  ) : null}
-                  <span className="mt-2 inline-block text-[10px] font-bold uppercase tracking-wide text-[color:var(--mts-primary-bright)]">
-                    Open
-                  </span>
-                </span>
-              </a>
-            );
-          })}
-        </div>
+        <ResourcesHub items={items} sectionTitle={title} compact={embedded} />
       )}
     </BlockSurface>
   );

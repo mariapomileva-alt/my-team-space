@@ -89,8 +89,8 @@ export const BLOCK_APP_META: Record<BlockType, BlockAppMeta> = {
   },
   integrations: {
     emoji: "🧩",
-    title: "Team tools",
-    subtitle: "Strava, Garmin & more",
+    title: "Smart integrations",
+    subtitle: "Garmin, YouTube & more",
     tileClass: "bg-indigo-100 text-indigo-700",
   },
   resources: {

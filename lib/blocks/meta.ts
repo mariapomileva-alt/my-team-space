@@ -103,7 +103,7 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
   },
   integrations: {
     type: "integrations",
-    title: "Tools & integrations",
+    title: "Smart integrations",
     emoji: "🧩",
     description: "Strava, Garmin, YouTube, Google Calendar — one dashboard.",
     section: "essential",
