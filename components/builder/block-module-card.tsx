@@ -50,9 +50,9 @@ export function BlockModuleCard({
       className={`list-none ${builderCardGridClass(block)} ${builderCardSizeClass(block.type)}`}
     >
       <motion.article
-        whileHover={block.enabled ? { y: -3, scale: 1.005 } : undefined}
+        whileHover={block.enabled ? { y: -2 } : undefined}
         transition={{ type: "spring", stiffness: 420, damping: 28 }}
-        className={`group relative flex h-full flex-col overflow-hidden rounded-[1.35rem] border bg-white/95 transition-[box-shadow,border-color] duration-300 ${
+        className={`group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.35rem] border bg-white/95 transition-[box-shadow,border-color,transform] duration-300 ${
           block.enabled
             ? expanded
               ? "border-indigo-300/90 shadow-[0_0_0_3px_rgba(99,102,241,0.18),0_12px_40px_-16px_rgba(99,102,241,0.35)]"

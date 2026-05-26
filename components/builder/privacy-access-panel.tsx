@@ -1,5 +1,6 @@
 "use client";
 
+import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
 import { magicInviteUrl } from "@/lib/team-access";
 import type { TeamSpace, TeamVisibility } from "@/lib/types";
 
@@ -30,7 +31,7 @@ export function PrivacyAccessPanel({
   }
 
   return (
-    <section className="overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/90 p-6 shadow-[0_4px_32px_-16px_rgba(15,23,42,0.1)] backdrop-blur-sm">
+    <section className={BUILDER_PANEL_SURFACE}>
       <h2 className="text-sm font-bold tracking-tight text-zinc-900">Privacy & access</h2>
       <p className="mt-1 text-sm text-zinc-500">
         No parent passwords. Use a team code or magic link — like a private clubhouse door.

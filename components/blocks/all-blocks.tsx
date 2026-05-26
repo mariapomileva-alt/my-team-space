@@ -54,34 +54,36 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
     <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
       <div className="overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
         {hasCover ? (
-          <div className="relative z-0 h-28 sm:h-32">
-            <img src={s.coverImageUrl} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+          <div className="hero-cover relative z-0 h-28 sm:h-32">
+            <img src={s.coverImageUrl} alt="" className="hero-cover__img h-full w-full object-cover" />
+            <div className="hero-cover__overlay absolute inset-0" aria-hidden />
+            <div className="hero-cover__tint absolute inset-0" aria-hidden />
+            <div className="hero-cover__vignette absolute inset-0" aria-hidden />
           </div>
         ) : (
-          <div className="h-2 bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-400" />
+          <div className="hero-cover__fallback h-24 sm:h-28" aria-hidden />
         )}
-        <div className={`relative z-10 bg-white px-4 pb-4 ${hasCover ? "pt-1" : "pt-4"}`}>
+        <div className={`hero-card-body relative z-10 px-4 pb-4 ${hasCover ? "pt-1" : "pt-4"}`}>
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-start gap-3">
               {logoSrc ? (
                 <img
                   src={logoSrc}
                   alt=""
-                  className={`relative z-20 h-14 w-14 shrink-0 rounded-2xl border-4 border-white object-cover shadow-md ${logoOverlap}`}
+                  className={`hero-logo__img relative z-20 h-14 w-14 shrink-0 rounded-2xl border-4 border-white object-cover shadow-md ${logoOverlap}`}
                 />
               ) : (
                 <div
-                  className={`relative z-20 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-indigo-600 text-xl font-bold text-white shadow-md ${logoOverlap}`}
+                  className={`relative z-20 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-[color:var(--mts-primary)] text-xl font-bold text-white shadow-md ${logoOverlap}`}
                 >
                   {team.name.slice(0, 1).toUpperCase()}
                 </div>
               )}
               <div className="min-w-0 pt-2">
                 <MtsBadge>Our team</MtsBadge>
-                <h1 className="mt-1 text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">{team.name}</h1>
+                <h1 className="mt-1 text-xl font-bold tracking-tight text-[color:var(--mts-text)] sm:text-2xl">{team.name}</h1>
                 {team.tagline ? (
-                  <p className="mt-0.5 line-clamp-2 text-[13px] text-neutral-500">{team.tagline}</p>
+                  <p className="mt-0.5 line-clamp-2 text-[13px] text-[color:var(--mts-muted)]">{team.tagline}</p>
                 ) : null}
                 {s.city ? <p className="mt-0.5 text-[12px] text-neutral-400">📍 {s.city}</p> : null}
               </div>
@@ -91,7 +93,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
               Live
             </span>
           </div>
-          <p className="mt-3 text-[14px] font-medium leading-snug text-indigo-700/90">“{quote}”</p>
+          <p className="mt-3 text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]">“{quote}”</p>
           {socialEntries.length > 0 ? (
             <div className="mt-3 flex flex-wrap gap-2">
               {socialEntries.map((key) => (
@@ -100,7 +102,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
                   href={s.social![key]!}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-10 items-center justify-center rounded-full bg-neutral-900 px-3.5 text-[12px] font-semibold text-white transition active:scale-[0.98]"
+                  className="inline-flex min-h-10 items-center justify-center rounded-full bg-[color:var(--mts-primary)] px-3.5 text-[12px] font-semibold text-white shadow-sm transition hover:opacity-95 active:scale-[0.98]"
                 >
                   {SOCIAL_LABELS[key]}
                 </a>
@@ -420,7 +422,7 @@ export function BlockGallery({ block, embedded }: BlockProps) {
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {images.map((img, i) => (
-            <img key={i} src={img.url} alt="" className="aspect-square rounded-xl object-cover" />
+            <img key={i} src={img.url} alt="" className="mts-themed-photo aspect-square rounded-xl object-cover" />
           ))}
         </div>
       )}

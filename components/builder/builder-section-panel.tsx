@@ -23,7 +23,7 @@ export function BuilderSectionPanel({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className={`overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-5 sm:p-6 ${skin.gradient} ${skin.border} shadow-[0_4px_32px_-16px_rgba(15,23,42,0.08)]`}
+      className={`w-full overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-6 ${skin.gradient} ${skin.border} shadow-[0_4px_32px_-16px_rgba(15,23,42,0.08)]`}
     >
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>

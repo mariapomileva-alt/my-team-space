@@ -8,6 +8,13 @@ import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-pane
 import { PrivacyAccessPanel } from "@/components/builder/privacy-access-panel";
 import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
 import {
+  BUILDER_EDITOR_COLUMN,
+  BUILDER_PAGE_SHELL,
+  BUILDER_PANEL_SURFACE,
+  BUILDER_PREVIEW_COLUMN,
+  BUILDER_WORKSPACE_GRID,
+} from "@/lib/builder/layout";
+import {
   BUILDER_SECTION_ORDER,
   groupBlocksBySection,
 } from "@/lib/blocks/meta";
@@ -189,7 +196,7 @@ export function TeamPageBuilder({
     >
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(139,92,246,0.08),transparent)]" />
 
-      <div className="px-2 pt-4 sm:px-4">
+      <div className={`${BUILDER_PAGE_SHELL} pt-4`}>
         <BuilderToolbar
           teamName={team.name}
           saveLabel={savedLabel}
@@ -205,34 +212,34 @@ export function TeamPageBuilder({
         <motion.p
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-auto mb-2 max-w-lg px-4 text-center text-xs font-medium text-emerald-700"
+          className={`${BUILDER_PAGE_SHELL} mb-2 text-center text-xs font-medium text-emerald-700`}
         >
           {msg}
         </motion.p>
       ) : null}
 
-      <div className="mx-auto flex justify-center px-4 pb-4 lg:hidden">
+      <div className={`${BUILDER_PAGE_SHELL} flex justify-center pb-4 lg:hidden`}>
         <BuilderLivePreview team={team} focusBlockId={focusBlockId} />
       </div>
 
-      <div className="mx-auto max-w-[1320px] px-4 pb-16 pt-2 sm:px-6">
+      <div className={`${BUILDER_PAGE_SHELL} pb-16 pt-2`}>
         <main className="min-w-0">
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-8 xl:gap-10">
-            <div className="min-w-0 flex-1 space-y-10">
+          <div className={BUILDER_WORKSPACE_GRID}>
+            <div className={BUILDER_EDITOR_COLUMN}>
               <motion.section
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/90 p-6 shadow-[0_4px_32px_-16px_rgba(15,23,42,0.1)] backdrop-blur-sm"
+                className={BUILDER_PANEL_SURFACE}
               >
                 <h2 className="text-sm font-bold tracking-tight text-zinc-900">Team colors</h2>
                 <p className="mt-1 text-sm text-zinc-500">Pick a palette — your app updates instantly.</p>
-                <motion.div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {THEMES.map((t) => (
                     <button
                       key={t.id}
                       type="button"
                       onClick={() => setTheme(t.id)}
-                      className={`rounded-2xl border p-4 text-left text-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+                      className={`rounded-2xl border p-4 text-left text-xs transition-all duration-200 hover:border-indigo-300 hover:shadow-md ${
                         team.themeId === t.id
                           ? "border-indigo-400 bg-indigo-50/50 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
                           : "border-zinc-200/90 bg-white"
@@ -251,7 +258,7 @@ export function TeamPageBuilder({
                       <span className="mt-2.5 block font-bold text-zinc-800">{t.label}</span>
                     </button>
                   ))}
-                </motion.div>
+                </div>
               </motion.section>
 
               <PrivacyAccessPanel team={team} siteUrl={siteUrl} onPatchTeam={patchTeam} />
@@ -260,34 +267,34 @@ export function TeamPageBuilder({
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
                 <SortableContext items={allPublicBlocks.map((b) => b.id)} strategy={rectSortingStrategy}>
                   <motion.div layout className="space-y-12">
-                {BUILDER_SECTION_ORDER.map((section) => {
-                  const blocks = sectionGroups[section];
-                  if (!blocks.length) return null;
-                  return (
-                    <BuilderSectionPanel key={section} section={section} blockCount={blocks.length}>
-                      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-                        {blocks.map((block) => (
-                          <BlockModuleCard
-                            key={block.id}
-                            block={block}
-                            team={team}
-                            expanded={expanded.has(block.id)}
-                            onToggleExpand={() => toggleExpand(block.id)}
-                            onToggleEnabled={() => toggleBlock(block.id)}
-                            onPatchBlock={patchBlock}
-                            onPatchTeam={patchTeam}
-                          />
-                        ))}
-                      </ul>
-                    </BuilderSectionPanel>
-                  );
-                })}
+                    {BUILDER_SECTION_ORDER.map((section) => {
+                      const blocks = sectionGroups[section];
+                      if (!blocks.length) return null;
+                      return (
+                        <BuilderSectionPanel key={section} section={section} blockCount={blocks.length}>
+                          <ul className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                            {blocks.map((block) => (
+                              <BlockModuleCard
+                                key={block.id}
+                                block={block}
+                                team={team}
+                                expanded={expanded.has(block.id)}
+                                onToggleExpand={() => toggleExpand(block.id)}
+                                onToggleEnabled={() => toggleBlock(block.id)}
+                                onPatchBlock={patchBlock}
+                                onPatchTeam={patchTeam}
+                              />
+                            ))}
+                          </ul>
+                        </BuilderSectionPanel>
+                      );
+                    })}
                   </motion.div>
                 </SortableContext>
               </DndContext>
             </div>
 
-            <aside className="mx-auto hidden w-full max-w-[380px] shrink-0 lg:sticky lg:top-[5.75rem] lg:z-20 lg:mx-0 lg:block lg:w-[380px] lg:self-start">
+            <aside className={BUILDER_PREVIEW_COLUMN}>
               <BuilderLivePreview team={team} focusBlockId={focusBlockId} />
             </aside>
           </div>

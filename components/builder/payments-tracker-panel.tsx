@@ -1,5 +1,6 @@
 "use client";
 
+import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
 import type { PaymentStatus, PaymentTrackerRow, TeamSpace } from "@/lib/types";
 
 function uid() {
@@ -41,7 +42,9 @@ export function PaymentsTrackerPanel({
   }
 
   return (
-    <section className="overflow-hidden rounded-[1.75rem] border border-amber-200/50 bg-gradient-to-br from-orange-50/40 via-amber-50/30 to-white p-6 shadow-[0_4px_32px_-16px_rgba(251,146,60,0.12)]">
+    <section
+      className={`${BUILDER_PANEL_SURFACE} border-amber-200/60 bg-gradient-to-br from-orange-50/50 via-amber-50/25 to-white shadow-[0_4px_32px_-16px_rgba(251,146,60,0.1)]`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-sm font-bold tracking-tight text-zinc-900">Payments tracker</h2>

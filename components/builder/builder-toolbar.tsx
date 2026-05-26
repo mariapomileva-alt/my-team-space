@@ -24,7 +24,7 @@ export function BuilderToolbar({
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="sticky top-3 z-50 mx-auto mb-6 max-w-[1280px] px-4 sm:px-6"
+      className="sticky top-3 z-50 mb-6 w-full"
     >
       <motion.div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.35rem] border border-white/60 bg-white/75 px-4 py-3 shadow-[0_8px_40px_-12px_rgba(99,102,241,0.25),0_0_0_1px_rgba(255,255,255,0.8)_inset] backdrop-blur-xl sm:px-5">
         <div className="min-w-0">
