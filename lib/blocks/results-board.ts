@@ -235,7 +235,7 @@ export function newCompetition(categoryId = ""): Competition {
     name: "",
     date: new Date().toISOString().slice(0, 10),
     categoryId,
-    results: [],
+    results: [newCompetitionResult()],
   };
 }
 
@@ -329,14 +329,23 @@ function normalizeCategories(raw: unknown): TeamCategory[] {
   });
 }
 
+/** Use typed settings from editor draft (avoids legacy `items` merge wiping new data). */
+export function resolveResultsBoardSettings(
+  block: BlockInstance,
+  override?: ResultsBoardSettings,
+): ResultsBoardSettings {
+  if (override) return syncCategoriesFromData(override);
+  return getResultsBoardSettings(block);
+}
+
 export function getResultsBoardSettings(block: BlockInstance): ResultsBoardSettings {
   const defaults = defaultResultsBoardSettings();
   const raw = getBlockSettings<Record<string, unknown>>(block);
 
   const hasLegacyItems = Array.isArray(raw.items) && (raw.items as unknown[]).length > 0;
   const hasNewData =
-    (Array.isArray(raw.competitions) && raw.competitions.length > 0) ||
-    (Array.isArray(raw.simpleResults) && raw.simpleResults.length > 0);
+    (Array.isArray(raw.competitions) && (raw.competitions as unknown[]).length > 0) ||
+    (Array.isArray(raw.simpleResults) && (raw.simpleResults as unknown[]).length > 0);
 
   if (hasLegacyItems && !hasNewData) {
     const simpleResults = (raw.items as { id?: string; name?: string; subtitle?: string; emoji?: string }[])
@@ -372,7 +381,7 @@ export function getResultsBoardSettings(block: BlockInstance): ResultsBoardSetti
   return syncCategoriesFromData(settings);
 }
 
-function syncCategoriesFromData(settings: ResultsBoardSettings): ResultsBoardSettings {
+export function syncCategoriesFromData(settings: ResultsBoardSettings): ResultsBoardSettings {
   let categories = [...settings.categories];
   for (const comp of settings.competitions) {
     if (comp.categoryId) continue;
@@ -1066,16 +1075,24 @@ export function getResultsBoardForBlock(block: BlockInstance, filter?: ResultsFi
   return computeResultsBoard(getResultsBoardSettings(block), filter);
 }
 
-/** True when coach has saved at least one meaningful result row. */
+/** True when at least one scored result exists (used for empty states). */
 export function resultsBoardHasContent(settings: ResultsBoardSettings): boolean {
   if (settings.mode === "simple") {
     return settings.simpleResults.some((r) => r.athleteName?.trim() && r.place > 0);
   }
-  return settings.competitions.some(
-    (c) =>
-      c.name?.trim() &&
-      c.results.some((r) => r.status === "participated" && r.athleteName?.trim() && r.place > 0),
+  return settings.competitions.some((c) =>
+    c.results.some(
+      (r) => r.status === "participated" && r.athleteName?.trim() && r.place > 0,
+    ),
   );
+}
+
+/** True when coach started entering season data (for helpful partial empty states). */
+export function resultsBoardHasDraft(settings: ResultsBoardSettings): boolean {
+  if (settings.mode === "simple") {
+    return settings.simpleResults.length > 0;
+  }
+  return settings.competitions.length > 0;
 }
 
 export function duplicateCompetition(comp: Competition): Competition {

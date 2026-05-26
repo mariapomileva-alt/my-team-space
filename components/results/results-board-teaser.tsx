@@ -3,7 +3,7 @@
 import { athletePhotoMap } from "@/lib/blocks/roster";
 import {
   computeResultsBoard,
-  getResultsBoardSettings,
+  resolveResultsBoardSettings,
   resultsBoardHasContent,
 } from "@/lib/blocks/results-board";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
@@ -38,7 +38,10 @@ export function ResultsBoardTeaser({
   onOpen: () => void;
   index?: number;
 }) {
-  const settings = useMemo(() => getResultsBoardSettings(block), [block.settings, block.id]);
+  const settings = useMemo(
+    () => resolveResultsBoardSettings(block),
+    [block.settings, block.id],
+  );
   const photos = athletePhotoMap(team);
   const data = useMemo(
     () => computeResultsBoard(settings, { categoryId: "all", period: "season" }),

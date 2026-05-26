@@ -3,9 +3,11 @@
 import { athletePhotoMap } from "@/lib/blocks/roster";
 import {
   computeResultsBoard,
-  getResultsBoardSettings,
+  resolveResultsBoardSettings,
   resultsBoardHasContent,
+  resultsBoardHasDraft,
   type LeaderboardRow,
+  type ResultsBoardSettings,
   type ResultsFilter,
 } from "@/lib/blocks/results-board";
 import { getCelebration, type AthleteCelebration } from "@/lib/results/celebrations";
@@ -469,14 +471,20 @@ export function ResultsBoardView({
   team,
   compact = false,
   celebrate = true,
+  settings: settingsOverride,
 }: {
   block: BlockInstance;
   team?: TeamSpace;
   compact?: boolean;
   /** Animate milestones when results change (off in builder preview). */
   celebrate?: boolean;
+  /** Live editor draft — keeps preview in sync before publish. */
+  settings?: ResultsBoardSettings;
 }) {
-  const settings = getResultsBoardSettings(block);
+  const settings = useMemo(
+    () => resolveResultsBoardSettings(block, settingsOverride),
+    [block, settingsOverride],
+  );
   const photos = team ? athletePhotoMap(team) : {};
   const [categoryId, setCategoryId] = useState<string>("all");
   const [period, setPeriod] = useState<ResultsFilter["period"]>("season");
@@ -503,14 +511,23 @@ export function ResultsBoardView({
   const categories = data.filterCategories;
   const comps = showAllComps ? data.competitions : data.competitions.slice(0, 4);
 
-  const isEmpty = !resultsBoardHasContent(settings);
+  const hasScoredResults = resultsBoardHasContent(settings);
+  const hasDraft = resultsBoardHasDraft(settings);
+  const isEmpty =
+    !hasScoredResults && data.leaderboard.length === 0 && data.competitions.length === 0;
 
   if (isEmpty) {
     return (
       <div className="rounded-[1.35rem] border border-dashed border-zinc-200 bg-zinc-50/80 px-4 py-10 text-center">
         <p className="text-2xl">🏁</p>
-        <p className="mt-2 text-sm font-semibold text-zinc-700">Results will appear here</p>
-        <p className="mt-1 text-[12px] text-zinc-500">Coach adds competitions — rankings update automatically.</p>
+        <p className="mt-2 text-sm font-semibold text-zinc-700">
+          {hasDraft ? "Add athlete results to see the board" : "Results will appear here"}
+        </p>
+        <p className="mt-1 text-[12px] text-zinc-500">
+          {hasDraft
+            ? "Open each competition → add athlete name + place. Rankings update instantly."
+            : "Add a competition in the Competitions tab — points and medals calculate automatically."}
+        </p>
       </div>
     );
   }

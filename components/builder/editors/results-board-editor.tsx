@@ -59,7 +59,9 @@ export function ResultsBoardEditor({
   function save(patch: Partial<ResultsBoardSettings>) {
     setDraft((prev) => {
       const next = { ...prev, ...patch };
-      onPatchBlock(block.id, { settings: next });
+      const persisted = { ...next } as ResultsBoardSettings & { items?: unknown };
+      delete persisted.items;
+      onPatchBlock(block.id, { settings: persisted });
       return next;
     });
   }
@@ -201,7 +203,7 @@ export function ResultsBoardEditor({
         <div className="rounded-2xl border border-indigo-100 bg-gradient-to-b from-indigo-50/40 to-white p-3 sm:p-4">
           <p className="mb-3 text-xs text-zinc-500">Live preview — same layout as the published team page.</p>
           <div className="max-h-[min(70vh,640px)] overflow-y-auto rounded-xl bg-[color:var(--mts-bg,#f8fafc)] p-3 ring-1 ring-zinc-100">
-            <ResultsBoardView block={previewBlock} team={team} celebrate={false} />
+            <ResultsBoardView block={previewBlock} team={team} celebrate={false} settings={draft} />
           </div>
         </div>
       ) : null}
