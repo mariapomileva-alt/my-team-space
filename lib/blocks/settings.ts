@@ -113,7 +113,7 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
         mode: "season",
         blockTitle: "Results board",
         seasonName: `${new Date().getFullYear()} Season`,
-        categories: ["Triathlon", "Running", "Swimming"],
+        categories: [],
         usePointsRating: true,
         medalsOnly: false,
         scoring: {

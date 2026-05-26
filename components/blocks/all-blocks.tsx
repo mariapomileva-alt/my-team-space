@@ -194,10 +194,10 @@ export function BlockSchedule({ team, block, embedded }: BlockProps) {
 }
 
 
-export function BlockResults({ block, embedded }: BlockProps) {
+export function BlockResults({ team, block, embedded }: BlockProps) {
   return (
     <BlockSurface embedded={embedded}>
-      <ResultsBoardView block={block} />
+      <ResultsBoardView block={block} team={team} />
     </BlockSurface>
   );
 }

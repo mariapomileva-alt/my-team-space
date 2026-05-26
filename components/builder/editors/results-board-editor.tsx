@@ -2,7 +2,9 @@
 
 import { ResultsBoardView } from "@/components/results/results-board-view";
 import { rosterFromTeam } from "@/lib/blocks/roster";
+import { CategoryPicker, ResultsCategoryEditor } from "@/components/builder/editors/results-category-editor";
 import {
+  categoryLabel,
   DEFAULT_SCORING,
   duplicateCompetition,
   getResultsBoardSettings,
@@ -11,15 +13,13 @@ import {
   newCompetitionResult,
   newSimpleResult,
   pointsForPlace,
-  SPORT_CATEGORIES,
   type Competition,
   type ResultsBoardSettings,
   type ScoringRules,
   type SimpleResult,
-  type SportCategory,
 } from "@/lib/blocks/results-board";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Tab = "setup" | "competitions" | "scoring" | "preview";
 
@@ -29,8 +29,6 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "scoring", label: "Scoring" },
   { id: "preview", label: "Preview" },
 ];
-
-const CATEGORY_OPTIONS = SPORT_CATEGORIES.filter((c) => c !== "All");
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return <label className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-500">{children}</label>;
@@ -51,12 +49,19 @@ export function ResultsBoardEditor({
 }) {
   const [tab, setTab] = useState<Tab>("competitions");
   const [openComp, setOpenComp] = useState<Set<string>>(() => new Set());
-  const s = getResultsBoardSettings(block);
+  const [draft, setDraft] = useState<ResultsBoardSettings>(() => getResultsBoardSettings(block));
   const roster = rosterFromTeam(team);
 
+  useEffect(() => {
+    setDraft(getResultsBoardSettings(block));
+  }, [block.id]);
+
   function save(patch: Partial<ResultsBoardSettings>) {
-    const current = getResultsBoardSettings(block);
-    onPatchBlock(block.id, { settings: { ...current, ...patch } });
+    setDraft((prev) => {
+      const next = { ...prev, ...patch };
+      onPatchBlock(block.id, { settings: next });
+      return next;
+    });
   }
 
   function toggleComp(id: string) {
@@ -68,13 +73,10 @@ export function ResultsBoardEditor({
     });
   }
 
-  const previewBlock = useMemo(
-    () => ({ ...block, settings: { ...block.settings, ...s } }),
-    [block, s],
-  );
+  const previewBlock = useMemo(() => ({ ...block, settings: draft }), [block, draft]);
 
   return (
-    <div className="relative z-10 space-y-4">
+    <div className="relative z-20 space-y-4" onClick={(e) => e.stopPropagation()}>
       <div className="flex flex-wrap gap-1 rounded-2xl bg-zinc-100/80 p-1">
         {TABS.map((t) => (
           <button
@@ -97,7 +99,7 @@ export function ResultsBoardEditor({
           </p>
           <div>
             <FieldLabel>Block title</FieldLabel>
-            <input className={inputClass()} value={s.blockTitle} onChange={(e) => save({ blockTitle: e.target.value })} />
+            <input className={inputClass()} value={draft.blockTitle} onChange={(e) => save({ blockTitle: e.target.value })} />
           </div>
           <div>
             <FieldLabel>Mode</FieldLabel>
@@ -113,7 +115,7 @@ export function ResultsBoardEditor({
                   type="button"
                   onClick={() => save({ mode: m.id })}
                   className={`rounded-xl border px-3 py-2 text-left text-xs ${
-                    s.mode === m.id ? "border-indigo-400 bg-indigo-50 ring-2 ring-indigo-100" : "border-zinc-200"
+                    draft.mode === m.id ? "border-indigo-400 bg-indigo-50 ring-2 ring-indigo-100" : "border-zinc-200"
                   }`}
                 >
                   <span className="font-semibold">{m.label}</span>
@@ -122,39 +124,20 @@ export function ResultsBoardEditor({
               ))}
             </div>
           </div>
-          {s.mode === "season" ? (
+          {draft.mode === "season" ? (
             <>
               <div>
                 <FieldLabel>Season name</FieldLabel>
                 <input
                   className={inputClass()}
                   placeholder="2026 Season"
-                  value={s.seasonName}
+                  value={draft.seasonName}
                   onChange={(e) => save({ seasonName: e.target.value })}
                 />
               </div>
               <div>
-                <FieldLabel>Sport categories enabled</FieldLabel>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {CATEGORY_OPTIONS.map((cat) => {
-                    const on = s.categories.includes(cat);
-                    return (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => {
-                          const next = on ? s.categories.filter((c) => c !== cat) : [...s.categories, cat];
-                          save({ categories: next.length ? next : [cat] });
-                        }}
-                        className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
-                          on ? "bg-indigo-600 text-white" : "border border-zinc-200 text-zinc-600"
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    );
-                  })}
-                </div>
+                <FieldLabel>Your categories</FieldLabel>
+                <ResultsCategoryEditor settings={draft} onSave={save} />
               </div>
             </>
           ) : null}
@@ -163,17 +146,17 @@ export function ResultsBoardEditor({
 
       {tab === "competitions" ? (
         <div className="relative z-10 space-y-3">
-          {s.mode === "simple" ? (
+          {draft.mode === "simple" ? (
             <>
               <p className="rounded-xl bg-amber-50 px-3 py-2 text-[11px] text-amber-900 ring-1 ring-amber-100">
                 Simple mode — for a full season table with auto points, switch to <strong>Season</strong> in the
                 Setup tab.
               </p>
-              <SimpleResultsEditor settings={s} roster={roster} onSave={save} />
+              <SimpleResultsEditor settings={draft} roster={roster} onSave={save} />
             </>
           ) : (
             <SeasonCompetitionsEditor
-              settings={s}
+              settings={draft}
               roster={roster}
               openComp={openComp}
               onToggleComp={toggleComp}
@@ -184,13 +167,15 @@ export function ResultsBoardEditor({
       ) : null}
 
       {tab === "scoring" ? (
-        <ScoringEditor settings={s} onSave={save} />
+        <ScoringEditor settings={draft} onSave={save} />
       ) : null}
 
       {tab === "preview" ? (
-        <div className="rounded-2xl border border-indigo-100 bg-gradient-to-b from-indigo-50/40 to-white p-4">
-          <p className="mb-3 text-xs text-zinc-500">How families will see this block on the team page.</p>
-          <ResultsBoardView block={previewBlock} />
+        <div className="rounded-2xl border border-indigo-100 bg-gradient-to-b from-indigo-50/40 to-white p-3 sm:p-4">
+          <p className="mb-3 text-xs text-zinc-500">Live preview — same layout as the published team page.</p>
+          <div className="max-h-[min(70vh,640px)] overflow-y-auto rounded-xl bg-[color:var(--mts-bg,#f8fafc)] p-3 ring-1 ring-zinc-100">
+            <ResultsBoardView block={previewBlock} team={team} />
+          </div>
         </div>
       ) : null}
     </div>
@@ -329,7 +314,7 @@ function SeasonCompetitionsEditor({
               <div className="min-w-0">
                 <p className="truncate font-semibold text-zinc-900">{comp.name || "New competition"}</p>
                 <p className="text-[11px] text-zinc-500">
-                  {comp.date || "No date"} · {comp.category} · {comp.results.length} athletes
+                  {comp.date || "No date"} · {categoryLabel(s, comp.categoryId)} · {comp.results.length} athletes
                 </p>
               </div>
               <span className="text-zinc-400">{open ? "▾" : "▸"}</span>
@@ -349,17 +334,12 @@ function SeasonCompetitionsEditor({
                     value={comp.date}
                     onChange={(e) => updateComp(comp.id, { date: e.target.value })}
                   />
-                  <select
-                    className={inputClass()}
-                    value={comp.category}
-                    onChange={(e) => updateComp(comp.id, { category: e.target.value as SportCategory })}
-                  >
-                    {SPORT_CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
+                  <CategoryPicker
+                    settings={s}
+                    value={comp.categoryId}
+                    onChange={(categoryId) => updateComp(comp.id, { categoryId })}
+                    onSaveCategories={(categories) => onSave({ categories })}
+                  />
                 </div>
                 {comp.results.map((r) => (
                   <AthleteResultRow
@@ -410,9 +390,12 @@ function SeasonCompetitionsEditor({
       <button
         type="button"
         className="w-full rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 py-3 text-sm font-bold text-white shadow-md"
-        onClick={() => {
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
           const c = newCompetition();
-          setComps([c, ...comps]);
+          const next = [c, ...comps];
+          setComps(next);
           onToggleComp(c.id);
         }}
       >

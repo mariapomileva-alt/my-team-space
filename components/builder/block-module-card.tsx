@@ -45,12 +45,7 @@ export function BlockModuleCard({
   const style = { transform: CSS.Transform.toString(transform), transition };
 
   return (
-    <motion.li
-      ref={setNodeRef}
-      style={style}
-      layout
-      className={`list-none ${builderCardGridClass(block)} ${builderCardSizeClass(block.type)}`}
-    >
+    <motion.li layout className={`list-none ${builderCardGridClass(block)} ${builderCardSizeClass(block.type)}`}>
       <motion.article
         whileHover={block.enabled ? { y: -2 } : undefined}
         transition={{ type: "spring", stiffness: 420, damping: 28 }}
@@ -67,7 +62,7 @@ export function BlockModuleCard({
         )}
       >
         <motion.div
-          className={`pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${
+          className={`pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${
             isGallery
               ? "bg-gradient-to-br from-rose-50/50 via-transparent to-indigo-50/40"
               : isResults
@@ -76,7 +71,7 @@ export function BlockModuleCard({
           }`}
         />
 
-        <motion.div className="relative flex flex-1 flex-col p-3.5 sm:p-4">
+        <motion.div ref={setNodeRef} style={style} className="relative z-[1] flex flex-1 flex-col p-3.5 sm:p-4">
           <div className="flex items-start gap-3">
             <button
               type="button"
@@ -143,7 +138,9 @@ export function BlockModuleCard({
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="relative z-10 overflow-hidden"
+              className="relative z-20 overflow-hidden bg-white"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               <BlockSettingsEditor
                 block={block}

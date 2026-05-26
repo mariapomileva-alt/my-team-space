@@ -67,6 +67,7 @@ export function TeamPageBuilder({
   teamRef.current = team;
 
   useEffect(() => {
+    if (dirtyRef.current) return;
     setTeam(initialTeam);
   }, [initialTeam]);
 
