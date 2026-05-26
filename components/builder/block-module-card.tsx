@@ -6,6 +6,8 @@ import {
   builderCardGridClass,
   builderCardSizeClass,
 } from "@/lib/blocks/builder-section-styles";
+import { BUILDER_RADIUS_CHOICE } from "@/lib/builder/layout";
+import { cn } from "@/lib/utils/cn";
 import { BLOCK_META } from "@/lib/blocks/meta";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { useSortable } from "@dnd-kit/sortable";
@@ -52,15 +54,17 @@ export function BlockModuleCard({
       <motion.article
         whileHover={block.enabled ? { y: -2 } : undefined}
         transition={{ type: "spring", stiffness: 420, damping: 28 }}
-        className={`group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.35rem] border bg-white/95 transition-[box-shadow,border-color,transform] duration-300 ${
+        className={cn(
+          "group relative flex h-full min-w-0 flex-col overflow-hidden border bg-white/95 transition-[box-shadow,border-color,transform] duration-300",
+          BUILDER_RADIUS_CHOICE,
           block.enabled
             ? expanded
               ? "border-indigo-300/90 shadow-[0_0_0_3px_rgba(99,102,241,0.18),0_12px_40px_-16px_rgba(99,102,241,0.35)]"
               : "border-white/90 shadow-[0_4px_24px_-12px_rgba(15,23,42,0.12)] hover:shadow-[0_16px_48px_-20px_rgba(99,102,241,0.28)]"
-            : "border-zinc-200/80 opacity-75 shadow-sm"
-        } ${isDragging ? "z-30 scale-[1.02] shadow-2xl ring-2 ring-indigo-400" : ""} ${
-          isResults ? "ring-1 ring-orange-100/80" : ""
-        }`}
+            : "border-zinc-200/80 opacity-75 shadow-sm",
+          isDragging && "z-30 scale-[1.02] shadow-2xl ring-2 ring-indigo-400",
+          isResults && "ring-1 ring-orange-100/80",
+        )}
       >
         <motion.div
           className={`pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${

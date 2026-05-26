@@ -54,11 +54,12 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
     <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
       <div className="overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
         {hasCover ? (
-          <div className="hero-cover relative z-0 h-28 sm:h-32">
-            <img src={s.coverImageUrl} alt="" className="hero-cover__img h-full w-full object-cover" />
-            <div className="hero-cover__overlay absolute inset-0" aria-hidden />
-            <div className="hero-cover__tint absolute inset-0" aria-hidden />
-            <div className="hero-cover__vignette absolute inset-0" aria-hidden />
+          <div className="relative z-0 h-28 sm:h-32">
+            <img src={s.coverImageUrl} alt="" className="h-full w-full object-cover" />
+            <div
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"
+              aria-hidden
+            />
           </div>
         ) : (
           <div className="hero-cover__fallback h-24 sm:h-28" aria-hidden />
@@ -70,7 +71,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
                 <img
                   src={logoSrc}
                   alt=""
-                  className={`hero-logo__img relative z-20 h-14 w-14 shrink-0 rounded-2xl border-4 border-white object-cover shadow-md ${logoOverlap}`}
+                  className={`relative z-20 h-14 w-14 shrink-0 rounded-2xl border-4 border-white object-cover shadow-md ${logoOverlap}`}
                 />
               ) : (
                 <div
@@ -422,7 +423,7 @@ export function BlockGallery({ block, embedded }: BlockProps) {
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {images.map((img, i) => (
-            <img key={i} src={img.url} alt="" className="mts-themed-photo aspect-square rounded-xl object-cover" />
+            <img key={i} src={img.url} alt="" className="aspect-square rounded-xl object-cover" />
           ))}
         </div>
       )}

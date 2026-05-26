@@ -18,42 +18,10 @@
 .mts-shell {
   background: var(--mts-page-bg);
   color: var(--mts-text);
+  transition: background 0.45s ease, color 0.25s ease;
 }
 
-/* Hero cover — photo tint follows active theme (builder + live app) */
-.hero-cover__img,
-.mts-themed-photo {
-  filter: var(--mts-hero-filter, none);
-  transition: filter 0.45s ease;
-}
-
-.hero-logo__img {
-  filter: var(--mts-hero-filter-soft, var(--mts-hero-filter, none));
-  transition: filter 0.45s ease;
-}
-
-.hero-cover__overlay {
-  background: var(--mts-hero-overlay, linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent));
-  mix-blend-mode: multiply;
-  opacity: 0.88;
-  transition: opacity 0.45s ease, background 0.45s ease;
-}
-
-.hero-cover__tint {
-  background: var(--mts-hero-tint, transparent);
-  mix-blend-mode: color;
-  opacity: var(--mts-hero-tint-opacity, 0.42);
-  transition: opacity 0.45s ease, background 0.45s ease;
-}
-
-.hero-cover__vignette {
-  background: var(
-    --mts-hero-vignette,
-    linear-gradient(to top, rgba(15, 23, 42, 0.38), transparent 62%)
-  );
-  pointer-events: none;
-}
-
+/* Hero placeholder when no cover photo uploaded */
 .hero-cover__fallback {
   background: var(--mts-hero-fallback, linear-gradient(120deg, #6366f1, #ec4899));
   transition: background 0.45s ease;
@@ -61,12 +29,6 @@
 
 .hero-card-body {
   background: var(--mts-card, #fff);
-}
-
-/* Public team app — landing-style neutral canvas on light themes */
-.mts-shell:has(.team-app-page) {
-  background: #f5f5f7;
-  background: linear-gradient(180deg, #fafafa 0%, #f5f5f7 42%, #eef2ff 100%);
 }
 
 .team-app-page {
@@ -159,7 +121,7 @@
 
 .builder-live-preview .mts-shell,
 .builder-live-preview .mts-shell--preview {
-  min-height: 0 !important;
+  min-height: 100% !important;
   height: auto !important;
   max-height: none !important;
 }

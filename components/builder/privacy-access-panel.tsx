@@ -1,6 +1,13 @@
 "use client";
 
-import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
+import {
+  BUILDER_FIELD_INPUT,
+  BUILDER_INSET_WELL,
+  BUILDER_PANEL_DESC,
+  BUILDER_PANEL_SURFACE,
+  BUILDER_PANEL_TITLE,
+  builderChoiceClass,
+} from "@/lib/builder/layout";
 import { magicInviteUrl } from "@/lib/team-access";
 import type { TeamSpace, TeamVisibility } from "@/lib/types";
 
@@ -32,12 +39,12 @@ export function PrivacyAccessPanel({
 
   return (
     <section className={BUILDER_PANEL_SURFACE}>
-      <h2 className="text-sm font-bold tracking-tight text-zinc-900">Privacy & access</h2>
-      <p className="mt-1 text-sm text-zinc-500">
+      <h2 className={BUILDER_PANEL_TITLE}>Privacy & access</h2>
+      <p className={BUILDER_PANEL_DESC}>
         No parent passwords. Use a team code or magic link — like a private clubhouse door.
       </p>
 
-      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {(
           [
             { id: "public" as const, label: "Public", hint: "Anyone with the link" },
@@ -49,9 +56,7 @@ export function PrivacyAccessPanel({
             key={opt.id}
             type="button"
             onClick={() => setVisibility(opt.id)}
-            className={`rounded-2xl border p-3 text-left text-sm transition ${
-              visibility === opt.id ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-100" : "border-zinc-200"
-            }`}
+            className={builderChoiceClass(visibility === opt.id, "text-sm")}
           >
             <span className="font-semibold">{opt.label}</span>
             <span className="mt-0.5 block text-xs text-zinc-500">{opt.hint}</span>
@@ -60,10 +65,10 @@ export function PrivacyAccessPanel({
       </div>
 
       {visibility !== "public" ? (
-        <div className="mt-4 space-y-3 rounded-2xl bg-zinc-50 p-4">
+        <div className={`mt-4 ${BUILDER_INSET_WELL}`}>
           <label className="block text-xs font-semibold text-zinc-500">Team access code</label>
           <input
-            className="w-full rounded-xl border border-zinc-200 px-3 py-2 font-mono text-sm"
+            className={`${BUILDER_FIELD_INPUT} font-mono`}
             placeholder="e.g. stars2026"
             value={team.accessCode ?? ""}
             onChange={(e) => onPatchTeam({ accessCode: e.target.value })}

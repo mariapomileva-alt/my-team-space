@@ -2,6 +2,8 @@
 
 import { BUILDER_SECTION_LABELS, type BuilderSection } from "@/lib/blocks/meta";
 import { BUILDER_SECTION_STYLES } from "@/lib/blocks/builder-section-styles";
+import { BUILDER_SECTION_SURFACE } from "@/lib/builder/layout";
+import { cn } from "@/lib/utils/cn";
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 
@@ -23,7 +25,7 @@ export function BuilderSectionPanel({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className={`w-full overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-6 ${skin.gradient} ${skin.border} shadow-[0_4px_32px_-16px_rgba(15,23,42,0.08)]`}
+      className={cn(BUILDER_SECTION_SURFACE, skin.gradient, skin.border)}
     >
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>

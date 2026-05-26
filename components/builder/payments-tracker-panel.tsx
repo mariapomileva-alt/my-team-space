@@ -1,6 +1,13 @@
 "use client";
 
-import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
+import {
+  BUILDER_FIELD_INPUT,
+  BUILDER_PANEL_DESC,
+  BUILDER_PANEL_SURFACE,
+  BUILDER_PANEL_TITLE,
+  BUILDER_RADIUS_CHOICE,
+} from "@/lib/builder/layout";
+import { cn } from "@/lib/utils/cn";
 import type { PaymentStatus, PaymentTrackerRow, TeamSpace } from "@/lib/types";
 
 function uid() {
@@ -47,8 +54,8 @@ export function PaymentsTrackerPanel({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-sm font-bold tracking-tight text-zinc-900">Payments tracker</h2>
-          <p className="mt-1 text-sm text-zinc-500">
+          <h2 className={BUILDER_PANEL_TITLE}>Payments tracker</h2>
+          <p className={BUILDER_PANEL_DESC}>
             Coach-only. Track paid / pending — paste Revolut or Stripe links in messages, not here.
           </p>
         </div>
@@ -66,23 +73,26 @@ export function PaymentsTrackerPanel({
           rows.map((row) => (
             <li
               key={row.id}
-              className="grid gap-2 rounded-xl border border-zinc-100 bg-white p-3 sm:grid-cols-[1fr_auto_auto]"
+              className={cn(
+                "grid gap-2 border border-zinc-100 bg-white p-3 sm:grid-cols-[1fr_auto_auto]",
+                BUILDER_RADIUS_CHOICE,
+              )}
             >
               <input
-                className="rounded-lg border border-zinc-100 px-2 py-1.5 text-sm"
+                className={BUILDER_FIELD_INPUT}
                 value={row.label}
                 onChange={(e) => update(row.id, { label: e.target.value })}
                 placeholder="Name"
               />
               <input
-                className="rounded-lg border border-zinc-100 px-2 py-1.5 text-sm"
+                className={BUILDER_FIELD_INPUT}
                 value={row.month}
                 onChange={(e) => update(row.id, { month: e.target.value })}
                 placeholder="Month"
               />
               <div className="flex gap-2">
                 <select
-                  className="min-w-0 flex-1 rounded-lg border border-zinc-100 px-2 py-1.5 text-sm"
+                  className={cn("min-w-0 flex-1", BUILDER_FIELD_INPUT)}
                   value={row.status}
                   onChange={(e) => update(row.id, { status: e.target.value as PaymentStatus })}
                 >

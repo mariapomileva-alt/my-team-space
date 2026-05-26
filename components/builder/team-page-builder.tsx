@@ -10,9 +10,12 @@ import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-ac
 import {
   BUILDER_EDITOR_COLUMN,
   BUILDER_PAGE_SHELL,
+  BUILDER_PANEL_DESC,
   BUILDER_PANEL_SURFACE,
+  BUILDER_PANEL_TITLE,
   BUILDER_PREVIEW_COLUMN,
   BUILDER_WORKSPACE_GRID,
+  builderChoiceClass,
 } from "@/lib/builder/layout";
 import {
   BUILDER_SECTION_ORDER,
@@ -231,19 +234,15 @@ export function TeamPageBuilder({
                 animate={{ opacity: 1, y: 0 }}
                 className={BUILDER_PANEL_SURFACE}
               >
-                <h2 className="text-sm font-bold tracking-tight text-zinc-900">Team colors</h2>
-                <p className="mt-1 text-sm text-zinc-500">Pick a palette — your app updates instantly.</p>
-                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <h2 className={BUILDER_PANEL_TITLE}>Team colors</h2>
+                <p className={BUILDER_PANEL_DESC}>Pick a palette — your app updates instantly.</p>
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {THEMES.map((t) => (
                     <button
                       key={t.id}
                       type="button"
                       onClick={() => setTheme(t.id)}
-                      className={`rounded-2xl border p-4 text-left text-xs transition-all duration-200 hover:border-indigo-300 hover:shadow-md ${
-                        team.themeId === t.id
-                          ? "border-indigo-400 bg-indigo-50/50 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
-                          : "border-zinc-200/90 bg-white"
-                      }`}
+                      className={builderChoiceClass(team.themeId === t.id, "text-xs")}
                     >
                       <div className="flex gap-1.5">
                         <span

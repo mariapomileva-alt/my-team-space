@@ -1,5 +1,6 @@
 "use client";
 
+import { BUILDER_TOOLBAR_SURFACE } from "@/lib/builder/layout";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -26,7 +27,7 @@ export function BuilderToolbar({
       animate={{ opacity: 1, y: 0 }}
       className="sticky top-3 z-50 mb-6 w-full"
     >
-      <motion.div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.35rem] border border-white/60 bg-white/75 px-4 py-3 shadow-[0_8px_40px_-12px_rgba(99,102,241,0.25),0_0_0_1px_rgba(255,255,255,0.8)_inset] backdrop-blur-xl sm:px-5">
+      <motion.div className={BUILDER_TOOLBAR_SURFACE}>
         <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-indigo-600">Building your team app</p>
           <h1 className="truncate text-lg font-bold tracking-tight text-zinc-900 sm:text-xl">{teamName}</h1>

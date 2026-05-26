@@ -59,7 +59,7 @@ export function BuilderLivePreview({
 
         <div
           ref={viewportRef}
-          className="builder-preview-viewport absolute left-0 right-0 z-0 overflow-x-hidden overflow-y-auto overscroll-contain bg-[#f8fafc]"
+          className="builder-preview-viewport absolute left-0 right-0 z-0 overflow-x-hidden overflow-y-auto overscroll-contain bg-transparent"
           style={{ top: NOTCH_H, height: VIEWPORT_H, width: "100%" }}
         >
           <TeamShell themeId={team.themeId} preview>
