@@ -143,7 +143,7 @@ export function BlockModuleCard({
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden"
+              className="relative z-10 overflow-hidden"
             >
               <BlockSettingsEditor
                 block={block}

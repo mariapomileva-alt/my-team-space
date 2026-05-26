@@ -295,8 +295,7 @@ function normalizeSimple(raw: unknown): SimpleResult[] {
         medal: str(row.medal, medalForPlace(num(row.place, 1))),
         note: row.note?.trim(),
       };
-    })
-    .filter((r) => r.athleteName);
+    });
 }
 
 function normalizeCompetitions(raw: unknown): Competition[] {
@@ -331,11 +330,9 @@ function normalizeCompetitions(raw: unknown): Competition[] {
                   note: r.note?.trim(),
                 } satisfies CompetitionAthleteResult;
               })
-              .filter((r) => r.athleteName)
           : [],
       };
-    })
-    .filter((c) => c.name);
+    });
 }
 
 function collectEvents(settings: ResultsBoardSettings): ResultEvent[] {
@@ -344,6 +341,7 @@ function collectEvents(settings: ResultsBoardSettings): ResultEvent[] {
 
   if (settings.mode === "simple") {
     for (const r of settings.simpleResults) {
+      if (!r.athleteName?.trim()) continue;
       const place = r.place > 0 ? r.place : 0;
       events.push({
         athleteKey: athleteKey("", r.athleteName),
@@ -361,7 +359,9 @@ function collectEvents(settings: ResultsBoardSettings): ResultEvent[] {
   }
 
   for (const comp of settings.competitions) {
+    if (!comp.name?.trim()) continue;
     for (const r of comp.results) {
+      if (!r.athleteName?.trim() && r.status !== "skipped") continue;
       const skipped = r.status === "skipped";
       const place = skipped ? 0 : r.place > 0 ? r.place : 0;
       const pts =

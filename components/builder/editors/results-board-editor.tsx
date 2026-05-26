@@ -74,7 +74,7 @@ export function ResultsBoardEditor({
   );
 
   return (
-    <div className="space-y-4">
+    <div className="relative z-10 space-y-4">
       <div className="flex flex-wrap gap-1 rounded-2xl bg-zinc-100/80 p-1">
         {TABS.map((t) => (
           <button
@@ -162,9 +162,15 @@ export function ResultsBoardEditor({
       ) : null}
 
       {tab === "competitions" ? (
-        <div className="space-y-3">
+        <div className="relative z-10 space-y-3">
           {s.mode === "simple" ? (
-            <SimpleResultsEditor settings={s} roster={roster} onSave={save} />
+            <>
+              <p className="rounded-xl bg-amber-50 px-3 py-2 text-[11px] text-amber-900 ring-1 ring-amber-100">
+                Simple mode — for a full season table with auto points, switch to <strong>Season</strong> in the
+                Setup tab.
+              </p>
+              <SimpleResultsEditor settings={s} roster={roster} onSave={save} />
+            </>
           ) : (
             <SeasonCompetitionsEditor
               settings={s}

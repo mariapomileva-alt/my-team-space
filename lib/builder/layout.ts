@@ -79,4 +79,4 @@ export const BUILDER_WORKSPACE_GRID =
 export const BUILDER_EDITOR_COLUMN = "min-w-0 w-full space-y-8 overflow-x-clip";
 
 export const BUILDER_PREVIEW_COLUMN =
-  "mx-auto hidden w-full max-w-[360px] shrink-0 lg:sticky lg:top-[5.75rem] lg:z-20 lg:col-start-2 lg:row-start-1 lg:mx-0 lg:block lg:w-[360px] lg:max-w-[360px] lg:justify-self-end";
+  "mx-auto hidden w-full max-w-[360px] shrink-0 lg:sticky lg:top-[5.75rem] lg:z-10 lg:col-start-2 lg:row-start-1 lg:mx-0 lg:block lg:w-[360px] lg:max-w-[360px] lg:justify-self-end";
