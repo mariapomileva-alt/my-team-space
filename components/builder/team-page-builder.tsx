@@ -21,7 +21,7 @@ import {
   BUILDER_SECTION_ORDER,
   groupBlocksBySection,
 } from "@/lib/blocks/meta";
-import { formatBuilderSaveLabel } from "@/lib/builder/save-status";
+import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
 import { THEMES } from "@/lib/themes";
 import type { BlockInstance, TeamSpace, ThemeId } from "@/lib/types";
@@ -57,6 +57,7 @@ export function TeamPageBuilder({
   });
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [saveTick, setSaveTick] = useState(0);
   const [msg, setMsg] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -95,24 +96,34 @@ export function TeamPageBuilder({
     }));
   }, []);
 
-  const persist = useCallback(async (silent: boolean) => {
+  const persist = useCallback(async (silent: boolean): Promise<boolean> => {
     setSaveState("saving");
     if (!silent) setMsg(null);
     try {
       await saveTeamContent(teamId, teamRef.current);
+      dirtyRef.current = false;
       setLastSaved(new Date());
       setSaveState("saved");
+      setSaveError(null);
       router.refresh();
+      return true;
     } catch (e) {
+      dirtyRef.current = true;
+      const detail = e instanceof Error ? e.message : "Save failed";
       setSaveState("error");
-      if (!silent) setMsg(e instanceof Error ? e.message : "Save failed");
+      setSaveError(humanizeSaveError(detail));
+      if (silent) {
+        setMsg(null);
+      } else {
+        setMsg(detail);
+      }
+      return false;
     }
   }, [teamId, router]);
 
   useEffect(() => {
     if (!dirtyRef.current) return;
     const t = window.setTimeout(() => {
-      dirtyRef.current = false;
       void persist(true);
     }, AUTOSAVE_MS);
     return () => window.clearTimeout(t);
@@ -175,8 +186,10 @@ export function TeamPageBuilder({
 
   function publish() {
     startTransition(async () => {
-      await persist(false);
-      setMsg("Published! Families see your latest changes.");
+      const ok = await persist(false);
+      if (ok) {
+        setMsg("Published! Families see your latest changes.");
+      }
     });
   }
 
@@ -204,6 +217,7 @@ export function TeamPageBuilder({
           teamName={team.name}
           saveLabel={savedLabel}
           saveState={saveState}
+          saveError={saveError}
           pending={pending}
           publicUrl={publicUrl}
           onPublish={publish}

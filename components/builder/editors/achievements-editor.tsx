@@ -1,6 +1,7 @@
 "use client";
 
 import type { BlockInstance, TeamSpace } from "@/lib/types";
+import { rosterFromTeam } from "@/lib/blocks/roster";
 import {
   ACHIEVEMENT_ICONS,
   getBlockSettings,
@@ -8,13 +9,7 @@ import {
   type AchievementCard,
 } from "@/lib/blocks/settings";
 
-type Settings = { cards: AchievementCard[]; roster?: { id: string; name: string }[] };
-
-function rosterFromTeam(team: TeamSpace): { id: string; name: string }[] {
-  const att = team.blocks.find((b) => b.type === "attendance");
-  const roster = (att?.settings?.roster as { id: string; name: string }[] | undefined) ?? [];
-  return roster.filter((p) => p.name?.trim());
-}
+type Settings = { cards: AchievementCard[] };
 
 export function AchievementsEditor({
   block,

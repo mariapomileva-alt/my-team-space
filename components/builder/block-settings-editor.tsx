@@ -11,6 +11,7 @@ import { LogisticsEditor } from "./editors/logistics-editor";
 import { PollsEditor } from "./editors/polls-editor";
 import { RosterEditor } from "./editors/roster-editor";
 import { ScheduleEditor } from "./editors/schedule-editor";
+import { ResultsBoardEditor } from "./editors/results-board-editor";
 import { SimpleBlocksEditor } from "./editors/simple-blocks-editor";
 import { QuickLinksEditor } from "./editors/quick-links-editor";
 import { EmbedEditor } from "./editors/embed-editor";
@@ -24,7 +25,6 @@ type Props = {
 };
 
 const SIMPLE_TYPES = new Set([
-  "results",
   "contacts",
   "documents",
   "team_feed",
@@ -58,6 +58,9 @@ export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam }: 
       ) : null}
       {block.type === "achievements" ? (
         <AchievementsEditor block={block} team={team} onPatchBlock={onPatchBlock} />
+      ) : null}
+      {block.type === "results" ? (
+        <ResultsBoardEditor block={block} team={team} onPatchBlock={onPatchBlock} />
       ) : null}
       {block.type === "attendance" || block.type === "birthdays" ? (
         <RosterEditor block={block} team={team} onPatchBlock={onPatchBlock} />

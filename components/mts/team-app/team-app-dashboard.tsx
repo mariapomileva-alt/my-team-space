@@ -162,13 +162,9 @@ function DashboardRowView({
   }
 
   return (
-    <div className={row.size === "half" ? "grid grid-cols-2 gap-2.5" : ""}>
-      <PreviewAnchor blockId={row.block.id}>
-        <div className={row.size === "half" ? "min-h-[148px]" : "min-h-[120px]"}>
-          <SoloWidget team={team} block={row.block} onOpen={onOpen} index={base} compact={row.size === "half"} />
-        </div>
-      </PreviewAnchor>
-    </div>
+    <PreviewAnchor blockId={row.block.id}>
+      <SoloWidget team={team} block={row.block} onOpen={onOpen} index={base} />
+    </PreviewAnchor>
   );
 }
 

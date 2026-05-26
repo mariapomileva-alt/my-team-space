@@ -2,6 +2,7 @@ import { BlockEmpty } from "@/components/blocks/block-empty";
 import { BlockHeading, BlockSurface } from "@/components/blocks/block-surface";
 import { CampTripConfirm } from "@/components/blocks/camp-trip-confirm";
 import { PollVote } from "@/components/blocks/poll-vote";
+import { ResultsBoardView } from "@/components/results/results-board-view";
 import { galleryEmbedSrc, isGooglePhotosAlbumUrl } from "@/lib/gallery-embed";
 import { MtsBadge } from "@/components/mts/card";
 import { IntegrationsHub } from "@/components/integrations/integrations-hub";
@@ -194,24 +195,9 @@ export function BlockSchedule({ team, block, embedded }: BlockProps) {
 
 
 export function BlockResults({ block, embedded }: BlockProps) {
-  const s = getBlockSettings<ListBlockSettings>(block);
-  const items = (s.items ?? []).filter((row) => row.name?.trim());
   return (
     <BlockSurface embedded={embedded}>
-      <BlockHeading embedded={embedded}>Results & highlights</BlockHeading>
-      {items.length === 0 ? (
-        <BlockEmpty message="Results and highlights will appear here." />
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-3">
-          {items.map((x) => (
-            <div key={x.id} className="rounded-2xl border border-[color:var(--mts-card-border)] p-4 text-center">
-              {x.emoji ? <div className="text-2xl">{x.emoji}</div> : null}
-              <div className="font-semibold">{x.name}</div>
-              {x.subtitle ? <div className="text-xs text-[color:var(--mts-muted)]">{x.subtitle}</div> : null}
-            </div>
-          ))}
-        </div>
-      )}
+      <ResultsBoardView block={block} />
     </BlockSurface>
   );
 }

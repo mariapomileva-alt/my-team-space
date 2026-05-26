@@ -8,6 +8,7 @@ export function BuilderToolbar({
   teamName,
   saveLabel,
   saveState,
+  saveError,
   pending,
   publicUrl,
   onPublish,
@@ -16,6 +17,7 @@ export function BuilderToolbar({
   teamName: string;
   saveLabel: string;
   saveState: "idle" | "saving" | "saved" | "error";
+  saveError?: string | null;
   pending: boolean;
   publicUrl: string;
   onPublish: () => void;
@@ -44,6 +46,11 @@ export function BuilderToolbar({
             />
             {saveLabel}
           </p>
+          {saveState === "error" && saveError ? (
+            <p className="mt-1 max-w-md text-[11px] leading-snug text-red-600" title={saveError}>
+              {saveError}
+            </p>
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button

@@ -149,7 +149,7 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
     type: "results",
     title: "Results board",
     emoji: "🏁",
-    description: "Scores and meet outcomes.",
+    description: "Season rankings, medals, and competition points.",
     section: "engagement",
     previewShape: "grid",
     priority: 9,

@@ -31,17 +31,26 @@ function findBlock(blocks: BlockInstance[], type: BlockType, used: Set<string>):
 export function buildDashboardRows(blocks: BlockInstance[]): DashboardRow[] {
   const used = new Set<string>();
   const rows: DashboardRow[] = [];
+  const pairOrphans: BlockInstance[] = [];
 
   for (const [leftType, rightType, variant] of PAIRS) {
     const left = findBlock(blocks, leftType, used);
     const right = findBlock(blocks, rightType, used);
     if (left && right) {
       rows.push({ kind: "pair", variant, left, right });
-    } else if (left) {
-      rows.push({ kind: "solo", block: left, size: "half" });
-    } else if (right) {
-      rows.push({ kind: "solo", block: right, size: "half" });
+    } else {
+      if (left) pairOrphans.push(left);
+      if (right) pairOrphans.push(right);
     }
+  }
+
+  let o = 0;
+  while (o + 1 < pairOrphans.length) {
+    rows.push({ kind: "pair-compact", left: pairOrphans[o], right: pairOrphans[o + 1] });
+    o += 2;
+  }
+  for (; o < pairOrphans.length; o++) {
+    rows.push({ kind: "solo", block: pairOrphans[o], size: "full" });
   }
 
   for (const { type, variant } of WIDE_ORDER) {

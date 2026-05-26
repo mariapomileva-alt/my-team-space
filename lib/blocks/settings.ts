@@ -108,6 +108,27 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
         customUrl: "",
       };
     case "results":
+      return {
+        enabled: true,
+        mode: "season",
+        blockTitle: "Results board",
+        seasonName: `${new Date().getFullYear()} Season`,
+        categories: ["Triathlon", "Running", "Swimming"],
+        usePointsRating: true,
+        medalsOnly: false,
+        scoring: {
+          first: 10,
+          second: 8,
+          third: 6,
+          fourth: 4,
+          fifth: 3,
+          sixth: 2,
+          other: 1,
+          skipped: 0,
+        },
+        competitions: [],
+        simpleResults: [],
+      };
     case "contacts":
     case "documents":
     case "team_feed":
