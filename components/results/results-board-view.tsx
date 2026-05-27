@@ -6,6 +6,7 @@ import {
   resolveResultsBoardSettings,
   resultsBoardHasContent,
   resultsBoardHasDraft,
+  totalAchievements,
   type LeaderboardRow,
   type ResultsBoardSettings,
   type ResultsFilter,
@@ -111,6 +112,22 @@ function CelebrationNotice({ children }: { children: React.ReactNode }) {
   );
 }
 
+function MedalStats({
+  row,
+  size = "sm",
+}: {
+  row: Pick<LeaderboardRow, "gold" | "silver" | "bronze" | "honors">;
+  size?: "sm" | "xs";
+}) {
+  const cls = size === "xs" ? "text-[10px]" : "text-[11px]";
+  return (
+    <p className={`font-medium text-zinc-500 ${cls}`}>
+      🥇 {row.gold} · 🥈 {row.silver} · 🥉 {row.bronze}
+      {row.honors > 0 ? ` · 🏅 ${row.honors}` : ""}
+    </p>
+  );
+}
+
 function PodiumCard({
   row,
   place,
@@ -125,7 +142,7 @@ function PodiumCard({
   celebrate?: AthleteCelebration;
 }) {
   const isFirst = place === 1;
-  const medals = { 1: "🏆", 2: "🥈", 3: "🥉" } as const;
+  const podiumMedals = { 1: "🥇", 2: "🥈", 3: "🥉" } as const;
   const placeLabels = { 1: "1st", 2: "2nd", 3: "3rd" } as const;
 
   const celebrateClass = [
@@ -155,7 +172,7 @@ function PodiumCard({
       >
         {placeLabels[place]}
       </span>
-      <span className={isFirst ? "text-4xl drop-shadow-sm" : "text-2xl"}>{medals[place]}</span>
+      <span className={isFirst ? "text-4xl drop-shadow-sm" : "text-2xl"}>{podiumMedals[place]}</span>
       <div className={isFirst ? "mt-3" : "mt-2"}>
         <AthleteAvatar
           name={row.athleteName}
@@ -180,9 +197,9 @@ function PodiumCard({
         {row.totalPoints}
         <span className={isFirst ? "ml-1 text-sm font-semibold text-amber-600/90" : " text-xs"}> pts</span>
       </p>
-      <p className={`font-medium text-zinc-500 ${isFirst ? "mt-1 text-[11px]" : "text-[10px]"}`}>
-        🥇 {row.gold} · 🥈 {row.silver} · 🥉 {row.bronze}
-      </p>
+      <div className={`${isFirst ? "mt-1" : "mt-0.5"}`}>
+        <MedalStats row={row} size={isFirst ? "sm" : "xs"} />
+      </div>
       <div className={`w-full overflow-hidden rounded-full bg-zinc-100/90 ${isFirst ? "mt-3 h-2" : "mt-2 h-1.5"}`}>
         <div
           className={`h-full rounded-full transition-all duration-700 ${
@@ -243,7 +260,7 @@ function PodiumSection({
         </h4>
         {first ? (
           <p className="mx-auto mt-3 max-w-xs text-[13px] leading-relaxed text-zinc-500">
-            {first.totalPoints} points · {first.gold + first.silver + first.bronze} medals earned
+            {first.totalPoints} points · {totalAchievements(first)} results counted
           </p>
         ) : null}
         {heroNewLeader && first ? (
@@ -345,9 +362,9 @@ function LeaderboardCard({
           <RankDelta delta={row.rankDelta} celebrate={celebrate?.rankUp} />
         </div>
         <p className="mt-0.5 text-[12px] font-semibold text-[color:var(--mts-primary)]">{row.totalPoints} points</p>
+        <MedalStats row={row} size="xs" />
         <p className="mt-0.5 text-[11px] text-zinc-500">
-          🥇 {row.gold} · 🥈 {row.silver} · 🥉 {row.bronze} · {row.competitions} events
-          {row.bestPlace ? ` · best #${row.bestPlace}` : ""}
+          {row.competitions} events{row.bestPlace ? ` · best #${row.bestPlace}` : ""}
         </p>
         <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-zinc-100">
           <div
@@ -391,7 +408,7 @@ function CompetitionCard({ comp }: { comp: import("@/lib/blocks/results-board").
         </span>
       </div>
       {comp.topThree.length > 0 ? (
-        <ul className="mt-3 space-y-1.5">
+        <ul className="mt-3 max-h-40 space-y-1.5 overflow-y-auto">
           {comp.topThree.map((t) => (
             <li
               key={`${t.name}-${t.place}`}
@@ -401,7 +418,7 @@ function CompetitionCard({ comp }: { comp: import("@/lib/blocks/results-board").
                 <span>{t.medal}</span>
                 <span className="truncate">{t.name}</span>
               </span>
-              <span className="tabular-nums text-zinc-400">#{t.place}</span>
+              <span className="shrink-0 tabular-nums text-zinc-400">#{t.place}</span>
             </li>
           ))}
         </ul>

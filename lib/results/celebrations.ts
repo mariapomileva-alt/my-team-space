@@ -1,4 +1,4 @@
-import type { LeaderboardRow } from "@/lib/blocks/results-board";
+import { totalAchievements, type LeaderboardRow } from "@/lib/blocks/results-board";
 
 export type AthleteCelebration = {
   newLeader: boolean;
@@ -53,7 +53,7 @@ export function saveResultsSnapshot(key: string, leaderboard: LeaderboardRow[]):
       athletes[r.athleteKey] = {
         rank: r.rank,
         badges: [...r.badges],
-        medals: r.gold + r.silver + r.bronze,
+        medals: totalAchievements(r),
         points: r.totalPoints,
       };
     }
@@ -87,7 +87,7 @@ export function diffResultsCelebrations(
     const prev = previous.athletes[row.athleteKey];
     if (!prev) continue;
 
-    const medals = row.gold + row.silver + row.bronze;
+    const medals = totalAchievements(row);
     const newBadges = row.badges.filter((b) => !prev.badges.includes(b));
     const rankUp = row.rank < prev.rank;
     const firstMedal = prev.medals === 0 && medals > 0;

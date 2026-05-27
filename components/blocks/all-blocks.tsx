@@ -20,17 +20,10 @@ import {
   type SocialKey,
   type WeatherSettings,
 } from "@/lib/blocks/settings";
+import { SocialLinkButtons, heroSocialLinks, type SocialLinkItem } from "@/components/social/social-link-buttons";
+import { normalizeSocialUrl } from "@/lib/social/links";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
-
-const SOCIAL_LABELS: Record<SocialKey, string> = {
-  instagram: "Instagram",
-  telegram: "Telegram",
-  whatsapp: "WhatsApp",
-  tiktok: "TikTok",
-  facebook: "Facebook",
-  youtube: "YouTube",
-};
 
 type HeroSettings = {
   quote: string;
@@ -47,7 +40,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   const s = getBlockSettings<HeroSettings>(block);
   const logoSrc = team.logoUrl?.trim() || s.teamPhotoUrl?.trim();
   const quote = s.quote || "Show up. Cheer loud. Grow together.";
-  const socialEntries = (Object.keys(SOCIAL_LABELS) as SocialKey[]).filter((k) => s.social?.[k]?.trim());
+  const socialLinks = heroSocialLinks(s.social ?? {});
   const hasCover = Boolean(s.coverImageUrl?.trim());
   const logoOverlap = hasCover ? "-mt-10" : "";
 
@@ -96,20 +89,8 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
             </span>
           </div>
           <p className="mt-3 text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]">“{quote}”</p>
-          {socialEntries.length > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {socialEntries.map((key) => (
-                <a
-                  key={key}
-                  href={s.social![key]!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-10 items-center justify-center rounded-full bg-[color:var(--mts-primary)] px-3.5 text-[12px] font-semibold text-white shadow-sm transition hover:opacity-95 active:scale-[0.98]"
-                >
-                  {SOCIAL_LABELS[key]}
-                </a>
-              ))}
-            </div>
+          {socialLinks.length > 0 ? (
+            <SocialLinkButtons links={socialLinks} className="mt-3" />
           ) : null}
         </div>
       </div>
@@ -549,25 +530,23 @@ export function BlockQuickLinks({ block, embedded }: BlockProps) {
     customUrl: string;
   }>(block);
   const links = [
-    s.whatsapp?.trim() ? { label: "WhatsApp", href: s.whatsapp } : null,
-    s.telegram?.trim() ? { label: "Telegram", href: s.telegram } : null,
-    s.instagram?.trim() ? { label: "Instagram", href: s.instagram } : null,
-    s.tiktok?.trim() ? { label: "TikTok", href: s.tiktok } : null,
-    s.website?.trim() ? { label: "Website", href: s.website } : null,
-    s.phone?.trim() ? { label: "Call coach", href: `tel:${s.phone}` } : null,
-    s.customUrl?.trim() ? { label: s.customLabel || "Link", href: s.customUrl } : null,
-  ].filter(Boolean) as { label: string; href: string }[];
+    s.whatsapp?.trim() ? { network: "whatsapp" as const, label: "WhatsApp", href: normalizeSocialUrl("whatsapp", s.whatsapp) } : null,
+    s.telegram?.trim() ? { network: "telegram" as const, label: "Telegram", href: normalizeSocialUrl("telegram", s.telegram) } : null,
+    s.instagram?.trim() ? { network: "instagram" as const, label: "Instagram", href: normalizeSocialUrl("instagram", s.instagram) } : null,
+    s.tiktok?.trim() ? { network: "tiktok" as const, label: "TikTok", href: normalizeSocialUrl("tiktok", s.tiktok) } : null,
+    s.website?.trim() ? { network: "website" as const, label: "Website", href: normalizeSocialUrl("website", s.website) } : null,
+    s.phone?.trim() ? { network: "phone" as const, label: "Call coach", href: normalizeSocialUrl("phone", s.phone) } : null,
+    s.customUrl?.trim()
+      ? { network: "link" as const, label: s.customLabel || "Link", href: normalizeSocialUrl("website", s.customUrl) }
+      : null,
+  ].filter(Boolean) as SocialLinkItem[];
   return (
     <BlockSurface embedded={embedded}>
       <BlockHeading embedded={embedded}>Quick links</BlockHeading>
       {links.length === 0 ? (
         <BlockEmpty message="Add WhatsApp, Telegram, or phone links in the builder." />
       ) : (
-        <div className="grid gap-2 sm:grid-cols-2">
-          {links.map((l) => (
-            <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center rounded-2xl border border-[color:var(--mts-card-border)] font-medium transition hover:bg-[var(--mts-accent-soft)]">{l.label}</a>
-          ))}
-        </div>
+        <SocialLinkButtons links={links} size="sm" />
       )}
     </BlockSurface>
   );

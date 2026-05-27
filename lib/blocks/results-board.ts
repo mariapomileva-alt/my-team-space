@@ -100,6 +100,8 @@ export type LeaderboardRow = {
   gold: number;
   silver: number;
   bronze: number;
+  /** 4th place and below — still counts toward season progress */
+  honors: number;
   competitions: number;
   bestPlace: number | null;
   progressPercent: number;
@@ -257,6 +259,10 @@ export function medalForPlace(place: number): string {
   if (place === 3) return "🥉";
   if (place > 0) return "🏅";
   return "—";
+}
+
+export function totalAchievements(row: Pick<LeaderboardRow, "gold" | "silver" | "bronze" | "honors">): number {
+  return row.gold + row.silver + row.bronze + row.honors;
 }
 
 export function pointsForPlace(place: number, scoring: ScoringRules): number {
@@ -452,7 +458,7 @@ function normalizeCompetitions(raw: unknown, categories: TeamCategory[]): Compet
                   athleteId: str(r.athleteId, ""),
                   athleteName: str(r.athleteName, ""),
                   place: status === "skipped" ? 0 : place,
-                  medal: str(r.medal, status === "skipped" ? "—" : medalForPlace(place)),
+                  medal: status === "skipped" ? "—" : medalForPlace(place),
                   points: typeof r.points === "number" ? r.points : undefined,
                   status,
                   note: r.note?.trim(),
@@ -476,7 +482,7 @@ function collectEvents(settings: ResultsBoardSettings): ResultEvent[] {
         athleteName: r.athleteName,
         athleteId: "",
         place,
-        medal: r.medal || medalForPlace(place),
+        medal: medalForPlace(place),
         points: pointsForPlace(place, scoring),
         date: r.date,
         categoryId: r.categoryId ?? "",
@@ -504,7 +510,7 @@ function collectEvents(settings: ResultsBoardSettings): ResultEvent[] {
         athleteName: r.athleteName,
         athleteId: r.athleteId,
         place,
-        medal: skipped ? "—" : r.medal || medalForPlace(place),
+        medal: skipped ? "—" : medalForPlace(place),
         points: pts,
         date: comp.date,
         categoryId: comp.categoryId,
@@ -801,12 +807,12 @@ export function filterEvents(
   });
 }
 
-function countMedal(medal: string, place: number) {
-  const m = medal.trim();
-  if (m === "🥇" || place === 1) return { gold: 1, silver: 0, bronze: 0 };
-  if (m === "🥈" || place === 2) return { gold: 0, silver: 1, bronze: 0 };
-  if (m === "🥉" || place === 3) return { gold: 0, silver: 0, bronze: 1 };
-  return { gold: 0, silver: 0, bronze: 0 };
+function countMedal(_medal: string, place: number) {
+  if (place === 1) return { gold: 1, silver: 0, bronze: 0, honors: 0 };
+  if (place === 2) return { gold: 0, silver: 1, bronze: 0, honors: 0 };
+  if (place === 3) return { gold: 0, silver: 0, bronze: 1, honors: 0 };
+  if (place >= 4) return { gold: 0, silver: 0, bronze: 0, honors: 1 };
+  return { gold: 0, silver: 0, bronze: 0, honors: 0 };
 }
 
 function buildLeaderboard(events: ResultEvent[], settings: ResultsBoardSettings): LeaderboardRow[] {
@@ -819,6 +825,7 @@ function buildLeaderboard(events: ResultEvent[], settings: ResultsBoardSettings)
       gold: number;
       silver: number;
       bronze: number;
+      honors: number;
       competitions: number;
       bestPlace: number | null;
       monthPoints: Map<string, number>;
@@ -835,6 +842,7 @@ function buildLeaderboard(events: ResultEvent[], settings: ResultsBoardSettings)
       gold: 0,
       silver: 0,
       bronze: 0,
+      honors: 0,
       competitions: 0,
       bestPlace: null,
       monthPoints: new Map(),
@@ -847,6 +855,7 @@ function buildLeaderboard(events: ResultEvent[], settings: ResultsBoardSettings)
     cur.gold += med.gold;
     cur.silver += med.silver;
     cur.bronze += med.bronze;
+    cur.honors += med.honors;
     cur.competitions += 1;
     if (e.place > 0) cur.bestPlace = cur.bestPlace == null ? e.place : Math.min(cur.bestPlace, e.place);
     const mk = monthKey(e.date);
@@ -864,6 +873,7 @@ function buildLeaderboard(events: ResultEvent[], settings: ResultsBoardSettings)
     gold: v.gold,
     silver: v.silver,
     bronze: v.bronze,
+    honors: v.honors,
     competitions: v.competitions,
     bestPlace: v.bestPlace,
     progressPercent: 0,
@@ -895,7 +905,7 @@ function buildLeaderboard(events: ResultEvent[], settings: ResultsBoardSettings)
 
   for (const r of rows) {
     if (r.competitions === 1) r.badges.push("first_competition");
-    if (r.gold + r.silver + r.bronze > 0) r.badges.push("first_medal");
+    if (totalAchievements(r) > 0) r.badges.push("first_medal");
   }
 
   const nowKey = monthKey(new Date().toISOString().slice(0, 10));
@@ -936,7 +946,8 @@ function buildCompetitionSummaries(settings: ResultsBoardSettings, filter: Resul
           .reduce<CompetitionSummary[]>((acc, r) => {
             const hit = acc.find((c) => c.name === r.competitionName);
             if (hit) {
-              if (r.place > 0) hit.topThree.push({ name: r.athleteName, place: r.place, medal: r.medal });
+              if (r.place > 0)
+                hit.topThree.push({ name: r.athleteName, place: r.place, medal: medalForPlace(r.place) });
               hit.athleteCount += 1;
               return acc;
             }
@@ -945,7 +956,8 @@ function buildCompetitionSummaries(settings: ResultsBoardSettings, filter: Resul
               name: r.competitionName,
               date: r.date,
               categoryLabel: categoryLabel(settings, r.categoryId ?? ""),
-              topThree: r.place > 0 ? [{ name: r.athleteName, place: r.place, medal: r.medal }] : [],
+              topThree:
+                r.place > 0 ? [{ name: r.athleteName, place: r.place, medal: medalForPlace(r.place) }] : [],
               athleteCount: 1,
             });
             return acc;
@@ -960,11 +972,10 @@ function buildCompetitionSummaries(settings: ResultsBoardSettings, filter: Resul
             topThree: c.results
               .filter((r) => r.status === "participated" && r.place > 0)
               .sort((a, b) => a.place - b.place)
-              .slice(0, 3)
               .map((r) => ({
                 name: r.athleteName,
                 place: r.place,
-                medal: r.medal,
+                medal: medalForPlace(r.place),
                 athleteId: r.athleteId,
               })),
             athleteCount: c.results.filter((r) => r.status === "participated").length,
@@ -980,8 +991,7 @@ function buildCompetitionSummaries(settings: ResultsBoardSettings, filter: Resul
       }
       return true;
     })
-    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
-    .map((c) => ({ ...c, topThree: c.topThree.slice(0, 3) }));
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 }
 
 function buildMonthly(events: ResultEvent[]): MonthlyProgressRow[] {
@@ -993,7 +1003,7 @@ function buildMonthly(events: ResultEvent[]): MonthlyProgressRow[] {
     const bucket = months.get(mk)!;
     bucket.athletes.set(e.athleteName, (bucket.athletes.get(e.athleteName) ?? 0) + e.points);
     const med = countMedal(e.medal, e.place);
-    bucket.medals += med.gold + med.silver + med.bronze;
+    bucket.medals += med.gold + med.silver + med.bronze + med.honors;
   }
   return [...months.entries()]
     .sort(([a], [b]) => a.localeCompare(b))

@@ -34,7 +34,7 @@ export function useResultsCelebrations({
   const leaderboardKey = useMemo(
     () =>
       leaderboard
-        .map((r) => `${r.athleteKey}:${r.rank}:${r.totalPoints}:${r.gold}${r.silver}${r.bronze}:${r.badges.join(".")}`)
+        .map((r) => `${r.athleteKey}:${r.rank}:${r.totalPoints}:${r.gold}${r.silver}${r.bronze}${r.honors}:${r.badges.join(".")}`)
         .join("|"),
     [leaderboard],
   );

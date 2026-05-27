@@ -1,6 +1,7 @@
 "use client";
 
 import { BlockModuleCard } from "@/components/builder/block-module-card";
+import { TeamColorsPanel } from "@/components/builder/team-colors-panel";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderSectionPanel } from "@/components/builder/builder-section-panel";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
@@ -10,12 +11,8 @@ import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-ac
 import {
   BUILDER_EDITOR_COLUMN,
   BUILDER_PAGE_SHELL,
-  BUILDER_PANEL_DESC,
-  BUILDER_PANEL_SURFACE,
-  BUILDER_PANEL_TITLE,
   BUILDER_PREVIEW_COLUMN,
   BUILDER_WORKSPACE_GRID,
-  builderChoiceClass,
 } from "@/lib/builder/layout";
 import {
   BUILDER_SECTION_ORDER,
@@ -264,36 +261,7 @@ export function TeamPageBuilder({
         <main className="min-w-0">
           <div className={BUILDER_WORKSPACE_GRID}>
             <div className={BUILDER_EDITOR_COLUMN}>
-              <motion.section
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={BUILDER_PANEL_SURFACE}
-              >
-                <h2 className={BUILDER_PANEL_TITLE}>Team colors</h2>
-                <p className={BUILDER_PANEL_DESC}>Pick a palette — your app updates instantly.</p>
-                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {THEMES.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setTheme(t.id)}
-                      className={builderChoiceClass(team.themeId === t.id, "text-xs")}
-                    >
-                      <div className="flex gap-1.5">
-                        <span
-                          className="h-7 w-7 rounded-full border border-black/5 shadow-sm"
-                          style={{ background: (t.cssVars as Record<string, string>)["--mts-primary"] }}
-                        />
-                        <span
-                          className="h-7 w-7 rounded-full border border-black/5 shadow-sm"
-                          style={{ background: (t.cssVars as Record<string, string>)["--mts-accent"] }}
-                        />
-                      </div>
-                      <span className="mt-2.5 block font-bold text-zinc-800">{t.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </motion.section>
+              <TeamColorsPanel themeId={team.themeId} onSelectTheme={setTheme} />
 
               <PrivacyAccessPanel team={team} siteUrl={siteUrl} onPatchTeam={patchTeam} />
               <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />

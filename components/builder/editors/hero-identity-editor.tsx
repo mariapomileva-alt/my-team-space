@@ -1,8 +1,10 @@
 "use client";
 
 import { ImageUploadField } from "@/components/builder/media/image-upload-field";
+import { SocialIcon } from "@/components/social/social-icons";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { getBlockSettings, type SocialKey } from "@/lib/blocks/settings";
+import { SOCIAL_ICON_CLASS, SOCIAL_LABELS } from "@/lib/social/links";
 
 type Settings = {
   quote: string;
@@ -12,14 +14,19 @@ type Settings = {
   social: Partial<Record<SocialKey, string>>;
 };
 
-const SOCIALS: { key: SocialKey; label: string }[] = [
-  { key: "instagram", label: "Instagram" },
-  { key: "telegram", label: "Telegram" },
-  { key: "whatsapp", label: "WhatsApp" },
-  { key: "tiktok", label: "TikTok" },
-  { key: "facebook", label: "Facebook" },
-  { key: "youtube", label: "YouTube" },
-];
+const SOCIAL_PLACEHOLDERS: Record<SocialKey, string> = {
+  instagram: "@username or link",
+  telegram: "@username or link",
+  whatsapp: "+371... or link",
+  tiktok: "@username or link",
+  facebook: "page name or link",
+  youtube: "@channel or link",
+};
+
+const SOCIALS = (Object.keys(SOCIAL_LABELS) as SocialKey[]).map((key) => ({
+  key,
+  label: SOCIAL_LABELS[key],
+}));
 
 export function HeroIdentityEditor({
   block,
@@ -88,13 +95,21 @@ export function HeroIdentityEditor({
       <p className="text-xs font-semibold text-zinc-500">Social links (only filled icons show publicly)</p>
       <div className="grid gap-2 sm:grid-cols-2">
         {SOCIALS.map(({ key, label }) => (
-          <input
-            key={key}
-            className="rounded-xl border border-zinc-200 px-3 py-2 text-sm"
-            placeholder={label}
-            value={s.social?.[key] ?? ""}
-            onChange={(e) => set({ social: { ...s.social, [key]: e.target.value } })}
-          />
+          <label key={key} className="relative block">
+            <span
+              className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${SOCIAL_ICON_CLASS[key]}`}
+              aria-hidden
+            >
+              <SocialIcon network={key} className="h-4 w-4" />
+            </span>
+            <input
+              className="w-full rounded-xl border border-zinc-200 py-2 pl-10 pr-3 text-sm"
+              placeholder={SOCIAL_PLACEHOLDERS[key]}
+              aria-label={label}
+              value={s.social?.[key] ?? ""}
+              onChange={(e) => set({ social: { ...s.social, [key]: e.target.value } })}
+            />
+          </label>
         ))}
       </div>
     </div>

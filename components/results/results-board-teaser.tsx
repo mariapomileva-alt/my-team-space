@@ -5,6 +5,7 @@ import {
   computeResultsBoard,
   resolveResultsBoardSettings,
   resultsBoardHasContent,
+  totalAchievements,
 } from "@/lib/blocks/results-board";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -53,7 +54,7 @@ export function ResultsBoardTeaser({
   const latest = data.competitions[0];
   const topHighlight = latest?.topThree[0];
   const miniBoard = data.leaderboard.slice(0, 3);
-  const totalMedals = data.leaderboard.reduce((s, r) => s + r.gold + r.silver + r.bronze, 0);
+  const totalMedals = data.leaderboard.reduce((s, r) => s + totalAchievements(r), 0);
   const leaderPhoto = leader
     ? photos[leader.athleteId] ?? photos[leader.athleteName.toLowerCase()]
     : undefined;
@@ -98,6 +99,7 @@ export function ResultsBoardTeaser({
             <p className="truncate text-base font-bold text-neutral-900">{leader.athleteName}</p>
             <p className="mt-0.5 text-[12px] font-semibold text-indigo-700">
               {leader.totalPoints} pts · 🥇 {leader.gold} · 🥈 {leader.silver} · 🥉 {leader.bronze}
+              {leader.honors > 0 ? ` · 🏅 ${leader.honors}` : ""}
             </p>
           </div>
         </div>
@@ -135,7 +137,7 @@ export function ResultsBoardTeaser({
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-neutral-700 ring-1 ring-neutral-100">
-          {totalMedals} team medals
+          {totalMedals} team results
         </span>
         {leader?.badges.slice(0, 2).map((b) => (
           <span

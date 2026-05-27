@@ -265,23 +265,23 @@ function SimpleResultsEditor({
             />
           )}
           <div className="grid grid-cols-2 gap-2">
-            <input
-              type="number"
-              min={1}
+            <select
               className={inputClass()}
-              placeholder="Place"
-              value={row.place || ""}
+              value={row.place || 1}
               onChange={(e) => {
                 const place = parseInt(e.target.value, 10) || 1;
                 update(row.id, { place, medal: medalForPlace(place) });
               }}
-            />
-            <input
-              className={inputClass()}
-              placeholder="Medal"
-              value={row.medal}
-              onChange={(e) => update(row.id, { medal: e.target.value })}
-            />
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((p) => (
+                <option key={p} value={p}>
+                  {p === 1 ? "1st" : p === 2 ? "2nd" : p === 3 ? "3rd" : `${p}th`} place
+                </option>
+              ))}
+            </select>
+            <span className="flex items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 text-lg">
+              {medalForPlace(row.place || 1)}
+            </span>
           </div>
           <button
             type="button"
@@ -497,22 +497,23 @@ function AthleteResultRow({
               onChange={(e) => onChange({ athleteName: e.target.value })}
             />
           )}
-          <input
-            type="number"
-            min={1}
+          <select
             className={inputClass()}
-            value={r.place || ""}
+            value={r.place || 1}
             onChange={(e) => {
               const place = parseInt(e.target.value, 10) || 1;
               onChange({ place, medal: medalForPlace(place) });
             }}
-          />
-          <input
-            className={inputClass()}
-            placeholder="Medal"
-            value={r.medal}
-            onChange={(e) => onChange({ medal: e.target.value })}
-          />
+          >
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((p) => (
+              <option key={p} value={p}>
+                {p === 1 ? "1st" : p === 2 ? "2nd" : p === 3 ? "3rd" : `${p}th`} · {medalForPlace(p)}
+              </option>
+            ))}
+          </select>
+          <span className="flex items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 text-lg">
+            {medalForPlace(r.place || 1)}
+          </span>
           <input
             type="number"
             className={inputClass()}
