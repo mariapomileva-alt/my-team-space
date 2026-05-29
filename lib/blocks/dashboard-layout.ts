@@ -1,5 +1,5 @@
 import { effectiveBlockLayout, isCompactLayout, layoutsCanShareRow } from "@/lib/blocks/block-layout";
-import type { BlockInstance, BlockType } from "@/lib/types";
+import type { BlockInstance, BlockType, BlockLayout } from "@/lib/types";
 
 export type DashboardPairVariant = "schedule-attendance" | "trips-rules" | "poll-announcement";
 
@@ -21,7 +21,8 @@ export type DashboardRow =
       size: "full" | "half";
       compact: boolean;
       featured: boolean;
-    };
+    }
+  | { kind: "results"; block: BlockInstance; layout: BlockLayout };
 
 const PAIRS: [BlockType, BlockType, DashboardPairVariant][] = [
   ["schedule", "attendance", "schedule-attendance"],
@@ -66,6 +67,12 @@ export function buildDashboardRows(blocks: BlockInstance[]): DashboardRow[] {
     const b = sorted[i + 1];
     const layoutA = effectiveBlockLayout(a);
     const layoutB = b ? effectiveBlockLayout(b) : null;
+
+    if (a.type === "results") {
+      rows.push({ kind: "results", block: a, layout: layoutA });
+      i += 1;
+      continue;
+    }
 
     const wideVariant = WIDE_VARIANT[a.type];
     if (wideVariant && (layoutA === "featured" || layoutA === "full")) {

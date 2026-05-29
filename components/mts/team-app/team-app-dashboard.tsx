@@ -149,6 +149,29 @@ function DashboardRowView({
 }) {
   const base = rowIndex * 2;
 
+  if (row.kind === "results") {
+    const isHalf = row.layout === "half" || row.layout === "card";
+    const content = (
+      <ResultsRail
+        team={team}
+        block={row.block}
+        onOpen={() => onOpen(row.block.id)}
+        index={base}
+        layout={row.layout}
+      />
+    );
+    if (isHalf) {
+      return (
+        <div className="grid grid-cols-2 gap-2.5">
+          <PreviewAnchor blockId={row.block.id}>
+            <div className={row.layout === "card" ? "min-h-[108px]" : "min-h-[148px]"}>{content}</div>
+          </PreviewAnchor>
+        </div>
+      );
+    }
+    return <PreviewAnchor blockId={row.block.id}>{content}</PreviewAnchor>;
+  }
+
   if (row.kind === "pair") {
     return (
       <div className="grid grid-cols-2 gap-2.5">
@@ -291,7 +314,9 @@ export function TeamAppDashboard({
     <div className="team-app-dashboard mt-4 flex flex-col gap-3 sm:gap-3.5">
       {rows.map((row, i) => {
         const rowKey =
-          row.kind === "pair"
+          row.kind === "results"
+            ? `${row.block.id}-${row.layout}`
+            : row.kind === "pair"
             ? `${row.left.id}-${row.left.layout}-${row.right.id}-${row.right.layout}`
             : row.kind === "pair-compact"
               ? `${row.left.id}-${row.left.layout}-${row.right.id}-${row.right.layout}`

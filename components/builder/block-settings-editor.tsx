@@ -1,6 +1,7 @@
 "use client";
 
 import { BlockAudiencePicker } from "@/components/builder/block-audience-picker";
+import { effectiveBlockLayout } from "@/lib/blocks/block-layout";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { AnnouncementBarEditor } from "./editors/announcement-bar-editor";
 import { AchievementsEditor } from "./editors/achievements-editor";
@@ -39,7 +40,7 @@ export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam, on
     <div className="space-y-4 border-t border-indigo-100/60 bg-gradient-to-b from-indigo-50/25 via-white to-white px-4 py-5 sm:px-5">
       <BlockAudiencePicker team={team} block={block} onPatchBlock={onPatchBlock} />
       <LayoutPicker
-        layout={block.layout ?? "full"}
+        layout={effectiveBlockLayout(block)}
         onChange={(layout) => {
           onPatchBlock(block.id, { layout });
           onPreviewBlock?.(block.id);

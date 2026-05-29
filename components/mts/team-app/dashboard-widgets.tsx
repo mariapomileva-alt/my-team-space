@@ -3,7 +3,7 @@
 import { ResultsBoardTeaser } from "@/components/results/results-board-teaser";
 import { DashboardCard, DashboardChevron, DashboardLabel } from "@/components/mts/team-app/dashboard-card";
 import { getDashboardData } from "@/lib/blocks/block-dashboard-data";
-import type { BlockInstance, TeamSpace } from "@/lib/types";
+import type { BlockInstance, BlockLayout, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
 
 function RingProgress({ value, size = 52 }: { value: number; size?: number }) {
@@ -343,13 +343,23 @@ export function ResultsRail({
   block,
   onOpen,
   index,
+  layout,
 }: {
   team: TeamSpace;
   block: BlockInstance;
   onOpen: () => void;
   index: number;
+  layout?: BlockLayout;
 }) {
-  return <ResultsBoardTeaser team={team} block={block} onOpen={onOpen} index={index} />;
+  return (
+    <ResultsBoardTeaser
+      team={team}
+      block={block}
+      onOpen={onOpen}
+      index={index}
+      layout={layout}
+    />
+  );
 }
 
 export function CompactStatCard({
