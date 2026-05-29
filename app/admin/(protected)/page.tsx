@@ -8,13 +8,13 @@ export default async function AdminHomePage() {
 
   const { data: rows, error: teamsError } = await supabase
     .from("team_members")
-    .select("team_id, teams (id, slug, name, subscription_status)")
+    .select("team_id, role, teams (id, slug, name, subscription_status)")
     .eq("user_id", user.id);
 
   const teams =
     rows?.map((r) => {
       const t = r.teams as unknown as { id: string; slug: string; name: string; subscription_status: string } | null;
-      return t ? { ...t, team_id: r.team_id as string } : null;
+      return t ? { ...t, team_id: r.team_id as string, role: (r.role as string) ?? "coach" } : null;
     }) ?? [];
   const list = teams.filter(Boolean) as {
     id: string;
@@ -22,6 +22,7 @@ export default async function AdminHomePage() {
     name: string;
     subscription_status: string;
     team_id: string;
+    role: string;
   }[];
 
   return (
@@ -63,25 +64,28 @@ export default async function AdminHomePage() {
                 <p className="font-semibold">{t.name}</p>
                 <p className="text-xs text-zinc-500">
                   {t.slug} · {t.subscription_status}
+                  {t.role === "assistant" ? " · admin" : ""}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Link href={`/admin/team/${t.id}/step-1`} className="rounded-full bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white">
                   Edit
                 </Link>
-                {t.subscription_status !== "active" && t.subscription_status !== "trialing" ? (
-                  <form action={startCheckoutSession.bind(null, t.id)}>
-                    <button type="submit" className="rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white">
-                      Subscribe
-                    </button>
-                  </form>
-                ) : (
-                  <form action={openBillingPortal.bind(null, t.id)}>
-                    <button type="submit" className="rounded-full border border-zinc-200 px-3 py-1.5 text-xs font-semibold">
-                      Manage billing
-                    </button>
-                  </form>
-                )}
+                {t.role === "coach" ? (
+                  t.subscription_status !== "active" && t.subscription_status !== "trialing" ? (
+                    <form action={startCheckoutSession.bind(null, t.id)}>
+                      <button type="submit" className="rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white">
+                        Subscribe
+                      </button>
+                    </form>
+                  ) : (
+                    <form action={openBillingPortal.bind(null, t.id)}>
+                      <button type="submit" className="rounded-full border border-zinc-200 px-3 py-1.5 text-xs font-semibold">
+                        Manage billing
+                      </button>
+                    </form>
+                  )
+                ) : null}
               </div>
             </li>
           ))}

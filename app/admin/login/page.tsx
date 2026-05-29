@@ -16,6 +16,7 @@ function LoginInner() {
   const registered = searchParams.get("registered") === "1";
   const linkExpired = searchParams.get("error") === "link_expired";
   const authDenied = searchParams.get("error") === "auth_denied";
+  const nextPath = searchParams.get("next")?.startsWith("/") ? searchParams.get("next")! : "/admin";
 
   const [mode, setMode] = useState<"magic" | "password">("password");
   const [email, setEmail] = useState("");
@@ -36,7 +37,7 @@ function LoginInner() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: authCallbackUrl(getAppOrigin(), "/admin"),
+        emailRedirectTo: authCallbackUrl(getAppOrigin(), nextPath),
         shouldCreateUser: true,
       },
     });
@@ -62,7 +63,7 @@ function LoginInner() {
       setErr(formatAuthErrorMessage(error.message));
       return;
     }
-    window.location.assign("/admin");
+    window.location.assign(nextPath);
   }
 
   return (
@@ -108,7 +109,7 @@ function LoginInner() {
       ) : null}
 
       <div className="mt-6 space-y-2">
-        <GoogleAuthButton nextPath="/admin" onError={setErr} />
+        <GoogleAuthButton nextPath={nextPath} onError={setErr} />
         <p className="text-center text-xs leading-relaxed text-zinc-500">
           Fastest way in—no magic-link email. Enable Google under Supabase → Authentication → Providers if needed.
         </p>

@@ -9,11 +9,11 @@ export async function startCheckoutSession(teamId: string) {
   const { supabase, user } = await requireAuth();
   const { data: mem } = await supabase
     .from("team_members")
-    .select("team_id")
+    .select("team_id, role")
     .eq("team_id", teamId)
     .eq("user_id", user.id)
     .maybeSingle();
-  if (!mem) throw new Error("Forbidden");
+  if (!mem || mem.role !== "coach") throw new Error("Only the team owner can manage billing");
 
   const apiKey = process.env.LEMONSQUEEZY_API_KEY;
   const storeId = process.env.LEMONSQUEEZY_STORE_ID;
@@ -67,11 +67,11 @@ export async function openBillingPortal(teamId: string) {
   const { supabase, user } = await requireAuth();
   const { data: mem } = await supabase
     .from("team_members")
-    .select("team_id")
+    .select("team_id, role")
     .eq("team_id", teamId)
     .eq("user_id", user.id)
     .maybeSingle();
-  if (!mem) throw new Error("Forbidden");
+  if (!mem || mem.role !== "coach") throw new Error("Only the team owner can manage billing");
 
   const apiKey = process.env.LEMONSQUEEZY_API_KEY;
   if (!apiKey) throw new Error("Lemon Squeezy not configured");

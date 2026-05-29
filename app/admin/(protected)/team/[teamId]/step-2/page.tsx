@@ -14,11 +14,12 @@ export default async function TeamStep2Page({ params }: Props) {
 
   const { data: mem } = await supabase
     .from("team_members")
-    .select("team_id")
+    .select("team_id, role")
     .eq("team_id", teamId)
     .eq("user_id", user.id)
     .maybeSingle();
   if (!mem) notFound();
+  const memberRole = (mem.role === "assistant" ? "assistant" : "coach") as "coach" | "assistant";
 
   const { data: teamRow } = await supabase.from("teams").select("*").eq("id", teamId).single();
   if (!teamRow) notFound();
@@ -31,5 +32,7 @@ export default async function TeamStep2Page({ params }: Props) {
   const proto = h.get("x-forwarded-proto") ?? "http";
   const publicUrl = `${proto}://${host}/team/${team.slug}`;
 
-  return <TeamStep2Client teamId={teamId} initialTeam={teamSpace} publicUrl={publicUrl} />;
+  return (
+    <TeamStep2Client teamId={teamId} initialTeam={teamSpace} publicUrl={publicUrl} memberRole={memberRole} />
+  );
 }

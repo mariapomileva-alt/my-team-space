@@ -8,7 +8,9 @@ import {
   BUILDER_PANEL_TITLE,
   builderChoiceClass,
 } from "@/lib/builder/layout";
+import { TeamAdminsPanel } from "@/components/builder/team-admins-panel";
 import { magicInviteUrl } from "@/lib/team-access";
+import type { TeamMemberRole } from "@/lib/team-admin";
 import type { TeamSpace, TeamVisibility } from "@/lib/types";
 
 function genToken() {
@@ -17,13 +19,18 @@ function genToken() {
 
 export function PrivacyAccessPanel({
   team,
+  teamId,
   siteUrl,
+  memberRole,
   onPatchTeam,
 }: {
   team: TeamSpace;
+  teamId: string;
   siteUrl: string;
+  memberRole: TeamMemberRole;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
 }) {
+  const isOwner = memberRole === "coach";
   const visibility = team.pageVisibility ?? "public";
   const settings = team.pageSettings ?? {};
   const invite = team.inviteToken ?? "";
@@ -102,6 +109,8 @@ export function PrivacyAccessPanel({
           ) : null}
         </div>
       ) : null}
+
+      <TeamAdminsPanel teamId={teamId} siteUrl={siteUrl} isOwner={isOwner} />
 
       <div className="mt-5 border-t border-zinc-100 pt-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Child photos (GDPR)</p>

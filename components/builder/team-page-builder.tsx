@@ -22,6 +22,7 @@ import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-st
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
 import { magicInviteUrl } from "@/lib/team-access";
 import { THEMES } from "@/lib/themes";
+import type { TeamMemberRole } from "@/lib/team-admin";
 import type { BlockInstance, TeamSpace, ThemeId } from "@/lib/types";
 import {
   DndContext,
@@ -42,10 +43,12 @@ export function TeamPageBuilder({
   teamId,
   initialTeam,
   publicUrl,
+  memberRole = "coach",
 }: {
   teamId: string;
   initialTeam: TeamSpace;
   publicUrl: string;
+  memberRole?: TeamMemberRole;
 }) {
   const siteUrl = publicUrl.replace(/\/team\/[^/]+$/, "");
   const router = useRouter();
@@ -263,7 +266,13 @@ export function TeamPageBuilder({
             <div className={BUILDER_EDITOR_COLUMN}>
               <TeamColorsPanel themeId={team.themeId} onSelectTheme={setTheme} />
 
-              <PrivacyAccessPanel team={team} siteUrl={siteUrl} onPatchTeam={patchTeam} />
+              <PrivacyAccessPanel
+                team={team}
+                teamId={teamId}
+                siteUrl={siteUrl}
+                memberRole={memberRole}
+                onPatchTeam={patchTeam}
+              />
               <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
 
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
