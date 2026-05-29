@@ -22,7 +22,7 @@ const VISIBILITY_LABELS: Record<TeamVisibility, string> = {
   mixed: "Mixed",
 };
 
-export function PrivacyAccessPanel({
+export function PrivacyAccessContent({
   team,
   teamId,
   siteUrl,
@@ -50,17 +50,9 @@ export function PrivacyAccessPanel({
   }
 
   return (
-    <BuilderCollapsiblePanel
-      className={BUILDER_PANEL_SURFACE}
-      title="Privacy & access"
-      description="No parent passwords. Use a team code or magic link — like a private clubhouse door."
-      summary={
-        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-600">
-          {VISIBILITY_LABELS[visibility]}
-        </span>
-      }
-    >
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <>
+      <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Privacy</p>
+      <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {(
           [
             { id: "public" as const, label: "Public", hint: "Anyone with the link" },
@@ -117,7 +109,9 @@ export function PrivacyAccessPanel({
         </div>
       ) : null}
 
-      <TeamAdminsPanel teamId={teamId} siteUrl={siteUrl} isOwner={isOwner} />
+      <div className="mt-6 border-t border-zinc-100 pt-5">
+        <TeamAdminsPanel teamId={teamId} siteUrl={siteUrl} isOwner={isOwner} />
+      </div>
 
       <div className="mt-5 border-t border-zinc-100 pt-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Child photos (GDPR)</p>
@@ -140,6 +134,44 @@ export function PrivacyAccessPanel({
           Hide child names on the public page (show initials only where possible).
         </label>
       </div>
+    </>
+  );
+}
+
+/** @deprecated Use AdvancedSettingsPanel in the page builder */
+export function PrivacyAccessPanel({
+  team,
+  teamId,
+  siteUrl,
+  memberRole,
+  onPatchTeam,
+}: {
+  team: TeamSpace;
+  teamId: string;
+  siteUrl: string;
+  memberRole: TeamMemberRole;
+  onPatchTeam: (patch: Partial<TeamSpace>) => void;
+}) {
+  const visibility = team.pageVisibility ?? "public";
+
+  return (
+    <BuilderCollapsiblePanel
+      className={BUILDER_PANEL_SURFACE}
+      title="Privacy & access"
+      description="No parent passwords. Use a team code or magic link — like a private clubhouse door."
+      summary={
+        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-600">
+          {VISIBILITY_LABELS[visibility]}
+        </span>
+      }
+    >
+      <PrivacyAccessContent
+        team={team}
+        teamId={teamId}
+        siteUrl={siteUrl}
+        memberRole={memberRole}
+        onPatchTeam={onPatchTeam}
+      />
     </BuilderCollapsiblePanel>
   );
 }

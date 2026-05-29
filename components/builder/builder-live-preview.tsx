@@ -2,14 +2,15 @@
 
 import { TeamShell } from "@/components/mts/team-shell";
 import { TeamPageBlocks } from "@/components/mts/team-page-blocks";
+import {
+  BUILDER_PHONE_H,
+  BUILDER_PHONE_HOME_H,
+  BUILDER_PHONE_NOTCH_H,
+  BUILDER_PHONE_VIEWPORT_H,
+  BUILDER_PHONE_W,
+} from "@/lib/builder/preview";
 import type { TeamSpace } from "@/lib/types";
 import { useEffect, useRef } from "react";
-
-const PHONE_W = 360;
-const PHONE_H = 612;
-const NOTCH_H = 28;
-const HOME_H = 24;
-const VIEWPORT_H = PHONE_H - NOTCH_H - HOME_H;
 
 function scrollPreviewToBlock(viewport: HTMLElement, target: Element) {
   const vpRect = viewport.getBoundingClientRect();
@@ -47,20 +48,25 @@ export function BuilderLivePreview({
       </p>
 
       <div
-        className="builder-phone-frame relative box-border shrink-0 overflow-hidden rounded-[2.25rem] border-[7px] border-zinc-900/95 bg-zinc-900 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.45)]"
-        style={{ width: PHONE_W, height: PHONE_H, minHeight: PHONE_H, maxHeight: PHONE_H }}
+        className="builder-phone-frame relative box-border shrink-0 overflow-hidden rounded-[2.5rem] border-[8px] border-zinc-900/95 bg-zinc-900 shadow-[0_32px_100px_-28px_rgba(99,102,241,0.35),0_24px_80px_-24px_rgba(15,23,42,0.5)] ring-1 ring-white/10"
+        style={{
+          width: BUILDER_PHONE_W,
+          height: BUILDER_PHONE_H,
+          minHeight: BUILDER_PHONE_H,
+          maxHeight: BUILDER_PHONE_H,
+        }}
       >
         <div
           className="pointer-events-none absolute left-0 right-0 top-0 z-10 flex items-center justify-center bg-zinc-900"
-          style={{ height: NOTCH_H }}
+          style={{ height: BUILDER_PHONE_NOTCH_H }}
         >
-          <span className="h-1 w-16 rounded-full bg-zinc-700" aria-hidden />
+          <span className="h-1.5 w-20 rounded-full bg-zinc-700" aria-hidden />
         </div>
 
         <div
           ref={viewportRef}
           className="builder-preview-viewport absolute left-0 right-0 z-0 overflow-x-hidden overflow-y-auto overscroll-contain bg-transparent"
-          style={{ top: NOTCH_H, height: VIEWPORT_H, width: "100%" }}
+          style={{ top: BUILDER_PHONE_NOTCH_H, height: BUILDER_PHONE_VIEWPORT_H, width: "100%" }}
         >
           <TeamShell themeId={team.themeId} preview>
             <TeamPageBlocks team={team} hasAccess previewBlockId={focusBlockId} />
@@ -69,14 +75,14 @@ export function BuilderLivePreview({
 
         <div
           className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 flex items-center justify-center bg-zinc-900"
-          style={{ height: HOME_H }}
+          style={{ height: BUILDER_PHONE_HOME_H }}
         >
-          <span className="h-1 w-24 rounded-full bg-zinc-700" aria-hidden />
+          <span className="h-1 w-28 rounded-full bg-zinc-700" aria-hidden />
         </div>
       </div>
 
-      <p className="mt-3 max-w-[280px] text-center text-[11px] leading-relaxed text-zinc-500">
-        Phone-sized frame — scroll inside to see the full app.
+      <p className="mt-3 max-w-[360px] text-center text-[11px] leading-relaxed text-zinc-500">
+        Scroll inside the phone — edits appear here instantly.
       </p>
     </div>
   );

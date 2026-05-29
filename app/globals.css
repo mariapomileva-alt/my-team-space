@@ -94,23 +94,23 @@
 
 .builder-live-preview {
   flex: none;
-  width: 360px;
+  width: 480px;
   max-width: 100%;
 }
 
 .builder-live-preview .builder-phone-frame {
-  width: 360px !important;
-  height: 612px !important;
-  min-height: 612px !important;
-  max-height: 612px !important;
+  width: 480px !important;
+  height: 816px !important;
+  min-height: 816px !important;
+  max-height: 816px !important;
   flex: none !important;
   contain: strict;
   overflow: hidden !important;
 }
 
 .builder-live-preview .builder-preview-viewport {
-  height: 560px !important;
-  max-height: 560px !important;
+  height: 756px !important;
+  max-height: 756px !important;
   min-height: 0 !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;

@@ -1,11 +1,11 @@
 "use client";
 
-import { BlockModuleCard } from "@/components/builder/block-module-card";
-import { TeamColorsPanel } from "@/components/builder/team-colors-panel";
+import { AdvancedSettingsPanel } from "@/components/builder/advanced-settings-panel";
+import { TeamIdentityPanel } from "@/components/builder/team-identity-panel";
+import { PageBlocksPanel } from "@/components/builder/page-blocks-panel";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
-import { PrivacyAccessPanel } from "@/components/builder/privacy-access-panel";
 import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
 import {
   BUILDER_EDITOR_COLUMN,
@@ -19,21 +19,15 @@ import { saveTeamPreviewLocal } from "@/lib/preview-storage";
 import { magicInviteUrl } from "@/lib/team-access";
 import { THEMES } from "@/lib/themes";
 import type { TeamMemberRole } from "@/lib/team-admin";
-import type { BlockInstance, TeamSpace, ThemeId } from "@/lib/types";
-import {
-  DndContext,
-  PointerSensor,
-  closestCenter,
-  type DragEndEvent,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
+import type { BlockInstance, BlockType, TeamSpace, ThemeId } from "@/lib/types";
+import type { DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 const AUTOSAVE_MS = 2500;
+const PAGE_BLOCK_TYPES = new Set<BlockType>(["hero"]);
 
 export function TeamPageBuilder({
   teamId,
@@ -49,9 +43,7 @@ export function TeamPageBuilder({
   const siteUrl = publicUrl.replace(/\/team\/[^/]+$/, "");
   const router = useRouter();
   const [team, setTeam] = useState<TeamSpace>(initialTeam);
-  const [expanded, setExpanded] = useState<Set<string>>(() => {
-    return new Set(initialTeam.blocks.filter((b) => b.enabled).map((b) => b.id));
-  });
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -73,6 +65,8 @@ export function TeamPageBuilder({
     return () => window.clearInterval(id);
   }, []);
 
+  const heroBlock = useMemo(() => team.blocks.find((b) => b.type === "hero"), [team.blocks]);
+
   const parentShareUrl = useMemo(() => {
     const visibility = team.pageVisibility ?? "public";
     if (visibility !== "public" && team.inviteToken) {
@@ -87,12 +81,14 @@ export function TeamPageBuilder({
     if (team.inviteToken) {
       return "Private team — this magic invite link opens the page without typing a code.";
     }
-    return "Private team — generate a magic link under Privacy & access, or parents can use your team code.";
+    return "Private team — generate a magic link under Advanced settings, or parents can use your team code.";
   }, [team.pageVisibility, team.inviteToken]);
 
   const orderedBlocks = useMemo(() => builderSortBlocks(team.blocks), [team.blocks]);
-
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const pageBlocks = useMemo(
+    () => orderedBlocks.filter((b) => !PAGE_BLOCK_TYPES.has(b.type)),
+    [orderedBlocks],
+  );
 
   const patchTeam = useCallback((patch: Partial<TeamSpace>) => {
     dirtyRef.current = true;
@@ -155,12 +151,16 @@ export function TeamPageBuilder({
     if (!block) return;
     const next = !block.enabled;
     patchBlock(id, { enabled: next });
-    setExpanded((prev) => {
-      const s = new Set(prev);
-      if (next) s.add(id);
-      else s.delete(id);
-      return s;
-    });
+    if (!next) {
+      setExpanded((prev) => {
+        const s = new Set(prev);
+        s.delete(id);
+        return s;
+      });
+      setFocusBlockId((cur) => (cur === id ? null : cur));
+    } else {
+      setFocusBlockId(id);
+    }
   }
 
   function toggleExpand(id: string) {
@@ -177,29 +177,39 @@ export function TeamPageBuilder({
     });
   }
 
+  function quickAddBlock(type: BlockType) {
+    const block = team.blocks.find((b) => b.type === type);
+    if (!block) return;
+    patchBlock(block.id, { enabled: true });
+    setExpanded((prev) => new Set(prev).add(block.id));
+    setFocusBlockId(block.id);
+  }
+
   function setBlocksOrder(nextOrdered: BlockInstance[]) {
     dirtyRef.current = true;
+    const hero = orderedBlocks.filter((b) => PAGE_BLOCK_TYPES.has(b.type));
+    const merged = [...hero, ...nextOrdered];
     setTeam((prev) => ({
       ...prev,
-      blocks: applyBlockOrder(prev.blocks, nextOrdered),
+      blocks: applyBlockOrder(prev.blocks, merged),
     }));
   }
 
   function moveBlock(id: string, dir: -1 | 1) {
-    const i = orderedBlocks.findIndex((b) => b.id === id);
+    const i = pageBlocks.findIndex((b) => b.id === id);
     if (i < 0) return;
     const j = i + dir;
-    if (j < 0 || j >= orderedBlocks.length) return;
-    setBlocksOrder(arrayMove(orderedBlocks, i, j));
+    if (j < 0 || j >= pageBlocks.length) return;
+    setBlocksOrder(arrayMove(pageBlocks, i, j));
   }
 
   function onDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = orderedBlocks.findIndex((b) => b.id === active.id);
-    const newIndex = orderedBlocks.findIndex((b) => b.id === over.id);
+    const oldIndex = pageBlocks.findIndex((b) => b.id === active.id);
+    const newIndex = pageBlocks.findIndex((b) => b.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
-    setBlocksOrder(arrayMove(orderedBlocks, oldIndex, newIndex));
+    setBlocksOrder(arrayMove(pageBlocks, oldIndex, newIndex));
   }
 
   function publish() {
@@ -263,56 +273,38 @@ export function TeamPageBuilder({
         <main className="min-w-0">
           <div className={BUILDER_WORKSPACE_GRID}>
             <div className={BUILDER_EDITOR_COLUMN}>
-              <TeamColorsPanel themeId={team.themeId} onSelectTheme={setTheme} />
+              <TeamIdentityPanel
+                team={team}
+                heroBlock={heroBlock}
+                onPatchTeam={patchTeam}
+                onPatchBlock={patchBlock}
+                onSelectTheme={setTheme}
+              />
 
-              <PrivacyAccessPanel
+              <PageBlocksPanel
+                blocks={pageBlocks}
+                team={team}
+                expanded={expanded}
+                onToggleExpand={toggleExpand}
+                onToggleEnabled={toggleBlock}
+                onPatchBlock={patchBlock}
+                onPatchTeam={patchTeam}
+                onPreviewBlock={setFocusBlockId}
+                onMoveUp={(id) => moveBlock(id, -1)}
+                onMoveDown={(id) => moveBlock(id, 1)}
+                onDragEnd={onDragEnd}
+                onQuickAdd={quickAddBlock}
+              />
+
+              <AdvancedSettingsPanel
                 team={team}
                 teamId={teamId}
                 siteUrl={siteUrl}
                 memberRole={memberRole}
                 onPatchTeam={patchTeam}
               />
+
               <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
-
-              <div className="rounded-2xl border border-zinc-200/80 bg-white/90 p-4 shadow-sm sm:p-5">
-                <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <h2 className="text-sm font-bold text-zinc-900">Page order</h2>
-                    <p className="mt-1 max-w-lg text-xs leading-relaxed text-zinc-500">
-                      ↑↓ changes the order on the live preview and the public team page. Put blocks next to each
-                      other if you want them side-by-side (e.g. Schedule + Attendance).
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] font-semibold text-zinc-600">
-                    {orderedBlocks.length} blocks
-                  </span>
-                </div>
-
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-                  <SortableContext items={orderedBlocks.map((b) => b.id)} strategy={rectSortingStrategy}>
-                    <ul className="grid w-full min-w-0 grid-cols-1 gap-3">
-                      {orderedBlocks.map((block, index) => (
-                        <BlockModuleCard
-                          key={block.id}
-                          block={block}
-                          team={team}
-                          position={index + 1}
-                          expanded={expanded.has(block.id)}
-                          canMoveUp={index > 0}
-                          canMoveDown={index < orderedBlocks.length - 1}
-                          onMoveUp={() => moveBlock(block.id, -1)}
-                          onMoveDown={() => moveBlock(block.id, 1)}
-                          onToggleExpand={() => toggleExpand(block.id)}
-                          onToggleEnabled={() => toggleBlock(block.id)}
-                          onPatchBlock={patchBlock}
-                          onPatchTeam={patchTeam}
-                          onPreviewBlock={setFocusBlockId}
-                        />
-                      ))}
-                    </ul>
-                  </SortableContext>
-                </DndContext>
-              </div>
             </div>
 
             <aside className={BUILDER_PREVIEW_COLUMN}>

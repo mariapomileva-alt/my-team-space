@@ -65,10 +65,11 @@ export function HeroIdentityEditor({
         value={team.name}
         onChange={(e) => onPatchTeam({ name: e.target.value })}
       />
-      <label className="block text-xs font-semibold text-zinc-500">Short description</label>
+      <label className="block text-xs font-semibold text-zinc-500">Team slogan</label>
       <textarea
         className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
         rows={2}
+        placeholder="One line that captures your team spirit"
         value={team.tagline ?? ""}
         onChange={(e) => onPatchTeam({ tagline: e.target.value })}
       />
@@ -86,7 +87,7 @@ export function HeroIdentityEditor({
       />
       <ImageUploadField
         teamId={team.id}
-        label="Hero cover image"
+        label="Cover image"
         folder="hero"
         aspect="wide"
         value={s.coverImageUrl}
