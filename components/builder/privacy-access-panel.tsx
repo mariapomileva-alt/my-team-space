@@ -3,11 +3,10 @@
 import {
   BUILDER_FIELD_INPUT,
   BUILDER_INSET_WELL,
-  BUILDER_PANEL_DESC,
   BUILDER_PANEL_SURFACE,
-  BUILDER_PANEL_TITLE,
   builderChoiceClass,
 } from "@/lib/builder/layout";
+import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
 import { TeamAdminsPanel } from "@/components/builder/team-admins-panel";
 import { magicInviteUrl } from "@/lib/team-access";
 import type { TeamMemberRole } from "@/lib/team-admin";
@@ -16,6 +15,12 @@ import type { TeamSpace, TeamVisibility } from "@/lib/types";
 function genToken() {
   return Math.random().toString(36).slice(2, 10);
 }
+
+const VISIBILITY_LABELS: Record<TeamVisibility, string> = {
+  public: "Public",
+  private: "Private",
+  mixed: "Mixed",
+};
 
 export function PrivacyAccessPanel({
   team,
@@ -45,13 +50,17 @@ export function PrivacyAccessPanel({
   }
 
   return (
-    <section className={BUILDER_PANEL_SURFACE}>
-      <h2 className={BUILDER_PANEL_TITLE}>Privacy & access</h2>
-      <p className={BUILDER_PANEL_DESC}>
-        No parent passwords. Use a team code or magic link — like a private clubhouse door.
-      </p>
-
-      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <BuilderCollapsiblePanel
+      className={BUILDER_PANEL_SURFACE}
+      title="Privacy & access"
+      description="No parent passwords. Use a team code or magic link — like a private clubhouse door."
+      summary={
+        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-600">
+          {VISIBILITY_LABELS[visibility]}
+        </span>
+      }
+    >
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {(
           [
             { id: "public" as const, label: "Public", hint: "Anyone with the link" },
@@ -98,9 +107,7 @@ export function PrivacyAccessPanel({
               </button>
             ) : null}
           </div>
-          {inviteLink ? (
-            <p className="break-all text-xs text-zinc-500">{inviteLink}</p>
-          ) : null}
+          {inviteLink ? <p className="break-all text-xs text-zinc-500">{inviteLink}</p> : null}
           {visibility === "mixed" ? (
             <p className="text-xs text-zinc-500">
               In each block editor, choose Public or Members only. Gallery, documents, and attendance default to
@@ -133,6 +140,6 @@ export function PrivacyAccessPanel({
           Hide child names on the public page (show initials only where possible).
         </label>
       </div>
-    </section>
+    </BuilderCollapsiblePanel>
   );
 }

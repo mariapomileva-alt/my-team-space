@@ -2,11 +2,10 @@
 
 import {
   BUILDER_FIELD_INPUT,
-  BUILDER_PANEL_DESC,
   BUILDER_PANEL_SURFACE,
-  BUILDER_PANEL_TITLE,
   BUILDER_RADIUS_CHOICE,
 } from "@/lib/builder/layout";
+import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
 import { cn } from "@/lib/utils/cn";
 import type { PaymentStatus, PaymentTrackerRow, TeamSpace } from "@/lib/types";
 
@@ -49,22 +48,22 @@ export function PaymentsTrackerPanel({
   }
 
   return (
-    <section
+    <BuilderCollapsiblePanel
       className={`${BUILDER_PANEL_SURFACE} border-amber-200/60 bg-gradient-to-br from-orange-50/50 via-amber-50/25 to-white shadow-[0_4px_32px_-16px_rgba(251,146,60,0.1)]`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h2 className={BUILDER_PANEL_TITLE}>Payments tracker</h2>
-          <p className={BUILDER_PANEL_DESC}>
-            Coach-only. Track paid / pending — paste Revolut or Stripe links in messages, not here.
-          </p>
-        </div>
-        <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-900">
+      title="Payments tracker"
+      description="Coach-only. Track paid / pending — paste Revolut or Stripe links in messages, not here."
+      summary={
+        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-900">
+          {rows.length ? `${rows.length} row${rows.length === 1 ? "" : "s"}` : "Empty"}
+        </span>
+      }
+      headerRight={
+        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-900">
           Not public
         </span>
-      </div>
-
-      <ul className="mt-4 space-y-2">
+      }
+    >
+      <ul className="space-y-2">
         {rows.length === 0 ? (
           <li className="rounded-xl border border-dashed border-zinc-200 px-4 py-6 text-center text-sm text-zinc-500">
             Add rows for monthly fees — Emma paid, Noah pending…
@@ -123,6 +122,6 @@ export function PaymentsTrackerPanel({
       >
         + Add row
       </button>
-    </section>
+    </BuilderCollapsiblePanel>
   );
 }
