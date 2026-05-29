@@ -260,13 +260,9 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
 /** @deprecated use section */
 export type BlockCategory = BuilderSection;
 
+/** Coach-defined order (matches public team page). */
 export function builderSortBlocks(blocks: BlockInstance[]): BlockInstance[] {
-  return [...blocks].sort((a, b) => {
-    const pa = BLOCK_META[a.type]?.priority ?? 99;
-    const pb = BLOCK_META[b.type]?.priority ?? 99;
-    if (pa !== pb) return pa - pb;
-    return a.order - b.order;
-  });
+  return [...blocks].sort((a, b) => a.order - b.order);
 }
 
 export function groupBlocksBySection(blocks: BlockInstance[]): Record<BuilderSection, BlockInstance[]> {
@@ -280,4 +276,15 @@ export function groupBlocksBySection(blocks: BlockInstance[]): Record<BuilderSec
     groups[section].push(b);
   }
   return groups;
+}
+
+export function applyBlockOrder(
+  blocks: BlockInstance[],
+  ordered: BlockInstance[],
+): BlockInstance[] {
+  const orderMap = new Map(ordered.map((b, i) => [b.id, i]));
+  return blocks.map((b) => ({
+    ...b,
+    order: orderMap.has(b.id) ? orderMap.get(b.id)! : b.order,
+  }));
 }

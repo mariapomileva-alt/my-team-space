@@ -18,6 +18,10 @@ type Props = {
   block: BlockInstance;
   team: TeamSpace;
   expanded: boolean;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
   onToggleExpand: () => void;
   onToggleEnabled: () => void;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
@@ -30,6 +34,10 @@ export function BlockModuleCard({
   block,
   team,
   expanded,
+  canMoveUp = false,
+  canMoveDown = false,
+  onMoveUp,
+  onMoveDown,
   onToggleExpand,
   onToggleEnabled,
   onPatchBlock,
@@ -72,18 +80,42 @@ export function BlockModuleCard({
         />
 
         <motion.div ref={setNodeRef} style={style} className="relative z-[1] flex flex-1 flex-col p-3.5 sm:p-4">
-          <div className="flex items-start gap-3">
-            <button
-              type="button"
-              className="mt-1 flex h-8 w-6 shrink-0 cursor-grab touch-manipulation flex-col items-center justify-center gap-0.5 rounded-lg text-zinc-300 transition hover:bg-zinc-100 hover:text-zinc-500 active:cursor-grabbing"
-              aria-label="Drag to reorder"
-              {...attributes}
-              {...listeners}
-            >
-              <span className="block h-0.5 w-3 rounded-full bg-current" />
-              <span className="block h-0.5 w-3 rounded-full bg-current" />
-              <span className="block h-0.5 w-3 rounded-full bg-current" />
-            </button>
+          <div className="flex items-start gap-2">
+            <div className="mt-0.5 flex shrink-0 flex-col items-center gap-0.5">
+              <div className="flex flex-col overflow-hidden rounded-lg border border-zinc-200/80 bg-zinc-50/80">
+                <button
+                  type="button"
+                  disabled={!canMoveUp}
+                  onClick={onMoveUp}
+                  className="px-2 py-1 text-[11px] font-semibold leading-none text-zinc-600 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label="Move block up"
+                  title="Move up"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  disabled={!canMoveDown}
+                  onClick={onMoveDown}
+                  className="border-t border-zinc-200/80 px-2 py-1 text-[11px] font-semibold leading-none text-zinc-600 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label="Move block down"
+                  title="Move down"
+                >
+                  ↓
+                </button>
+              </div>
+              <button
+                type="button"
+                className="flex h-7 w-7 cursor-grab touch-manipulation flex-col items-center justify-center gap-0.5 rounded-lg text-zinc-300 transition hover:bg-zinc-100 hover:text-zinc-500 active:cursor-grabbing"
+                aria-label="Drag to reorder"
+                {...attributes}
+                {...listeners}
+              >
+                <span className="block h-0.5 w-3 rounded-full bg-current" />
+                <span className="block h-0.5 w-3 rounded-full bg-current" />
+                <span className="block h-0.5 w-3 rounded-full bg-current" />
+              </button>
+            </div>
 
             <BlockShapePreview
               shape={meta.previewShape}

@@ -16,6 +16,7 @@ import {
 } from "@/lib/builder/layout";
 import {
   BUILDER_SECTION_ORDER,
+  applyBlockOrder,
   groupBlocksBySection,
 } from "@/lib/blocks/meta";
 import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
@@ -185,22 +186,29 @@ export function TeamPageBuilder({
     });
   }
 
+  function setBlocksOrder(nextOrdered: BlockInstance[]) {
+    dirtyRef.current = true;
+    setTeam((prev) => ({
+      ...prev,
+      blocks: applyBlockOrder(prev.blocks, nextOrdered),
+    }));
+  }
+
+  function moveBlock(id: string, dir: -1 | 1) {
+    const i = allPublicBlocks.findIndex((b) => b.id === id);
+    if (i < 0) return;
+    const j = i + dir;
+    if (j < 0 || j >= allPublicBlocks.length) return;
+    setBlocksOrder(arrayMove(allPublicBlocks, i, j));
+  }
+
   function onDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const oldIndex = allPublicBlocks.findIndex((b) => b.id === active.id);
     const newIndex = allPublicBlocks.findIndex((b) => b.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
-    const next = arrayMove(allPublicBlocks, oldIndex, newIndex);
-    const orderMap = new Map(next.map((b, i) => [b.id, i]));
-    dirtyRef.current = true;
-    setTeam((prev) => ({
-      ...prev,
-      blocks: prev.blocks.map((b) => ({
-        ...b,
-        order: orderMap.has(b.id) ? orderMap.get(b.id)! : b.order,
-      })),
-    }));
+    setBlocksOrder(arrayMove(allPublicBlocks, oldIndex, newIndex));
   }
 
   function publish() {
@@ -275,6 +283,10 @@ export function TeamPageBuilder({
               />
               <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
 
+              <p className="text-xs leading-relaxed text-zinc-500">
+                Set the order families see on your page — use the ↑↓ arrows or drag the handle on each block.
+              </p>
+
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
                 <SortableContext items={allPublicBlocks.map((b) => b.id)} strategy={rectSortingStrategy}>
                   <motion.div layout className="space-y-12">
@@ -284,18 +296,27 @@ export function TeamPageBuilder({
                       return (
                         <BuilderSectionPanel key={section} section={section} blockCount={blocks.length}>
                           <ul className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-                            {blocks.map((block) => (
-                              <BlockModuleCard
-                                key={block.id}
-                                block={block}
-                                team={team}
-                                expanded={expanded.has(block.id)}
-                                onToggleExpand={() => toggleExpand(block.id)}
-                                onToggleEnabled={() => toggleBlock(block.id)}
-                                onPatchBlock={patchBlock}
-                                onPatchTeam={patchTeam}
-                              />
-                            ))}
+                            {blocks.map((block) => {
+                              const globalIndex = allPublicBlocks.findIndex((b) => b.id === block.id);
+                              return (
+                                <BlockModuleCard
+                                  key={block.id}
+                                  block={block}
+                                  team={team}
+                                  expanded={expanded.has(block.id)}
+                                  canMoveUp={globalIndex > 0}
+                                  canMoveDown={
+                                    globalIndex >= 0 && globalIndex < allPublicBlocks.length - 1
+                                  }
+                                  onMoveUp={() => moveBlock(block.id, -1)}
+                                  onMoveDown={() => moveBlock(block.id, 1)}
+                                  onToggleExpand={() => toggleExpand(block.id)}
+                                  onToggleEnabled={() => toggleBlock(block.id)}
+                                  onPatchBlock={patchBlock}
+                                  onPatchTeam={patchTeam}
+                                />
+                              );
+                            })}
                           </ul>
                         </BuilderSectionPanel>
                       );
