@@ -27,6 +27,7 @@ type Props = {
   onToggleEnabled: () => void;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
+  onPreviewBlock?: (id: string) => void;
 };
 
 const RESULTS_TYPES = new Set(["results", "achievements"]);
@@ -44,6 +45,7 @@ export function BlockModuleCard({
   onToggleEnabled,
   onPatchBlock,
   onPatchTeam,
+  onPreviewBlock,
 }: Props) {
   const meta = BLOCK_META[block.type];
   const section = (meta?.section ?? "advanced") as BuilderSection;
@@ -193,6 +195,7 @@ export function BlockModuleCard({
                 team={team}
                 onPatchBlock={onPatchBlock}
                 onPatchTeam={onPatchTeam}
+                onPreviewBlock={onPreviewBlock}
               />
             </motion.div>
           ) : null}

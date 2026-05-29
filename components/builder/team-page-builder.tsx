@@ -306,6 +306,7 @@ export function TeamPageBuilder({
                           onToggleEnabled={() => toggleBlock(block.id)}
                           onPatchBlock={patchBlock}
                           onPatchTeam={patchTeam}
+                          onPreviewBlock={setFocusBlockId}
                         />
                       ))}
                     </ul>

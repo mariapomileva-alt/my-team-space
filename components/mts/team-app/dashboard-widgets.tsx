@@ -34,17 +34,19 @@ export function ScheduleDashboardCard({
   onOpen,
   index,
   compact,
+  featured,
 }: {
   team: TeamSpace;
   block: BlockInstance;
   onOpen: () => void;
   index: number;
   compact?: boolean;
+  featured?: boolean;
 }) {
   const d = getDashboardData(team, block).schedule!;
   const next = d.next ?? d.events[0];
   return (
-    <DashboardCard onClick={onOpen} index={index} accent="sky" compact={compact}>
+    <DashboardCard onClick={onOpen} index={index} accent="sky" compact={compact} featured={featured}>
       <DashboardLabel action={<DashboardChevron />}>Schedule</DashboardLabel>
       <p className="text-[15px] font-bold leading-tight text-neutral-900">{next.title}</p>
       <p className="mt-0.5 text-[12px] font-semibold text-sky-600">
@@ -71,16 +73,18 @@ export function AttendanceDashboardCard({
   onOpen,
   index,
   compact,
+  featured,
 }: {
   team: TeamSpace;
   block: BlockInstance;
   onOpen: () => void;
   index: number;
   compact?: boolean;
+  featured?: boolean;
 }) {
   const d = getDashboardData(team, block).attendance!;
   return (
-    <DashboardCard onClick={onOpen} index={index} accent="emerald" compact={compact}>
+    <DashboardCard onClick={onOpen} index={index} accent="emerald" compact={compact} featured={featured}>
       <DashboardLabel action={<DashboardChevron />}>Attendance</DashboardLabel>
       <div className="flex items-center gap-3">
         <div className="relative shrink-0">
@@ -353,11 +357,15 @@ export function CompactStatCard({
   block,
   onOpen,
   index,
+  compact = true,
+  featured,
 }: {
   team: TeamSpace;
   block: BlockInstance;
   onOpen: () => void;
   index: number;
+  compact?: boolean;
+  featured?: boolean;
 }) {
   const data = getDashboardData(team, block);
   let emoji = "✨";
@@ -403,7 +411,7 @@ export function CompactStatCard({
   }
 
   return (
-    <DashboardCard onClick={onOpen} index={index} compact>
+    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
       <div className="flex items-start justify-between gap-2">
         <span className="text-xl" aria-hidden>
           {emoji}

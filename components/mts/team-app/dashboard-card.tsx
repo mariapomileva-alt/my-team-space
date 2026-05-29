@@ -11,6 +11,7 @@ export function DashboardCard({
   accent,
   index = 0,
   compact,
+  featured,
 }: {
   onClick: () => void;
   children: ReactNode;
@@ -18,6 +19,7 @@ export function DashboardCard({
   accent?: "indigo" | "sky" | "emerald" | "amber" | "rose" | "violet" | "neutral";
   index?: number;
   compact?: boolean;
+  featured?: boolean;
 }) {
   const accentRing =
     accent === "sky"
@@ -43,7 +45,7 @@ export function DashboardCard({
       className={cn(
         "group flex h-full w-full flex-col overflow-hidden rounded-[1.25rem] border border-neutral-200/90 bg-white text-left shadow-[0_4px_20px_-12px_rgba(15,23,42,0.14)] ring-1 ring-neutral-100/80 transition",
         accentRing,
-        compact ? "p-3" : "p-3.5",
+        featured ? "min-h-[156px] p-4 shadow-[0_8px_28px_-14px_rgba(99,102,241,0.35)] ring-indigo-100/90" : compact ? "p-3" : "p-3.5",
         className,
       )}
     >

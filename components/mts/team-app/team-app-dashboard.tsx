@@ -22,19 +22,40 @@ function SoloWidget({
   onOpen,
   index,
   compact,
+  featured,
 }: {
   team: TeamSpace;
   block: BlockInstance;
   onOpen: (id: string) => void;
   index: number;
   compact?: boolean;
+  featured?: boolean;
 }) {
   const open = () => onOpen(block.id);
+  const cardCompact = featured ? false : compact;
   switch (block.type) {
     case "schedule":
-      return <ScheduleDashboardCard team={team} block={block} onOpen={open} index={index} compact={compact} />;
+      return (
+        <ScheduleDashboardCard
+          team={team}
+          block={block}
+          onOpen={open}
+          index={index}
+          compact={cardCompact}
+          featured={featured}
+        />
+      );
     case "attendance":
-      return <AttendanceDashboardCard team={team} block={block} onOpen={open} index={index} compact={compact} />;
+      return (
+        <AttendanceDashboardCard
+          team={team}
+          block={block}
+          onOpen={open}
+          index={index}
+          compact={cardCompact}
+          featured={featured}
+        />
+      );
     case "camp_trip":
       return <TripsDashboardCard team={team} block={block} onOpen={open} index={index} />;
     case "documents":
@@ -44,7 +65,16 @@ function SoloWidget({
     case "team_feed":
       return <AnnouncementDashboardCard team={team} block={block} onOpen={open} index={index} />;
     default:
-      return <CompactStatCard team={team} block={block} onOpen={open} index={index} />;
+      return (
+        <CompactStatCard
+          team={team}
+          block={block}
+          onOpen={open}
+          index={index}
+          compact={cardCompact}
+          featured={featured}
+        />
+      );
   }
 }
 
@@ -55,6 +85,7 @@ function PairCell({
   side,
   onOpen,
   index,
+  compact = true,
 }: {
   team: TeamSpace;
   block: BlockInstance;
@@ -62,12 +93,25 @@ function PairCell({
   side: "left" | "right";
   onOpen: (id: string) => void;
   index: number;
+  compact?: boolean;
 }) {
   if (variant === "schedule-attendance") {
     return side === "left" ? (
-      <ScheduleDashboardCard team={team} block={block} onOpen={() => onOpen(block.id)} index={index} compact />
+      <ScheduleDashboardCard
+        team={team}
+        block={block}
+        onOpen={() => onOpen(block.id)}
+        index={index}
+        compact={compact}
+      />
     ) : (
-      <AttendanceDashboardCard team={team} block={block} onOpen={() => onOpen(block.id)} index={index} compact />
+      <AttendanceDashboardCard
+        team={team}
+        block={block}
+        onOpen={() => onOpen(block.id)}
+        index={index}
+        compact={compact}
+      />
     );
   }
   if (variant === "trips-rules") {
@@ -109,13 +153,29 @@ function DashboardRowView({
     return (
       <div className="grid grid-cols-2 gap-2.5">
         <PreviewAnchor blockId={row.left.id}>
-          <div className="min-h-[148px]">
-            <PairCell team={team} block={row.left} variant={row.variant} side="left" onOpen={onOpen} index={base} />
+          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
+            <PairCell
+              team={team}
+              block={row.left}
+              variant={row.variant}
+              side="left"
+              onOpen={onOpen}
+              index={base}
+              compact={row.compact}
+            />
           </div>
         </PreviewAnchor>
         <PreviewAnchor blockId={row.right.id}>
-          <div className="min-h-[148px]">
-            <PairCell team={team} block={row.right} variant={row.variant} side="right" onOpen={onOpen} index={base + 1} />
+          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
+            <PairCell
+              team={team}
+              block={row.right}
+              variant={row.variant}
+              side="right"
+              onOpen={onOpen}
+              index={base + 1}
+              compact={row.compact}
+            />
           </div>
         </PreviewAnchor>
       </div>
@@ -123,23 +183,30 @@ function DashboardRowView({
   }
 
   if (row.kind === "wide") {
+    const minH = row.featured ? "min-h-[200px]" : undefined;
     if (row.variant === "achievements") {
       return (
         <PreviewAnchor blockId={row.block.id}>
-          <AchievementsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
+          <div className={minH}>
+            <AchievementsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
+          </div>
         </PreviewAnchor>
       );
     }
     if (row.variant === "gallery") {
       return (
         <PreviewAnchor blockId={row.block.id}>
-          <GalleryStackCard team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
+          <div className={minH}>
+            <GalleryStackCard team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
+          </div>
         </PreviewAnchor>
       );
     }
     return (
       <PreviewAnchor blockId={row.block.id}>
-        <ResultsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
+        <div className={minH}>
+          <ResultsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
+        </div>
       </PreviewAnchor>
     );
   }
@@ -148,13 +215,44 @@ function DashboardRowView({
     return (
       <div className="grid grid-cols-2 gap-2.5">
         <PreviewAnchor blockId={row.left.id}>
-          <div className="min-h-[108px]">
-            <SoloWidget team={team} block={row.left} onOpen={onOpen} index={base} compact />
+          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
+            <SoloWidget
+              team={team}
+              block={row.left}
+              onOpen={onOpen}
+              index={base}
+              compact={row.compact}
+            />
           </div>
         </PreviewAnchor>
         <PreviewAnchor blockId={row.right.id}>
-          <div className="min-h-[108px]">
-            <SoloWidget team={team} block={row.right} onOpen={onOpen} index={base + 1} compact />
+          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
+            <SoloWidget
+              team={team}
+              block={row.right}
+              onOpen={onOpen}
+              index={base + 1}
+              compact={row.compact}
+            />
+          </div>
+        </PreviewAnchor>
+      </div>
+    );
+  }
+
+  if (row.size === "half") {
+    return (
+      <div className="grid grid-cols-2 gap-2.5">
+        <PreviewAnchor blockId={row.block.id}>
+          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
+            <SoloWidget
+              team={team}
+              block={row.block}
+              onOpen={onOpen}
+              index={base}
+              compact={row.compact}
+              featured={row.featured}
+            />
           </div>
         </PreviewAnchor>
       </div>
@@ -163,7 +261,16 @@ function DashboardRowView({
 
   return (
     <PreviewAnchor blockId={row.block.id}>
-      <SoloWidget team={team} block={row.block} onOpen={onOpen} index={base} />
+      <div className={row.featured ? "min-h-[168px]" : undefined}>
+        <SoloWidget
+          team={team}
+          block={row.block}
+          onOpen={onOpen}
+          index={base}
+          compact={row.compact}
+          featured={row.featured}
+        />
+      </div>
     </PreviewAnchor>
   );
 }
@@ -182,9 +289,17 @@ export function TeamAppDashboard({
 
   return (
     <div className="team-app-dashboard mt-4 flex flex-col gap-3 sm:gap-3.5">
-      {rows.map((row, i) => (
-        <DashboardRowView key={`row-${i}-${row.kind}`} row={row} team={team} onOpen={onOpenBlock} rowIndex={i} />
-      ))}
+      {rows.map((row, i) => {
+        const rowKey =
+          row.kind === "pair"
+            ? `${row.left.id}-${row.left.layout}-${row.right.id}-${row.right.layout}`
+            : row.kind === "pair-compact"
+              ? `${row.left.id}-${row.left.layout}-${row.right.id}-${row.right.layout}`
+              : `${row.block.id}-${row.block.layout}-${row.kind}`;
+        return (
+          <DashboardRowView key={rowKey} row={row} team={team} onOpen={onOpenBlock} rowIndex={i} />
+        );
+      })}
     </div>
   );
 }

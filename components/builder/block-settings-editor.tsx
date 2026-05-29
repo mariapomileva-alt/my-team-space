@@ -22,6 +22,7 @@ type Props = {
   team: TeamSpace;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
+  onPreviewBlock?: (id: string) => void;
 };
 
 const SIMPLE_TYPES = new Set([
@@ -33,11 +34,17 @@ const SIMPLE_TYPES = new Set([
   "weather",
 ]);
 
-export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam }: Props) {
+export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam, onPreviewBlock }: Props) {
   return (
     <div className="space-y-4 border-t border-indigo-100/60 bg-gradient-to-b from-indigo-50/25 via-white to-white px-4 py-5 sm:px-5">
       <BlockAudiencePicker team={team} block={block} onPatchBlock={onPatchBlock} />
-      <LayoutPicker layout={block.layout ?? "full"} onChange={(layout) => onPatchBlock(block.id, { layout })} />
+      <LayoutPicker
+        layout={block.layout ?? "full"}
+        onChange={(layout) => {
+          onPatchBlock(block.id, { layout });
+          onPreviewBlock?.(block.id);
+        }}
+      />
 
       {block.type === "announcement_bar" ? (
         <AnnouncementBarEditor block={block} onPatchBlock={onPatchBlock} />
