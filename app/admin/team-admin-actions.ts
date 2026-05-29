@@ -1,5 +1,6 @@
 "use server";
 
+import { sendTeamAdminInviteEmail } from "@/lib/email/admin-invite";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { adminInviteUrl, parseTeamStaffPayload, type TeamStaffPayload } from "@/lib/team-admin";
 import { revalidatePath } from "next/cache";
@@ -21,7 +22,7 @@ export async function getTeamStaff(teamId: string): Promise<TeamStaffPayload | n
   return parseTeamStaffPayload(data);
 }
 
-export async function createTeamAdminInvite(teamId: string, email: string) {
+export async function createTeamAdminInvite(teamId: string, email: string, siteOrigin?: string) {
   const { supabase } = await requireAuth();
   const { data, error } = await supabase.rpc("create_team_admin_invite", {
     p_team_id: teamId,
@@ -33,10 +34,23 @@ export async function createTeamAdminInvite(teamId: string, email: string) {
   const token = row?.token;
   if (!token) throw new Error("Invite could not be created");
 
+  const origin = siteOrigin?.trim() || appOriginFromEnv();
+  const inviteUrl = adminInviteUrl(origin, token);
+  const inviteEmail = row.email ?? email.trim().toLowerCase();
+
+  const { data: teamRow } = await supabase.from("teams").select("name").eq("id", teamId).maybeSingle();
+  const mail = await sendTeamAdminInviteEmail({
+    to: inviteEmail,
+    inviteUrl,
+    teamName: (teamRow?.name as string | undefined) ?? "your team",
+  });
+
   revalidatePath(`/admin/team/${teamId}/step-2`);
   return {
-    inviteUrl: adminInviteUrl(appOriginFromEnv(), token),
-    email: row.email ?? email.trim().toLowerCase(),
+    inviteUrl,
+    email: inviteEmail,
+    emailSent: mail.sent,
+    emailError: mail.sent ? undefined : mail.reason,
   };
 }
 

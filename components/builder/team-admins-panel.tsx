@@ -25,6 +25,8 @@ export function TeamAdminsPanel({
   const [staff, setStaff] = useState<TeamStaffPayload | null>(null);
   const [email, setEmail] = useState("");
   const [lastInviteUrl, setLastInviteUrl] = useState("");
+  const [lastInviteEmail, setLastInviteEmail] = useState("");
+  const [emailSent, setEmailSent] = useState<boolean | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -60,8 +62,10 @@ export function TeamAdminsPanel({
     if (!trimmed) return;
     startTransition(async () => {
       try {
-        const { inviteUrl } = await createTeamAdminInvite(teamId, trimmed);
-        setLastInviteUrl(inviteUrl);
+        const result = await createTeamAdminInvite(teamId, trimmed, siteUrl);
+        setLastInviteUrl(result.inviteUrl);
+        setLastInviteEmail(result.email);
+        setEmailSent(result.emailSent);
         setEmail("");
         setErr(null);
         await load();
@@ -75,8 +79,8 @@ export function TeamAdminsPanel({
     <div className={`mt-5 border-t border-zinc-100 pt-4 ${BUILDER_INSET_WELL}`}>
       <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Page admins</p>
       <p className="mt-1 text-sm text-zinc-600">
-        Invite someone to help manage this page — same editor access as you, without billing controls. We don&apos;t
-        email the link automatically: copy it and send via WhatsApp, Telegram, or your own email.
+        Invite someone to help manage this page — same editor access as you, without billing controls. If email is
+        configured on the server, we send the invite automatically; otherwise copy the link below.
       </p>
 
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
@@ -99,9 +103,24 @@ export function TeamAdminsPanel({
       </div>
 
       {lastInviteUrl ? (
-        <div className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50/50 px-3 py-2.5">
-          <p className="text-[11px] font-semibold text-indigo-900">Invite link — send to your admin</p>
-          <p className="mt-1 break-all text-xs text-indigo-800/90">{lastInviteUrl}</p>
+        <div
+          className={`mt-3 rounded-xl border px-3 py-2.5 ${
+            emailSent
+              ? "border-emerald-200 bg-emerald-50/80"
+              : "border-indigo-100 bg-indigo-50/50"
+          }`}
+        >
+          {emailSent ? (
+            <p className="text-[11px] font-semibold text-emerald-900">
+              Invite email sent to {lastInviteEmail}. Ask them to check inbox and spam.
+            </p>
+          ) : (
+            <p className="text-[11px] font-semibold text-indigo-900">
+              Automatic email is not set up — copy this link and send it to {lastInviteEmail} (WhatsApp, Telegram, or
+              Gmail).
+            </p>
+          )}
+          <p className="mt-1 break-all text-xs text-zinc-700">{lastInviteUrl}</p>
           <button
             type="button"
             className="mt-2 text-xs font-semibold text-indigo-700 underline"
