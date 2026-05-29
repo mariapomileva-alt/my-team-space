@@ -11,10 +11,11 @@ const LAYOUT_HINTS: Record<BlockLayout, string> = {
   card: "Compact tile in the grid",
 };
 
-function LayoutThumbnail({ layout, active }: { layout: BlockLayout; active: boolean }) {
-  const bar = (w: string, h = "h-1.5") =>
-    cn("rounded-sm bg-current opacity-70", h, w);
+function LayoutBar({ width, height = "h-1.5" }: { width: string; height?: string }) {
+  return <div className={cn("rounded-sm bg-current opacity-70", height, width)} />;
+}
 
+function LayoutThumbnail({ layout, active }: { layout: BlockLayout; active: boolean }) {
   return (
     <div
       className={cn(
@@ -25,29 +26,29 @@ function LayoutThumbnail({ layout, active }: { layout: BlockLayout; active: bool
     >
       {layout === "full" ? (
         <div className="flex w-full flex-col gap-1">
-          {bar("w-full")}
-          {bar("w-3/4")}
+          <LayoutBar width="w-full" />
+          <LayoutBar width="w-3/4" />
         </div>
       ) : null}
       {layout === "featured" ? (
         <div className="flex w-full flex-col gap-1">
-          {bar("w-full", "h-3")}
-          {bar("w-1/2", "h-1")}
+          <LayoutBar width="w-full" height="h-3" />
+          <LayoutBar width="w-1/2" height="h-1" />
         </div>
       ) : null}
       {layout === "half" ? (
         <div className="flex w-full gap-1">
           <div className="flex flex-1 flex-col gap-1">
-            {bar("w-full")}
-            {bar("w-2/3")}
+            <LayoutBar width="w-full" />
+            <LayoutBar width="w-2/3" />
           </div>
           <div className="w-1/2 rounded-sm border border-dashed border-current opacity-40" />
         </div>
       ) : null}
       {layout === "card" ? (
         <div className="grid w-full grid-cols-2 gap-1">
-          <div className="rounded-sm border border-current p-1 opacity-80">
-            {bar("w-full")}
+          <div className="flex flex-col gap-1 rounded-sm border border-current p-1 opacity-80">
+            <LayoutBar width="w-full" />
           </div>
           <div className="rounded-sm border border-dashed border-current opacity-40" />
         </div>
