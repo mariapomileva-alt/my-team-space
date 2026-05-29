@@ -8,7 +8,7 @@ import {
 } from "@/lib/blocks/builder-section-styles";
 import { BUILDER_RADIUS_CHOICE } from "@/lib/builder/layout";
 import { cn } from "@/lib/utils/cn";
-import { BLOCK_META } from "@/lib/blocks/meta";
+import { BLOCK_META, BUILDER_SECTION_LABELS, type BuilderSection } from "@/lib/blocks/meta";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -18,6 +18,7 @@ type Props = {
   block: BlockInstance;
   team: TeamSpace;
   expanded: boolean;
+  position?: number;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
   onMoveUp?: () => void;
@@ -34,6 +35,7 @@ export function BlockModuleCard({
   block,
   team,
   expanded,
+  position,
   canMoveUp = false,
   canMoveDown = false,
   onMoveUp,
@@ -44,6 +46,8 @@ export function BlockModuleCard({
   onPatchTeam,
 }: Props) {
   const meta = BLOCK_META[block.type];
+  const section = (meta?.section ?? "advanced") as BuilderSection;
+  const sectionLabel = BUILDER_SECTION_LABELS[section].title;
   const isGallery = block.type === "gallery";
   const isResults = RESULTS_TYPES.has(block.type);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -134,7 +138,17 @@ export function BlockModuleCard({
                   {meta.emoji}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold tracking-tight text-zinc-900">{meta.title}</span>
+                  <span className="flex flex-wrap items-center gap-2">
+                    {position != null ? (
+                      <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-zinc-500">
+                        #{position}
+                      </span>
+                    ) : null}
+                    <span className="text-sm font-bold tracking-tight text-zinc-900">{meta.title}</span>
+                    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-zinc-500">
+                      {sectionLabel}
+                    </span>
+                  </span>
                   <span className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-zinc-500">
                     {meta.description}
                   </span>

@@ -3,7 +3,6 @@
 import { BlockModuleCard } from "@/components/builder/block-module-card";
 import { TeamColorsPanel } from "@/components/builder/team-colors-panel";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
-import { BuilderSectionPanel } from "@/components/builder/builder-section-panel";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
 import { PrivacyAccessPanel } from "@/components/builder/privacy-access-panel";
@@ -14,11 +13,7 @@ import {
   BUILDER_PREVIEW_COLUMN,
   BUILDER_WORKSPACE_GRID,
 } from "@/lib/builder/layout";
-import {
-  BUILDER_SECTION_ORDER,
-  applyBlockOrder,
-  groupBlocksBySection,
-} from "@/lib/blocks/meta";
+import { applyBlockOrder, builderSortBlocks } from "@/lib/blocks/meta";
 import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
 import { magicInviteUrl } from "@/lib/team-access";
@@ -95,11 +90,7 @@ export function TeamPageBuilder({
     return "Private team — generate a magic link under Privacy & access, or parents can use your team code.";
   }, [team.pageVisibility, team.inviteToken]);
 
-  const sectionGroups = useMemo(() => groupBlocksBySection(team.blocks), [team.blocks]);
-  const allPublicBlocks = useMemo(
-    () => BUILDER_SECTION_ORDER.flatMap((s) => sectionGroups[s]),
-    [sectionGroups],
-  );
+  const orderedBlocks = useMemo(() => builderSortBlocks(team.blocks), [team.blocks]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -195,20 +186,20 @@ export function TeamPageBuilder({
   }
 
   function moveBlock(id: string, dir: -1 | 1) {
-    const i = allPublicBlocks.findIndex((b) => b.id === id);
+    const i = orderedBlocks.findIndex((b) => b.id === id);
     if (i < 0) return;
     const j = i + dir;
-    if (j < 0 || j >= allPublicBlocks.length) return;
-    setBlocksOrder(arrayMove(allPublicBlocks, i, j));
+    if (j < 0 || j >= orderedBlocks.length) return;
+    setBlocksOrder(arrayMove(orderedBlocks, i, j));
   }
 
   function onDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = allPublicBlocks.findIndex((b) => b.id === active.id);
-    const newIndex = allPublicBlocks.findIndex((b) => b.id === over.id);
+    const oldIndex = orderedBlocks.findIndex((b) => b.id === active.id);
+    const newIndex = orderedBlocks.findIndex((b) => b.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
-    setBlocksOrder(arrayMove(allPublicBlocks, oldIndex, newIndex));
+    setBlocksOrder(arrayMove(orderedBlocks, oldIndex, newIndex));
   }
 
   function publish() {
@@ -283,47 +274,44 @@ export function TeamPageBuilder({
               />
               <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
 
-              <p className="text-xs leading-relaxed text-zinc-500">
-                Set the order families see on your page — use the ↑↓ arrows or drag the handle on each block.
-              </p>
+              <div className="rounded-2xl border border-zinc-200/80 bg-white/90 p-4 shadow-sm sm:p-5">
+                <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <h2 className="text-sm font-bold text-zinc-900">Page order</h2>
+                    <p className="mt-1 max-w-lg text-xs leading-relaxed text-zinc-500">
+                      ↑↓ changes the order on the live preview and the public team page. Put blocks next to each
+                      other if you want them side-by-side (e.g. Schedule + Attendance).
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] font-semibold text-zinc-600">
+                    {orderedBlocks.length} blocks
+                  </span>
+                </div>
 
-              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-                <SortableContext items={allPublicBlocks.map((b) => b.id)} strategy={rectSortingStrategy}>
-                  <motion.div layout className="space-y-12">
-                    {BUILDER_SECTION_ORDER.map((section) => {
-                      const blocks = sectionGroups[section];
-                      if (!blocks.length) return null;
-                      return (
-                        <BuilderSectionPanel key={section} section={section} blockCount={blocks.length}>
-                          <ul className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-                            {blocks.map((block) => {
-                              const globalIndex = allPublicBlocks.findIndex((b) => b.id === block.id);
-                              return (
-                                <BlockModuleCard
-                                  key={block.id}
-                                  block={block}
-                                  team={team}
-                                  expanded={expanded.has(block.id)}
-                                  canMoveUp={globalIndex > 0}
-                                  canMoveDown={
-                                    globalIndex >= 0 && globalIndex < allPublicBlocks.length - 1
-                                  }
-                                  onMoveUp={() => moveBlock(block.id, -1)}
-                                  onMoveDown={() => moveBlock(block.id, 1)}
-                                  onToggleExpand={() => toggleExpand(block.id)}
-                                  onToggleEnabled={() => toggleBlock(block.id)}
-                                  onPatchBlock={patchBlock}
-                                  onPatchTeam={patchTeam}
-                                />
-                              );
-                            })}
-                          </ul>
-                        </BuilderSectionPanel>
-                      );
-                    })}
-                  </motion.div>
-                </SortableContext>
-              </DndContext>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+                  <SortableContext items={orderedBlocks.map((b) => b.id)} strategy={rectSortingStrategy}>
+                    <ul className="grid w-full min-w-0 grid-cols-1 gap-3">
+                      {orderedBlocks.map((block, index) => (
+                        <BlockModuleCard
+                          key={block.id}
+                          block={block}
+                          team={team}
+                          position={index + 1}
+                          expanded={expanded.has(block.id)}
+                          canMoveUp={index > 0}
+                          canMoveDown={index < orderedBlocks.length - 1}
+                          onMoveUp={() => moveBlock(block.id, -1)}
+                          onMoveDown={() => moveBlock(block.id, 1)}
+                          onToggleExpand={() => toggleExpand(block.id)}
+                          onToggleEnabled={() => toggleBlock(block.id)}
+                          onPatchBlock={patchBlock}
+                          onPatchTeam={patchTeam}
+                        />
+                      ))}
+                    </ul>
+                  </SortableContext>
+                </DndContext>
+              </div>
             </div>
 
             <aside className={BUILDER_PREVIEW_COLUMN}>

@@ -16,60 +16,67 @@ const PAIRS: [BlockType, BlockType, DashboardPairVariant][] = [
   ["polls", "team_feed", "poll-announcement"],
 ];
 
-const WIDE_ORDER: { type: BlockType; variant: DashboardWideVariant }[] = [
-  { type: "achievements", variant: "achievements" },
-  { type: "gallery", variant: "gallery" },
-  { type: "results", variant: "results" },
-];
+const WIDE_VARIANT: Partial<Record<BlockType, DashboardWideVariant>> = {
+  achievements: "achievements",
+  gallery: "gallery",
+  results: "results",
+};
 
-function findBlock(blocks: BlockInstance[], type: BlockType, used: Set<string>): BlockInstance | undefined {
-  const b = blocks.find((x) => x.type === type && !used.has(x.id));
-  if (b) used.add(b.id);
-  return b;
+function pairVariant(left: BlockType, right: BlockType): DashboardPairVariant | null {
+  for (const [lt, rt, variant] of PAIRS) {
+    if ((left === lt && right === rt) || (left === rt && right === lt)) return variant;
+  }
+  return null;
 }
 
+function pairSides(
+  a: BlockInstance,
+  b: BlockInstance,
+  variant: DashboardPairVariant,
+): { left: BlockInstance; right: BlockInstance } {
+  for (const [lt, rt, v] of PAIRS) {
+    if (v !== variant) continue;
+    if (a.type === lt && b.type === rt) return { left: a, right: b };
+    if (a.type === rt && b.type === lt) return { left: b, right: a };
+  }
+  return { left: a, right: b };
+}
+
+/** Build dashboard rows in coach-defined block order (see block.order). */
 export function buildDashboardRows(blocks: BlockInstance[]): DashboardRow[] {
-  const used = new Set<string>();
+  const sorted = [...blocks].sort((a, b) => a.order - b.order);
   const rows: DashboardRow[] = [];
-  const pairOrphans: BlockInstance[] = [];
-
-  for (const [leftType, rightType, variant] of PAIRS) {
-    const left = findBlock(blocks, leftType, used);
-    const right = findBlock(blocks, rightType, used);
-    if (left && right) {
-      rows.push({ kind: "pair", variant, left, right });
-    } else {
-      if (left) pairOrphans.push(left);
-      if (right) pairOrphans.push(right);
-    }
-  }
-
-  let o = 0;
-  while (o + 1 < pairOrphans.length) {
-    rows.push({ kind: "pair-compact", left: pairOrphans[o], right: pairOrphans[o + 1] });
-    o += 2;
-  }
-  for (; o < pairOrphans.length; o++) {
-    rows.push({ kind: "solo", block: pairOrphans[o], size: "full" });
-  }
-
-  for (const { type, variant } of WIDE_ORDER) {
-    const block = findBlock(blocks, type, used);
-    if (block) rows.push({ kind: "wide", variant, block });
-  }
-
-  const rest = blocks.filter((b) => !used.has(b.id));
   let i = 0;
-  while (i < rest.length) {
-    const a = rest[i];
-    const b = rest[i + 1];
+
+  while (i < sorted.length) {
+    const a = sorted[i]!;
+    const b = sorted[i + 1];
+
+    if (b) {
+      const pv = pairVariant(a.type, b.type);
+      if (pv) {
+        const { left, right } = pairSides(a, b, pv);
+        rows.push({ kind: "pair", variant: pv, left, right });
+        i += 2;
+        continue;
+      }
+    }
+
+    const wide = WIDE_VARIANT[a.type];
+    if (wide) {
+      rows.push({ kind: "wide", variant: wide, block: a });
+      i += 1;
+      continue;
+    }
+
     if (b) {
       rows.push({ kind: "pair-compact", left: a, right: b });
       i += 2;
-    } else {
-      rows.push({ kind: "solo", block: a, size: "full" });
-      i += 1;
+      continue;
     }
+
+    rows.push({ kind: "solo", block: a, size: "full" });
+    i += 1;
   }
 
   return rows;
