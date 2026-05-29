@@ -3,10 +3,10 @@
 import { requireAuth } from "@/lib/auth/require-auth";
 import { adminInviteUrl, parseTeamStaffPayload, type TeamStaffPayload } from "@/lib/team-admin";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 function appOriginFromEnv(): string {
-  const url = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  const url =
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() || process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (url) return url.replace(/\/$/, "");
   return "http://localhost:3000";
 }
@@ -58,7 +58,7 @@ export async function removeTeamAdmin(teamId: string, userId: string) {
   revalidatePath("/admin");
 }
 
-export async function acceptTeamAdminInvite(token: string) {
+export async function acceptTeamAdminInvite(token: string): Promise<{ teamId: string }> {
   const { supabase } = await requireAuth();
   const { data, error } = await supabase.rpc("accept_team_admin_invite", { p_token: token.trim() });
   if (error) throw new Error(error.message);
@@ -68,5 +68,6 @@ export async function acceptTeamAdminInvite(token: string) {
   if (!teamId) throw new Error("Invite accepted but team id missing");
 
   revalidatePath("/admin");
-  redirect(`/admin/team/${teamId}/step-2`);
+  revalidatePath(`/admin/team/${teamId}/step-2`);
+  return { teamId };
 }

@@ -75,7 +75,8 @@ export function TeamAdminsPanel({
     <div className={`mt-5 border-t border-zinc-100 pt-4 ${BUILDER_INSET_WELL}`}>
       <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Page admins</p>
       <p className="mt-1 text-sm text-zinc-600">
-        Invite someone to help manage this page — same editor access as you, without billing controls.
+        Invite someone to help manage this page — same editor access as you, without billing controls. We don&apos;t
+        email the link automatically: copy it and send via WhatsApp, Telegram, or your own email.
       </p>
 
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
