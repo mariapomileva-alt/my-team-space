@@ -11,36 +11,32 @@ const LAYOUT_HINTS: Record<BlockLayout, string> = {
   card: "Compact tile in the grid",
 };
 
-function LayoutBar({ width, height = "h-1.5" }: { width: string; height?: string }) {
-  return <div className={cn("rounded-sm bg-current opacity-70", height, width)} />;
-}
-
 function LayoutThumbnail({ layout, active }: { layout: BlockLayout; active: boolean }) {
   return (
     <div
       className={cn(
-        "flex h-14 w-full items-center justify-center rounded-lg border p-2 transition",
+        "flex h-14 w-full items-center justify-center overflow-hidden rounded-lg border p-2 transition",
         active ? "border-indigo-400 bg-indigo-50/80 text-indigo-600" : "border-zinc-200 bg-zinc-50 text-zinc-400",
       )}
       aria-hidden
     >
       {layout === "full" ? (
         <div className="flex w-full flex-col gap-1">
-          <LayoutBar width="w-full" />
-          <LayoutBar width="w-3/4" />
+          <div className="h-1.5 w-full rounded-sm bg-current opacity-70" />
+          <div className="h-1.5 w-3/4 rounded-sm bg-current opacity-70" />
         </div>
       ) : null}
       {layout === "featured" ? (
         <div className="flex w-full flex-col gap-1">
-          <LayoutBar width="w-full" height="h-3" />
-          <LayoutBar width="w-1/2" height="h-1" />
+          <div className="h-3 w-full rounded-sm bg-current opacity-70" />
+          <div className="h-1 w-1/2 rounded-sm bg-current opacity-70" />
         </div>
       ) : null}
       {layout === "half" ? (
         <div className="flex w-full gap-1">
           <div className="flex flex-1 flex-col gap-1">
-            <LayoutBar width="w-full" />
-            <LayoutBar width="w-2/3" />
+            <div className="h-1.5 w-full rounded-sm bg-current opacity-70" />
+            <div className="h-1.5 w-2/3 rounded-sm bg-current opacity-70" />
           </div>
           <div className="w-1/2 rounded-sm border border-dashed border-current opacity-40" />
         </div>
@@ -48,7 +44,7 @@ function LayoutThumbnail({ layout, active }: { layout: BlockLayout; active: bool
       {layout === "card" ? (
         <div className="grid w-full grid-cols-2 gap-1">
           <div className="flex flex-col gap-1 rounded-sm border border-current p-1 opacity-80">
-            <LayoutBar width="w-full" />
+            <div className="h-1.5 w-full rounded-sm bg-current opacity-70" />
           </div>
           <div className="rounded-sm border border-dashed border-current opacity-40" />
         </div>
