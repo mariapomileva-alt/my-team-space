@@ -16,7 +16,11 @@ function LoginInner() {
   const registered = searchParams.get("registered") === "1";
   const linkExpired = searchParams.get("error") === "link_expired";
   const authDenied = searchParams.get("error") === "auth_denied";
-  const nextPath = searchParams.get("next")?.startsWith("/") ? searchParams.get("next")! : "/admin";
+  const rawNext = searchParams.get("next");
+  const nextPath =
+    rawNext?.startsWith("/") && !rawNext.startsWith("//") && !rawNext.includes("://")
+      ? rawNext
+      : "/admin";
 
   const [mode, setMode] = useState<"magic" | "password">("password");
   const [email, setEmail] = useState("");

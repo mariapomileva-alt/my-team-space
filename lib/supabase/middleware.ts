@@ -4,9 +4,12 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
+
   const url = getSupabaseUrl();
   const key = getSupabaseAnonKey();
-  if (!url || !key) return supabaseResponse;
+  if (!url || !key) {
+    return supabaseResponse;
+  }
 
   const supabase = createServerClient(url, key, {
     cookies: {
@@ -16,7 +19,9 @@ export async function updateSession(request: NextRequest) {
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         supabaseResponse = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options));
+        cookiesToSet.forEach(({ name, value, options }) => {
+          supabaseResponse.cookies.set(name, value, options);
+        });
       },
     },
   });
@@ -26,5 +31,6 @@ export async function updateSession(request: NextRequest) {
   } catch {
     /* avoid 500 on transient Supabase/network errors */
   }
+
   return supabaseResponse;
 }
