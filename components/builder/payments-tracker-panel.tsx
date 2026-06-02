@@ -62,8 +62,17 @@ export function PaymentsTrackerPanel({
       else if (r.status === "pending") pending++;
       else unpaid++;
     }
-    return { paid, pending, unpaid };
+    return { paid, pending, unpaid, total: rows.length };
   }, [rows]);
+
+  const summaryPill = useMemo(() => {
+    if (summary.total === 0) return "Start tracking fees";
+    const parts: string[] = [];
+    if (summary.paid) parts.push(`${summary.paid} paid`);
+    if (summary.pending) parts.push(`${summary.pending} pending`);
+    if (summary.unpaid) parts.push(`${summary.unpaid} unpaid`);
+    return parts.length ? parts.join(" · ") : `${summary.total} athletes`;
+  }, [summary]);
 
   const byMonth = useMemo(() => {
     const map = new Map<string, PaymentTrackerRow[]>();
@@ -80,15 +89,15 @@ export function PaymentsTrackerPanel({
     <BuilderCollapsiblePanel
       className={`${BUILDER_PANEL_SURFACE} border-amber-200/50 bg-gradient-to-br from-amber-50/30 via-white to-orange-50/20`}
       title="Payments tracker"
-      description="Optional coach tool — never shown on your public team page."
+      description="Track membership fees privately — parents never see this."
       summary={
-        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-900">
-          {rows.length ? `${summary.paid} paid` : "Empty"}
+        <span className="max-w-[200px] truncate rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-900">
+          {summaryPill}
         </span>
       }
       headerRight={
-        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-900">
-          Coach only
+        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900">
+          Just for you
         </span>
       }
       defaultExpanded={false}
@@ -115,8 +124,10 @@ export function PaymentsTrackerPanel({
 
       {rows.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-amber-200/80 bg-amber-50/30 px-4 py-8 text-center">
-          <p className="text-sm font-semibold text-zinc-800">Track monthly fees at a glance</p>
-          <p className="mt-1 text-xs text-zinc-500">Tap status icons to mark paid, pending, or unpaid.</p>
+          <p className="text-sm font-semibold text-zinc-800">No athletes added yet</p>
+          <p className="mt-1 text-xs leading-relaxed text-zinc-500">
+            Start tracking membership payments — tap ✅ ⏳ ❌ to mark who paid each month.
+          </p>
         </div>
       ) : (
         <div className="space-y-4">

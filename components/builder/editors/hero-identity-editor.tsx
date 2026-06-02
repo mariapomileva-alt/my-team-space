@@ -71,7 +71,7 @@ export function HeroIdentityEditor({
   return (
     <div className="space-y-5">
       <p className="text-sm text-zinc-500">
-        Logo and name are all you need — optional details can wait.
+        Start with your logo and team name — you can publish right after that.
       </p>
 
       <ImageUploadField

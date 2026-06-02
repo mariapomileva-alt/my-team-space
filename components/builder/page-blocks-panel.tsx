@@ -14,7 +14,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useState } from "react";
 
 const QUICK_ADD_TYPES: BlockType[] = ["gallery", "calendar", "results", "contacts"];
@@ -53,22 +53,29 @@ export function PageBlocksPanel({
   const enabledCount = blocks.filter((b) => b.enabled).length;
   const activeBlock = activeId ? blocks.find((b) => b.id === activeId) : undefined;
 
+  const summaryLabel =
+    enabledCount === 0
+      ? "No sections yet"
+      : enabledCount === 1
+        ? "1 section on your page"
+        : `${enabledCount} sections on your page`;
+
   return (
     <BuilderCollapsiblePanel
       className={`${BUILDER_PANEL_SURFACE} border-violet-200/40`}
-      title="Step 2 — Page blocks"
-      description="Turn sections on, drag to reorder — like building a Notion page."
+      title="Step 2 — Build your page"
+      description="Choose what parents and athletes will see — turn sections on and drag to reorder."
       summary={
         <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800">
-          {enabledCount} live · {blocks.length} total
+          {summaryLabel}
         </span>
       }
       defaultExpanded
     >
       {enabledCount === 0 ? (
         <div className="mb-5 rounded-2xl border border-dashed border-violet-200 bg-gradient-to-br from-violet-50/80 to-indigo-50/40 px-5 py-8 text-center">
-          <p className="text-base font-bold text-zinc-900">Start building your team page</p>
-          <p className="mt-1 text-sm text-zinc-500">Add a block — preview updates right away.</p>
+          <p className="text-base font-bold text-zinc-900">Pick your first sections</p>
+          <p className="mt-1 text-sm text-zinc-500">Like Lego blocks — tap to add, preview updates instantly.</p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             {QUICK_ADD_TYPES.map((type) => {
               const meta = BLOCK_META[type];
@@ -77,16 +84,22 @@ export function PageBlocksPanel({
                   key={type}
                   type="button"
                   onClick={() => onQuickAdd(type)}
-                  className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 py-2.5 text-sm font-semibold text-violet-900 shadow-sm transition hover:border-violet-300 hover:shadow-md active:scale-[0.98]"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-900 shadow-sm transition hover:border-violet-300 hover:shadow-md active:scale-[0.98]"
                 >
-                  <span aria-hidden>{meta.emoji}</span>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-lg" aria-hidden>
+                    {meta.emoji}
+                  </span>
                   {meta.title}
                 </button>
               );
             })}
           </div>
         </div>
-      ) : null}
+      ) : (
+        <p className="mb-3 text-[11px] text-zinc-500">
+          Drag the handle to reorder · tap a card to edit · toggle to show or hide on your page.
+        </p>
+      )}
 
       <DndContext
         sensors={sensors}
@@ -98,8 +111,8 @@ export function PageBlocksPanel({
         }}
         onDragCancel={() => setActiveId(null)}
       >
-        <SortableContext items={blocks.map((b) => b.id)} strategy={rectSortingStrategy}>
-          <ul className="grid w-full min-w-0 grid-cols-1 gap-2.5">
+        <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+          <ul className="flex w-full min-w-0 flex-col gap-3">
             {blocks.map((block, index) => (
               <BlockModuleCard
                 key={block.id}
@@ -117,6 +130,7 @@ export function PageBlocksPanel({
                 onPatchTeam={onPatchTeam}
                 onPreviewBlock={onPreviewBlock}
                 isDraggingOverlay={false}
+                legoLayout
               />
             ))}
           </ul>
@@ -124,7 +138,7 @@ export function PageBlocksPanel({
 
         <DragOverlay dropAnimation={{ duration: 220, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
           {activeBlock ? (
-            <div className="rotate-[1.5deg] scale-[1.02] opacity-95 shadow-2xl">
+            <div className="rotate-[1deg] scale-[1.01] opacity-95 shadow-2xl">
               <BlockModuleCard
                 block={activeBlock}
                 team={team}
@@ -133,7 +147,7 @@ export function PageBlocksPanel({
                 onToggleEnabled={() => {}}
                 onPatchBlock={() => {}}
                 onPatchTeam={() => {}}
-                isDraggingOverlay
+                legoLayout
               />
             </div>
           ) : null}

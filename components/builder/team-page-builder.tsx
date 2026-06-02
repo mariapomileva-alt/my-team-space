@@ -13,7 +13,8 @@ import {
   BUILDER_PREVIEW_COLUMN,
   BUILDER_WORKSPACE_GRID,
 } from "@/lib/builder/layout";
-import { BuilderProgress, builderCompletionPercent, type BuilderProgressTarget } from "@/components/builder/builder-progress";
+import { BuilderProgress, type BuilderProgressTarget } from "@/components/builder/builder-progress";
+import { getCompletionGuidance } from "@/lib/builder/page-completion";
 import { applyBlockOrder, builderSortBlocks } from "@/lib/blocks/meta";
 import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
@@ -217,13 +218,16 @@ export function TeamPageBuilder({
 
   function publish() {
     startTransition(async () => {
-      const percent = builderCompletionPercent(teamRef.current);
-      if (percent < 30) {
-        setMsg("Your page is still missing a few important details.");
-      }
+      const guidance = getCompletionGuidance(teamRef.current);
       const ok = await persist(false);
       if (ok) {
-        setMsg("Published! Families see your latest changes.");
+        if (guidance.isFullyReady) {
+          setMsg("Published! Your team page is fully ready — families can see it now.");
+        } else if (!guidance.canPublish) {
+          setMsg("Published — add your team name and logo when you can so parents recognize you.");
+        } else {
+          setMsg("Published! Families see your latest changes.");
+        }
       }
     });
   }
