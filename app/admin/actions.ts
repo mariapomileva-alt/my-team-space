@@ -11,7 +11,12 @@ export async function createTeamAction(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   if (!slug || !name) throw new Error("Slug and name required");
   const { data, error } = await supabase.rpc("create_team", { p_slug: slug, p_name: name });
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (error.message.includes("team_limit_reached")) {
+      redirect("/admin?upgrade=academy");
+    }
+    throw new Error(error.message);
+  }
   const normalized = slug.trim().toLowerCase();
   revalidatePath(`/team/${normalized}`);
   revalidateTag(publicTeamCacheTag(normalized), "default");

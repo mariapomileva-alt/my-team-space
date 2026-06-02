@@ -80,6 +80,11 @@ export type TeamSpace = {
   plan: SubscriptionPlan;
   tagline?: string;
   blocks: BlockInstance[];
+  /** Denormalized for UI (from DB) */
+  subscriptionStatus?: string;
+  publishStatus?: "draft" | "published";
+  isPlanPrimary?: boolean;
+  planEditLocked?: boolean;
   pageVisibility?: TeamVisibility;
   accessCode?: string;
   inviteToken?: string;

@@ -5,6 +5,9 @@ export function humanizeSaveError(message: string): string {
   const raw = message.trim();
   if (!raw) return "Unknown error — try Publish or refresh the page.";
   if (raw === "Forbidden") return "No access to this team — sign in again as the coach.";
+  if (/subscription does not allow editing/i.test(raw)) {
+    return "Your subscription is not active. Please update billing to continue editing your team page.";
+  }
   if (/JWT|session|refresh token|not authenticated/i.test(raw)) {
     return "Session expired — refresh the page and sign in again.";
   }

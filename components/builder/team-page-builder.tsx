@@ -107,11 +107,12 @@ export function TeamPageBuilder({
     }));
   }, []);
 
-  const persist = useCallback(async (silent: boolean): Promise<boolean> => {
+  const persist = useCallback(
+    async (silent: boolean, options?: { publish?: boolean }): Promise<boolean> => {
     setSaveState("saving");
     if (!silent) setMsg(null);
     try {
-      await saveTeamContent(teamId, teamRef.current);
+      await saveTeamContent(teamId, teamRef.current, options);
       dirtyRef.current = false;
       setLastSaved(new Date());
       setSaveState("saved");
@@ -130,7 +131,9 @@ export function TeamPageBuilder({
       }
       return false;
     }
-  }, [teamId, router]);
+    },
+    [teamId, router],
+  );
 
   useEffect(() => {
     if (!dirtyRef.current) return;
@@ -219,7 +222,7 @@ export function TeamPageBuilder({
   function publish() {
     startTransition(async () => {
       const guidance = getCompletionGuidance(teamRef.current);
-      const ok = await persist(false);
+      const ok = await persist(false, { publish: true });
       if (ok) {
         if (guidance.isFullyReady) {
           setMsg("Published! Your team page is fully ready — families can see it now.");

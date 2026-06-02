@@ -1,5 +1,6 @@
 "use server";
 
+import { assertTeamEditable } from "@/lib/billing/coach-subscription";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TeamSpace } from "@/lib/types";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -31,9 +32,10 @@ function revalidatePublicTeamBySlug(slug: string) {
   revalidateTag(publicTeamCacheTag(slug), "default");
 }
 
-export async function saveTeamContent(teamId: string, team: TeamSpace) {
+export async function saveTeamContent(teamId: string, team: TeamSpace, options?: { publish?: boolean }) {
   const { supabase, user } = await getCoachContext();
   await assertCoach(supabase, user.id, teamId);
+  await assertTeamEditable(supabase, user.id, teamId);
   const logoUrl = team.logoUrl?.trim().slice(0, 2048) || null;
   const pageSettings = {
     ...(team.pageSettings ?? {}),
@@ -50,22 +52,24 @@ export async function saveTeamContent(teamId: string, team: TeamSpace) {
     return { ...block, settings };
   });
 
-  const { error } = await supabase
-    .from("teams")
-    .update({
-      name: team.name.slice(0, 200),
-      tagline: team.tagline?.slice(0, 220) ?? null,
-      logo_url: logoUrl,
-      theme_id: team.themeId,
-      primary_color: team.primaryColor.slice(0, 32),
-      secondary_color: team.secondaryColor.slice(0, 32),
-      blocks: blocks as unknown as object,
-      page_visibility: team.pageVisibility ?? "public",
-      access_code: team.accessCode?.slice(0, 64) ?? null,
-      invite_token: team.inviteToken?.slice(0, 64) ?? null,
-      page_settings: pageSettings as object,
-    })
-    .eq("id", teamId);
+  const patch: Record<string, unknown> = {
+    name: team.name.slice(0, 200),
+    tagline: team.tagline?.slice(0, 220) ?? null,
+    logo_url: logoUrl,
+    theme_id: team.themeId,
+    primary_color: team.primaryColor.slice(0, 32),
+    secondary_color: team.secondaryColor.slice(0, 32),
+    blocks: blocks as unknown as object,
+    page_visibility: team.pageVisibility ?? "public",
+    access_code: team.accessCode?.slice(0, 64) ?? null,
+    invite_token: team.inviteToken?.slice(0, 64) ?? null,
+    page_settings: pageSettings as object,
+  };
+  if (options?.publish) {
+    patch.publish_status = "published";
+  }
+
+  const { error } = await supabase.from("teams").update(patch).eq("id", teamId);
   if (error) throw new Error(error.message);
   const { data: row } = await supabase.from("teams").select("slug").eq("id", teamId).single();
   if (row?.slug) revalidatePublicTeamBySlug(row.slug);

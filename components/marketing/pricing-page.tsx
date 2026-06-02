@@ -10,7 +10,7 @@ const PLANS = [
     badge: null as string | null,
     featured: false,
     cta: "Start Team Space",
-    href: "/admin/signup",
+    href: "/admin?startPlan=single_team",
     features: [
       "1 team space",
       "schedules",
@@ -33,7 +33,7 @@ const PLANS = [
     badge: "Early Access",
     featured: true,
     cta: "Claim Early Access",
-    href: "/admin/signup",
+    href: "/admin?startPlan=single_team",
     features: ["Everything in Team Space."],
     note: "After 12 months, regular pricing applies.",
   },
@@ -45,7 +45,7 @@ const PLANS = [
     badge: "Most Popular",
     featured: false,
     cta: "Start Academy",
-    href: "/admin/signup",
+    href: "/admin?startPlan=academy",
     features: [
       "up to 20 teams",
       "academy dashboard",

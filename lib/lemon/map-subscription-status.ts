@@ -1,18 +1,8 @@
-/** Map Lemon Squeezy subscription.status to teams.subscription_status CHECK values. */
+import { lemonStatusToCoachStatus, coachStatusToTeamStatus } from "@/lib/billing/map-status";
+
+/** @deprecated use lemonStatusToCoachStatus — kept for team-level helpers */
 export function lemonStatusToTeamStatus(lsStatus: string | undefined): string {
-  switch (lsStatus) {
-    case "active":
-      return "active";
-    case "on_trial":
-      return "trialing";
-    case "past_due":
-      return "past_due";
-    case "cancelled":
-    case "expired":
-      return "canceled";
-    case "paused":
-    case "unpaid":
-    default:
-      return "inactive";
-  }
+  return coachStatusToTeamStatus(lemonStatusToCoachStatus(lsStatus));
 }
+
+export { lemonStatusToCoachStatus };

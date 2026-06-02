@@ -5,6 +5,9 @@ export type CoachTeamListItem = {
   slug: string;
   name: string;
   subscription_status: string;
+  publish_status: "draft" | "published";
+  is_plan_primary: boolean;
+  plan_edit_locked: boolean;
   team_id: string;
   role: string;
 };
@@ -31,7 +34,7 @@ export async function loadCoachTeams(
 
   const { data: teams, error: teamsError } = await supabase
     .from("teams")
-    .select("id, slug, name, subscription_status")
+    .select("id, slug, name, subscription_status, publish_status, is_plan_primary, plan_edit_locked")
     .in("id", teamIds);
 
   if (teamsError) {
@@ -43,9 +46,14 @@ export async function loadCoachTeams(
     slug: t.slug as string,
     name: t.name as string,
     subscription_status: (t.subscription_status as string) ?? "inactive",
+    publish_status: (t.publish_status as "draft" | "published") ?? "draft",
+    is_plan_primary: Boolean(t.is_plan_primary),
+    plan_edit_locked: Boolean(t.plan_edit_locked),
     team_id: t.id as string,
     role: roleByTeam.get(t.id as string) ?? "coach",
   }));
+
+  list.sort((a, b) => a.name.localeCompare(b.name));
 
   return { list, error: null };
 }

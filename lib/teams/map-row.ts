@@ -20,6 +20,9 @@ export type TeamDbRow = {
   tagline: string | null;
   blocks: unknown;
   subscription_status: string;
+  publish_status?: string | null;
+  is_plan_primary?: boolean | null;
+  plan_edit_locked?: boolean | null;
   page_visibility?: string | null;
   access_code?: string | null;
   invite_token?: string | null;
@@ -118,6 +121,10 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
     plan: "pro",
     tagline: row.tagline ?? undefined,
     blocks,
+    subscriptionStatus: row.subscription_status ?? "inactive",
+    publishStatus: (row.publish_status === "published" ? "published" : "draft") as "draft" | "published",
+    isPlanPrimary: Boolean(row.is_plan_primary),
+    planEditLocked: Boolean(row.plan_edit_locked),
     pageVisibility: parseVisibility(row.page_visibility ?? undefined),
     accessCode: row.access_code ?? undefined,
     inviteToken: row.invite_token ?? undefined,
