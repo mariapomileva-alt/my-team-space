@@ -5,6 +5,8 @@ import {
   AnnouncementDashboardCard,
   AttendanceDashboardCard,
   CompactStatCard,
+  PaymentDashboardCard,
+  QuickActionsDashboardCard,
   GalleryStackCard,
   PollDashboardCard,
   ResultsRail,
@@ -64,6 +66,27 @@ function SoloWidget({
       return <PollDashboardCard team={team} block={block} onOpen={open} index={index} />;
     case "team_feed":
       return <AnnouncementDashboardCard team={team} block={block} onOpen={open} index={index} />;
+    case "payments":
+      return (
+        <PaymentDashboardCard
+          team={team}
+          block={block}
+          onOpen={open}
+          index={index}
+          featured={featured}
+        />
+      );
+    case "quick_actions":
+      return (
+        <QuickActionsDashboardCard
+          team={team}
+          block={block}
+          onOpen={open}
+          index={index}
+          compact={cardCompact}
+          featured={featured}
+        />
+      );
     default:
       return (
         <CompactStatCard

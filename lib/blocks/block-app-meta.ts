@@ -87,6 +87,18 @@ export const BLOCK_APP_META: Record<BlockType, BlockAppMeta> = {
     subtitle: "Chat & follow us",
     tileClass: "bg-fuchsia-100 text-fuchsia-700",
   },
+  payments: {
+    emoji: "💳",
+    title: "Payments",
+    subtitle: "Membership & fees",
+    tileClass: "bg-sky-100 text-sky-800",
+  },
+  quick_actions: {
+    emoji: "⚡",
+    title: "Quick actions",
+    subtitle: "Pay, shop, register & more",
+    tileClass: "bg-amber-100 text-amber-900",
+  },
   integrations: {
     emoji: "🧩",
     title: "Smart integrations",

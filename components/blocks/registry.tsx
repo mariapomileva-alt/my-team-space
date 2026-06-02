@@ -13,6 +13,8 @@ import {
   BlockHero,
   BlockPolls,
   BlockQuickLinks,
+  BlockPayments,
+  BlockQuickActions,
   BlockIntegrations,
   BlockResources,
   BlockResults,
@@ -63,6 +65,10 @@ export function renderBlock(team: TeamSpace, block: BlockInstance, options?: Ren
       return <BlockBirthdays team={team} block={block} embedded={embedded} />;
     case "quick_links":
       return <BlockQuickLinks team={team} block={block} embedded={embedded} />;
+    case "payments":
+      return <BlockPayments team={team} block={block} embedded={embedded} />;
+    case "quick_actions":
+      return <BlockQuickActions team={team} block={block} embedded={embedded} />;
     case "integrations":
       return <BlockIntegrations team={team} block={block} embedded={embedded} />;
     case "resources":

@@ -15,11 +15,15 @@ import {
   type ContentItem,
   type CountdownSettings,
   type ListBlockSettings,
+  type PaymentLinkSettings,
   type PollSettings,
+  type QuickActionsSettings,
   type ResourceItem,
   type SocialKey,
   type WeatherSettings,
 } from "@/lib/blocks/settings";
+import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
+import { QuickActionsGrid } from "@/components/blocks/quick-actions-grid";
 import { SocialLinkButtons, heroSocialLinks, type SocialLinkItem } from "@/components/social/social-link-buttons";
 import { normalizeSocialUrl } from "@/lib/social/links";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
@@ -621,6 +625,62 @@ export function BlockResources({ block, embedded }: BlockProps) {
       ) : (
         <ResourcesHub items={items} sectionTitle={title} compact={embedded} />
       )}
+    </BlockSurface>
+  );
+}
+
+export function BlockPayments({ block, embedded }: BlockProps) {
+  const s = getBlockSettings<PaymentLinkSettings>(block);
+  const hasContent = Boolean(s.title?.trim() || s.paymentUrl?.trim());
+
+  if (embedded) {
+    return (
+      <BlockSurface embedded>
+        <BlockHeading embedded>Payments</BlockHeading>
+        {hasContent ? (
+          <PaymentLinkCard
+            title={s.title}
+            description={s.description}
+            buttonLabel={s.buttonLabel}
+            paymentUrl={s.paymentUrl}
+            variant="compact"
+          />
+        ) : (
+          <BlockEmpty message="Add a payment title and link in the builder." />
+        )}
+      </BlockSurface>
+    );
+  }
+
+  if (!hasContent) {
+    return (
+      <BlockSurface>
+        <BlockHeading>Payments</BlockHeading>
+        <BlockEmpty message="Add a payment title and link in the builder." />
+      </BlockSurface>
+    );
+  }
+
+  return (
+    <PaymentLinkCard
+      title={s.title}
+      description={s.description}
+      buttonLabel={s.buttonLabel}
+      paymentUrl={s.paymentUrl}
+      variant="featured"
+    />
+  );
+}
+
+export function BlockQuickActions({ block, embedded }: BlockProps) {
+  const s = getBlockSettings<QuickActionsSettings>(block);
+  const title = s.sectionTitle?.trim() || "Quick actions";
+  const actions = s.actions ?? [];
+
+  return (
+    <BlockSurface embedded={embedded}>
+      <BlockHeading embedded={embedded}>{title}</BlockHeading>
+      <QuickActionsGrid actions={actions} compact={embedded} />
     </BlockSurface>
   );
 }

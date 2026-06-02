@@ -1,5 +1,12 @@
 import { computeResultsBoard, getResultsBoardSettings } from "@/lib/blocks/results-board";
-import { getBlockSettings, type ListBlockSettings, type PollSettings } from "@/lib/blocks/settings";
+import {
+  getBlockSettings,
+  type ListBlockSettings,
+  type PaymentLinkSettings,
+  type PollSettings,
+  type QuickActionsSettings,
+} from "@/lib/blocks/settings";
+import { toExternalHref } from "@/lib/external-url";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 
 const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -49,6 +56,17 @@ export type DashboardBlockData = {
   };
   calendar: { externalUrl?: string };
   quick_links: { labels: string[] };
+  payments: {
+    title: string;
+    description?: string;
+    buttonLabel: string;
+    hasUrl: boolean;
+  };
+  quick_actions: {
+    title: string;
+    count: number;
+    previews: { icon: string; title: string }[];
+  };
   weather: { temp?: string; note?: string; location?: string };
   countdown: { label: string; targetLabel: string; parts?: { days: number; hrs: number; min: number } };
   birthdays: { items: { name: string; date: string }[] };
@@ -234,6 +252,31 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
         return s[keys[i]]?.trim();
       });
       return { quick_links: { labels: labels.length ? labels : ["Chat", "Follow"] } };
+    }
+    case "payments": {
+      const s = getBlockSettings<PaymentLinkSettings>(block);
+      return {
+        payments: {
+          title: s.title?.trim() || "Payments",
+          description: s.description?.trim(),
+          buttonLabel: s.buttonLabel?.trim() || "Pay now",
+          hasUrl: Boolean(toExternalHref(s.paymentUrl ?? "")),
+        },
+      };
+    }
+    case "quick_actions": {
+      const s = getBlockSettings<QuickActionsSettings>(block);
+      const valid = (s.actions ?? []).filter((a) => a.title?.trim() && toExternalHref(a.url ?? ""));
+      return {
+        quick_actions: {
+          title: s.sectionTitle?.trim() || "Quick actions",
+          count: valid.length,
+          previews: valid.slice(0, 4).map((a) => ({
+            icon: a.icon,
+            title: a.title.trim(),
+          })),
+        },
+      };
     }
     case "weather": {
       const s = getBlockSettings<{ temp?: string; note?: string; location?: string }>(block);

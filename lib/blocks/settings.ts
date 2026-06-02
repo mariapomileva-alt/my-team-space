@@ -1,4 +1,24 @@
+import type { QuickActionIconId } from "@/lib/quick-actions/icons";
 import type { BlockInstance, BlockType } from "@/lib/types";
+
+export type PaymentLinkSettings = {
+  title: string;
+  description: string;
+  buttonLabel: string;
+  paymentUrl: string;
+};
+
+export type QuickActionItem = {
+  id: string;
+  icon: QuickActionIconId;
+  title: string;
+  url: string;
+};
+
+export type QuickActionsSettings = {
+  sectionTitle?: string;
+  actions: QuickActionItem[];
+};
 
 export type SocialKey = "instagram" | "telegram" | "whatsapp" | "tiktok" | "facebook" | "youtube";
 
@@ -108,6 +128,18 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
         customLabel: "",
         customUrl: "",
       };
+    case "payments":
+      return {
+        title: "Monthly Membership",
+        description: "",
+        buttonLabel: "Pay now",
+        paymentUrl: "",
+      } satisfies PaymentLinkSettings;
+    case "quick_actions":
+      return {
+        sectionTitle: "Quick actions",
+        actions: [] as QuickActionItem[],
+      } satisfies QuickActionsSettings;
     case "results":
       return {
         enabled: true,
@@ -245,6 +277,16 @@ export function newSponsorItem(): ContentItem {
 
 export function newResourceItem(): ResourceItem {
   return { id: uid("res"), title: "", description: "", url: "", kind: "pdf" };
+}
+
+export function newQuickActionItem(partial?: Partial<QuickActionItem>): QuickActionItem {
+  return {
+    id: uid("act"),
+    icon: "custom",
+    title: "",
+    url: "",
+    ...partial,
+  };
 }
 
 export const ACHIEVEMENT_ICONS = ["🏆", "🥇", "🥈", "🥉", "⭐", "🎖", "📜", "🔥", "❤️"] as const;

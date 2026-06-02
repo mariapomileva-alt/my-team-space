@@ -10,6 +10,8 @@ const ORDERED_BLOCKS: BlockType[] = [
   "schedule",
   "contacts",
   "quick_links",
+  "payments",
+  "quick_actions",
   "integrations",
   "gallery",
   "polls",

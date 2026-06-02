@@ -51,6 +51,8 @@ export type BlockType =
   | "countdown"
   | "birthdays"
   | "quick_links"
+  | "payments"
+  | "quick_actions"
   | "integrations"
   | "resources";
 

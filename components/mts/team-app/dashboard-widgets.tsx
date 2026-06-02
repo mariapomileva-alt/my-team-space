@@ -1,8 +1,12 @@
 "use client";
 
+import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
+import { QuickActionsGrid } from "@/components/blocks/quick-actions-grid";
 import { ResultsBoardTeaser } from "@/components/results/results-board-teaser";
 import { DashboardCard, DashboardChevron, DashboardLabel } from "@/components/mts/team-app/dashboard-card";
 import { getDashboardData } from "@/lib/blocks/block-dashboard-data";
+import { getBlockSettings, type PaymentLinkSettings, type QuickActionsSettings } from "@/lib/blocks/settings";
+import { quickActionEmoji, type QuickActionIconId } from "@/lib/quick-actions/icons";
 import type { BlockInstance, BlockLayout, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
 
@@ -362,6 +366,114 @@ export function ResultsRail({
   );
 }
 
+export function PaymentDashboardCard({
+  team,
+  block,
+  onOpen,
+  index,
+  featured,
+}: {
+  team: TeamSpace;
+  block: BlockInstance;
+  onOpen: () => void;
+  index: number;
+  featured?: boolean;
+}) {
+  const s = getBlockSettings<PaymentLinkSettings>(block);
+  const d = getDashboardData(team, block).payments!;
+
+  if (featured) {
+    return (
+      <PaymentLinkCard
+        title={s.title}
+        description={s.description}
+        buttonLabel={s.buttonLabel}
+        paymentUrl={s.paymentUrl}
+        variant="featured"
+      />
+    );
+  }
+
+  return (
+    <DashboardCard onClick={onOpen} index={index} accent="sky" compact featured={featured}>
+      <DashboardLabel action={<DashboardChevron />}>Payments</DashboardLabel>
+      <div className="flex items-start gap-2.5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-lg">
+          💳
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[15px] font-bold leading-tight text-neutral-900">{d.title}</p>
+          {d.description ? (
+            <p className="mt-0.5 line-clamp-2 text-[12px] text-neutral-500">{d.description}</p>
+          ) : (
+            <p className="mt-0.5 text-[12px] text-neutral-500">
+              {d.hasUrl ? d.buttonLabel : "Add payment link"}
+            </p>
+          )}
+        </div>
+      </div>
+      <p className="mt-auto pt-2 text-[11px] font-semibold text-sky-600">
+        {d.hasUrl ? `${d.buttonLabel} ›` : "Set up in builder ›"}
+      </p>
+    </DashboardCard>
+  );
+}
+
+export function QuickActionsDashboardCard({
+  team,
+  block,
+  onOpen,
+  index,
+  compact,
+  featured,
+}: {
+  team: TeamSpace;
+  block: BlockInstance;
+  onOpen: () => void;
+  index: number;
+  compact?: boolean;
+  featured?: boolean;
+}) {
+  const s = getBlockSettings<QuickActionsSettings>(block);
+  const d = getDashboardData(team, block).quick_actions!;
+  const showInlineGrid = featured || !compact;
+
+  if (showInlineGrid && (s.actions?.length ?? 0) > 0) {
+    return (
+      <div className="space-y-2.5">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{d.title}</p>
+        <QuickActionsGrid actions={s.actions ?? []} compact={compact && !featured} />
+      </div>
+    );
+  }
+
+  return (
+    <DashboardCard onClick={onOpen} index={index} accent="amber" compact={compact} featured={featured}>
+      <DashboardLabel action={<DashboardChevron />}>{d.title}</DashboardLabel>
+      {d.previews.length > 0 ? (
+        <div className="mt-1 grid grid-cols-2 gap-2">
+          {d.previews.map((p) => (
+            <div
+              key={`${p.title}-${p.icon}`}
+              className="flex items-center gap-1.5 rounded-xl bg-amber-50/80 px-2 py-1.5"
+            >
+              <span className="text-base" aria-hidden>
+                {quickActionEmoji(p.icon as QuickActionIconId)}
+              </span>
+              <span className="line-clamp-1 text-[11px] font-semibold text-neutral-800">{p.title}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-[13px] text-neutral-500">Add pay, shop, and registration buttons</p>
+      )}
+      <p className="mt-auto pt-2 text-[10px] font-medium text-neutral-400">
+        {d.count > 0 ? `${d.count} action${d.count === 1 ? "" : "s"}` : "Tap to set up"}
+      </p>
+    </DashboardCard>
+  );
+}
+
 export function CompactStatCard({
   team,
   block,
@@ -398,6 +510,16 @@ export function CompactStatCard({
     label = "Social";
     stat = String(data.quick_links.labels.length);
     sub = data.quick_links.labels.join(" · ");
+  } else if (data.payments) {
+    emoji = "💳";
+    label = "Payments";
+    stat = data.payments.hasUrl ? "Ready" : "—";
+    sub = data.payments.title;
+  } else if (data.quick_actions) {
+    emoji = "⚡";
+    label = "Actions";
+    stat = String(data.quick_actions.count);
+    sub = data.quick_actions.previews[0]?.title ?? "Pay · Shop · Register";
   } else if (data.weather) {
     emoji = "🌤️";
     label = "Venue";
