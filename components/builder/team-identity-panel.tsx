@@ -50,7 +50,7 @@ export function TeamIdentityPanel({
     <BuilderCollapsiblePanel
       className={`${BUILDER_PANEL_SURFACE} border-indigo-200/50 bg-gradient-to-br from-indigo-50/40 via-white to-violet-50/30`}
       title="Step 1 — Team identity"
-      description="Logo, cover, name & colors — your preview updates instantly."
+      description="Logo and team name — enough to publish. Everything else is optional."
       summary={
         <span className="inline-flex max-w-[220px] items-center gap-2 truncate rounded-full bg-white/80 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-700 ring-1 ring-zinc-200/80">
           <span

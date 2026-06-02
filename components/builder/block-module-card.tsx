@@ -68,6 +68,8 @@ export function BlockModuleCard({
   return (
     <motion.li
       layout={!isDraggingOverlay}
+      data-builder-block-id={block.id}
+      data-builder-block-type={block.type}
       className={cn("list-none", !isDraggingOverlay && builderCardGridClass(block), !isDraggingOverlay && builderCardSizeClass(block.type))}
     >
       <motion.article

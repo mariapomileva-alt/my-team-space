@@ -83,7 +83,8 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
       return { message: "", tone: "info" as "info" | "urgent" | "confirm", accent: "theme", pinned: true };
     case "hero":
       return {
-        quote: "Show up. Cheer loud. Grow together.",
+        quote: "",
+        description: "",
         city: "",
         coverImageUrl: "",
         teamPhotoUrl: "",

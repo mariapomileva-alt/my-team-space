@@ -27,6 +27,7 @@ import { motion } from "framer-motion";
 
 type HeroSettings = {
   quote: string;
+  description?: string;
   city: string;
   coverImageUrl: string;
   teamPhotoUrl?: string;
@@ -39,7 +40,8 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   if (embedded) return null;
   const s = getBlockSettings<HeroSettings>(block);
   const logoSrc = team.logoUrl?.trim() || s.teamPhotoUrl?.trim();
-  const quote = s.quote || "Show up. Cheer loud. Grow together.";
+  const motto = s.quote?.trim();
+  const description = s.description?.trim();
   const socialLinks = heroSocialLinks(s.social ?? {});
   const hasCover = Boolean(s.coverImageUrl?.trim());
   const logoOverlap = hasCover ? "-mt-10" : "";
@@ -77,10 +79,14 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
               <div className="min-w-0 pt-2">
                 <MtsBadge>Our team</MtsBadge>
                 <h1 className="mt-1 text-xl font-bold tracking-tight text-[color:var(--mts-text)] sm:text-2xl">{team.name}</h1>
-                {team.tagline ? (
-                  <p className="mt-0.5 line-clamp-2 text-[13px] text-[color:var(--mts-muted)]">{team.tagline}</p>
+                {team.tagline?.trim() ? (
+                  <p className="mt-0.5 line-clamp-2 text-[13px] font-medium text-[color:var(--mts-muted)]">
+                    {team.tagline.trim()}
+                  </p>
                 ) : null}
-                {s.city ? <p className="mt-0.5 text-[12px] text-neutral-400">📍 {s.city}</p> : null}
+                {s.city?.trim() ? (
+                  <p className="mt-0.5 text-[12px] text-neutral-400">📍 {s.city.trim()}</p>
+                ) : null}
               </div>
             </div>
             <span className="relative z-10 mt-2 flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
@@ -88,7 +94,14 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
               Live
             </span>
           </div>
-          <p className="mt-3 text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]">“{quote}”</p>
+          {description ? (
+            <p className="mt-3 text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
+          ) : null}
+          {motto ? (
+            <p className={`text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)] ${description ? "mt-2" : "mt-3"}`}>
+              “{motto}”
+            </p>
+          ) : null}
           {socialLinks.length > 0 ? (
             <SocialLinkButtons links={socialLinks} className="mt-3" />
           ) : null}

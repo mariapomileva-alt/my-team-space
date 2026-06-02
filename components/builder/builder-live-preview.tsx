@@ -1,89 +1,74 @@
 "use client";
 
-import { TeamShell } from "@/components/mts/team-shell";
-import { TeamPageBlocks } from "@/components/mts/team-page-blocks";
+import { BuilderFullPreviewModal } from "@/components/builder/builder-full-preview-modal";
+import { BuilderPreviewSegment } from "@/components/builder/builder-preview-segment";
+import { BuilderPreviewViewport } from "@/components/builder/builder-preview-viewport";
 import {
-  BUILDER_PHONE_H,
-  BUILDER_PHONE_HOME_H,
-  BUILDER_PHONE_NOTCH_H,
-  BUILDER_PHONE_VIEWPORT_H,
-  BUILDER_PHONE_W,
+  readStoredPreviewMode,
+  storePreviewMode,
+  type BuilderPreviewMode,
 } from "@/lib/builder/preview";
 import type { TeamSpace } from "@/lib/types";
-import { useEffect, useRef } from "react";
-
-function scrollPreviewToBlock(viewport: HTMLElement, target: Element) {
-  const vpRect = viewport.getBoundingClientRect();
-  const tRect = target.getBoundingClientRect();
-  const offset = tRect.top - vpRect.top - vpRect.height / 2 + tRect.height / 2;
-  viewport.scrollTop += offset;
-}
+import { useEffect, useState } from "react";
 
 export function BuilderLivePreview({
   team,
   focusBlockId,
+  onOpenInTab,
 }: {
   team: TeamSpace;
   focusBlockId?: string | null;
+  onOpenInTab?: () => void;
 }) {
-  const viewportRef = useRef<HTMLDivElement>(null);
+  const [mode, setMode] = useState<BuilderPreviewMode>("mobile");
+  const [fullOpen, setFullOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const root = viewportRef.current;
-    if (!root) return;
-    root.querySelectorAll("[data-preview-block-id].preview-block-focus").forEach((el) => {
-      el.classList.remove("preview-block-focus");
-    });
-    if (!focusBlockId) return;
-    const target = root.querySelector(`[data-preview-block-id="${focusBlockId}"]`);
-    if (!target) return;
-    target.classList.add("preview-block-focus");
-    scrollPreviewToBlock(root, target);
-  }, [focusBlockId, team]);
+    setMode(readStoredPreviewMode());
+    setHydrated(true);
+  }, []);
+
+  function changeMode(next: BuilderPreviewMode) {
+    setMode(next);
+    storePreviewMode(next);
+  }
 
   return (
-    <div className="builder-live-preview flex flex-col items-center">
-      <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
-        Live preview
-      </p>
-
-      <div
-        className="builder-phone-frame relative box-border shrink-0 overflow-hidden rounded-[2.5rem] border-[8px] border-zinc-900/95 bg-zinc-900 shadow-[0_32px_100px_-28px_rgba(99,102,241,0.35),0_24px_80px_-24px_rgba(15,23,42,0.5)] ring-1 ring-white/10"
-        style={{
-          width: BUILDER_PHONE_W,
-          height: BUILDER_PHONE_H,
-          minHeight: BUILDER_PHONE_H,
-          maxHeight: BUILDER_PHONE_H,
-        }}
-      >
-        <div
-          className="pointer-events-none absolute left-0 right-0 top-0 z-10 flex items-center justify-center bg-zinc-900"
-          style={{ height: BUILDER_PHONE_NOTCH_H }}
-        >
-          <span className="h-1.5 w-20 rounded-full bg-zinc-700" aria-hidden />
-        </div>
-
-        <div
-          ref={viewportRef}
-          className="builder-preview-viewport absolute left-0 right-0 z-0 overflow-x-hidden overflow-y-auto overscroll-contain bg-transparent"
-          style={{ top: BUILDER_PHONE_NOTCH_H, height: BUILDER_PHONE_VIEWPORT_H, width: "100%" }}
-        >
-          <TeamShell themeId={team.themeId} preview>
-            <TeamPageBlocks team={team} hasAccess previewBlockId={focusBlockId} />
-          </TeamShell>
-        </div>
-
-        <div
-          className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 flex items-center justify-center bg-zinc-900"
-          style={{ height: BUILDER_PHONE_HOME_H }}
-        >
-          <span className="h-1 w-28 rounded-full bg-zinc-700" aria-hidden />
-        </div>
+    <div className="builder-live-preview flex w-full flex-col">
+      <div className="mb-2.5 w-full">
+        <BuilderPreviewSegment mode={mode} onChange={changeMode} />
       </div>
 
-      <p className="mt-3 max-w-[360px] text-center text-[11px] leading-relaxed text-zinc-500">
-        Scroll inside the phone — edits appear here instantly.
-      </p>
+      <div
+        className="min-h-[200px] w-full transition-opacity duration-200"
+        style={{ opacity: hydrated ? 1 : 0.6 }}
+      >
+        <BuilderPreviewViewport team={team} mode={mode} focusBlockId={focusBlockId} />
+      </div>
+
+      {onOpenInTab ? (
+        <button
+          type="button"
+          onClick={() => setFullOpen(true)}
+          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white py-2 text-[11px] font-semibold text-zinc-600 transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
+        >
+          <span aria-hidden>🔍</span>
+          Open full preview
+        </button>
+      ) : null}
+
+      {onOpenInTab ? (
+        <BuilderFullPreviewModal
+          open={fullOpen}
+          onClose={() => setFullOpen(false)}
+          team={team}
+          mode={mode}
+          onModeChange={changeMode}
+          focusBlockId={focusBlockId}
+          onOpenInTab={onOpenInTab}
+        />
+      ) : null}
     </div>
   );
 }

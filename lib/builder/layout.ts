@@ -72,13 +72,13 @@ export function builderChoiceClass(selected: boolean, extra?: string) {
   return cn(BUILDER_CHOICE_BASE, selected ? BUILDER_CHOICE_SELECTED : BUILDER_CHOICE_IDLE, extra);
 }
 
-/** Left column + sticky preview (480px phone ≈ +35% vs original) */
-export const BUILDER_PREVIEW_WIDTH_PX = 480;
+/** Compact sticky preview column — editor gets the rest */
+export const BUILDER_PREVIEW_WIDTH_PX = 340;
 
 export const BUILDER_WORKSPACE_GRID =
-  "grid w-full grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1fr)_480px] lg:gap-10 xl:gap-12";
+  "grid w-full grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-8";
 
 export const BUILDER_EDITOR_COLUMN = "min-w-0 w-full space-y-6 overflow-x-clip lg:space-y-7";
 
 export const BUILDER_PREVIEW_COLUMN =
-  "mx-auto hidden w-full max-w-[480px] shrink-0 lg:sticky lg:top-[5.75rem] lg:z-10 lg:col-start-2 lg:row-start-1 lg:mx-0 lg:block lg:w-[480px] lg:max-w-[480px] lg:justify-self-end";
+  "mx-auto hidden w-full max-w-[340px] shrink-0 lg:sticky lg:top-[5.75rem] lg:z-10 lg:col-start-2 lg:row-start-1 lg:mx-0 lg:block lg:w-[340px] lg:max-w-[340px] lg:justify-self-end";

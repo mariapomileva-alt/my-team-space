@@ -1,6 +1,7 @@
 "use client";
 
 import { TeamShareBar } from "@/components/builder/team-share-bar";
+import type { ReactNode } from "react";
 import { BUILDER_TOOLBAR_SURFACE } from "@/lib/builder/layout";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -14,6 +15,7 @@ export function BuilderToolbar({
   publicUrl,
   parentShareUrl,
   shareHint,
+  progress,
   onPublish,
   onPreview,
 }: {
@@ -25,6 +27,7 @@ export function BuilderToolbar({
   publicUrl: string;
   parentShareUrl: string;
   shareHint?: string;
+  progress?: ReactNode;
   onPublish: () => void;
   onPreview: () => void;
 }) {
@@ -84,6 +87,7 @@ export function BuilderToolbar({
           </button>
         </div>
         </div>
+        {progress ? <div className="mt-3 w-full">{progress}</div> : null}
         <TeamShareBar url={parentShareUrl} hint={shareHint} />
       </motion.div>
     </motion.div>

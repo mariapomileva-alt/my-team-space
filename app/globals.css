@@ -94,29 +94,27 @@
 
 .builder-live-preview {
   flex: none;
-  width: 480px;
+  width: 100%;
   max-width: 100%;
 }
 
 .builder-live-preview .builder-phone-frame {
-  width: 480px !important;
-  height: 816px !important;
-  min-height: 816px !important;
-  max-height: 816px !important;
   flex: none !important;
   contain: strict;
   overflow: hidden !important;
 }
 
 .builder-live-preview .builder-preview-viewport {
-  height: 756px !important;
-  max-height: 756px !important;
   min-height: 0 !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   -webkit-overflow-scrolling: touch;
+}
+
+.builder-live-preview .builder-desktop-viewport {
+  max-height: 348px;
 }
 
 .builder-live-preview .mts-shell,
