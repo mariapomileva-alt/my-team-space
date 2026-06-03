@@ -45,7 +45,7 @@ export function BuilderToolbar({
         <div className="flex w-full flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-indigo-600">Building your team page</p>
-          <h1 className="truncate text-lg font-bold tracking-tight text-zinc-900 sm:text-xl">{teamName}</h1>
+          <h1 className="truncate text-lg font-bold tracking-normal text-zinc-900 sm:text-xl">{teamName}</h1>
           <p className="mt-0.5 flex items-center gap-1.5 text-xs text-zinc-500">
             <span
               className={`inline-block h-1.5 w-1.5 rounded-full ${
