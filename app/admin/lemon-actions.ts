@@ -1,11 +1,17 @@
 "use server";
 
-import { variantIdForPlan, isSingleTeamVariantConfigured } from "@/lib/billing/config";
+import { isBillingConfigured, variantIdForPlan, isSingleTeamVariantConfigured } from "@/lib/billing/config";
 import type { PlanType } from "@/lib/billing/types";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { redirect } from "next/navigation";
 
 const LEMON_API = "https://api.lemonsqueezy.com/v1";
+
+function pricingRedirect(plan: PlanType = "single_team", reason?: string): never {
+  const q = new URLSearchParams({ startPlan: plan });
+  if (reason) q.set("billing", reason);
+  redirect(`/pricing?${q.toString()}`);
+}
 
 export async function startCheckoutForPlan(plan: PlanType) {
   const { user } = await requireAuth();
@@ -16,9 +22,7 @@ export async function startCheckoutForPlan(plan: PlanType) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   if (!apiKey || !storeId || !variantId || !appUrl) {
-    throw new Error(
-      "Lemon Squeezy not configured. Set LEMONSQUEEZY_API_KEY, STORE_ID, SINGLE_TEAM + ACADEMY variant IDs, and NEXT_PUBLIC_APP_URL.",
-    );
+    pricingRedirect(plan, "not_configured");
   }
 
   const checkout_data: Record<string, unknown> = {
@@ -54,55 +58,70 @@ export async function startCheckoutForPlan(plan: PlanType) {
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text.slice(0, 240) || `Checkout API ${res.status}`);
+    pricingRedirect(plan, "checkout_failed");
   }
 
   const json = (await res.json()) as { data?: { attributes?: { url?: string } } };
-  const url = json?.data?.attributes?.url;
-  if (!url) throw new Error("No checkout URL in Lemon Squeezy response");
-  redirect(url);
+  const url = json?.data?.attributes?.url?.trim();
+  if (url) {
+    redirect(url);
+  }
+  pricingRedirect(plan, "checkout_failed");
 }
 
 /** @deprecated Per-team checkout — use startCheckoutForPlan */
 export async function startCheckoutSession(teamId: string) {
+  void teamId;
   if (!isSingleTeamVariantConfigured()) {
-    throw new Error("Single Team variant not configured");
+    pricingRedirect("single_team", "not_configured");
   }
   await startCheckoutForPlan("single_team");
 }
 
+/** Opens Lemon customer portal, or pricing if no paid subscription yet. Never throws. */
 export async function openBillingPortal() {
   const { supabase, user } = await requireAuth();
 
-  const apiKey = process.env.LEMONSQUEEZY_API_KEY;
-  if (!apiKey) throw new Error("Lemon Squeezy not configured");
+  if (!isBillingConfigured()) {
+    pricingRedirect("single_team", "not_configured");
+  }
 
-  const { data: subRow } = await supabase
+  const apiKey = process.env.LEMONSQUEEZY_API_KEY!;
+
+  const { data: subRow, error } = await supabase
     .from("coach_subscriptions")
     .select("lemon_subscription_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const subId = subRow?.lemon_subscription_id as string | undefined;
-  if (!subId) throw new Error("No subscription yet — choose a plan on the pricing page first.");
+  if (error) {
+    redirect("/admin?billing=error");
+  }
 
-  const res = await fetch(`${LEMON_API}/subscriptions/${encodeURIComponent(subId)}`, {
+  const subId = (subRow?.lemon_subscription_id as string | undefined)?.trim();
+  if (!subId) {
+    pricingRedirect("single_team", "no_subscription");
+  }
+
+  const lemonSubId = subId;
+  const res = await fetch(`${LEMON_API}/subscriptions/${encodeURIComponent(lemonSubId)}`, {
     headers: {
       Accept: "application/vnd.api+json",
       Authorization: `Bearer ${apiKey}`,
     },
   });
+
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text.slice(0, 240) || `Subscription API ${res.status}`);
+    pricingRedirect("single_team", "portal_unavailable");
   }
 
   const json = (await res.json()) as {
     data?: { attributes?: { urls?: { customer_portal?: string | null } } };
   };
-  const portal = json?.data?.attributes?.urls?.customer_portal;
-  if (!portal) throw new Error("No customer portal URL — check Lemon Squeezy subscription");
+  const portal = json?.data?.attributes?.urls?.customer_portal?.trim();
+  if (!portal) {
+    redirect("/admin?billing=no_portal");
+  }
   redirect(portal);
 }
 

@@ -44,6 +44,7 @@ export default async function TeamStep2Page({ params }: Props) {
         teamsUsed: 1,
         teamLimit: 1,
         billingActive: true,
+        hasLemonSubscription: false,
         canEdit: true,
         lockReason: "none" as const,
         showUpgradeCta: false,

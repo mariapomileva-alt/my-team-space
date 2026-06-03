@@ -15,6 +15,8 @@ export type BuilderBillingContext = {
   teamsUsed: number;
   teamLimit: number;
   billingActive: boolean;
+  /** True when coach has a Lemon Squeezy subscription id (paid / trialing via Lemon). */
+  hasLemonSubscription: boolean;
   canEdit: boolean;
   lockReason: BuilderLockReason;
   showUpgradeCta: boolean;
@@ -55,11 +57,22 @@ export async function loadBuilderBillingContext(
 
   const showUpgradeCta = !isAcademy && ent.teamsUsed > 1;
 
+  const { data: subRow } = await supabase
+    .from("coach_subscriptions")
+    .select("lemon_subscription_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const hasLemonSubscription = Boolean(
+    (subRow?.lemon_subscription_id as string | undefined)?.trim(),
+  );
+
   return {
     planLabel: ent.planLabel,
     teamsUsed: ent.teamsUsed,
     teamLimit: ent.teamLimit,
     billingActive,
+    hasLemonSubscription,
     canEdit,
     lockReason,
     showUpgradeCta,

@@ -2,6 +2,7 @@
 
 import { openBillingPortal, startCheckoutForPlan } from "@/app/admin/lemon-actions";
 import { builderUsageLabel, type BuilderBillingContext } from "@/lib/billing/builder-context";
+import Link from "next/link";
 
 function Dot() {
   return (
@@ -16,6 +17,7 @@ export function BuilderBillingStatus({ billing }: { billing: BuilderBillingConte
   const usage = builderUsageLabel(billing.teamsUsed, billing.teamLimit, billing.planLabel);
   const publishLabel = billing.publishStatus === "published" ? "Published" : "Draft";
   const showUpgrade = billing.showUpgradeCta;
+  const showChoosePlan = !billing.billingActive && !billing.hasLemonSubscription;
 
   return (
     <div
@@ -40,7 +42,18 @@ export function BuilderBillingStatus({ billing }: { billing: BuilderBillingConte
           </form>
         </>
       ) : null}
-      {!billing.billingActive ? (
+      {showChoosePlan ? (
+        <>
+          <Dot />
+          <Link
+            href="/pricing?startPlan=single_team"
+            className="font-semibold text-indigo-600/90 transition hover:text-indigo-700 hover:underline"
+          >
+            Choose a plan
+          </Link>
+        </>
+      ) : null}
+      {!billing.billingActive && billing.hasLemonSubscription ? (
         <>
           <Dot />
           <form action={openBillingPortal} className="inline">
