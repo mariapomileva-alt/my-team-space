@@ -135,7 +135,9 @@ export function TeamPageBuilder({
       setLastSaved(new Date());
       setSaveState("saved");
       setSaveError(null);
-      router.refresh();
+      if (!silent || options?.publish) {
+        router.refresh();
+      }
       return true;
     } catch (e) {
       dirtyRef.current = true;

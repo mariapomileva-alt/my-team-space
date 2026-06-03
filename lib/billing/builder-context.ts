@@ -1,3 +1,4 @@
+import { resolveCoachCanEditTeam } from "@/lib/billing/coach-can-edit";
 import { ensureCoachTeamEditAccess } from "@/lib/billing/ensure-team-access";
 import { loadCoachEntitlements } from "@/lib/billing/coach-subscription";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -37,30 +38,21 @@ export async function loadBuilderBillingContext(
     await ensureCoachTeamEditAccess(supabase, teamId);
   }
 
-  const { data: canEditRaw, error: rpcError } = await supabase.rpc("coach_subscription_allows_edit", {
-    p_user_id: userId,
-    p_team_id: teamId,
-  });
-
-  if (rpcError) {
-    console.error("[loadBuilderBillingContext] coach_subscription_allows_edit:", rpcError.message);
-  }
-
-  let canEdit = rpcError ? ent.teamsUsed <= 1 : Boolean(canEditRaw);
+  const edit = await resolveCoachCanEditTeam(supabase, userId, teamId);
+  const canEdit = edit.allowed;
   const billingActive = ent.billingActive;
 
   let lockReason: BuilderLockReason = "none";
   if (!canEdit) {
-    if (!billingActive) {
+    if (edit.reason === "subscription_inactive" || !billingActive) {
       lockReason = "subscription_inactive";
-    } else if (team.plan_edit_locked) {
+    } else if (team.plan_edit_locked || edit.reason === "plan_locked") {
       lockReason = "team_plan_locked";
     } else {
       lockReason = "not_active_team";
     }
   }
 
-  /** Academy upsell only when the coach already has more than one team page. */
   const showUpgradeCta = !isAcademy && ent.teamsUsed > 1;
 
   return {

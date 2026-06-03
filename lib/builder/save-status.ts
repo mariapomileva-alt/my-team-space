@@ -4,6 +4,12 @@ export type BuilderSaveState = "idle" | "saving" | "saved" | "error";
 export function humanizeSaveError(message: string): string {
   const raw = message.trim();
   if (!raw) return "Unknown error — try Publish or refresh the page.";
+  if (/Server Components render|omitted in production builds/i.test(raw)) {
+    return "Save failed — run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase SQL Editor, then refresh this page.";
+  }
+  if (/coach_subscription|coach_subscriptions|set_primary_team/i.test(raw)) {
+    return "Billing tables are not set up yet. Run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase, then refresh.";
+  }
   if (raw === "Forbidden") return "No access to this team — sign in again as the coach.";
   if (/subscription does not allow editing/i.test(raw)) {
     return "Your subscription is not active. Please update billing to continue editing your team page.";

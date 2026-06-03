@@ -1,3 +1,5 @@
+import { assertCoachCanEditTeam } from "@/lib/billing/coach-can-edit";
+import { ensureCoachTeamEditAccess } from "@/lib/billing/ensure-team-access";
 import { ACADEMY_TEAM_LIMIT } from "@/lib/billing/config";
 import { coachStatusAllowsBillingFeatures, coachStatusAllowsEdit } from "@/lib/billing/map-status";
 import type {
@@ -125,14 +127,6 @@ export async function assertTeamEditable(
   userId: string,
   teamId: string,
 ): Promise<void> {
-  const { data, error } = await supabase.rpc("coach_subscription_allows_edit", {
-    p_user_id: userId,
-    p_team_id: teamId,
-  });
-  if (error) throw new Error(error.message);
-  if (!data) {
-    throw new Error(
-      "Your subscription does not allow editing this team page. Update billing or choose your active team.",
-    );
-  }
+  await ensureCoachTeamEditAccess(supabase, teamId);
+  await assertCoachCanEditTeam(supabase, userId, teamId);
 }

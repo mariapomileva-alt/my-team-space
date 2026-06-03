@@ -1,5 +1,5 @@
 import { TeamStep2Client } from "../team-step2-client";
-import { loadBuilderBillingContext } from "@/lib/billing/builder-context";
+import { loadBuilderBillingContext, type BuilderBillingContext } from "@/lib/billing/builder-context";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { mapTeamRowToTeamSpace, publicLogoUrlFromPath, type TeamDbRow } from "@/lib/teams/map-row";
 import { headers } from "next/headers";
@@ -33,10 +33,26 @@ export default async function TeamStep2Page({ params }: Props) {
   const proto = h.get("x-forwarded-proto") ?? "http";
   const publicUrl = `${proto}://${host}/team/${team.slug}`;
 
-  const billing =
-    memberRole === "coach"
-      ? await loadBuilderBillingContext(supabase, user.id, teamId, team)
-      : null;
+  let billing: BuilderBillingContext | null = null;
+  if (memberRole === "coach") {
+    try {
+      billing = await loadBuilderBillingContext(supabase, user.id, teamId, team);
+    } catch (e) {
+      console.error("[TeamStep2Page] billing:", e);
+      billing = {
+        planLabel: "Single Team Plan",
+        teamsUsed: 1,
+        teamLimit: 1,
+        billingActive: true,
+        canEdit: true,
+        lockReason: "none" as const,
+        showUpgradeCta: false,
+        publishStatus: (team.publish_status === "published" ? "published" : "draft") as
+          | "draft"
+          | "published",
+      };
+    }
+  }
 
   return (
     <TeamStep2Client

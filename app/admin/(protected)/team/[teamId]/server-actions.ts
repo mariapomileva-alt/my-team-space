@@ -69,7 +69,18 @@ export async function saveTeamContent(teamId: string, team: TeamSpace, options?:
     patch.publish_status = "published";
   }
 
-  const { error } = await supabase.from("teams").update(patch).eq("id", teamId);
+  let { error } = await supabase.from("teams").update(patch).eq("id", teamId);
+
+  if (error?.message?.includes("publish_status") && options?.publish) {
+    const { publish_status: _removed, ...withoutPublish } = patch;
+    ({ error } = await supabase.from("teams").update(withoutPublish).eq("id", teamId));
+    if (!error) {
+      throw new Error(
+        "Published in app, but publish_status column is missing — run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase.",
+      );
+    }
+  }
+
   if (error) throw new Error(error.message);
   const { data: row } = await supabase.from("teams").select("slug").eq("id", teamId).single();
   if (row?.slug) revalidatePublicTeamBySlug(row.slug);
