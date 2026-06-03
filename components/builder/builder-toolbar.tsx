@@ -84,7 +84,13 @@ export function BuilderToolbar({
           <button
             type="button"
             disabled={pending || editLocked}
-            title={editLocked ? "Update billing or choose your active team to publish" : undefined}
+            title={
+              editLocked
+                ? "Update billing or choose your active team to publish"
+                : saveLabel.includes("Publishing locked") || saveLabel.includes("required")
+                  ? saveLabel
+                  : undefined
+            }
             onClick={onPublish}
             className="rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 px-5 py-2 text-xs font-bold text-white shadow-[0_6px_24px_-6px_rgba(99,102,241,0.55)] transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >

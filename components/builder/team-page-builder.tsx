@@ -15,7 +15,7 @@ import {
   BUILDER_WORKSPACE_GRID,
 } from "@/lib/builder/layout";
 import { BuilderProgress, type BuilderProgressTarget } from "@/components/builder/builder-progress";
-import { getCompletionGuidance } from "@/lib/builder/page-completion";
+import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
 import { applyBlockOrder, builderSortBlocks } from "@/lib/blocks/meta";
 import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
@@ -255,10 +255,20 @@ export function TeamPageBuilder({
     window.open(`/team/${team.slug}`, "_blank", "noopener,noreferrer");
   }
 
-  const savedLabel = useMemo(
+  const autosaveLabel = useMemo(
     () => formatBuilderSaveLabel(saveState, lastSaved),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- saveTick refreshes relative time
     [saveState, lastSaved, saveTick],
+  );
+
+  const toolbarStatusLabel = useMemo(
+    () =>
+      builderToolbarStatusLabel(team, {
+        editLocked,
+        billing,
+        autosaveLabel,
+      }),
+    [team, editLocked, billing, autosaveLabel],
   );
 
   function scrollTo(el: HTMLElement | null) {
@@ -302,7 +312,7 @@ export function TeamPageBuilder({
       <div className={`${BUILDER_PAGE_SHELL} pt-4`}>
         <BuilderToolbar
           teamName={team.name}
-          saveLabel={editLocked ? "Editing locked — changes won't save" : savedLabel}
+          saveLabel={toolbarStatusLabel}
           saveState={editLocked ? "idle" : saveState}
           saveError={saveError}
           pending={pending}

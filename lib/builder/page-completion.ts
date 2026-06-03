@@ -1,5 +1,6 @@
 import { getBlockSettings, type SocialKey } from "@/lib/blocks/settings";
 import type { TeamSpace } from "@/lib/types";
+import type { BuilderBillingContext } from "@/lib/billing/builder-context";
 
 export type BuilderProgressTarget =
   | "identity"
@@ -21,6 +22,8 @@ export type CompletionItem = {
 };
 
 const SUGGESTION_LABELS = ["Logo", "Schedule", "Contacts"] as const;
+
+const REQUIRED_LABELS = new Set(["Team name", "Logo"]);
 
 type HeroSettings = {
   quote: string;
@@ -100,67 +103,86 @@ export function builderCompletionPercent(team: TeamSpace): number {
 }
 
 export type CompletionGuidance = {
-  statusTitle: string;
-  helperText: string;
-  nextStep: string;
+  readinessPercent: number;
+  emotionalHeadline: string;
+  summaryLine: string;
+  primaryHeadline: string;
+  primaryActionText: string;
+  primaryCtaLabel: string | null;
+  primaryTarget: BuilderProgressTarget;
   tone: "ready" | "almost" | "needs-work";
   doneCount: number;
   totalCount: number;
-  remainingCount: number;
+  optionalRemainingCount: number;
   completed: CompletionItem[];
-  completedCelebrations: string[];
   requiredMissing: CompletionItem[];
-  publishRemainingMessage: string | null;
+  missingForPublish: { label: string }[];
   suggestions: CompletionItem[];
   canPublish: boolean;
   isFullyReady: boolean;
 };
 
 const COMPLETED_LABELS: Record<string, string> = {
-  "Team name": "Team name added",
-  Logo: "Logo added",
-  Schedule: "Schedule added",
-  Contacts: "Contacts added",
-  "Cover image": "Cover image added",
-  Gallery: "Gallery added",
-  Results: "Results added",
-  "Social links": "Social links added",
+  "Team name": "Team name",
+  Logo: "Logo",
+  Schedule: "Schedule",
+  Contacts: "Contacts",
+  "Cover image": "Cover image",
+  Gallery: "Gallery",
+  Results: "Results",
+  "Social links": "Social links",
 };
 
 export function completedCelebrationLabel(item: CompletionItem): string {
-  return COMPLETED_LABELS[item.label] ?? `${item.label} added`;
+  return COMPLETED_LABELS[item.label] ?? item.label;
 }
 
-export function requiredPublishAction(item: CompletionItem): string {
-  if (item.label === "Logo") return "Add your logo.";
-  if (item.label === "Team name") return "Add your team name.";
-  return `Add your ${item.label.toLowerCase()}.`;
+function primaryCtaLabel(item: CompletionItem): string {
+  if (item.label === "Logo") return "Upload logo";
+  if (item.label === "Team name") return "Add team name";
+  return `Add ${item.label.toLowerCase()}`;
 }
 
-function buildPublishRemainingMessage(requiredMissing: CompletionItem[]): string | null {
-  if (requiredMissing.length === 0) return null;
-  const action = requiredPublishAction(requiredMissing[0]!);
-  if (requiredMissing.length === 1) {
-    return `Only 1 required item remains before publishing:\n${action}`;
+function unlockPublishingText(item: CompletionItem): string {
+  if (item.label === "Logo") return "Add your logo to unlock publishing";
+  if (item.label === "Team name") return "Add your team name to unlock publishing";
+  return `Add your ${item.label.toLowerCase()} to unlock publishing`;
+}
+
+function buildPrimaryAction(requiredMissing: CompletionItem[], isFullyReady: boolean) {
+  if (isFullyReady) {
+    return {
+      primaryHeadline: "You're ready to publish",
+      primaryActionText: "Your team page looks great — publish when you're ready.",
+      primaryCtaLabel: null as string | null,
+      primaryTarget: "identity" as BuilderProgressTarget,
+    };
   }
-  const actions = requiredMissing.map(requiredPublishAction).join(" ");
-  return `Only ${requiredMissing.length} required items remain before publishing:\n${actions}`;
-}
 
-function buildNextStep(
-  items: CompletionItem[],
-  hasName: boolean,
-  hasLogo: boolean,
-  isFullyReady: boolean,
-): string {
-  if (isFullyReady) return "";
-  if (!hasName) return "Add your team name — then you're ready to publish.";
-  if (!hasLogo) return "Add your logo — then you're ready to publish.";
-  const next = items
-    .filter((i) => !i.done)
-    .sort((a, b) => a.priority - b.priority)[0];
-  if (!next) return "You're ready to publish whenever you like.";
-  return `Consider adding ${next.label.toLowerCase()} to make your page even better.`;
+  const first = requiredMissing[0];
+  if (!first) {
+    return {
+      primaryHeadline: "You're almost ready to publish",
+      primaryActionText: "Optional sections help parents find more info.",
+      primaryCtaLabel: null,
+      primaryTarget: "identity" as BuilderProgressTarget,
+    };
+  }
+
+  const count = requiredMissing.length;
+  const primaryHeadline =
+    count === 1
+      ? "One step left before publishing"
+      : count === 2
+        ? "Two steps left before publishing"
+        : "Complete required items to publish";
+
+  return {
+    primaryHeadline,
+    primaryActionText: unlockPublishingText(first),
+    primaryCtaLabel: primaryCtaLabel(first),
+    primaryTarget: first.id,
+  };
 }
 
 export function getCompletionGuidance(team: TeamSpace): CompletionGuidance {
@@ -169,65 +191,95 @@ export function getCompletionGuidance(team: TeamSpace): CompletionGuidance {
   const missing = items.filter((i) => !i.done);
   const doneCount = completed.length;
   const totalCount = items.length;
+  const readinessPercent = builderCompletionPercent(team);
 
   const hasName = items.find((i) => i.label === "Team name")?.done ?? false;
   const hasLogo = items.find((i) => i.label === "Logo")?.done ?? false;
   const canPublish = hasName && hasLogo;
   const isFullyReady = missing.length === 0;
 
-  const requiredMissing = items.filter(
-    (i) => !i.done && (i.label === "Team name" || i.label === "Logo"),
-  );
+  const requiredMissing = items.filter((i) => !i.done && REQUIRED_LABELS.has(i.label));
+  const optionalRemainingCount = missing.filter((i) => !REQUIRED_LABELS.has(i.label)).length;
 
   const suggestions = items.filter((i) =>
     (SUGGESTION_LABELS as readonly string[]).includes(i.label),
   );
 
-  const hasOpenSuggestions = suggestions.some((i) => !i.done);
+  const primary = buildPrimaryAction(requiredMissing, isFullyReady);
 
-  let statusTitle: string;
-  let helperText: string;
-  let tone: CompletionGuidance["tone"];
-
-  const remainingCount = missing.length;
-
+  let emotionalHeadline: string;
   if (isFullyReady) {
-    statusTitle = "You're all set";
-    helperText = "Your team page is ready for families.";
-    tone = "ready";
-  } else if (!hasName || !hasLogo) {
-    statusTitle = "You're almost done";
-    helperText =
-      doneCount >= totalCount - 2
-        ? "Just one more step and you can publish."
-        : "Great start — keep going, you're on the right track.";
-    tone = doneCount >= 4 ? "almost" : "needs-work";
-  } else if (canPublish) {
-    statusTitle = "You're almost done";
-    helperText = hasOpenSuggestions
-      ? "You can publish now — extra sections help parents even more."
-      : "You can publish now. Nice work.";
-    tone = "almost";
+    emotionalHeadline = "You're ready to publish";
+  } else if (requiredMissing.length === 1) {
+    emotionalHeadline = "Only one required step remains";
+  } else if (requiredMissing.length > 1) {
+    emotionalHeadline = "Great start — your team page is nearly ready";
   } else {
-    statusTitle = "You're almost done";
-    helperText = "You're making great progress on your team page.";
-    tone = "almost";
+    emotionalHeadline = "You're almost ready to publish";
   }
 
+  const summaryParts: string[] = [`${readinessPercent}% ready`];
+  if (optionalRemainingCount > 0) {
+    summaryParts.push(
+      `${optionalRemainingCount} optional ${optionalRemainingCount === 1 ? "item" : "items"} remaining`,
+    );
+  } else if (isFullyReady) {
+    summaryParts.push("All sections complete");
+  }
+
+  let tone: CompletionGuidance["tone"] = "almost";
+  if (isFullyReady) tone = "ready";
+  else if (readinessPercent < 40) tone = "needs-work";
+
   return {
-    statusTitle,
-    helperText,
-    nextStep: buildNextStep(items, hasName, hasLogo, isFullyReady),
+    readinessPercent,
+    emotionalHeadline,
+    summaryLine: summaryParts.join(" · "),
+    ...primary,
     tone,
     doneCount,
     totalCount,
-    remainingCount,
+    optionalRemainingCount,
     completed,
-    completedCelebrations: completed.map(completedCelebrationLabel),
     requiredMissing,
-    publishRemainingMessage: buildPublishRemainingMessage(requiredMissing),
+    missingForPublish: requiredMissing.map((i) => ({ label: i.label })),
     suggestions,
     canPublish,
     isFullyReady,
   };
+}
+
+/** Friendly toolbar status — never sounds like a hard error. */
+export function builderToolbarStatusLabel(
+  team: TeamSpace,
+  options: {
+    editLocked: boolean;
+    billing: BuilderBillingContext | null;
+    autosaveLabel: string;
+  },
+): string {
+  const { editLocked, billing, autosaveLabel } = options;
+
+  if (editLocked && billing) {
+    if (billing.lockReason === "subscription_inactive") {
+      return "Editing paused — update billing to continue";
+    }
+    if (billing.lockReason === "team_plan_locked" || billing.lockReason === "not_active_team") {
+      return "Editing paused — choose your active team in the dashboard";
+    }
+    return "Editing paused — check your plan in the dashboard";
+  }
+
+  const g = getCompletionGuidance(team);
+  if (!g.canPublish && g.requiredMissing.length > 0) {
+    if (g.requiredMissing.length === 1) {
+      const label = g.requiredMissing[0]!.label;
+      if (label === "Logo") return "Publishing locked — add a logo to continue";
+      if (label === "Team name") return "Publishing locked — add your team name to continue";
+      return "One required item missing before publishing";
+    }
+    return "Complete required items to unlock publishing";
+  }
+
+  return autosaveLabel;
 }
