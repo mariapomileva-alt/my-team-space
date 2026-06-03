@@ -62,7 +62,7 @@ function effectiveTeamLimit(sub: CoachSubscription | null): number {
 }
 
 function planLabel(sub: CoachSubscription | null): string {
-  if (!sub?.planType) return "No plan";
+  if (!sub?.planType) return "Single Team Plan";
   if (sub.planType === "academy") return "Academy Plan";
   return "Single Team Plan";
 }

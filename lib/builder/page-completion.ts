@@ -106,12 +106,46 @@ export type CompletionGuidance = {
   tone: "ready" | "almost" | "needs-work";
   doneCount: number;
   totalCount: number;
+  remainingCount: number;
   completed: CompletionItem[];
+  completedCelebrations: string[];
   requiredMissing: CompletionItem[];
+  publishRemainingMessage: string | null;
   suggestions: CompletionItem[];
   canPublish: boolean;
   isFullyReady: boolean;
 };
+
+const COMPLETED_LABELS: Record<string, string> = {
+  "Team name": "Team name added",
+  Logo: "Logo added",
+  Schedule: "Schedule added",
+  Contacts: "Contacts added",
+  "Cover image": "Cover image added",
+  Gallery: "Gallery added",
+  Results: "Results added",
+  "Social links": "Social links added",
+};
+
+export function completedCelebrationLabel(item: CompletionItem): string {
+  return COMPLETED_LABELS[item.label] ?? `${item.label} added`;
+}
+
+export function requiredPublishAction(item: CompletionItem): string {
+  if (item.label === "Logo") return "Add your logo.";
+  if (item.label === "Team name") return "Add your team name.";
+  return `Add your ${item.label.toLowerCase()}.`;
+}
+
+function buildPublishRemainingMessage(requiredMissing: CompletionItem[]): string | null {
+  if (requiredMissing.length === 0) return null;
+  const action = requiredPublishAction(requiredMissing[0]!);
+  if (requiredMissing.length === 1) {
+    return `Only 1 required item remains before publishing:\n${action}`;
+  }
+  const actions = requiredMissing.map(requiredPublishAction).join(" ");
+  return `Only ${requiredMissing.length} required items remain before publishing:\n${actions}`;
+}
 
 function buildNextStep(
   items: CompletionItem[],
@@ -120,19 +154,13 @@ function buildNextStep(
   isFullyReady: boolean,
 ): string {
   if (isFullyReady) return "";
-  if (!hasName) return "Add your team name to publish your page.";
-  if (!hasLogo) return "Add a logo to publish your page.";
+  if (!hasName) return "Add your team name — then you're ready to publish.";
+  if (!hasLogo) return "Add your logo — then you're ready to publish.";
   const next = items
     .filter((i) => !i.done)
     .sort((a, b) => a.priority - b.priority)[0];
-  if (!next) return "You can publish whenever you're ready.";
-  return `Add ${next.label.toLowerCase()} to strengthen your page.`;
-}
-
-export function requiredMissingLabel(item: CompletionItem): string {
-  if (item.label === "Logo") return "Logo required";
-  if (item.label === "Team name") return "Team name required";
-  return `${item.label} required`;
+  if (!next) return "You're ready to publish whenever you like.";
+  return `Consider adding ${next.label.toLowerCase()} to make your page even better.`;
 }
 
 export function getCompletionGuidance(team: TeamSpace): CompletionGuidance {
@@ -161,28 +189,29 @@ export function getCompletionGuidance(team: TeamSpace): CompletionGuidance {
   let helperText: string;
   let tone: CompletionGuidance["tone"];
 
+  const remainingCount = missing.length;
+
   if (isFullyReady) {
-    statusTitle = "Ready to publish";
-    helperText = "Your team page is complete.";
+    statusTitle = "You're all set";
+    helperText = "Your team page is ready for families.";
     tone = "ready";
-  } else if (!hasName) {
-    statusTitle = "Almost ready to publish";
-    helperText = "Add your team name to go live.";
-    tone = "needs-work";
-  } else if (!hasLogo) {
-    statusTitle = "Almost ready to publish";
-    helperText = "Add your logo to go live.";
-    tone = "needs-work";
+  } else if (!hasName || !hasLogo) {
+    statusTitle = "You're almost done";
+    helperText =
+      doneCount >= totalCount - 2
+        ? "Just one more step and you can publish."
+        : "Great start — keep going, you're on the right track.";
+    tone = doneCount >= 4 ? "almost" : "needs-work";
   } else if (canPublish) {
-    statusTitle = "Almost ready to publish";
+    statusTitle = "You're almost done";
     helperText = hasOpenSuggestions
-      ? "Optional sections help parents find more info."
-      : "You can publish anytime.";
+      ? "You can publish now — extra sections help parents even more."
+      : "You can publish now. Nice work.";
     tone = "almost";
   } else {
-    statusTitle = "Almost ready to publish";
-    helperText = "Finish the essentials to go live.";
-    tone = "needs-work";
+    statusTitle = "You're almost done";
+    helperText = "You're making great progress on your team page.";
+    tone = "almost";
   }
 
   return {
@@ -192,8 +221,11 @@ export function getCompletionGuidance(team: TeamSpace): CompletionGuidance {
     tone,
     doneCount,
     totalCount,
+    remainingCount,
     completed,
+    completedCelebrations: completed.map(completedCelebrationLabel),
     requiredMissing,
+    publishRemainingMessage: buildPublishRemainingMessage(requiredMissing),
     suggestions,
     canPublish,
     isFullyReady,
