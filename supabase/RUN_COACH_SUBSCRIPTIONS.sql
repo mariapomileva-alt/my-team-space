@@ -452,7 +452,7 @@ begin
   for rec in
     select
       tm.user_id,
-      min(tm.team_id) as first_team_id,
+      (array_agg(tm.team_id order by tm.team_id))[1] as first_team_id,
       count(*)::integer as team_cnt
     from public.team_members tm
     where tm.role = 'coach'
