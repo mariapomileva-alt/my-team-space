@@ -16,6 +16,7 @@ export async function setPrimaryTeamAction(teamId: string) {
     revalidateTag(publicTeamCacheTag(team.slug as string), "default");
   }
   revalidatePath("/admin");
+  revalidatePath(`/admin/team/${teamId}/step-2`);
 }
 
 export async function assertCanEditTeam(teamId: string) {

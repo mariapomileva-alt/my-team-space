@@ -1,3 +1,4 @@
+import { ensureCoachTeamEditAccess } from "@/lib/billing/ensure-team-access";
 import { loadCoachEntitlements } from "@/lib/billing/coach-subscription";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -29,16 +30,24 @@ export async function loadBuilderBillingContext(
   },
 ): Promise<BuilderBillingContext> {
   const ent = await loadCoachEntitlements(supabase, userId);
+  const planType = ent.subscription?.planType ?? "single_team";
+  const isAcademy = planType === "academy";
 
-  const { data: canEditRaw } = await supabase.rpc("coach_subscription_allows_edit", {
+  if (!isAcademy) {
+    await ensureCoachTeamEditAccess(supabase, teamId);
+  }
+
+  const { data: canEditRaw, error: rpcError } = await supabase.rpc("coach_subscription_allows_edit", {
     p_user_id: userId,
     p_team_id: teamId,
   });
 
-  const canEdit = Boolean(canEditRaw);
+  if (rpcError) {
+    console.error("[loadBuilderBillingContext] coach_subscription_allows_edit:", rpcError.message);
+  }
+
+  let canEdit = rpcError ? ent.teamsUsed <= 1 : Boolean(canEditRaw);
   const billingActive = ent.billingActive;
-  const planType = ent.subscription?.planType;
-  const isAcademy = planType === "academy";
 
   let lockReason: BuilderLockReason = "none";
   if (!canEdit) {
@@ -51,9 +60,8 @@ export async function loadBuilderBillingContext(
     }
   }
 
-  const showUpgradeCta =
-    !isAcademy &&
-    (lockReason === "team_plan_locked" || lockReason === "not_active_team" || ent.needsPrimaryTeamSelection);
+  /** Academy upsell only when the coach already has more than one team page. */
+  const showUpgradeCta = !isAcademy && ent.teamsUsed > 1;
 
   return {
     planLabel: ent.planLabel,
@@ -72,9 +80,9 @@ export function builderLockMessage(reason: BuilderLockReason): string | null {
     case "subscription_inactive":
       return "Your subscription is not active. Please update your billing to continue editing your team page.";
     case "team_plan_locked":
-      return "This team page is locked on your current plan. Choose your active team in the dashboard or upgrade to Academy.";
+      return "This team page is not your active page on the Single Team plan. Use “Make this my active team” below.";
     case "not_active_team":
-      return "Your Single Team plan includes one active team page. Switch your active team in the dashboard or upgrade to Academy.";
+      return "This team page is not your active page on the Single Team plan. Use “Make this my active team” below.";
     default:
       return null;
   }

@@ -265,7 +265,10 @@ export function builderToolbarStatusLabel(
       return "Editing paused — update billing to continue";
     }
     if (billing.lockReason === "team_plan_locked" || billing.lockReason === "not_active_team") {
-      return "Editing paused — choose your active team in the dashboard";
+      if (billing.teamsUsed <= 1) {
+        return "Setting up your team access… refresh if this stays";
+      }
+      return "Editing paused — make this your active team below";
     }
     return "Editing paused — check your plan in the dashboard";
   }

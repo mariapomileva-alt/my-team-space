@@ -5,6 +5,7 @@ import { TeamIdentityPanel } from "@/components/builder/team-identity-panel";
 import { PageBlocksPanel } from "@/components/builder/page-blocks-panel";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderBillingStatus } from "@/components/builder/builder-billing-status";
+import { BuilderEditAccessBanner } from "@/components/builder/builder-edit-access-banner";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
 import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
@@ -46,8 +47,10 @@ export function TeamPageBuilder({
   memberRole?: TeamMemberRole;
   billing?: BuilderBillingContext | null;
 }) {
-  const canEdit = billing?.canEdit ?? true;
-  const editLocked = Boolean(billing && !billing.canEdit);
+  /** One team on Single Team plan is always editable in the builder. */
+  const canEdit =
+    billing == null ? true : billing.canEdit || billing.teamsUsed <= 1;
+  const editLocked = billing != null && !canEdit;
   const siteUrl = publicUrl.replace(/\/team\/[^/]+$/, "");
   const router = useRouter();
   const [team, setTeam] = useState<TeamSpace>(initialTeam);
@@ -310,6 +313,9 @@ export function TeamPageBuilder({
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(139,92,246,0.08),transparent)]" />
 
       <div className={`${BUILDER_PAGE_SHELL} pt-4`}>
+        {billing && memberRole === "coach" ? (
+          <BuilderEditAccessBanner teamId={teamId} billing={billing} />
+        ) : null}
         <BuilderToolbar
           teamName={team.name}
           saveLabel={toolbarStatusLabel}

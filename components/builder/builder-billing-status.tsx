@@ -15,8 +15,7 @@ function Dot() {
 export function BuilderBillingStatus({ billing }: { billing: BuilderBillingContext }) {
   const usage = builderUsageLabel(billing.teamsUsed, billing.teamLimit, billing.planLabel);
   const publishLabel = billing.publishStatus === "published" ? "Published" : "Draft";
-  const showUpgrade =
-    billing.showUpgradeCta || (billing.planLabel !== "Academy Plan" && billing.billingActive);
+  const showUpgrade = billing.showUpgradeCta;
 
   return (
     <div
