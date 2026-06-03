@@ -1,4 +1,3 @@
-import { PageHero } from "@/components/marketing/page-hero";
 import Link from "next/link";
 
 const FAQ_ITEMS = [
@@ -46,24 +45,27 @@ const FAQ_ITEMS = [
 
 export function FaqPage() {
   return (
-    <>
-      <PageHero title="Frequently asked questions" subtitle="Quick answers about MyTeamSpace." />
-      <section className="mx-auto max-w-3xl px-6 py-14 sm:px-8 sm:py-16">
-        <dl className="space-y-4">
-          {FAQ_ITEMS.map((item) => (
-            <div key={item.q} className="rounded-2xl border border-black/[0.06] bg-white p-6 shadow-sm">
-              <dt className="font-semibold text-[#1A1C23]">{item.q}</dt>
-              <dd className="mt-2 text-[15px] leading-relaxed text-neutral-600">{item.a}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-10 text-center text-sm text-neutral-500">
-          Still have questions?{" "}
-          <Link href="/support" className="font-medium text-[#6C5CE7] hover:underline">
-            Contact support
-          </Link>
-        </p>
-      </section>
-    </>
+    <section className="mx-auto max-w-3xl px-6 pb-14 pt-10 sm:px-8 sm:pb-16 sm:pt-12">
+      <header className="text-center">
+        <h1 className="font-[family-name:var(--font-brand)] text-3xl font-bold tracking-tight text-[#1A1C23] sm:text-4xl">
+          Frequently asked questions
+        </h1>
+        <p className="mt-3 text-lg leading-relaxed text-neutral-500">Quick answers about MyTeamSpace.</p>
+      </header>
+      <dl className="mt-8 space-y-4">
+        {FAQ_ITEMS.map((item) => (
+          <div key={item.q} className="rounded-2xl border border-black/[0.06] bg-white p-6 shadow-sm">
+            <dt className="font-semibold text-[#1A1C23]">{item.q}</dt>
+            <dd className="mt-2 text-[15px] leading-relaxed text-neutral-600">{item.a}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-10 text-center text-sm text-neutral-500">
+        Still have questions?{" "}
+        <Link href="/support" className="font-medium text-[#6C5CE7] hover:underline">
+          Contact support
+        </Link>
+      </p>
+    </section>
   );
 }
