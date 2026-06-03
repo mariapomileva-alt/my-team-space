@@ -53,6 +53,7 @@ export type BlockType =
   | "quick_links"
   | "payments"
   | "quick_actions"
+  | "team_shop"
   | "integrations"
   | "resources";
 

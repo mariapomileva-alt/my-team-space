@@ -1,6 +1,8 @@
 "use client";
 
 import type { SeasonTimelineEvent, SeasonTimelineMonth } from "@/lib/blocks/results-board";
+import { mtsTypeTitleLg, mtsTypeTitleMd } from "@/lib/typography";
+import { cn } from "@/lib/utils/cn";
 
 function eventTone(kind: SeasonTimelineEvent["kind"]): string {
   switch (kind) {
@@ -60,7 +62,7 @@ export function SeasonTimelineSection({
 
       <header className="relative mb-6 text-center sm:mb-8">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-700/70">{seasonName}</p>
-        <h4 className="mt-2 text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">{title}</h4>
+        <h4 className={cn("mt-2", mtsTypeTitleLg)}>{title}</h4>
         <p className="mx-auto mt-2 max-w-xs text-[12px] leading-relaxed text-zinc-500">
           A story of competitions, medals, and moments that matter.
         </p>
@@ -69,7 +71,7 @@ export function SeasonTimelineSection({
       <div className="relative space-y-8">
         {months.map((month) => (
           <article key={month.monthKey}>
-            <h5 className="results-timeline-month mb-3 text-lg font-bold tracking-tight text-zinc-900 sm:text-xl">
+            <h5 className={cn("results-timeline-month mb-3", mtsTypeTitleMd)}>
               {month.label}
             </h5>
             <ol className="results-timeline-list relative space-y-2 border-l border-zinc-200/90 pl-4 sm:pl-5">

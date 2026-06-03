@@ -96,8 +96,14 @@ export const BLOCK_APP_META: Record<BlockType, BlockAppMeta> = {
   quick_actions: {
     emoji: "⚡",
     title: "Quick actions",
-    subtitle: "Pay, shop, register & more",
+    subtitle: "Links & registration",
     tileClass: "bg-amber-100 text-amber-900",
+  },
+  team_shop: {
+    emoji: "🛍",
+    title: "Team shop",
+    subtitle: "Merch & uniforms",
+    tileClass: "bg-rose-100 text-rose-800",
   },
   integrations: {
     emoji: "🧩",

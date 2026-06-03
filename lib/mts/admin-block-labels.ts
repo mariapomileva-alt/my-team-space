@@ -21,6 +21,7 @@ export const ADMIN_BLOCK_LABELS: Record<BlockInstance["type"], string> = {
   quick_links: "Quick links",
   payments: "Payments",
   quick_actions: "Quick Actions",
+  team_shop: "Team Shop",
   integrations: "Smart integrations",
   resources: "Team resources",
 };

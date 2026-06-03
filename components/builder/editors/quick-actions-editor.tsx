@@ -41,8 +41,8 @@ export function QuickActionsEditor({
   return (
     <div className="space-y-4">
       <p className="text-sm text-zinc-500">
-        Create buttons for payments, merch, registration, photos, chat groups, and more — any link
-        works.
+        Add simple link buttons for parents — WhatsApp, registration forms, maps, photos, videos, and
+        documents. For merch with photos and prices, use the Team Shop block.
       </p>
       <div>
         {fieldLabel("Section title (optional)")}

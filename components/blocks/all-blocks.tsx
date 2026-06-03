@@ -9,6 +9,8 @@ import { IntegrationsHub } from "@/components/integrations/integrations-hub";
 import { ResourcesHub } from "@/components/integrations/resource-card";
 import { SmartIntegrationCard } from "@/components/integrations/smart-integration-card";
 import { enrichIntegrationLink } from "@/lib/integrations/build-preview";
+import { mtsTypeTitleLg } from "@/lib/typography";
+import { cn } from "@/lib/utils/cn";
 import type { IntegrationLink } from "@/lib/integrations/types";
 import {
   getBlockSettings,
@@ -18,12 +20,14 @@ import {
   type PaymentLinkSettings,
   type PollSettings,
   type QuickActionsSettings,
+  type TeamShopSettings,
   type ResourceItem,
   type SocialKey,
   type WeatherSettings,
 } from "@/lib/blocks/settings";
 import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
-import { QuickActionsGrid } from "@/components/blocks/quick-actions-grid";
+import { QuickActionsGrid, validQuickActions } from "@/components/blocks/quick-actions-grid";
+import { TeamShopGrid, validTeamShopProducts } from "@/components/blocks/team-shop-grid";
 import { SocialLinkButtons, heroSocialLinks, type SocialLinkItem } from "@/components/social/social-link-buttons";
 import { normalizeSocialUrl } from "@/lib/social/links";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
@@ -82,7 +86,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
               )}
               <div className="min-w-0 pt-2">
                 <MtsBadge>Our team</MtsBadge>
-                <h1 className="mt-1 text-xl font-bold tracking-tight text-[color:var(--mts-text)] sm:text-2xl">{team.name}</h1>
+                <h1 className={cn("mt-1 text-[color:var(--mts-text)]", mtsTypeTitleLg)}>{team.name}</h1>
                 {team.tagline?.trim() ? (
                   <p className="mt-0.5 line-clamp-2 text-[13px] font-medium text-[color:var(--mts-muted)]">
                     {team.tagline.trim()}
@@ -676,11 +680,46 @@ export function BlockQuickActions({ block, embedded }: BlockProps) {
   const s = getBlockSettings<QuickActionsSettings>(block);
   const title = s.sectionTitle?.trim() || "Quick actions";
   const actions = s.actions ?? [];
+  const valid = validQuickActions(actions);
+
+  if (!embedded && valid.length === 0) {
+    return null;
+  }
 
   return (
     <BlockSurface embedded={embedded}>
       <BlockHeading embedded={embedded}>{title}</BlockHeading>
-      <QuickActionsGrid actions={actions} compact={embedded} />
+      {valid.length > 0 ? (
+        <QuickActionsGrid actions={actions} compact={embedded} />
+      ) : (
+        <BlockEmpty message="Add link buttons — WhatsApp, registration, maps, and more." />
+      )}
+    </BlockSurface>
+  );
+}
+
+export function BlockTeamShop({ block, embedded }: BlockProps) {
+  const s = getBlockSettings<TeamShopSettings>(block);
+  const title = s.sectionTitle?.trim() || "Team Shop";
+  const subtitle = s.subtitle?.trim();
+  const products = s.products ?? [];
+  const valid = validTeamShopProducts(products);
+
+  if (!embedded && valid.length === 0) {
+    return null;
+  }
+
+  return (
+    <BlockSurface embedded={embedded}>
+      <div className="mb-4">
+        <BlockHeading embedded={embedded}>{title}</BlockHeading>
+        {subtitle ? <p className="mt-1 text-sm text-neutral-500">{subtitle}</p> : null}
+      </div>
+      {valid.length > 0 ? (
+        <TeamShopGrid products={products} compact={embedded} />
+      ) : (
+        <BlockEmpty message="Add your first product — photo, price, and order link." />
+      )}
     </BlockSurface>
   );
 }

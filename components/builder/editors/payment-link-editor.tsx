@@ -24,8 +24,8 @@ export function PaymentLinkEditor({
   return (
     <div className="space-y-4">
       <p className="text-sm text-zinc-500">
-        Paste any payment link — Revolut, PayPal, Stripe, Wise, or your bank page. Parents tap one
-        button to pay.
+        One main payment for your team — membership, camp, competition, or donations. Paste a Revolut,
+        PayPal, Stripe, Wise, or bank link. For multiple products, use Team Shop instead.
       </p>
       <div>
         {fieldLabel("Payment title")}

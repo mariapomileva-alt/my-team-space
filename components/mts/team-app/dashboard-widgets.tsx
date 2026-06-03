@@ -2,12 +2,20 @@
 
 import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid } from "@/components/blocks/quick-actions-grid";
+import { TeamShopGrid } from "@/components/blocks/team-shop-grid";
 import { ResultsBoardTeaser } from "@/components/results/results-board-teaser";
 import { DashboardCard, DashboardChevron, DashboardLabel } from "@/components/mts/team-app/dashboard-card";
 import { getDashboardData } from "@/lib/blocks/block-dashboard-data";
-import { getBlockSettings, type PaymentLinkSettings, type QuickActionsSettings } from "@/lib/blocks/settings";
+import {
+  getBlockSettings,
+  type PaymentLinkSettings,
+  type QuickActionsSettings,
+  type TeamShopSettings,
+} from "@/lib/blocks/settings";
 import { quickActionEmoji, type QuickActionIconId } from "@/lib/quick-actions/icons";
+import { mtsTypeTitleSm } from "@/lib/typography";
 import type { BlockInstance, BlockLayout, TeamSpace } from "@/lib/types";
+import { cn } from "@/lib/utils/cn";
 import { motion } from "framer-motion";
 
 function RingProgress({ value, size = 52 }: { value: number; size?: number }) {
@@ -52,7 +60,7 @@ export function ScheduleDashboardCard({
   return (
     <DashboardCard onClick={onOpen} index={index} accent="sky" compact={compact} featured={featured}>
       <DashboardLabel action={<DashboardChevron />}>Schedule</DashboardLabel>
-      <p className="text-[15px] font-bold leading-tight text-neutral-900">{next.title}</p>
+      <p className={mtsTypeTitleSm}>{next.title}</p>
       <p className="mt-0.5 text-[12px] font-semibold text-sky-600">
         {next.day} · {next.time}
       </p>
@@ -272,7 +280,9 @@ export function AchievementsRail({
             className="dashboard-rail-item min-w-[132px] shrink-0 snap-start rounded-2xl border border-amber-100/90 bg-gradient-to-br from-amber-50 to-white p-3 text-left shadow-sm ring-1 ring-amber-100/60 active:scale-[0.98]"
           >
             <span className="text-2xl">{c.icon}</span>
-            <p className="mt-1.5 line-clamp-2 text-[12px] font-bold leading-tight text-neutral-900">{c.title}</p>
+            <p className={cn("mt-1.5 line-clamp-2 text-[12px] font-semibold leading-snug tracking-normal text-neutral-900")}>
+              {c.title}
+            </p>
             {c.player ? <p className="mt-0.5 truncate text-[10px] font-medium text-amber-800/80">{c.player}</p> : null}
           </button>
         ))}
@@ -402,7 +412,7 @@ export function PaymentDashboardCard({
           💳
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[15px] font-bold leading-tight text-neutral-900">{d.title}</p>
+          <p className={mtsTypeTitleSm}>{d.title}</p>
           {d.description ? (
             <p className="mt-0.5 line-clamp-2 text-[12px] text-neutral-500">{d.description}</p>
           ) : (
@@ -465,11 +475,72 @@ export function QuickActionsDashboardCard({
           ))}
         </div>
       ) : (
-        <p className="text-[13px] text-neutral-500">Add pay, shop, and registration buttons</p>
+        <p className="text-[13px] text-neutral-500">Add WhatsApp, registration, and map links</p>
       )}
       <p className="mt-auto pt-2 text-[10px] font-medium text-neutral-400">
         {d.count > 0 ? `${d.count} action${d.count === 1 ? "" : "s"}` : "Tap to set up"}
       </p>
+    </DashboardCard>
+  );
+}
+
+export function TeamShopDashboardCard({
+  team,
+  block,
+  onOpen,
+  index,
+  compact,
+  featured,
+}: {
+  team: TeamSpace;
+  block: BlockInstance;
+  onOpen: () => void;
+  index: number;
+  compact?: boolean;
+  featured?: boolean;
+}) {
+  const s = getBlockSettings<TeamShopSettings>(block);
+  const d = getDashboardData(team, block).team_shop!;
+  const showInline = featured || !compact;
+
+  if (showInline && (s.products?.length ?? 0) > 0) {
+    return (
+      <div className="space-y-2.5">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{d.title}</p>
+        <TeamShopGrid products={s.products ?? []} compact />
+      </div>
+    );
+  }
+
+  return (
+    <DashboardCard onClick={onOpen} index={index} accent="rose" compact={compact} featured={featured}>
+      <DashboardLabel action={<DashboardChevron />}>{d.title}</DashboardLabel>
+      {d.previews.length > 0 ? (
+        <div className="mt-2 flex gap-2 overflow-hidden">
+          {d.previews.map((p) => (
+            <div
+              key={p.name}
+              className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-rose-50 ring-1 ring-rose-100"
+            >
+              {p.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-lg">🛍</div>
+              )}
+            </div>
+          ))}
+          <div className="min-w-0 flex-1">
+            <p className="line-clamp-1 text-[13px] font-bold text-neutral-900">{d.previews[0]?.name}</p>
+            {d.previews[0]?.price ? (
+              <p className="text-[12px] font-semibold text-rose-600">{d.previews[0].price}</p>
+            ) : null}
+            <p className="text-[10px] text-neutral-500">{d.count} product{d.count === 1 ? "" : "s"}</p>
+          </div>
+        </div>
+      ) : (
+        <p className="text-[13px] text-neutral-500">Add uniforms, merch, and equipment</p>
+      )}
     </DashboardCard>
   );
 }
@@ -519,7 +590,12 @@ export function CompactStatCard({
     emoji = "⚡";
     label = "Actions";
     stat = String(data.quick_actions.count);
-    sub = data.quick_actions.previews[0]?.title ?? "Pay · Shop · Register";
+    sub = data.quick_actions.previews[0]?.title ?? "Links & registration";
+  } else if (data.team_shop) {
+    emoji = "🛍";
+    label = "Team shop";
+    stat = String(data.team_shop.count);
+    sub = data.team_shop.previews[0]?.name ?? "Merch & uniforms";
   } else if (data.weather) {
     emoji = "🌤️";
     label = "Venue";

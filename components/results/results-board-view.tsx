@@ -13,6 +13,8 @@ import {
 } from "@/lib/blocks/results-board";
 import { getCelebration, type AthleteCelebration } from "@/lib/results/celebrations";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
+import { mtsTypeTitleLg, mtsTypeTitleSm } from "@/lib/typography";
+import { cn } from "@/lib/utils/cn";
 import { useMemo, useState } from "react";
 import { SeasonTimelineSection } from "@/components/results/season-timeline";
 import { useResultsCelebrations } from "@/components/results/use-results-celebrations";
@@ -183,9 +185,11 @@ function PodiumCard({
         />
       </div>
       <p
-        className={`mt-3 line-clamp-2 w-full font-bold leading-tight text-zinc-900 ${
-          isFirst ? "text-base sm:text-lg" : "text-[13px]"
-        }`}
+        className={cn(
+          "mt-3 line-clamp-2 w-full",
+          mtsTypeTitleSm,
+          isFirst ? "text-base sm:text-lg" : "text-[13px]",
+        )}
       >
         {row.athleteName}
       </p>
@@ -246,7 +250,7 @@ function PodiumSection({
 
       <header className="relative z-10 mb-8 text-center sm:mb-10">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-amber-800/70">Season leaders</p>
-        <h4 className="mt-2 text-2xl font-extrabold tracking-tight text-zinc-900 sm:text-3xl">
+        <h4 className={cn("mt-2 font-extrabold sm:text-3xl", mtsTypeTitleLg, "text-2xl")}>
           {first ? (
             <>
               <span className="bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 bg-clip-text text-transparent">
@@ -557,7 +561,7 @@ export function ResultsBoardView({
         <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[color:var(--mts-muted)]">
           {settings.seasonName}
         </p>
-        <h3 className="text-xl font-bold tracking-tight text-[color:var(--mts-text)] sm:text-2xl">{title}</h3>
+        <h3 className={cn("text-[color:var(--mts-text)]", mtsTypeTitleLg)}>{title}</h3>
         <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">
           Track team progress and competition results
         </p>

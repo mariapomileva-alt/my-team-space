@@ -1,4 +1,5 @@
 import { TeamStep2Client } from "../team-step2-client";
+import { loadBuilderBillingContext } from "@/lib/billing/builder-context";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { mapTeamRowToTeamSpace, publicLogoUrlFromPath, type TeamDbRow } from "@/lib/teams/map-row";
 import { headers } from "next/headers";
@@ -32,7 +33,18 @@ export default async function TeamStep2Page({ params }: Props) {
   const proto = h.get("x-forwarded-proto") ?? "http";
   const publicUrl = `${proto}://${host}/team/${team.slug}`;
 
+  const billing =
+    memberRole === "coach"
+      ? await loadBuilderBillingContext(supabase, user.id, teamId, team)
+      : null;
+
   return (
-    <TeamStep2Client teamId={teamId} initialTeam={teamSpace} publicUrl={publicUrl} memberRole={memberRole} />
+    <TeamStep2Client
+      teamId={teamId}
+      initialTeam={teamSpace}
+      publicUrl={publicUrl}
+      memberRole={memberRole}
+      billing={billing}
+    />
   );
 }

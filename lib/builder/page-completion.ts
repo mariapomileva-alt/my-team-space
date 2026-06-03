@@ -20,6 +20,8 @@ export type CompletionItem = {
   priority: number;
 };
 
+const SUGGESTION_LABELS = ["Logo", "Schedule", "Contacts"] as const;
+
 type HeroSettings = {
   quote: string;
   description?: string;
@@ -98,50 +100,83 @@ export function builderCompletionPercent(team: TeamSpace): number {
 }
 
 export type CompletionGuidance = {
-  headline: string;
+  statusTitle: string;
+  helperText: string;
   tone: "ready" | "almost" | "needs-work";
+  doneCount: number;
+  totalCount: number;
   completed: CompletionItem[];
-  nextSteps: CompletionItem[];
+  requiredMissing: CompletionItem[];
+  suggestions: CompletionItem[];
   canPublish: boolean;
   isFullyReady: boolean;
 };
 
+export function requiredMissingLabel(item: CompletionItem): string {
+  if (item.label === "Logo") return "Logo required";
+  if (item.label === "Team name") return "Team name required";
+  return `${item.label} required`;
+}
+
 export function getCompletionGuidance(team: TeamSpace): CompletionGuidance {
   const items = getCompletionItems(team);
   const completed = items.filter((i) => i.done);
-  const missing = items.filter((i) => !i.done).sort((a, b) => a.priority - b.priority);
+  const missing = items.filter((i) => !i.done);
+  const doneCount = completed.length;
+  const totalCount = items.length;
 
   const hasName = items.find((i) => i.label === "Team name")?.done ?? false;
   const hasLogo = items.find((i) => i.label === "Logo")?.done ?? false;
   const canPublish = hasName && hasLogo;
   const isFullyReady = missing.length === 0;
 
-  let headline: string;
+  const requiredMissing = items.filter(
+    (i) => !i.done && (i.label === "Team name" || i.label === "Logo"),
+  );
+
+  const suggestions = items.filter((i) =>
+    (SUGGESTION_LABELS as readonly string[]).includes(i.label),
+  );
+
+  const hasOpenSuggestions = suggestions.some((i) => !i.done);
+
+  let statusTitle: string;
+  let helperText: string;
   let tone: CompletionGuidance["tone"];
 
   if (isFullyReady) {
-    headline = "🎉 Your team page is fully ready!";
+    statusTitle = "Ready to publish";
+    helperText = "Your team page is complete.";
     tone = "ready";
   } else if (!hasName) {
-    headline = "🟡 Add your team name";
+    statusTitle = "Almost ready to publish";
+    helperText = "Add your team name to go live.";
     tone = "needs-work";
   } else if (!hasLogo) {
-    headline = "🟡 Add logo to publish";
+    statusTitle = "Almost ready to publish";
+    helperText = "Add your logo to go live.";
     tone = "needs-work";
   } else if (canPublish) {
-    headline = "🟢 Ready to publish";
+    statusTitle = "Almost ready to publish";
+    helperText = hasOpenSuggestions
+      ? "Optional sections help parents find more info."
+      : "You can publish anytime.";
     tone = "almost";
   } else {
-    const next = missing[0];
-    headline = next ? `🟡 Add ${next.label.toLowerCase()}` : "🟡 Keep building your page";
+    statusTitle = "Almost ready to publish";
+    helperText = "Finish the essentials to go live.";
     tone = "needs-work";
   }
 
   return {
-    headline,
+    statusTitle,
+    helperText,
     tone,
+    doneCount,
+    totalCount,
     completed,
-    nextSteps: missing.slice(0, 4),
+    requiredMissing,
+    suggestions,
     canPublish,
     isFullyReady,
   };

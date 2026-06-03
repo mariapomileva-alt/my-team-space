@@ -18,7 +18,18 @@
 .mts-shell {
   background: var(--mts-page-bg);
   color: var(--mts-text);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   transition: background 0.45s ease, color 0.25s ease;
+}
+
+.builder-live-preview {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Hero placeholder when no cover photo uploaded */

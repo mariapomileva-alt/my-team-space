@@ -4,6 +4,7 @@ import { AdvancedSettingsPanel } from "@/components/builder/advanced-settings-pa
 import { TeamIdentityPanel } from "@/components/builder/team-identity-panel";
 import { PageBlocksPanel } from "@/components/builder/page-blocks-panel";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
+import { BuilderBillingStatus } from "@/components/builder/builder-billing-status";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
 import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
@@ -20,6 +21,7 @@ import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-st
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
 import { magicInviteUrl } from "@/lib/team-access";
 import { THEMES } from "@/lib/themes";
+import type { BuilderBillingContext } from "@/lib/billing/builder-context";
 import type { TeamMemberRole } from "@/lib/team-admin";
 import type { BlockInstance, BlockType, TeamSpace, ThemeId } from "@/lib/types";
 import type { DragEndEvent } from "@dnd-kit/core";
@@ -36,12 +38,16 @@ export function TeamPageBuilder({
   initialTeam,
   publicUrl,
   memberRole = "coach",
+  billing = null,
 }: {
   teamId: string;
   initialTeam: TeamSpace;
   publicUrl: string;
   memberRole?: TeamMemberRole;
+  billing?: BuilderBillingContext | null;
 }) {
+  const canEdit = billing?.canEdit ?? true;
+  const editLocked = Boolean(billing && !billing.canEdit);
   const siteUrl = publicUrl.replace(/\/team\/[^/]+$/, "");
   const router = useRouter();
   const [team, setTeam] = useState<TeamSpace>(initialTeam);
@@ -109,6 +115,15 @@ export function TeamPageBuilder({
 
   const persist = useCallback(
     async (silent: boolean, options?: { publish?: boolean }): Promise<boolean> => {
+    if (!canEdit) {
+      if (!silent) {
+        setSaveState("error");
+        setSaveError(
+          "Editing is locked. Update billing or choose your active team in the dashboard.",
+        );
+      }
+      return false;
+    }
     setSaveState("saving");
     if (!silent) setMsg(null);
     try {
@@ -132,16 +147,16 @@ export function TeamPageBuilder({
       return false;
     }
     },
-    [teamId, router],
+    [teamId, router, canEdit],
   );
 
   useEffect(() => {
-    if (!dirtyRef.current) return;
+    if (!canEdit || !dirtyRef.current) return;
     const t = window.setTimeout(() => {
       void persist(true);
     }, AUTOSAVE_MS);
     return () => window.clearTimeout(t);
-  }, [team, persist]);
+  }, [team, persist, canEdit]);
 
   function setTheme(themeId: ThemeId) {
     const th = THEMES.find((t) => t.id === themeId);
@@ -287,14 +302,16 @@ export function TeamPageBuilder({
       <div className={`${BUILDER_PAGE_SHELL} pt-4`}>
         <BuilderToolbar
           teamName={team.name}
-          saveLabel={savedLabel}
-          saveState={saveState}
+          saveLabel={editLocked ? "Editing locked — changes won't save" : savedLabel}
+          saveState={editLocked ? "idle" : saveState}
           saveError={saveError}
           pending={pending}
           publicUrl={publicUrl}
           parentShareUrl={parentShareUrl}
           shareHint={shareHint}
           progress={<BuilderProgress team={team} onJump={jumpTo} />}
+          billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
+          editLocked={editLocked}
           onPublish={publish}
           onPreview={previewAsParent}
         />
@@ -314,10 +331,13 @@ export function TeamPageBuilder({
         <BuilderLivePreview team={team} focusBlockId={focusBlockId} onOpenInTab={previewAsParent} />
       </div>
 
-      <div className={`${BUILDER_PAGE_SHELL} pb-16 pt-2`}>
+      <div className={`${BUILDER_PAGE_SHELL} pb-16 pt-1`}>
         <main className="min-w-0">
           <div className={BUILDER_WORKSPACE_GRID}>
-            <div className={BUILDER_EDITOR_COLUMN}>
+            <div
+              className={`${BUILDER_EDITOR_COLUMN}${editLocked ? " pointer-events-none select-none opacity-[0.72]" : ""}`}
+              aria-disabled={editLocked}
+            >
               <div ref={identityRef} id="builder-team-identity" className="scroll-mt-28">
                 <TeamIdentityPanel
                   team={team}

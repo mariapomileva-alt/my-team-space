@@ -67,6 +67,11 @@ export type DashboardBlockData = {
     count: number;
     previews: { icon: string; title: string }[];
   };
+  team_shop: {
+    title: string;
+    count: number;
+    previews: { name: string; price?: string; imageUrl?: string }[];
+  };
   weather: { temp?: string; note?: string; location?: string };
   countdown: { label: string; targetLabel: string; parts?: { days: number; hrs: number; min: number } };
   birthdays: { items: { name: string; date: string }[] };
@@ -274,6 +279,21 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
           previews: valid.slice(0, 4).map((a) => ({
             icon: a.icon,
             title: a.title.trim(),
+          })),
+        },
+      };
+    }
+    case "team_shop": {
+      const s = getBlockSettings<{ sectionTitle?: string; products: { name?: string; price?: string; imageUrl?: string; productUrl?: string }[] }>(block);
+      const valid = (s.products ?? []).filter((p) => p.name?.trim() && toExternalHref(p.productUrl ?? ""));
+      return {
+        team_shop: {
+          title: s.sectionTitle?.trim() || "Team Shop",
+          count: valid.length,
+          previews: valid.slice(0, 3).map((p) => ({
+            name: p.name!.trim(),
+            price: p.price?.trim(),
+            imageUrl: p.imageUrl?.trim(),
           })),
         },
       };

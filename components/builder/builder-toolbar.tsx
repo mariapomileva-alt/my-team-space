@@ -16,6 +16,8 @@ export function BuilderToolbar({
   parentShareUrl,
   shareHint,
   progress,
+  billingStatus,
+  editLocked = false,
   onPublish,
   onPreview,
 }: {
@@ -28,6 +30,8 @@ export function BuilderToolbar({
   parentShareUrl: string;
   shareHint?: string;
   progress?: ReactNode;
+  billingStatus?: ReactNode;
+  editLocked?: boolean;
   onPublish: () => void;
   onPreview: () => void;
 }) {
@@ -35,7 +39,7 @@ export function BuilderToolbar({
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="sticky top-3 z-50 mb-6 w-full"
+      className="sticky top-3 z-50 mb-4 w-full"
     >
       <motion.div className={`${BUILDER_TOOLBAR_SURFACE} flex-col !items-stretch`}>
         <div className="flex w-full flex-wrap items-center justify-between gap-3">
@@ -79,15 +83,17 @@ export function BuilderToolbar({
           </Link>
           <button
             type="button"
-            disabled={pending}
+            disabled={pending || editLocked}
+            title={editLocked ? "Update billing or choose your active team to publish" : undefined}
             onClick={onPublish}
-            className="rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 px-5 py-2 text-xs font-bold text-white shadow-[0_6px_24px_-6px_rgba(99,102,241,0.55)] transition hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+            className="rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 px-5 py-2 text-xs font-bold text-white shadow-[0_6px_24px_-6px_rgba(99,102,241,0.55)] transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {pending ? "Publishing…" : "Publish ✦"}
+            {pending ? "Publishing…" : editLocked ? "Publish locked" : "Publish ✦"}
           </button>
         </div>
         </div>
-        {progress ? <div className="mt-3 w-full">{progress}</div> : null}
+        {progress ? <div className="mt-2 w-full">{progress}</div> : null}
+        {billingStatus}
         <TeamShareBar url={parentShareUrl} hint={shareHint} />
       </motion.div>
     </motion.div>

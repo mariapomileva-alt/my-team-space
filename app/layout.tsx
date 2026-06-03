@@ -43,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${poppins.variable} ${inter.variable} h-full antialiased`}>
-      <body className="min-h-full font-[family-name:var(--font-mts)] text-[#1A1C23]">{children}</body>
+      <body className="min-h-full font-sans text-[#1A1C23]">{children}</body>
     </html>
   );
 }

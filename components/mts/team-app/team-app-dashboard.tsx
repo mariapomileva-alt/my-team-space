@@ -7,6 +7,7 @@ import {
   CompactStatCard,
   PaymentDashboardCard,
   QuickActionsDashboardCard,
+  TeamShopDashboardCard,
   GalleryStackCard,
   PollDashboardCard,
   ResultsRail,
@@ -79,6 +80,17 @@ function SoloWidget({
     case "quick_actions":
       return (
         <QuickActionsDashboardCard
+          team={team}
+          block={block}
+          onOpen={open}
+          index={index}
+          compact={cardCompact}
+          featured={featured}
+        />
+      );
+    case "team_shop":
+      return (
+        <TeamShopDashboardCard
           team={team}
           block={block}
           onOpen={open}

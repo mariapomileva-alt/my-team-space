@@ -20,6 +20,22 @@ export type QuickActionsSettings = {
   actions: QuickActionItem[];
 };
 
+export type TeamShopProduct = {
+  id: string;
+  imageUrl: string;
+  name: string;
+  price?: string;
+  description?: string;
+  buttonLabel: string;
+  productUrl: string;
+};
+
+export type TeamShopSettings = {
+  sectionTitle?: string;
+  subtitle?: string;
+  products: TeamShopProduct[];
+};
+
 export type SocialKey = "instagram" | "telegram" | "whatsapp" | "tiktok" | "facebook" | "youtube";
 
 export type ManualScheduleEvent = {
@@ -140,6 +156,12 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
         sectionTitle: "Quick actions",
         actions: [] as QuickActionItem[],
       } satisfies QuickActionsSettings;
+    case "team_shop":
+      return {
+        sectionTitle: "Team Shop",
+        subtitle: "Order team merch and equipment here.",
+        products: [] as TeamShopProduct[],
+      } satisfies TeamShopSettings;
     case "results":
       return {
         enabled: true,
@@ -285,6 +307,19 @@ export function newQuickActionItem(partial?: Partial<QuickActionItem>): QuickAct
     icon: "custom",
     title: "",
     url: "",
+    ...partial,
+  };
+}
+
+export function newTeamShopProduct(partial?: Partial<TeamShopProduct>): TeamShopProduct {
+  return {
+    id: uid("prod"),
+    imageUrl: "",
+    name: "",
+    price: "",
+    description: "",
+    buttonLabel: "Order now",
+    productUrl: "",
     ...partial,
   };
 }

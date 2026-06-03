@@ -17,6 +17,7 @@ import { SimpleBlocksEditor } from "./editors/simple-blocks-editor";
 import { QuickLinksEditor } from "./editors/quick-links-editor";
 import { PaymentLinkEditor } from "./editors/payment-link-editor";
 import { QuickActionsEditor } from "./editors/quick-actions-editor";
+import { TeamShopEditor } from "./editors/team-shop-editor";
 import { EmbedEditor } from "./editors/embed-editor";
 import { ResourcesEditor } from "./editors/resources-editor";
 
@@ -59,6 +60,9 @@ export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam, on
       {block.type === "payments" ? <PaymentLinkEditor block={block} onPatchBlock={onPatchBlock} /> : null}
       {block.type === "quick_actions" ? (
         <QuickActionsEditor block={block} onPatchBlock={onPatchBlock} />
+      ) : null}
+      {block.type === "team_shop" ? (
+        <TeamShopEditor block={block} teamId={team.id} onPatchBlock={onPatchBlock} />
       ) : null}
       {block.type === "schedule" || block.type === "calendar" ? (
         <ScheduleEditor block={block} onPatchBlock={onPatchBlock} />

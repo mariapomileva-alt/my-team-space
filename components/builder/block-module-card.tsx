@@ -43,7 +43,8 @@ const LEGO_ACCENTS: Partial<Record<string, string>> = {
   contacts: "from-teal-100 to-emerald-50",
   integrations: "from-violet-100 to-fuchsia-50",
   payments: "from-sky-100 to-indigo-50",
-  quick_actions: "from-amber-100 to-orange-50",
+  team_shop: "from-rose-100 to-orange-50",
+  quick_actions: "from-amber-100 to-yellow-50",
   announcement_bar: "from-indigo-100 to-violet-50",
 };
 

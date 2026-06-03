@@ -15,6 +15,7 @@ import {
   BlockQuickLinks,
   BlockPayments,
   BlockQuickActions,
+  BlockTeamShop,
   BlockIntegrations,
   BlockResources,
   BlockResults,
@@ -69,6 +70,8 @@ export function renderBlock(team: TeamSpace, block: BlockInstance, options?: Ren
       return <BlockPayments team={team} block={block} embedded={embedded} />;
     case "quick_actions":
       return <BlockQuickActions team={team} block={block} embedded={embedded} />;
+    case "team_shop":
+      return <BlockTeamShop team={team} block={block} embedded={embedded} />;
     case "integrations":
       return <BlockIntegrations team={team} block={block} embedded={embedded} />;
     case "resources":

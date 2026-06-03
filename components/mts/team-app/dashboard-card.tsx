@@ -1,5 +1,6 @@
 "use client";
 
+import { mtsTypeLabel } from "@/lib/typography";
 import { cn } from "@/lib/utils/cn";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
@@ -57,7 +58,7 @@ export function DashboardCard({
 export function DashboardLabel({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <div className="mb-2 flex items-center justify-between gap-2">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{children}</p>
+      <p className={mtsTypeLabel}>{children}</p>
       {action}
     </div>
   );
