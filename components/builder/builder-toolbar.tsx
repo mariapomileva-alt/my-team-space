@@ -93,8 +93,8 @@ export function BuilderToolbar({
         </div>
         </div>
         {progress ? <div className="mt-2 w-full">{progress}</div> : null}
-        {billingStatus}
         <TeamShareBar url={parentShareUrl} hint={shareHint} />
+        {billingStatus ? <div className="mt-2 w-full">{billingStatus}</div> : null}
       </motion.div>
     </motion.div>
   );

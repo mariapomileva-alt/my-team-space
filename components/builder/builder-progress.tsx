@@ -47,6 +47,7 @@ export function BuilderProgress({
   const {
     statusTitle,
     helperText,
+    nextStep,
     tone,
     doneCount,
     totalCount,
@@ -68,17 +69,32 @@ export function BuilderProgress({
         className,
       )}
     >
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
+          <span aria-hidden className="mr-0.5">
+            ✨
+          </span>
+          Team page progress
+        </p>
+        <p className="shrink-0 text-[11px] font-semibold tabular-nums text-zinc-500">
+          {doneCount}/{totalCount} completed
+        </p>
+      </div>
+
+      {!isFullyReady && nextStep ? (
+        <p className="mt-1 text-[11px] leading-snug text-zinc-600">
+          <span className="font-medium text-zinc-500">Next step:</span> {nextStep}
+        </p>
+      ) : null}
+
+      <div className="mt-1.5 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
           <StatusIcon tone={tone} />
-          <p className="min-w-0 text-[13px] font-semibold leading-snug tracking-normal text-zinc-900">
+          <p className="min-w-0 text-[12px] font-semibold leading-snug text-zinc-900">
             <span>{statusTitle}</span>
             <span className="font-normal text-zinc-500"> · {helperText}</span>
           </p>
         </div>
-        <p className="shrink-0 text-[11px] font-semibold leading-none tabular-nums text-zinc-500">
-          {doneCount}/{totalCount} done
-        </p>
       </div>
 
       <div className="mt-1.5 flex items-center justify-between gap-2">

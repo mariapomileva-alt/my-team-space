@@ -102,6 +102,7 @@ export function builderCompletionPercent(team: TeamSpace): number {
 export type CompletionGuidance = {
   statusTitle: string;
   helperText: string;
+  nextStep: string;
   tone: "ready" | "almost" | "needs-work";
   doneCount: number;
   totalCount: number;
@@ -111,6 +112,22 @@ export type CompletionGuidance = {
   canPublish: boolean;
   isFullyReady: boolean;
 };
+
+function buildNextStep(
+  items: CompletionItem[],
+  hasName: boolean,
+  hasLogo: boolean,
+  isFullyReady: boolean,
+): string {
+  if (isFullyReady) return "";
+  if (!hasName) return "Add your team name to publish your page.";
+  if (!hasLogo) return "Add a logo to publish your page.";
+  const next = items
+    .filter((i) => !i.done)
+    .sort((a, b) => a.priority - b.priority)[0];
+  if (!next) return "You can publish whenever you're ready.";
+  return `Add ${next.label.toLowerCase()} to strengthen your page.`;
+}
 
 export function requiredMissingLabel(item: CompletionItem): string {
   if (item.label === "Logo") return "Logo required";
@@ -171,6 +188,7 @@ export function getCompletionGuidance(team: TeamSpace): CompletionGuidance {
   return {
     statusTitle,
     helperText,
+    nextStep: buildNextStep(items, hasName, hasLogo, isFullyReady),
     tone,
     doneCount,
     totalCount,

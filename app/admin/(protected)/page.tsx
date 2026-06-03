@@ -87,10 +87,10 @@ export default async function AdminHomePage({
         {upgrade === "academy" ? (
           <div
             role="status"
-            className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-950"
+            className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm text-indigo-950"
           >
-            <p className="font-semibold">Your current plan includes 1 team page.</p>
-            <p className="mt-1 text-indigo-900/90">Upgrade to Academy to create more teams.</p>
+            <p className="font-semibold">You&apos;ve reached your team limit.</p>
+            <p className="mt-1 text-indigo-900/90">Your Single Team plan includes one active team page.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <form action={startCheckoutForPlan.bind(null, "academy")}>
                 <button
@@ -100,8 +100,11 @@ export default async function AdminHomePage({
                   Upgrade to Academy
                 </button>
               </form>
-              <Link href="/admin" className="rounded-full border border-indigo-200 bg-white px-4 py-2 text-xs font-semibold text-indigo-800">
-                Back to dashboard
+              <Link
+                href="/admin"
+                className="inline-flex items-center rounded-full border border-indigo-200 bg-white px-4 py-2 text-xs font-semibold text-indigo-800"
+              >
+                Go to Dashboard
               </Link>
             </div>
           </div>
@@ -318,16 +321,6 @@ export default async function AdminHomePage({
                   Editing and publishing are locked while subscription is inactive.
                 </p>
               ) : null}
-              <div className="mt-5 rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-950">
-                <p className="font-semibold">
-                  Your current plan includes 1 team page. Upgrade to Academy to create more teams.
-                </p>
-                <form action={startCheckoutForPlan.bind(null, "academy")} className="mt-3">
-                  <button type="submit" className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-bold text-white">
-                    Upgrade to Academy
-                  </button>
-                </form>
-              </div>
             </div>
           </section>
         ) : (
