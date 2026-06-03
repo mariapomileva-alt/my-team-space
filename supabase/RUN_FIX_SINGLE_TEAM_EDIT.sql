@@ -1,5 +1,8 @@
--- Run once in Supabase SQL Editor if the builder stays locked with one team.
--- Fixes: coach_subscription_allows_edit + grants.
+-- =============================================================================
+-- QUICK FIX (only if coach_subscriptions table ALREADY exists)
+-- If you see: relation "public.coach_subscriptions" does not exist
+-- → Run RUN_COACH_SUBSCRIPTIONS.sql instead (full setup).
+-- =============================================================================
 
 create or replace function public.coach_subscription_allows_edit(p_user_id uuid, p_team_id uuid)
 returns boolean
@@ -69,6 +72,3 @@ end;
 $$;
 
 grant execute on function public.coach_subscription_allows_edit(uuid, uuid) to authenticated;
-
--- Unlock your only team if flags are stale:
--- select public.set_primary_team('YOUR-TEAM-UUID-HERE');
