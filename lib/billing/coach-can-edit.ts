@@ -1,3 +1,4 @@
+import { ensureCoachTeamEditAccess } from "@/lib/billing/ensure-team-access";
 import { loadCoachEntitlements } from "@/lib/billing/coach-subscription";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -61,6 +62,15 @@ export async function resolveCoachCanEditTeam(
   }
 
   return { allowed: false, reason: "plan_locked" };
+}
+
+export async function assertTeamEditable(
+  supabase: SupabaseClient,
+  userId: string,
+  teamId: string,
+): Promise<void> {
+  await ensureCoachTeamEditAccess(supabase, teamId);
+  await assertCoachCanEditTeam(supabase, userId, teamId);
 }
 
 export async function assertCoachCanEditTeam(

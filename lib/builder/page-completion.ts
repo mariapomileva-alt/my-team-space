@@ -1,6 +1,6 @@
 import { getBlockSettings, type SocialKey } from "@/lib/blocks/settings";
 import type { TeamSpace } from "@/lib/types";
-import type { BuilderBillingContext } from "@/lib/billing/builder-context";
+import type { BuilderBillingContext } from "@/lib/billing/builder-context-types";
 
 export type BuilderProgressTarget =
   | "identity"

@@ -1,7 +1,7 @@
 "use client";
 
 import { setPrimaryTeamAction } from "@/app/admin/billing-actions";
-import type { BuilderBillingContext } from "@/lib/billing/builder-context";
+import type { BuilderBillingContext } from "@/lib/billing/builder-context-types";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 

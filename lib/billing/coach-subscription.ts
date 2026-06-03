@@ -1,5 +1,3 @@
-import { assertCoachCanEditTeam } from "@/lib/billing/coach-can-edit";
-import { ensureCoachTeamEditAccess } from "@/lib/billing/ensure-team-access";
 import { ACADEMY_TEAM_LIMIT } from "@/lib/billing/config";
 import { coachStatusAllowsBillingFeatures, coachStatusAllowsEdit } from "@/lib/billing/map-status";
 import type {
@@ -120,13 +118,4 @@ export async function loadCoachEntitlements(
   const teamsUsed = ownedTeamIds.length;
 
   return buildCoachEntitlements(sub, teamsUsed, ownedTeamIds);
-}
-
-export async function assertTeamEditable(
-  supabase: SupabaseClient,
-  userId: string,
-  teamId: string,
-): Promise<void> {
-  await ensureCoachTeamEditAccess(supabase, teamId);
-  await assertCoachCanEditTeam(supabase, userId, teamId);
 }

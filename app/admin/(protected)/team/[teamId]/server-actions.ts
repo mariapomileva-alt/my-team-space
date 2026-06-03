@@ -1,6 +1,6 @@
 "use server";
 
-import { assertTeamEditable } from "@/lib/billing/coach-subscription";
+import { assertTeamEditable } from "@/lib/billing/coach-can-edit";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TeamSpace } from "@/lib/types";
 import { createServerSupabase } from "@/lib/supabase/server";

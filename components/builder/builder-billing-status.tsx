@@ -1,7 +1,10 @@
 "use client";
 
 import { openBillingPortal, startCheckoutForPlan } from "@/app/admin/lemon-actions";
-import { builderUsageLabel, type BuilderBillingContext } from "@/lib/billing/builder-context";
+import {
+  builderUsageLabel,
+  type BuilderBillingContext,
+} from "@/lib/billing/builder-context-types";
 import Link from "next/link";
 
 function Dot() {

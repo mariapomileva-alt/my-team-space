@@ -1,6 +1,6 @@
 "use server";
 
-import { assertTeamEditable } from "@/lib/billing/coach-subscription";
+import { assertTeamEditable } from "@/lib/billing/coach-can-edit";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { publicTeamCacheTag } from "@/lib/teams/public";
 import { revalidatePath, revalidateTag } from "next/cache";

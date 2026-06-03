@@ -22,7 +22,7 @@ import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-st
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
 import { magicInviteUrl } from "@/lib/team-access";
 import { THEMES } from "@/lib/themes";
-import type { BuilderBillingContext } from "@/lib/billing/builder-context";
+import type { BuilderBillingContext } from "@/lib/billing/builder-context-types";
 import type { TeamMemberRole } from "@/lib/team-admin";
 import type { BlockInstance, BlockType, TeamSpace, ThemeId } from "@/lib/types";
 import type { DragEndEvent } from "@dnd-kit/core";

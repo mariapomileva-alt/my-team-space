@@ -1,7 +1,7 @@
 "use client";
 
 import { TeamPageBuilder } from "@/components/builder/team-page-builder";
-import type { BuilderBillingContext } from "@/lib/billing/builder-context";
+import type { BuilderBillingContext } from "@/lib/billing/builder-context-types";
 import type { TeamMemberRole } from "@/lib/team-admin";
 import type { TeamSpace } from "@/lib/types";
 
