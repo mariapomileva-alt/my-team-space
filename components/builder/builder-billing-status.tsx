@@ -1,6 +1,7 @@
 "use client";
 
-import { openBillingPortal, startCheckoutForPlan } from "@/app/admin/lemon-actions";
+import { openBillingPortal } from "@/app/admin/lemon-actions";
+import { startCheckoutFormAction } from "@/lib/admin/checkout-actions";
 import {
   builderUsageLabel,
   type BuilderBillingContext,
@@ -35,7 +36,8 @@ export function BuilderBillingStatus({ billing }: { billing: BuilderBillingConte
       {showUpgrade ? (
         <>
           <Dot />
-          <form action={startCheckoutForPlan.bind(null, "academy")} className="inline">
+          <form action={startCheckoutFormAction} className="inline">
+            <input type="hidden" name="plan" value="academy" />
             <button
               type="submit"
               className="font-semibold text-indigo-600/90 transition hover:text-indigo-700 hover:underline"

@@ -1,6 +1,9 @@
 import { createTeamAction } from "@/app/admin/actions";
-import { setPrimaryTeamAction } from "@/app/admin/billing-actions";
-import { openBillingPortal, startCheckoutForPlan } from "@/app/admin/lemon-actions";
+import { setPrimaryTeamFormAction } from "@/app/admin/billing-actions";
+import { startCheckoutFormAction } from "@/lib/admin/checkout-actions";
+import { openBillingPortal } from "@/app/admin/lemon-actions";
+import { DashboardEditLink } from "@/components/admin/dashboard-edit-link";
+import type { CoachTeamListItem } from "@/lib/admin/load-coach-teams";
 import { loadCoachEntitlements } from "@/lib/billing/coach-subscription";
 import { loadCoachTeams } from "@/lib/admin/load-coach-teams";
 import { requireAuth } from "@/lib/auth/require-auth";
@@ -9,6 +12,11 @@ import Link from "next/link";
 import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
+
+function teamEditLocked(team: CoachTeamListItem, billingActive: boolean): boolean {
+  if (team.role !== "coach") return false;
+  return Boolean(team.plan_edit_locked) || !billingActive;
+}
 
 export default async function AdminHomePage({
   searchParams,
@@ -50,7 +58,18 @@ export default async function AdminHomePage({
   const showLimit = isAcademy ? `${teamsUsed} / ${teamLimit} teams used` : `${Math.min(teamsUsed, 1)} / 1 team used`;
   const billingActive = entitlements?.billingActive ?? true;
 
-  const primaryTeam = list.find((t) => t.is_plan_primary) ?? list[0];
+  const ownedTeams = list.filter((t) => t.role === "coach");
+  const assistedTeams = list.filter((t) => t.role === "assistant");
+  const isAssistantOnly = ownedTeams.length === 0 && assistedTeams.length > 0;
+  const isCoach = ownedTeams.length > 0;
+  const checkoutSuccess = sp.checkout === "success";
+  const checkoutPlan =
+    sp.plan === "academy" || sp.plan === "single_team"
+      ? (sp.plan as "academy" | "single_team")
+      : null;
+  const billingNotice = typeof sp.billing === "string" ? sp.billing : undefined;
+
+  const primaryTeam = ownedTeams.find((t) => t.is_plan_primary) ?? ownedTeams[0];
 
   return (
     <div className="min-h-screen bg-zinc-50 px-4 py-10 text-zinc-900 sm:px-8">
@@ -84,6 +103,36 @@ export default async function AdminHomePage({
           </div>
         ) : null}
 
+        {checkoutSuccess ? (
+          <div
+            role="status"
+            className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-950"
+          >
+            <p className="font-semibold">Payment successful — thank you!</p>
+            <p className="mt-1 text-emerald-900/90">
+              {checkoutPlan === "academy"
+                ? "Your Academy plan is active. You can create and manage multiple team pages."
+                : "Your Single Team plan is active. Open your team page below to finish setup."}
+            </p>
+          </div>
+        ) : null}
+
+        {billingNotice === "no_portal" ? (
+          <div
+            role="status"
+            className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+          >
+            <p className="font-semibold">Billing portal isn&apos;t available yet.</p>
+            <p className="mt-1">
+              Complete checkout on{" "}
+              <Link href="/pricing" className="font-semibold underline">
+                Pricing
+              </Link>{" "}
+              or contact support if you already paid.
+            </p>
+          </div>
+        ) : null}
+
         {upgrade === "academy" ? (
           <div
             role="status"
@@ -92,7 +141,8 @@ export default async function AdminHomePage({
             <p className="font-semibold">You&apos;ve reached your team limit.</p>
             <p className="mt-1 text-indigo-900/90">Your Single Team plan includes one active team page.</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <form action={startCheckoutForPlan.bind(null, "academy")}>
+              <form action={startCheckoutFormAction}>
+                <input type="hidden" name="plan" value="academy" />
                 <button
                   type="submit"
                   className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-bold text-white"
@@ -110,7 +160,7 @@ export default async function AdminHomePage({
           </div>
         ) : null}
 
-        {!billingActive ? (
+        {isCoach && !billingActive ? (
           <div
             role="status"
             className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
@@ -128,27 +178,44 @@ export default async function AdminHomePage({
         ) : null}
 
         <header>
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Coach</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+            {isAssistantOnly ? "Page admin" : "Coach"}
+          </p>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold">{isAcademy ? "My Teams" : "Your team"}</h1>
-              {isAcademy ? (
+              <h1 className="text-2xl font-bold">
+                {isAssistantOnly
+                  ? "Teams you help manage"
+                  : isAcademy
+                    ? "My Teams"
+                    : "Your team"}
+              </h1>
+              {isAssistantOnly ? (
+                <p className="mt-1 text-sm text-zinc-600">
+                  You can edit these team pages. Billing and publishing stay with the team owner.
+                </p>
+              ) : isAcademy ? (
                 <p className="mt-1 text-sm text-zinc-600">Create and manage all your team pages from one place.</p>
               ) : null}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
-                {entitlements?.planLabel ?? (isAcademy ? "Academy Plan" : "Single Team Plan")}
-              </span>
-              <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-800">
-                {showLimit}
-              </span>
-              <form action={openBillingPortal}>
-                <button type="submit" className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold">
-                  Manage billing
-                </button>
-              </form>
-            </div>
+            {isCoach ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
+                  {entitlements?.planLabel ?? (isAcademy ? "Academy Plan" : "Single Team Plan")}
+                </span>
+                <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-800">
+                  {showLimit}
+                </span>
+                <form action={openBillingPortal}>
+                  <button
+                    type="submit"
+                    className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold"
+                  >
+                    Manage billing
+                  </button>
+                </form>
+              </div>
+            ) : null}
           </div>
           {userEmail ? <p className="mt-2 text-sm text-zinc-600">Signed in as {userEmail}</p> : null}
           <p className="mt-3 text-xs text-zinc-500">
@@ -160,7 +227,7 @@ export default async function AdminHomePage({
           </p>
         </header>
 
-        {entitlements?.needsPrimaryTeamSelection ? (
+        {isCoach && entitlements?.needsPrimaryTeamSelection ? (
           <section className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950">
             <p className="font-semibold">
               Your current plan includes 1 team page. Choose which team should stay active.
@@ -177,7 +244,8 @@ export default async function AdminHomePage({
                       <p className="truncate font-semibold text-zinc-900">{t.name}</p>
                       <p className="truncate text-xs text-zinc-500">{siteUrl}/team/{t.slug}</p>
                     </div>
-                    <form action={setPrimaryTeamAction.bind(null, t.id)}>
+                    <form action={setPrimaryTeamFormAction}>
+                      <input type="hidden" name="teamId" value={t.id} />
                       <button type="submit" className="rounded-full bg-zinc-900 px-3 py-1.5 text-xs font-bold text-white">
                         Keep active
                       </button>
@@ -186,7 +254,8 @@ export default async function AdminHomePage({
                 ))}
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
-              <form action={startCheckoutForPlan.bind(null, "academy")}>
+              <form action={startCheckoutFormAction}>
+                <input type="hidden" name="plan" value="academy" />
                 <button type="submit" className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-bold text-white">
                   Upgrade to Academy
                 </button>
@@ -200,13 +269,14 @@ export default async function AdminHomePage({
           </section>
         ) : null}
 
-        {startPlan ? (
+        {isCoach && startPlan ? (
           <section className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm text-indigo-950">
             <p className="font-semibold">
               {startPlan === "academy" ? "Upgrade to Academy Plan" : "Start Single Team Plan"}
             </p>
             <p className="mt-1 text-indigo-900/90">You will be redirected to Lemon Squeezy checkout.</p>
-            <form action={startCheckoutForPlan.bind(null, startPlan)} className="mt-3">
+            <form action={startCheckoutFormAction} className="mt-3">
+              <input type="hidden" name="plan" value={startPlan} />
               <button type="submit" className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-bold text-white">
                 Continue to checkout
               </button>
@@ -214,7 +284,7 @@ export default async function AdminHomePage({
           </section>
         ) : null}
 
-        {isAcademy ? (
+        {isCoach && isAcademy ? (
           <section className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-sm font-bold text-zinc-900">Teams</h2>
@@ -228,9 +298,9 @@ export default async function AdminHomePage({
               ) : null}
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {list.map((t) => {
+              {ownedTeams.map((t) => {
                 const url = `${siteUrl}/team/${t.slug}`;
-                const locked = Boolean(t.plan_edit_locked) || !billingActive;
+                const locked = teamEditLocked(t, billingActive);
                 return (
                   <div
                     key={t.id}
@@ -261,15 +331,7 @@ export default async function AdminHomePage({
                       </a>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <Link
-                        href={`/admin/team/${t.id}/step-2`}
-                        className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                          locked ? "bg-zinc-200 text-zinc-500" : "bg-zinc-900 text-white"
-                        }`}
-                        aria-disabled={locked}
-                      >
-                        Edit
-                      </Link>
+                      <DashboardEditLink teamId={t.id} disabled={locked} label="Edit" />
                       <CopyLinkButton url={url} />
                     </div>
                     {locked ? (
@@ -282,7 +344,7 @@ export default async function AdminHomePage({
               })}
             </div>
           </section>
-        ) : primaryTeam ? (
+        ) : isCoach && primaryTeam ? (
           <section className="space-y-3">
             <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -294,15 +356,12 @@ export default async function AdminHomePage({
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Link
-                    href={`/admin/team/${primaryTeam.id}/step-2`}
-                    className={`rounded-full px-4 py-2 text-xs font-bold ${
-                      !billingActive || primaryTeam.plan_edit_locked ? "bg-zinc-200 text-zinc-500" : "bg-zinc-900 text-white"
-                    }`}
-                    aria-disabled={!billingActive || primaryTeam.plan_edit_locked}
-                  >
-                    Edit team
-                  </Link>
+                  <DashboardEditLink
+                    teamId={primaryTeam.id}
+                    disabled={teamEditLocked(primaryTeam, billingActive)}
+                    label="Edit team"
+                    size="md"
+                  />
                   <CopyLinkButton url={`${siteUrl}/team/${primaryTeam.slug}`} />
                 </div>
               </div>
@@ -323,14 +382,49 @@ export default async function AdminHomePage({
               ) : null}
             </div>
           </section>
-        ) : (
+        ) : isCoach ? (
           <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-bold">Create your team page</h2>
             <p className="mt-1 text-sm text-zinc-600">Start with one team. You can upgrade to Academy anytime.</p>
           </section>
-        )}
+        ) : null}
 
-        {!fatalError ? (
+        {assistedTeams.length > 0 ? (
+          <section className="space-y-3">
+            <h2 className="text-sm font-bold text-zinc-900">
+              {isAssistantOnly ? "Your teams" : "Teams you admin"}
+            </h2>
+            <div className={`grid gap-3 ${isAssistantOnly ? "" : "sm:grid-cols-2"}`}>
+              {assistedTeams.map((t) => {
+                const url = `${siteUrl}/team/${t.slug}`;
+                return (
+                  <div key={t.id} className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                    <p className="truncate text-base font-bold">{t.name}</p>
+                    <p className="mt-1 text-xs text-zinc-500">
+                      Page admin · {t.publish_status === "published" ? "Published" : "Draft"}
+                    </p>
+                    <div className="mt-3">
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block truncate rounded-xl bg-zinc-50 px-3 py-2 text-xs font-mono text-zinc-700 ring-1 ring-zinc-100"
+                      >
+                        {url}
+                      </a>
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <DashboardEditLink teamId={t.id} disabled={false} label="Edit page" />
+                      <CopyLinkButton url={url} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
+
+        {!fatalError && isCoach ? (
           (isAcademy ? (
             <section id="create-team" className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-bold">Create a new team</h2>
@@ -366,7 +460,7 @@ export default async function AdminHomePage({
                 </button>
               </form>
             </section>
-          ) : list.length === 0 ? (
+          ) : ownedTeams.length === 0 ? (
             <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
               <h2 className="font-bold">Create your team page</h2>
               <p className="mt-1 text-sm text-zinc-600">

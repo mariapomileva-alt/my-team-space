@@ -315,6 +315,12 @@ export function TeamPageBuilder({
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(139,92,246,0.08),transparent)]" />
 
       <div className={`${BUILDER_PAGE_SHELL} pt-4`}>
+        {memberRole === "assistant" ? (
+          <p className="mb-3 rounded-xl border border-violet-200/80 bg-violet-50/50 px-3 py-2 text-[11px] text-violet-950">
+            You&apos;re editing as a <strong>page admin</strong>. Changes save automatically. Only the team owner can
+            publish.
+          </p>
+        ) : null}
         {billing && memberRole === "coach" ? (
           <BuilderEditAccessBanner teamId={teamId} billing={billing} />
         ) : null}
@@ -330,6 +336,7 @@ export function TeamPageBuilder({
           progress={<BuilderProgress team={team} onJump={jumpTo} />}
           billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
           editLocked={editLocked}
+          canPublish={memberRole === "coach"}
           onPublish={publish}
           onPreview={previewAsParent}
         />

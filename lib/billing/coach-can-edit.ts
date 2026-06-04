@@ -46,7 +46,7 @@ export async function resolveCoachCanEditTeam(
       error.code === "42P01";
 
     if (rpcMissing) {
-      return { allowed: true, rpcMissing: true };
+      return ent.teamsUsed <= 1 ? { allowed: true, rpcMissing: true } : { allowed: false, reason: "rpc_error", rpcMissing: true };
     }
 
     console.error("[resolveCoachCanEditTeam]", msg);

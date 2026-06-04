@@ -1,4 +1,4 @@
-import { isCurrentUserTeamCoach } from "@/lib/teams/is-team-coach";
+import { isCurrentUserTeamMember } from "@/lib/teams/is-team-coach";
 import { buildTeamAssetPath, teamAssetPublicUrl, TEAM_ASSETS_BUCKET } from "@/lib/storage/team-assets";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
@@ -22,7 +22,7 @@ export async function POST(
   const { teamId } = await params;
   if (!teamId) return NextResponse.json({ error: "Missing team" }, { status: 400 });
 
-  const allowed = await isCurrentUserTeamCoach(teamId);
+  const allowed = await isCurrentUserTeamMember(teamId);
   if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const form = await req.formData();

@@ -6,7 +6,19 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function createTeamAction(formData: FormData) {
-  const { supabase } = await requireAuth();
+  const { supabase, user } = await requireAuth();
+
+  const { data: coachRow } = await supabase
+    .from("team_members")
+    .select("team_id")
+    .eq("user_id", user.id)
+    .eq("role", "coach")
+    .limit(1)
+    .maybeSingle();
+  if (!coachRow) {
+    throw new Error("Only team owners can create new teams. Open a team you admin from the dashboard.");
+  }
+
   const slug = String(formData.get("slug") ?? "").trim();
   const name = String(formData.get("name") ?? "").trim();
   if (!slug || !name) throw new Error("Slug and name required");
@@ -20,5 +32,5 @@ export async function createTeamAction(formData: FormData) {
   const normalized = slug.trim().toLowerCase();
   revalidatePath(`/team/${normalized}`);
   revalidateTag(publicTeamCacheTag(normalized), "default");
-  redirect(`/admin/team/${data as string}/step-1`);
+  redirect(`/admin/team/${data as string}/step-2`);
 }

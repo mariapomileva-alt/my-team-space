@@ -1,6 +1,7 @@
 "use server";
 
 import { assertTeamEditable } from "@/lib/billing/coach-can-edit";
+import { assertTeamMember } from "@/lib/team-member-access";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TeamSpace } from "@/lib/types";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -17,14 +18,8 @@ async function getCoachContext() {
   return { supabase, user };
 }
 
-async function assertCoach(supabase: SupabaseClient, userId: string, teamId: string) {
-  const { data, error } = await supabase
-    .from("team_members")
-    .select("team_id")
-    .eq("team_id", teamId)
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (error || !data) throw new Error("Forbidden");
+async function assertMember(supabase: SupabaseClient, userId: string, teamId: string) {
+  await assertTeamMember(supabase, userId, teamId);
 }
 
 function revalidatePublicTeamBySlug(slug: string) {
@@ -34,8 +29,15 @@ function revalidatePublicTeamBySlug(slug: string) {
 
 export async function saveTeamContent(teamId: string, team: TeamSpace, options?: { publish?: boolean }) {
   const { supabase, user } = await getCoachContext();
-  await assertCoach(supabase, user.id, teamId);
-  await assertTeamEditable(supabase, user.id, teamId);
+  const membership = await assertTeamMember(supabase, user.id, teamId);
+
+  if (options?.publish && membership.role !== "coach") {
+    throw new Error("Only the team owner can publish the page.");
+  }
+
+  if (membership.role === "coach") {
+    await assertTeamEditable(supabase, user.id, teamId);
+  }
   const logoUrl = team.logoUrl?.trim().slice(0, 2048) || null;
   const pageSettings = {
     ...(team.pageSettings ?? {}),
@@ -88,7 +90,7 @@ export async function saveTeamContent(teamId: string, team: TeamSpace, options?:
 
 export async function addScheduleEvent(teamId: string, formData: FormData) {
   const { supabase, user } = await getCoachContext();
-  await assertCoach(supabase, user.id, teamId);
+  await assertMember(supabase, user.id, teamId);
   const title = String(formData.get("title") ?? "").trim();
   const starts = String(formData.get("starts_at") ?? "");
   const location = String(formData.get("location") ?? "").trim() || null;
@@ -106,7 +108,7 @@ export async function addScheduleEvent(teamId: string, formData: FormData) {
 
 export async function addTeamUpdate(teamId: string, formData: FormData) {
   const { supabase, user } = await getCoachContext();
-  await assertCoach(supabase, user.id, teamId);
+  await assertMember(supabase, user.id, teamId);
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
   if (!title) throw new Error("Title required");
@@ -122,7 +124,7 @@ export async function addTeamUpdate(teamId: string, formData: FormData) {
 
 export async function addAchievement(teamId: string, formData: FormData) {
   const { supabase, user } = await getCoachContext();
-  await assertCoach(supabase, user.id, teamId);
+  await assertMember(supabase, user.id, teamId);
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
   const icon = String(formData.get("icon") ?? "").trim() || null;

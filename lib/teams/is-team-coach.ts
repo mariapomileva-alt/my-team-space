@@ -1,7 +1,7 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 
-/** True when the current session user is a member (coach) of the team. */
-export async function isCurrentUserTeamCoach(teamId: string): Promise<boolean> {
+/** True when the current session user is any member of the team (coach or page admin). */
+export async function isCurrentUserTeamMember(teamId: string): Promise<boolean> {
   try {
     const supabase = await createServerSupabase();
     const {
@@ -21,3 +21,6 @@ export async function isCurrentUserTeamCoach(teamId: string): Promise<boolean> {
     return false;
   }
 }
+
+/** @deprecated Use isCurrentUserTeamMember */
+export const isCurrentUserTeamCoach = isCurrentUserTeamMember;

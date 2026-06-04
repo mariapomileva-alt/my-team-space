@@ -10,7 +10,10 @@ export function humanizeSaveError(message: string): string {
   if (/coach_subscription|coach_subscriptions|set_primary_team/i.test(raw)) {
     return "Billing tables are not set up yet. Run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase, then refresh.";
   }
-  if (raw === "Forbidden") return "No access to this team — sign in again as the coach.";
+  if (raw === "Forbidden") return "You don't have access to this team.";
+  if (/Only the team owner can publish/i.test(raw)) {
+    return "Only the team owner can publish. Ask the coach to press Publish.";
+  }
   if (/subscription does not allow editing/i.test(raw)) {
     return "Your subscription is not active. Please update billing to continue editing your team page.";
   }

@@ -18,6 +18,7 @@ export function BuilderToolbar({
   progress,
   billingStatus,
   editLocked = false,
+  canPublish = true,
   onPublish,
   onPreview,
 }: {
@@ -32,6 +33,7 @@ export function BuilderToolbar({
   progress?: ReactNode;
   billingStatus?: ReactNode;
   editLocked?: boolean;
+  canPublish?: boolean;
   onPublish: () => void;
   onPreview: () => void;
 }) {
@@ -81,21 +83,23 @@ export function BuilderToolbar({
           >
             Open page
           </Link>
-          <button
-            type="button"
-            disabled={pending || editLocked}
-            title={
-              editLocked
-                ? "Update billing or choose your active team to publish"
-                : saveLabel.includes("Publishing locked") || saveLabel.includes("required")
-                  ? saveLabel
-                  : undefined
-            }
-            onClick={onPublish}
-            className="rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 px-5 py-2 text-xs font-bold text-white shadow-[0_6px_24px_-6px_rgba(99,102,241,0.55)] transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {pending ? "Publishing…" : editLocked ? "Publish locked" : "Publish ✦"}
-          </button>
+          {canPublish ? (
+            <button
+              type="button"
+              disabled={pending || editLocked}
+              title={
+                editLocked
+                  ? "Update billing or choose your active team to publish"
+                  : saveLabel.includes("Publishing locked") || saveLabel.includes("required")
+                    ? saveLabel
+                    : undefined
+              }
+              onClick={onPublish}
+              className="rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 px-5 py-2 text-xs font-bold text-white shadow-[0_6px_24px_-6px_rgba(99,102,241,0.55)] transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {pending ? "Publishing…" : editLocked ? "Publish locked" : "Publish ✦"}
+            </button>
+          ) : null}
         </div>
         </div>
         {progress ? <div className="mt-2 w-full">{progress}</div> : null}
