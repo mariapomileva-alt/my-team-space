@@ -9,7 +9,6 @@ import { IntegrationsHub } from "@/components/integrations/integrations-hub";
 import { ResourcesHub } from "@/components/integrations/resource-card";
 import { SmartIntegrationCard } from "@/components/integrations/smart-integration-card";
 import { enrichIntegrationLink } from "@/lib/integrations/build-preview";
-import { mtsTypeTitleLg } from "@/lib/typography";
 import { cn } from "@/lib/utils/cn";
 import type { IntegrationLink } from "@/lib/integrations/types";
 import {
@@ -54,48 +53,23 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   const socialLinks = heroSocialLinks(s.social ?? {});
   const hasCover = Boolean(s.coverImageUrl?.trim());
 
-  const logoNode = <MtsTeamLogo src={logoSrc} teamName={team.name} />;
+  const logoNode = <MtsTeamLogo src={logoSrc} teamName={team.name} className="mts-media-frame--logo-hero" />;
 
   const liveBadge = (
-    <span className="relative z-10 flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
+    <span
+      className={cn(
+        "relative z-20 flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1",
+        hasCover
+          ? "bg-white/95 text-emerald-700 ring-white/80 shadow-sm backdrop-blur-sm"
+          : "bg-emerald-50 text-emerald-700 ring-emerald-100",
+      )}
+    >
       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
       Live
     </span>
   );
 
-  const identityBlock = (
-    <div className="min-w-0">
-      <MtsBadge>Our team</MtsBadge>
-      <h1 className={cn("mt-1 text-[color:var(--mts-text)]", mtsTypeTitleLg)}>{team.name}</h1>
-      {team.tagline?.trim() ? (
-        <p className="mt-0.5 text-[13px] font-medium leading-snug text-[color:var(--mts-muted)]">
-          {team.tagline.trim()}
-        </p>
-      ) : null}
-      {s.city?.trim() ? (
-        <p className="mt-0.5 text-[12px] text-neutral-400">📍 {s.city.trim()}</p>
-      ) : null}
-    </div>
-  );
-
-  const extrasBlock = (
-    <>
-      {description ? (
-        <p className="mt-2.5 text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
-      ) : null}
-      {motto ? (
-        <p
-          className={cn(
-            "text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]",
-            description ? "mt-2" : "mt-2.5",
-          )}
-        >
-          “{motto}”
-        </p>
-      ) : null}
-      {socialLinks.length > 0 ? <SocialLinkButtons links={socialLinks} className="mt-2.5" /> : null}
-    </>
-  );
+  const hasExtras = Boolean(description || motto || socialLinks.length > 0);
 
   return (
     <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
@@ -104,9 +78,10 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
           <div className="relative z-0">
             <MtsCoverBanner src={s.coverImageUrl} />
             <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent"
               aria-hidden
             />
+            <div className="absolute right-3 top-3 z-20">{liveBadge}</div>
           </div>
         ) : (
           <MtsCoverBanner fallbackClassName="hero-cover__fallback" />
@@ -119,10 +94,33 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
             )}
           >
             {logoNode}
-            {liveBadge}
+            {!hasCover ? liveBadge : null}
           </div>
-          <div className={cn("min-w-0", hasCover ? "mt-2.5" : "mt-3")}>{identityBlock}</div>
-          <div className="mt-2.5">{extrasBlock}</div>
+
+          <div className={cn("min-w-0", hasCover ? "mt-2" : "mt-3")}>
+            <MtsBadge>Our team</MtsBadge>
+            <h1 className="hero-title mt-1 text-[color:var(--mts-text)]">{team.name}</h1>
+            {team.tagline?.trim() ? (
+              <p className="mt-1 text-[13px] font-medium leading-snug text-[color:var(--mts-muted)]">
+                {team.tagline.trim()}
+              </p>
+            ) : null}
+            {s.city?.trim() ? (
+              <p className="mt-1 text-[12px] font-medium text-neutral-400">📍 {s.city.trim()}</p>
+            ) : null}
+          </div>
+
+          {hasExtras ? (
+            <div className="hero-extras mt-3 space-y-3 border-t border-neutral-100/90 pt-3">
+              {motto ? (
+                <blockquote className="hero-motto text-[color:var(--mts-primary)]">“{motto}”</blockquote>
+              ) : null}
+              {description ? (
+                <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
+              ) : null}
+              {socialLinks.length > 0 ? <SocialLinkButtons links={socialLinks} size="sm" /> : null}
+            </div>
+          ) : null}
         </div>
       </div>
     </motion.section>
