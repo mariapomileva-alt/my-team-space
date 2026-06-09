@@ -53,8 +53,6 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   const socialLinks = heroSocialLinks(s.social ?? {});
   const hasCover = Boolean(s.coverImageUrl?.trim());
 
-  const logoNode = <MtsTeamLogo src={logoSrc} teamName={team.name} />;
-
   const liveBadge = (
     <span
       className={cn(
@@ -69,54 +67,65 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
     </span>
   );
 
+  const hasDetails = Boolean(description || motto || socialLinks.length > 0);
+
   return (
     <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
-      <div className="overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
-        {hasCover ? (
-          <div className="relative z-0">
-            <MtsCoverBanner src={s.coverImageUrl} />
-            <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
-              aria-hidden
-            />
-            <div className="absolute right-3 top-3 z-20">{liveBadge}</div>
-          </div>
-        ) : (
-          <MtsCoverBanner fallbackClassName="hero-cover__fallback" />
-        )}
-        <div className={cn("hero-card-body relative z-10 px-4 pb-5", hasCover ? "pt-0" : "pt-4")}>
-          {!hasCover ? <div className="absolute right-4 top-4 z-20">{liveBadge}</div> : null}
+      <div className="hero-card overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
+        <div className="hero-card__cover relative z-0">
+          {hasCover ? (
+            <>
+              <MtsCoverBanner src={s.coverImageUrl} />
+              <div
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
+                aria-hidden
+              />
+            </>
+          ) : (
+            <MtsCoverBanner fallbackClassName="hero-cover__fallback" />
+          )}
+          <div className="absolute right-3 top-3 z-20">{liveBadge}</div>
+        </div>
 
-          <div
-            className={cn(
-              "hero-identity-row flex items-center justify-center gap-2.5 sm:gap-3",
-              hasCover && "hero-identity--overlap",
-            )}
-          >
-            {logoNode}
-            <h1 className="hero-title min-w-0 text-balance text-[color:var(--mts-text)]">{team.name}</h1>
-          </div>
-
-          <div className="mt-3 space-y-1 text-center">
-            <MtsBadge>Our team</MtsBadge>
-            {team.tagline?.trim() ? (
-              <p className="text-[13px] font-medium leading-snug text-[color:var(--mts-muted)]">
-                {team.tagline.trim()}
-              </p>
-            ) : null}
-            {s.city?.trim() ? (
-              <p className="text-[12px] text-neutral-400">📍 {s.city.trim()}</p>
-            ) : null}
+        <div className="hero-card__body relative z-10">
+          <div className="hero-card__identity">
+            <div className="hero-card__logo-zone">
+              <MtsTeamLogo
+                src={logoSrc}
+                teamName={team.name}
+                className="mts-media-frame--logo-hero-card"
+              />
+            </div>
+            <div className="hero-card__text-zone">
+              <h1 className="hero-card__title">{team.name}</h1>
+              {team.tagline?.trim() ? (
+                <p className="hero-card__subtitle">{team.tagline.trim()}</p>
+              ) : null}
+              {s.city?.trim() ? (
+                <p className="hero-card__city">📍 {s.city.trim()}</p>
+              ) : null}
+            </div>
           </div>
 
-          {description ? (
-            <p className="mt-3 text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
-          ) : null}
-          {motto ? (
-            <p className="mt-3 text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]">“{motto}”</p>
-          ) : null}
-          {socialLinks.length > 0 ? (
-            <SocialLinkButtons links={socialLinks} className="mt-3" />
+          {hasDetails ? (
+            <div className="hero-card__details">
+              {description ? (
+                <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
+              ) : null}
+              {motto ? (
+                <p
+                  className={cn(
+                    "text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]",
+                    description ? "mt-2" : "mt-0",
+                  )}
+                >
+                  “{motto}”
+                </p>
+              ) : null}
+              {socialLinks.length > 0 ? (
+                <SocialLinkButtons links={socialLinks} className={motto || description ? "mt-3" : "mt-0"} />
+              ) : null}
+            </div>
           ) : null}
         </div>
       </div>

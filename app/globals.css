@@ -42,6 +42,115 @@
   background: var(--mts-card, #fff);
 }
 
+/* Business-card team header */
+.hero-card {
+  --hero-logo-size: 92px;
+  --hero-identity-gap: 14px;
+}
+
+@media (min-width: 640px) {
+  .hero-card {
+    --hero-logo-size: 112px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-card {
+    --hero-logo-size: 120px;
+  }
+}
+
+.hero-card__cover .mts-media-frame--cover {
+  width: 100%;
+  max-height: none;
+  aspect-ratio: 2.15 / 1;
+  min-height: 7.25rem;
+}
+
+@media (min-width: 640px) {
+  .hero-card__cover .mts-media-frame--cover {
+    aspect-ratio: 2.35 / 1;
+    min-height: 8.5rem;
+  }
+}
+
+.hero-card__body {
+  background: var(--mts-card, #fff);
+  padding: 0 1rem 1.25rem;
+}
+
+.hero-card__identity {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--hero-identity-gap);
+  margin-top: calc(var(--hero-logo-size) * -0.5);
+  padding-bottom: 0.25rem;
+}
+
+.hero-card__logo-zone {
+  flex: 0 0 var(--hero-logo-size);
+  width: var(--hero-logo-size);
+}
+
+.hero-card__text-zone {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-bottom: 0.125rem;
+}
+
+.mts-media-frame--logo-hero-card {
+  width: var(--hero-logo-size);
+  height: var(--hero-logo-size);
+  max-width: 100%;
+  border-radius: 1.15rem;
+}
+
+.hero-card__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--mts-text, #1a1c23);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .hero-card__title {
+    font-size: 1.375rem;
+  }
+}
+
+.hero-card__subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--mts-muted, #6b7280);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.hero-card__city {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: #a3a3a3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.hero-card__details {
+  margin-top: 0.75rem;
+}
+
 /* Shared media frames — consistent crop, padding, and alignment */
 .mts-media-frame {
   position: relative;
@@ -119,33 +228,6 @@
   height: 2.75rem;
   flex-shrink: 0;
   border-radius: 9999px;
-}
-
-.hero-identity-row {
-  max-width: 100%;
-}
-
-.hero-identity--overlap {
-  margin-top: -1.75rem;
-}
-
-@media (min-width: 640px) {
-  .hero-identity--overlap {
-    margin-top: -2rem;
-  }
-}
-
-.hero-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-}
-
-@media (min-width: 640px) {
-  .hero-title {
-    font-size: 1.375rem;
-  }
 }
 
 .team-app-page {
