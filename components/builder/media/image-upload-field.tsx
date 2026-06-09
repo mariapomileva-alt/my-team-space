@@ -1,6 +1,13 @@
 "use client";
 
-import { compressImageFile } from "@/lib/media/compress-image";
+import { processImageFile } from "@/lib/media/compress-image";
+import {
+  displayRoleForUpload,
+  presetForUpload,
+  uploadHintForPreset,
+} from "@/lib/media/image-presets";
+import { MtsMediaFrame } from "@/components/mts/media/mts-media";
+import { cn } from "@/lib/utils/cn";
 import { useCallback, useRef, useState } from "react";
 
 type Props = {
@@ -9,8 +16,16 @@ type Props = {
   value: string;
   onChange: (url: string) => void;
   folder?: string;
-  aspect?: "square" | "wide" | "auto";
+  aspect?: "square" | "wide" | "portrait" | "auto";
   hint?: string;
+};
+
+const PREVIEW_FRAME: Record<ReturnType<typeof displayRoleForUpload>, string> = {
+  logo: "max-w-[140px]",
+  cover: "w-full",
+  gallery: "max-w-[180px]",
+  shop: "max-w-[140px]",
+  avatar: "max-w-[88px]",
 };
 
 export function ImageUploadField({
@@ -28,15 +43,17 @@ export function ImageUploadField({
   const [error, setError] = useState<string | null>(null);
   const [urlDraft, setUrlDraft] = useState("");
 
-  const aspectClass =
-    aspect === "square" ? "aspect-square max-w-[140px]" : aspect === "wide" ? "aspect-[16/9]" : "aspect-[4/3] max-h-40";
+  const preset = presetForUpload(folder, aspect);
+  const displayRole = displayRoleForUpload(folder, aspect);
+  const autoHint = uploadHintForPreset(preset, folder);
+  const previewClass = PREVIEW_FRAME[displayRole];
 
   const uploadFile = useCallback(
     async (file: File) => {
       setError(null);
       setUploading(true);
       try {
-        const { blob, mime, extension } = await compressImageFile(file);
+        const { blob, mime, extension } = await processImageFile(file, preset);
         const out = new File([blob], `upload.${extension}`, { type: mime });
         const body = new FormData();
         body.append("file", out);
@@ -52,7 +69,7 @@ export function ImageUploadField({
         setUploading(false);
       }
     },
-    [folder, onChange, teamId],
+    [folder, onChange, preset, teamId],
   );
 
   async function onPick(files: FileList | null) {
@@ -70,12 +87,12 @@ export function ImageUploadField({
     <div className="space-y-2">
       <span className="block text-xs font-semibold text-zinc-500">{label}</span>
       {hint ? <p className="text-[11px] leading-snug text-zinc-400">{hint}</p> : null}
+      <p className="text-[11px] leading-snug text-zinc-400">{autoHint}</p>
 
       {value?.trim() ? (
-        <div className={`relative overflow-hidden rounded-2xl border border-zinc-200/90 bg-zinc-50 shadow-sm ${aspectClass}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="" className="h-full w-full object-cover" />
-          <div className="absolute inset-x-0 bottom-0 flex gap-1 bg-gradient-to-t from-black/50 to-transparent p-2">
+        <div className={cn("relative", previewClass)}>
+          <MtsMediaFrame src={value} role={displayRole} className="rounded-2xl border border-zinc-200/90 shadow-sm" />
+          <div className="absolute inset-x-0 bottom-0 flex gap-1 rounded-b-2xl bg-gradient-to-t from-black/50 to-transparent p-2">
             <button
               type="button"
               className="rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-zinc-800"
@@ -120,7 +137,7 @@ export function ImageUploadField({
           <span className="mt-2 text-xs font-bold text-zinc-700">
             {uploading ? "Uploading…" : "Upload from device"}
           </span>
-          <span className="mt-1 text-[11px] text-zinc-500">or drag & drop · auto-compressed</span>
+          <span className="mt-1 text-[11px] text-zinc-500">or drag & drop</span>
         </div>
       )}
 

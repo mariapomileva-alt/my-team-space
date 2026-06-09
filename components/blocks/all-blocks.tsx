@@ -28,6 +28,7 @@ import {
 import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid, validQuickActions } from "@/components/blocks/quick-actions-grid";
 import { TeamShopGrid, validTeamShopProducts } from "@/components/blocks/team-shop-grid";
+import { MtsCoverBanner, MtsGalleryPhoto, MtsTeamLogo } from "@/components/mts/media/mts-media";
 import { SocialLinkButtons, heroSocialLinks, type SocialLinkItem } from "@/components/social/social-link-buttons";
 import { normalizeSocialUrl } from "@/lib/social/links";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
@@ -52,70 +53,71 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   const description = s.description?.trim();
   const socialLinks = heroSocialLinks(s.social ?? {});
   const hasCover = Boolean(s.coverImageUrl?.trim());
-  const logoOverlap = hasCover ? "-mt-10" : "";
+
+  const logoNode = <MtsTeamLogo src={logoSrc} teamName={team.name} />;
+
+  const liveBadge = (
+    <span className="relative z-10 flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
+      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
+      Live
+    </span>
+  );
+
+  const identityBlock = (
+    <div className="min-w-0">
+      <MtsBadge>Our team</MtsBadge>
+      <h1 className={cn("mt-1 text-[color:var(--mts-text)]", mtsTypeTitleLg)}>{team.name}</h1>
+      {team.tagline?.trim() ? (
+        <p className="mt-0.5 line-clamp-2 text-[13px] font-medium text-[color:var(--mts-muted)]">
+          {team.tagline.trim()}
+        </p>
+      ) : null}
+      {s.city?.trim() ? (
+        <p className="mt-0.5 text-[12px] text-neutral-400">📍 {s.city.trim()}</p>
+      ) : null}
+    </div>
+  );
+
+  const extrasBlock = (
+    <>
+      {description ? (
+        <p className="mt-2.5 text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
+      ) : null}
+      {motto ? (
+        <p
+          className={cn(
+            "text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]",
+            description ? "mt-2" : "mt-2.5",
+          )}
+        >
+          “{motto}”
+        </p>
+      ) : null}
+      {socialLinks.length > 0 ? <SocialLinkButtons links={socialLinks} className="mt-2.5" /> : null}
+    </>
+  );
 
   return (
     <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
       <div className="overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
         {hasCover ? (
-          <div className="relative z-0 h-28 sm:h-32">
-            <img src={s.coverImageUrl} alt="" className="h-full w-full object-cover" />
+          <div className="relative z-0">
+            <MtsCoverBanner src={s.coverImageUrl} />
             <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent"
               aria-hidden
             />
           </div>
         ) : (
-          <div className="hero-cover__fallback h-24 sm:h-28" aria-hidden />
+          <MtsCoverBanner fallbackClassName="hero-cover__fallback" />
         )}
-        <div className={`hero-card-body relative z-10 px-4 pb-4 ${hasCover ? "pt-1" : "pt-4"}`}>
-          <div className="flex items-start justify-between gap-3">
-            {logoSrc ? (
-              <img
-                src={logoSrc}
-                alt=""
-                className={`relative z-20 h-14 w-14 shrink-0 rounded-2xl border-4 border-white object-cover shadow-md ${logoOverlap}`}
-              />
-            ) : (
-              <div
-                className={`relative z-20 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-[color:var(--mts-primary)] text-xl font-bold text-white shadow-md ${logoOverlap}`}
-              >
-                {team.name.slice(0, 1).toUpperCase()}
-              </div>
-            )}
-            <span
-              className={cn(
-                "relative z-10 flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100",
-                hasCover ? "mt-10" : "mt-1",
-              )}
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-              Live
-            </span>
+        <div className={cn("hero-card-body relative z-10 px-4 pb-4", hasCover ? "pt-0" : "pt-4")}>
+          <div className={cn("hero-identity", hasCover && "hero-identity--overlap")}>
+            <div className="hero-identity__logo">{logoNode}</div>
+            <div className="hero-identity__text min-w-0">{identityBlock}</div>
+            <div className="hero-identity__badge mb-0.5 shrink-0 self-end">{liveBadge}</div>
           </div>
-          <div className={cn("min-w-0", hasCover ? "mt-2" : "mt-3")}>
-            <MtsBadge>Our team</MtsBadge>
-            <h1 className={cn("mt-1 text-[color:var(--mts-text)]", mtsTypeTitleLg)}>{team.name}</h1>
-            {team.tagline?.trim() ? (
-              <p className="mt-0.5 line-clamp-2 text-[13px] font-medium text-[color:var(--mts-muted)]">
-                {team.tagline.trim()}
-              </p>
-            ) : null}
-            {s.city?.trim() ? (
-              <p className="mt-0.5 text-[12px] text-neutral-400">📍 {s.city.trim()}</p>
-            ) : null}
-          </div>
-          {description ? (
-            <p className="mt-3 text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
-          ) : null}
-          {motto ? (
-            <p className={`text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)] ${description ? "mt-2" : "mt-3"}`}>
-              “{motto}”
-            </p>
-          ) : null}
-          {socialLinks.length > 0 ? (
-            <SocialLinkButtons links={socialLinks} className="mt-3" />
-          ) : null}
+          <div className="hero-identity__extras">{extrasBlock}</div>
         </div>
       </div>
     </motion.section>
@@ -414,7 +416,7 @@ export function BlockGallery({ block, embedded }: BlockProps) {
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {images.map((img, i) => (
-            <img key={i} src={img.url} alt="" className="aspect-square rounded-xl object-cover" />
+            <MtsGalleryPhoto key={i} src={img.url} alt="" />
           ))}
         </div>
       )}

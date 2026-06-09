@@ -48,6 +48,7 @@ export function GalleryEditor({
                 teamId={teamId}
                 label="Photo"
                 folder="gallery"
+                aspect="square"
                 value={img.url}
                 onChange={(url) =>
                   set({ images: images.map((x) => (x.id === img.id ? { ...x, url } : x)) })

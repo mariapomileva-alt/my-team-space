@@ -107,7 +107,7 @@ export function TeamShopEditor({
                   teamId={teamId}
                   label="Product photo"
                   folder="shop"
-                  aspect="square"
+                  aspect="portrait"
                   value={product.imageUrl}
                   onChange={(url) => updateProduct(product.id, { imageUrl: url })}
                   hint="Upload or paste image URL"

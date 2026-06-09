@@ -3,6 +3,7 @@
 import { toExternalHref } from "@/lib/external-url";
 import type { TeamShopProduct } from "@/lib/blocks/settings";
 import { mtsTypeBodySm, mtsTypeTitleMd } from "@/lib/typography";
+import { MtsShopPhoto } from "@/components/mts/media/mts-media";
 import { cn } from "@/lib/utils/cn";
 import { motion } from "framer-motion";
 
@@ -60,21 +61,15 @@ export function TeamShopGrid({
           transition={{ delay: i * 0.04 }}
           className="flex flex-col overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_8px_32px_-16px_rgba(15,23,42,0.16)] ring-1 ring-neutral-100/90"
         >
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-rose-50 via-white to-violet-50">
-            {product.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={product.imageUrl}
-                alt=""
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
-            ) : (
+          <MtsShopPhoto
+            src={product.imageUrl}
+            className="bg-gradient-to-br from-rose-50 via-white to-violet-50"
+            fallback={
               <div className="flex h-full w-full items-center justify-center text-5xl opacity-40" aria-hidden>
                 🛍
               </div>
-            )}
-          </div>
+            }
+          />
           <div className="flex flex-1 flex-col p-4 sm:p-5">
             <div className="min-w-0 flex-1">
               <h3 className={mtsTypeTitleMd}>{product.name}</h3>
