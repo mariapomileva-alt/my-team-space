@@ -53,7 +53,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   const socialLinks = heroSocialLinks(s.social ?? {});
   const hasCover = Boolean(s.coverImageUrl?.trim());
 
-  const logoNode = <MtsTeamLogo src={logoSrc} teamName={team.name} className="mts-media-frame--logo-hero" />;
+  const logoNode = <MtsTeamLogo src={logoSrc} teamName={team.name} />;
 
   const liveBadge = (
     <span
@@ -69,8 +69,6 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
     </span>
   );
 
-  const hasExtras = Boolean(description || motto || socialLinks.length > 0);
-
   return (
     <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
       <div className="overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
@@ -78,7 +76,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
           <div className="relative z-0">
             <MtsCoverBanner src={s.coverImageUrl} />
             <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
               aria-hidden
             />
             <div className="absolute right-3 top-3 z-20">{liveBadge}</div>
@@ -86,40 +84,39 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
         ) : (
           <MtsCoverBanner fallbackClassName="hero-cover__fallback" />
         )}
-        <div className={cn("hero-card-body relative z-10 px-4 pb-4", hasCover ? "pt-0" : "pt-4")}>
+        <div className={cn("hero-card-body relative z-10 px-4 pb-5", hasCover ? "pt-0" : "pt-4")}>
+          {!hasCover ? <div className="absolute right-4 top-4 z-20">{liveBadge}</div> : null}
+
           <div
             className={cn(
-              "flex items-start justify-between gap-3",
+              "hero-identity-row flex items-center justify-center gap-2.5 sm:gap-3",
               hasCover && "hero-identity--overlap",
             )}
           >
             {logoNode}
-            {!hasCover ? liveBadge : null}
+            <h1 className="hero-title min-w-0 text-balance text-[color:var(--mts-text)]">{team.name}</h1>
           </div>
 
-          <div className={cn("min-w-0", hasCover ? "mt-2" : "mt-3")}>
+          <div className="mt-3 space-y-1 text-center">
             <MtsBadge>Our team</MtsBadge>
-            <h1 className="hero-title mt-1 text-[color:var(--mts-text)]">{team.name}</h1>
             {team.tagline?.trim() ? (
-              <p className="mt-1 text-[13px] font-medium leading-snug text-[color:var(--mts-muted)]">
+              <p className="text-[13px] font-medium leading-snug text-[color:var(--mts-muted)]">
                 {team.tagline.trim()}
               </p>
             ) : null}
             {s.city?.trim() ? (
-              <p className="mt-1 text-[12px] font-medium text-neutral-400">📍 {s.city.trim()}</p>
+              <p className="text-[12px] text-neutral-400">📍 {s.city.trim()}</p>
             ) : null}
           </div>
 
-          {hasExtras ? (
-            <div className="hero-extras mt-3 space-y-3 border-t border-neutral-100/90 pt-3">
-              {motto ? (
-                <blockquote className="hero-motto text-[color:var(--mts-primary)]">“{motto}”</blockquote>
-              ) : null}
-              {description ? (
-                <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
-              ) : null}
-              {socialLinks.length > 0 ? <SocialLinkButtons links={socialLinks} size="sm" /> : null}
-            </div>
+          {description ? (
+            <p className="mt-3 text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
+          ) : null}
+          {motto ? (
+            <p className="mt-3 text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]">“{motto}”</p>
+          ) : null}
+          {socialLinks.length > 0 ? (
+            <SocialLinkButtons links={socialLinks} className="mt-3" />
           ) : null}
         </div>
       </div>
