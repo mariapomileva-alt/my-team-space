@@ -121,13 +121,6 @@
   border-radius: 9999px;
 }
 
-.hero-identity {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 0.625rem;
-}
-
 .hero-identity--overlap {
   margin-top: -1.75rem;
 }
@@ -136,10 +129,6 @@
   .hero-identity--overlap {
     margin-top: -2rem;
   }
-}
-
-.hero-identity__extras {
-  margin-top: 0.625rem;
 }
 
 .team-app-page {

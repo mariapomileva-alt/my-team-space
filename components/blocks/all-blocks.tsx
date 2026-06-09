@@ -68,7 +68,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
       <MtsBadge>Our team</MtsBadge>
       <h1 className={cn("mt-1 text-[color:var(--mts-text)]", mtsTypeTitleLg)}>{team.name}</h1>
       {team.tagline?.trim() ? (
-        <p className="mt-0.5 line-clamp-2 text-[13px] font-medium text-[color:var(--mts-muted)]">
+        <p className="mt-0.5 text-[13px] font-medium leading-snug text-[color:var(--mts-muted)]">
           {team.tagline.trim()}
         </p>
       ) : null}
@@ -112,12 +112,17 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
           <MtsCoverBanner fallbackClassName="hero-cover__fallback" />
         )}
         <div className={cn("hero-card-body relative z-10 px-4 pb-4", hasCover ? "pt-0" : "pt-4")}>
-          <div className={cn("hero-identity", hasCover && "hero-identity--overlap")}>
-            <div className="hero-identity__logo">{logoNode}</div>
-            <div className="hero-identity__text min-w-0">{identityBlock}</div>
-            <div className="hero-identity__badge mb-0.5 shrink-0 self-end">{liveBadge}</div>
+          <div
+            className={cn(
+              "flex items-start justify-between gap-3",
+              hasCover && "hero-identity--overlap",
+            )}
+          >
+            {logoNode}
+            {liveBadge}
           </div>
-          <div className="hero-identity__extras">{extrasBlock}</div>
+          <div className={cn("min-w-0", hasCover ? "mt-2.5" : "mt-3")}>{identityBlock}</div>
+          <div className="mt-2.5">{extrasBlock}</div>
         </div>
       </div>
     </motion.section>
