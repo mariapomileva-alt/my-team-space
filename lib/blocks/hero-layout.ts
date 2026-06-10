@@ -6,7 +6,7 @@
  *   [logo 50/50 overlap] [team name + subtitle + city]
  *   [description, motto, social]
  *
- * Do not center logo and text separately. They are one identity block.
+ * Logo center sits on the cover bottom edge. Do not center logo and text separately.
  */
 
 export const HERO_LAYOUT = {
@@ -14,13 +14,25 @@ export const HERO_LAYOUT = {
   logoOverlapRatio: 0.5,
 
   /** Gap between logo and text (12–16px). */
-  identityGapMobile: "0.75rem",
-  identityGapDesktop: "0.875rem",
+  identityGapMobile: "0.875rem",
+  identityGapDesktop: "1rem",
 
-  /** Logo square size — mobile ~56px, tablet ~68px, desktop ~76px. */
-  logoSizeMobile: "3.5rem",
-  logoSizeTablet: "4.25rem",
-  logoSizeDesktop: "4.75rem",
+  /** Logo square — mobile 96px, desktop 128–140px. */
+  logoSizeMobile: "6rem",
+  logoSizeDesktop: "8rem",
+  logoSizeDesktopLg: "8.75rem",
+
+  /** Cover height — mobile ~160px, desktop ~250–280px. */
+  coverHeightMobile: "10rem",
+  coverHeightDesktop: "15.625rem",
+  coverHeightDesktopLg: "17.5rem",
+
+  /** Content width split. */
+  logoZonePercent: "27%",
+  textZonePercent: "73%",
+
+  /** Text starts in middle-lower half of logo (not flush to bottom). */
+  textOffsetRatio: 0.42,
 
   /** Title/subtitle clamps. */
   titleMaxLines: 2,

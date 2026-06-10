@@ -48,36 +48,43 @@
  * Component: components/blocks/team-hero-card.tsx
  */
 .hero-card {
-  --hero-logo-size: 3.5rem;
-  --hero-identity-gap: 0.75rem;
+  --hero-logo-size: 6rem;
+  --hero-cover-height: 10rem;
+  --hero-logo-zone: 27%;
+  --hero-text-zone: 73%;
+  --hero-identity-gap: 0.875rem;
 }
 
 @media (min-width: 640px) {
   .hero-card {
-    --hero-logo-size: 4.25rem;
-    --hero-identity-gap: 0.875rem;
+    --hero-logo-size: 8rem;
+    --hero-cover-height: 15.625rem;
+    --hero-identity-gap: 1rem;
   }
 }
 
 @media (min-width: 1024px) {
   .hero-card {
-    --hero-logo-size: 4.75rem;
+    --hero-logo-size: 8.75rem;
+    --hero-cover-height: 17.5rem;
   }
+}
+
+.hero-card__cover {
+  position: relative;
+  z-index: 0;
 }
 
 .hero-card__cover .mts-media-frame--cover {
   width: 100%;
-  max-height: 7.5rem;
-  aspect-ratio: 21 / 9;
-}
-
-@media (min-width: 640px) {
-  .hero-card__cover .mts-media-frame--cover {
-    max-height: 8.25rem;
-  }
+  height: var(--hero-cover-height);
+  max-height: none;
+  aspect-ratio: unset;
 }
 
 .hero-card__body {
+  position: relative;
+  z-index: 1;
   background: var(--mts-card, #fff);
   padding: 0 1rem 1.25rem;
 }
@@ -90,29 +97,32 @@
 }
 
 .hero-card__logo-zone {
-  flex: 0 0 var(--hero-logo-size);
-  width: var(--hero-logo-size);
+  position: relative;
+  z-index: 20;
+  flex: 0 0 var(--hero-logo-zone);
+  min-width: var(--hero-logo-size);
+  max-width: 30%;
 }
 
 .hero-card__text-zone {
-  flex: 1 1 0;
+  flex: 1 1 var(--hero-text-zone);
   min-width: 0;
-  padding-top: calc(var(--hero-logo-size) * 0.5);
+  padding-top: calc(var(--hero-logo-size) * 0.42);
 }
 
 .mts-media-frame--logo-hero-card {
   width: var(--hero-logo-size);
   height: var(--hero-logo-size);
-  max-width: 100%;
-  border-radius: 1rem;
+  flex-shrink: 0;
+  border-radius: 1.1rem;
 }
 
 .hero-card__title {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: 1.1875rem;
   font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   color: var(--mts-text, #1a1c23);
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -122,7 +132,7 @@
 
 @media (min-width: 640px) {
   .hero-card__title {
-    font-size: 1.25rem;
+    font-size: 1.375rem;
   }
 }
 
