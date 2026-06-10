@@ -44,33 +44,32 @@
 
 /* Business-card team header */
 .hero-card {
-  --hero-logo-size: 92px;
-  --hero-identity-gap: 14px;
+  --hero-logo-size: 3.5rem;
+  --hero-identity-gap: 0.75rem;
 }
 
 @media (min-width: 640px) {
   .hero-card {
-    --hero-logo-size: 112px;
+    --hero-logo-size: 4.25rem;
+    --hero-identity-gap: 0.875rem;
   }
 }
 
 @media (min-width: 1024px) {
   .hero-card {
-    --hero-logo-size: 120px;
+    --hero-logo-size: 4.75rem;
   }
 }
 
 .hero-card__cover .mts-media-frame--cover {
   width: 100%;
-  max-height: none;
-  aspect-ratio: 2.15 / 1;
-  min-height: 7.25rem;
+  max-height: 7.5rem;
+  aspect-ratio: 21 / 9;
 }
 
 @media (min-width: 640px) {
   .hero-card__cover .mts-media-frame--cover {
-    aspect-ratio: 2.35 / 1;
-    min-height: 8.5rem;
+    max-height: 8.25rem;
   }
 }
 
@@ -81,10 +80,9 @@
 
 .hero-card__identity {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--hero-identity-gap);
   margin-top: calc(var(--hero-logo-size) * -0.5);
-  padding-bottom: 0.25rem;
 }
 
 .hero-card__logo-zone {
@@ -95,22 +93,22 @@
 .hero-card__text-zone {
   flex: 1 1 0;
   min-width: 0;
-  padding-bottom: 0.125rem;
+  padding-top: calc(var(--hero-logo-size) * 0.5);
 }
 
 .mts-media-frame--logo-hero-card {
   width: var(--hero-logo-size);
   height: var(--hero-logo-size);
   max-width: 100%;
-  border-radius: 1.15rem;
+  border-radius: 1rem;
 }
 
 .hero-card__title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   color: var(--mts-text, #1a1c23);
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -120,7 +118,7 @@
 
 @media (min-width: 640px) {
   .hero-card__title {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
   }
 }
 
@@ -148,7 +146,7 @@
 }
 
 .hero-card__details {
-  margin-top: 0.75rem;
+  margin-top: 1rem;
 }
 
 /* Shared media frames — consistent crop, padding, and alignment */

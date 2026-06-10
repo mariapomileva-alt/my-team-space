@@ -123,7 +123,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
                 </p>
               ) : null}
               {socialLinks.length > 0 ? (
-                <SocialLinkButtons links={socialLinks} className={motto || description ? "mt-3" : "mt-0"} />
+                <SocialLinkButtons links={socialLinks} className="mt-3" />
               ) : null}
             </div>
           ) : null}
