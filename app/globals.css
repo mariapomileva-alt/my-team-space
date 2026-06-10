@@ -47,26 +47,13 @@
  * Rules: lib/blocks/hero-layout.ts · .cursor/rules/team-hero-layout.mdc
  * Component: components/blocks/team-hero-card.tsx
  */
+/* Container queries: layout follows card width (fixes builder mobile preview on desktop). */
 .hero-card {
+  container-type: inline-size;
+  container-name: team-hero;
   --hero-logo-size: 4.75rem;
   --hero-cover-height: 9.75rem;
   --hero-identity-gap: 0.75rem;
-}
-
-@media (min-width: 640px) {
-  .hero-card {
-    --hero-logo-size: 8rem;
-    --hero-cover-height: 15.625rem;
-    --hero-logo-zone: 27%;
-    --hero-identity-gap: 1rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .hero-card {
-    --hero-logo-size: 8.75rem;
-    --hero-cover-height: 17.5rem;
-  }
 }
 
 .hero-card__cover {
@@ -90,7 +77,7 @@
 
 .hero-card__identity {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--hero-identity-gap);
   margin-top: calc(var(--hero-logo-size) * -0.5);
 }
@@ -98,15 +85,13 @@
 .hero-card__logo-zone {
   position: relative;
   z-index: 20;
-  flex: 0 0 var(--hero-logo-zone);
-  min-width: var(--hero-logo-size);
-  max-width: 30%;
+  flex: 0 0 var(--hero-logo-size);
+  width: var(--hero-logo-size);
 }
 
 .hero-card__text-zone {
-  flex: 1 1 var(--hero-text-zone);
+  flex: 1 1 0;
   min-width: 0;
-  padding-top: calc(var(--hero-logo-size) * 0.42);
 }
 
 .mts-media-frame--logo-hero-card {
@@ -131,11 +116,39 @@
   text-overflow: ellipsis;
 }
 
-@media (min-width: 640px) {
+@container team-hero (min-width: 540px) {
+  .hero-card {
+    --hero-logo-size: 8rem;
+    --hero-cover-height: 15.625rem;
+    --hero-identity-gap: 1rem;
+  }
+
+  .hero-card__identity {
+    align-items: flex-start;
+  }
+
+  .hero-card__logo-zone {
+    flex: 0 0 27%;
+    width: auto;
+    min-width: var(--hero-logo-size);
+    max-width: 30%;
+  }
+
+  .hero-card__text-zone {
+    padding-top: calc(var(--hero-logo-size) * 0.42);
+  }
+
   .hero-card__title {
     font-size: 1.375rem;
     line-height: 1.2;
     letter-spacing: -0.02em;
+  }
+}
+
+@container team-hero (min-width: 720px) {
+  .hero-card {
+    --hero-logo-size: 8.75rem;
+    --hero-cover-height: 17.5rem;
   }
 }
 

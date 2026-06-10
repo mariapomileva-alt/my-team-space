@@ -20,8 +20,9 @@ Every team page header uses the **business-card** pattern. One block, one identi
 
 - Logo **left**, text **right** — same row (`hero-card__identity`). Never center logo alone.
 - Logo overlap: `margin-top: calc(var(--hero-logo-size) * -0.5)` — logo **center on cover bottom edge**, half on cover, half on white.
-- **Mobile:** logo **76px** fixed width only (~20%); text `flex: 1` (~80%). No `min-width` on logo zone.
-- **Desktop:** logo zone **~27%**, text **~73%**, logo **128–140px**, cover **250–280px**.
+- Use **container queries** on `.hero-card` (`container-name: team-hero`), not viewport `@media` — builder mobile preview is ~280px wide.
+- **Narrow card (<540px):** logo **76px** fixed; text `flex: 1` (~80%). No `min-width` on logo zone.
+- **Wide card (≥540px):** logo zone **~27%**, logo **128–140px**, cover **250–280px**.
 - Gap logo↔text: **12–16px** (`--hero-identity-gap`).
 - Mobile cover **~156px**. Title **2 lines**, never squeezed by logo column.
 - Mobile: `align-items: center` on identity. Desktop: text offset `padding-top: 42%` logo.

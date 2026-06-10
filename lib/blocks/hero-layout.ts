@@ -20,9 +20,10 @@ export const HERO_LAYOUT = {
   coverHeightDesktop: "15.625rem",
   coverHeightDesktopLg: "17.5rem",
 
-  /** Desktop only — mobile uses flex remainder. */
+  /** Wide card (container ≥540px) only — narrow cards use flex remainder. */
   logoZonePercent: "27%",
-  textZonePercent: "73%",
+  containerBreakpointDesktop: "540px",
+  containerBreakpointWide: "720px",
 
   textOffsetRatio: 0.42,
 
