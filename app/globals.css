@@ -42,7 +42,11 @@
   background: var(--mts-card, #fff);
 }
 
-/* Business-card team header */
+/*
+ * Business-card team header — canonical layout for all teams.
+ * Rules: lib/blocks/hero-layout.ts · .cursor/rules/team-hero-layout.mdc
+ * Component: components/blocks/team-hero-card.tsx
+ */
 .hero-card {
   --hero-logo-size: 3.5rem;
   --hero-identity-gap: 0.75rem;

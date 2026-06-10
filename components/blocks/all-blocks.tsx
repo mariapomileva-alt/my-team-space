@@ -27,8 +27,13 @@ import {
 import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid, validQuickActions } from "@/components/blocks/quick-actions-grid";
 import { TeamShopGrid, validTeamShopProducts } from "@/components/blocks/team-shop-grid";
-import { MtsCoverBanner, MtsGalleryPhoto, MtsTeamLogo } from "@/components/mts/media/mts-media";
-import { SocialLinkButtons, heroSocialLinks, type SocialLinkItem } from "@/components/social/social-link-buttons";
+import { TeamHeroCard } from "@/components/blocks/team-hero-card";
+import { MtsGalleryPhoto } from "@/components/mts/media/mts-media";
+import {
+  SocialLinkButtons,
+  heroSocialLinks,
+  type SocialLinkItem,
+} from "@/components/social/social-link-buttons";
 import { normalizeSocialUrl } from "@/lib/social/links";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -51,85 +56,18 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   const motto = s.quote?.trim();
   const description = s.description?.trim();
   const socialLinks = heroSocialLinks(s.social ?? {});
-  const hasCover = Boolean(s.coverImageUrl?.trim());
-
-  const liveBadge = (
-    <span
-      className={cn(
-        "relative z-20 flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1",
-        hasCover
-          ? "bg-white/95 text-emerald-700 ring-white/80 shadow-sm backdrop-blur-sm"
-          : "bg-emerald-50 text-emerald-700 ring-emerald-100",
-      )}
-    >
-      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-      Live
-    </span>
-  );
-
-  const hasDetails = Boolean(description || motto || socialLinks.length > 0);
 
   return (
-    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
-      <div className="hero-card overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80">
-        <div className="hero-card__cover relative z-0">
-          {hasCover ? (
-            <>
-              <MtsCoverBanner src={s.coverImageUrl} />
-              <div
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
-                aria-hidden
-              />
-            </>
-          ) : (
-            <MtsCoverBanner fallbackClassName="hero-cover__fallback" />
-          )}
-          <div className="absolute right-3 top-3 z-20">{liveBadge}</div>
-        </div>
-
-        <div className="hero-card__body relative z-10">
-          <div className="hero-card__identity">
-            <div className="hero-card__logo-zone">
-              <MtsTeamLogo
-                src={logoSrc}
-                teamName={team.name}
-                className="mts-media-frame--logo-hero-card"
-              />
-            </div>
-            <div className="hero-card__text-zone">
-              <h1 className="hero-card__title">{team.name}</h1>
-              {team.tagline?.trim() ? (
-                <p className="hero-card__subtitle">{team.tagline.trim()}</p>
-              ) : null}
-              {s.city?.trim() ? (
-                <p className="hero-card__city">📍 {s.city.trim()}</p>
-              ) : null}
-            </div>
-          </div>
-
-          {hasDetails ? (
-            <div className="hero-card__details">
-              {description ? (
-                <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description}</p>
-              ) : null}
-              {motto ? (
-                <p
-                  className={cn(
-                    "text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]",
-                    description ? "mt-2" : "mt-0",
-                  )}
-                >
-                  “{motto}”
-                </p>
-              ) : null}
-              {socialLinks.length > 0 ? (
-                <SocialLinkButtons links={socialLinks} className="mt-3" />
-              ) : null}
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </motion.section>
+    <TeamHeroCard
+      teamName={team.name}
+      logoSrc={logoSrc}
+      tagline={team.tagline}
+      city={s.city}
+      coverSrc={s.coverImageUrl}
+      description={description}
+      motto={motto}
+      socialLinks={socialLinks}
+    />
   );
 }
 

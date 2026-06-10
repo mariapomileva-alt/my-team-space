@@ -1,0 +1,43 @@
+---
+description: Mandatory business-card layout for team hero (logo overlap + text zone)
+globs: components/blocks/**,components/mts/media/**,app/globals.css,lib/blocks/hero-layout.ts
+alwaysApply: true
+---
+
+# Team hero layout (always)
+
+Every team page header uses the **business-card** pattern. One block, one identity row.
+
+## Structure
+
+```
+[cover photo — object-fit: cover, Live top-right]
+[logo 50% on cover / 50% on white] [team name + subtitle + city]
+[description · motto · social — below, with mt-3 spacing]
+```
+
+## Mandatory rules
+
+- Logo **left**, text **right** — same row (`hero-card__identity`). Never center logo alone.
+- Logo overlap: `margin-top: calc(var(--hero-logo-size) * -0.5)` — exactly half on cover, half on white.
+- Text aligns with **lower half** of logo: `padding-top: calc(var(--hero-logo-size) * 0.5)` on `hero-card__text-zone`.
+- Gap logo↔text: **12–16px** (`--hero-identity-gap`).
+- Logo: `MtsTeamLogo` + `mts-media-frame--logo-hero-card`, `object-fit: contain`.
+- Cover: `MtsCoverBanner`, `object-fit: cover`.
+- Title: max **2 lines** + ellipsis (`hero-card__title`).
+- Subtitle/tagline: max **1 line** + ellipsis (`hero-card__subtitle`).
+
+## Do not
+
+- Stack title under logo on its own row
+- Use `justify-center` on logo without text beside it
+- Use `align-items: end` grid that pins logo to city line
+- Invent new hero class names — extend `hero-card*` in `globals.css`
+- Duplicate layout in builder preview — use `TeamHeroCard` / `BlockHero`
+
+## Source files
+
+- Component: `components/blocks/team-hero-card.tsx`
+- Block wrapper: `BlockHero` in `components/blocks/all-blocks.tsx`
+- Tokens: `lib/blocks/hero-layout.ts`
+- Styles: `app/globals.css` (`.hero-card*`)
