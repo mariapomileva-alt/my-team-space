@@ -97,7 +97,7 @@ function DesktopTeamPreview({ phase }: { phase: "simple" | "rich" }) {
         </div>
       </div>
 
-      <div className="max-h-[220px] space-y-2.5 overflow-hidden p-3.5 sm:max-h-[260px]">
+      <div className="min-h-[200px] max-h-[220px] space-y-2.5 overflow-hidden p-3.5 sm:min-h-[240px] sm:max-h-[260px]">
         <AnimatePresence mode="wait">
           {phase === "simple" ? (
             <motion.div
@@ -215,7 +215,7 @@ function PhoneTeamPreview({ phase }: { phase: "simple" | "rich" }) {
 function HeroProductVisual({ phase }: { phase: "simple" | "rich" }) {
   return (
     <motion.div
-      className={`relative mx-auto w-full max-w-[520px] min-h-[400px] pt-10 sm:min-h-[420px] sm:pt-12 ${accentGlow}`}
+      className={`relative mx-auto w-full max-w-[520px] min-h-[380px] pt-6 sm:min-h-[400px] sm:pt-8 ${accentGlow}`}
       initial={false}
     >
       {FLOATING.map((f, i) => (
@@ -228,7 +228,7 @@ function HeroProductVisual({ phase }: { phase: "simple" | "rich" }) {
         />
       ))}
 
-      <motion.div className="relative z-10 pt-2 sm:pt-0">
+      <motion.div className="relative z-10 mt-3 sm:mt-5">
         <div className="rounded-[1.75rem] border border-neutral-200/80 bg-gradient-to-b from-neutral-100/60 to-neutral-50/80 p-2.5 shadow-[0_40px_80px_-32px_rgba(15,23,42,0.35)]">
           <DesktopTeamPreview phase={phase} />
         </div>
@@ -537,7 +537,7 @@ function ExploreTeamSpacesSection() {
 
 export function HomeLanding() {
   const [cycle, setCycle] = useState(0);
-  const [phase, setPhase] = useState<"simple" | "rich">("simple");
+  const [phase, setPhase] = useState<"simple" | "rich">("rich");
 
   useEffect(() => {
     const t = setInterval(() => setCycle((c) => c + 1), 12000);
@@ -588,7 +588,7 @@ export function HomeLanding() {
               </p>
             </div>
 
-            <div className="relative isolate mx-auto w-full max-w-lg lg:mx-0 lg:max-w-none">
+            <div className="relative isolate mx-auto w-full max-w-lg pt-2 sm:pt-3 lg:mx-0 lg:max-w-none lg:pt-6">
               <HeroProductVisual phase={phase} />
             </div>
           </div>
