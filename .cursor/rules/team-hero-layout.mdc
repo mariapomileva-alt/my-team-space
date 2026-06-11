@@ -11,15 +11,18 @@ Every team page header uses the **business-card** pattern. One block, one identi
 ## Structure
 
 ```
-[cover photo — object-fit: cover, Live top-right]
-[logo 50% on cover / 50% on white] [team name + subtitle + city]
-[description · motto · social — below, with mt-3 spacing]
+[cover photo — object-fit: cover, Live top-right, identity anchored to cover bottom]
+[logo 50% on cover / 50% on white] [team name + subtitle + city]  ← inside cover, translateY(50%)
+[description · motto · social — in body below]
 ```
 
 ## Mandatory rules
 
+- Identity row lives **inside** `hero-card__cover` — logo is part of the cover, not the body.
+- Logo overlap: `bottom: 0; transform: translateY(50%)` on `hero-card__identity` — cover bottom passes through logo center.
+- Cover `z-index: 2` · body `z-index: 1` so logo paints above the white content band.
+- Body `padding-top: calc(var(--hero-logo-size) * 0.5)` reserves space for the logo’s lower half.
 - Logo **left**, text **right** — same row (`hero-card__identity`). Never center logo alone.
-- Logo overlap: `margin-top: calc(var(--hero-logo-size) * -0.5 - var(--hero-logo-lift))` — center on cover edge (+17px lift).
 - Hero logo artwork: `scale(1.12)` inside fixed container; shadow `0 8px 24px rgba(0,0,0,0.08)`.
 - Use **container queries** on `.hero-card` (`team-hero`), not viewport `@media`.
 - **Narrow (<540px):** logo **76px**, text `flex:1` (~80%), `align-items: center`.

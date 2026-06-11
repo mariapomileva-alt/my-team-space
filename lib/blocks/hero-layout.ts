@@ -4,9 +4,8 @@
  */
 
 export const HERO_LAYOUT = {
+  /** Logo center sits on cover bottom edge — 50% on photo, 50% on white. */
   logoOverlapRatio: 0.5,
-  /** Extra lift so logo center sits on cover/content boundary (~17px). */
-  logoLift: "1.0625rem",
 
   identityGapMobile: "0.8125rem",
   identityGapDesktop: "0.9375rem",
@@ -15,9 +14,9 @@ export const HERO_LAYOUT = {
   logoSizeDesktop: "7rem",
   logoSizeDesktopLg: "7.5rem",
 
-  coverHeightMobile: "9.5rem",
-  coverHeightDesktop: "14.5rem",
-  coverHeightDesktopLg: "16rem",
+  coverHeightMobile: "10.5rem",
+  coverHeightDesktop: "15.5rem",
+  coverHeightDesktopLg: "17rem",
 
   logoZonePercent: "25%",
   containerBreakpointDesktop: "540px",

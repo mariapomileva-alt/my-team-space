@@ -54,12 +54,12 @@ export function TeamHeroCard({
           "overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80",
         )}
       >
-        <div className={cn(HERO_LAYOUT.cover, "relative z-0")}>
+        <div className={HERO_LAYOUT.cover}>
           {hasCover ? (
             <>
               <MtsCoverBanner src={coverSrc} />
               <div
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent"
                 aria-hidden
               />
             </>
@@ -67,9 +67,7 @@ export function TeamHeroCard({
             <MtsCoverBanner fallbackClassName="hero-cover__fallback" />
           )}
           <div className="absolute right-3 top-3 z-20">{liveBadge}</div>
-        </div>
 
-        <div className={cn(HERO_LAYOUT.body, "relative z-10")}>
           <div className={HERO_LAYOUT.identity}>
             <div className={HERO_LAYOUT.logoZone}>
               <MtsTeamLogo src={logoSrc} teamName={teamName} className={HERO_LAYOUT.logoFrame} />
@@ -80,7 +78,9 @@ export function TeamHeroCard({
               {city?.trim() ? <p className={HERO_LAYOUT.city}>📍 {city.trim()}</p> : null}
             </div>
           </div>
+        </div>
 
+        <div className={HERO_LAYOUT.body}>
           {hasDetails ? (
             <div className={HERO_LAYOUT.details}>
               {description?.trim() ? (

@@ -3,7 +3,7 @@ import { PricingPage } from "@/components/marketing/pricing-page";
 
 export const metadata = {
   title: "Pricing — MyTeamSpace",
-  description: "Simple pricing for modern teams. Team Space, Founding Teams, and Academy Space plans.",
+  description: "Team Plan €29/month. Academy Plan €199/month. Simple, stable pricing for teams and clubs.",
 };
 
 export default function PricingRoute() {

@@ -34,8 +34,12 @@ const FAQ_ITEMS = [
     a: "Subscriptions renew monthly unless cancelled. You can upgrade, downgrade, or cancel anytime from your account.",
   },
   {
-    q: "Is there a free trial?",
-    a: "Free trials may be available during launch periods. See Pricing for current offers.",
+    q: "How much does MyTeamSpace cost?",
+    a: "Team Plan is €29/month for one team. Academy Plan is €199/month for clubs managing up to 20 teams. See Pricing for full details.",
+  },
+  {
+    q: "Do you offer promotions?",
+    a: "We occasionally run seasonal campaigns with a promo code at checkout. When an offer is live, you'll see it in the site banner and on the Pricing page.",
   },
   {
     q: "How do I get support?",

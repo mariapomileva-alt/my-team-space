@@ -112,7 +112,7 @@ export default async function AdminHomePage({
             <p className="mt-1 text-emerald-900/90">
               {checkoutPlan === "academy"
                 ? "Your Academy plan is active. You can create and manage multiple team pages."
-                : "Your Single Team plan is active. Open your team page below to finish setup."}
+                : "Your Team Plan is active. Open your team page below to finish setup."}
             </p>
           </div>
         ) : null}
@@ -139,7 +139,7 @@ export default async function AdminHomePage({
             className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm text-indigo-950"
           >
             <p className="font-semibold">You&apos;ve reached your team limit.</p>
-            <p className="mt-1 text-indigo-900/90">Your Single Team plan includes one active team page.</p>
+            <p className="mt-1 text-indigo-900/90">Your Team Plan includes one active team page.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <form action={startCheckoutFormAction}>
                 <input type="hidden" name="plan" value="academy" />
@@ -201,7 +201,7 @@ export default async function AdminHomePage({
             {isCoach ? (
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
-                  {entitlements?.planLabel ?? (isAcademy ? "Academy Plan" : "Single Team Plan")}
+                  {entitlements?.planLabel ?? (isAcademy ? "Academy Plan" : "Team Plan")}
                 </span>
                 <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-800">
                   {showLimit}
@@ -233,7 +233,7 @@ export default async function AdminHomePage({
               Your current plan includes 1 team page. Choose which team should stay active.
             </p>
             <p className="mt-1 text-amber-900/90">
-              We keep all your team pages safe, but only one can be editable on the Single Team plan.
+              We keep all your team pages safe, but only one can be editable on the Team Plan.
             </p>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               {list
@@ -272,7 +272,7 @@ export default async function AdminHomePage({
         {isCoach && startPlan ? (
           <section className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm text-indigo-950">
             <p className="font-semibold">
-              {startPlan === "academy" ? "Upgrade to Academy Plan" : "Start Single Team Plan"}
+              {startPlan === "academy" ? "Upgrade to Academy Plan" : "Start Team Plan"}
             </p>
             <p className="mt-1 text-indigo-900/90">You will be redirected to Lemon Squeezy checkout.</p>
             <form action={startCheckoutFormAction} className="mt-3">

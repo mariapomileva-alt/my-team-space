@@ -31,8 +31,8 @@ export function BuilderEditAccessBanner({
     <div className="mb-2 rounded-xl border border-violet-200/80 bg-violet-50/50 px-3 py-2.5 text-[11px] text-violet-950">
       <p className="font-medium leading-snug">
         {billing.teamsUsed <= 1
-          ? "Your Single Team plan includes one active team page. Confirm this team as your active page to edit."
-          : "On the Single Team plan, only one team page can be edited at a time. Make this team your active page to continue."}
+          ? "Your Team Plan includes one active team page. Confirm this team as your active page to edit."
+          : "On the Team Plan, only one team page can be edited at a time. Make this team your active page to continue."}
       </p>
       <button
         type="button"

@@ -25,9 +25,9 @@ export function builderLockMessage(reason: BuilderLockReason): string | null {
     case "subscription_inactive":
       return "Your subscription is not active. Please update your billing to continue editing your team page.";
     case "team_plan_locked":
-      return "This team page is not your active page on the Single Team plan. Use “Make this my active team” below.";
+      return "This team page is not your active page on the Team Plan. Use “Make this my active team” below.";
     case "not_active_team":
-      return "This team page is not your active page on the Single Team plan. Use “Make this my active team” below.";
+      return "This team page is not your active page on the Team Plan. Use “Make this my active team” below.";
     default:
       return null;
   }
@@ -44,7 +44,7 @@ export function defaultBuilderBillingContext(
   publishStatus: "draft" | "published" = "draft",
 ): BuilderBillingContext {
   return {
-    planLabel: "Single Team Plan",
+    planLabel: "Team Plan",
     teamsUsed: 1,
     teamLimit: 1,
     billingActive: true,

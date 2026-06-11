@@ -1,6 +1,8 @@
 "use client";
 
 import { FeatureWidgetsGrid } from "@/components/landing/feature-widgets-grid";
+import { PricingPlans } from "@/components/marketing/pricing-plans";
+import { ACADEMY_PLAN_PRICE, TEAM_PLAN_PRICE } from "@/lib/marketing/pricing";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -673,6 +675,29 @@ export function HomeLanding() {
               </span>
             </li>
           </ul>
+        </section>
+
+        <section className="border-t border-neutral-100/80 bg-white/60">
+          <div className="mx-auto max-w-5xl px-6 py-20 sm:px-8 lg:py-24">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">Pricing</p>
+              <h2 className="mt-3 font-[family-name:var(--font-brand)] text-3xl font-bold tracking-tight text-[#1A1C23] sm:text-4xl">
+                Professional pricing. No surprises.
+              </h2>
+              <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
+                Team Plan {TEAM_PLAN_PRICE}/month for one team. Academy Plan {ACADEMY_PLAN_PRICE}/month when you&apos;re
+                ready to grow.
+              </p>
+            </div>
+            <div className="mt-12">
+              <PricingPlans />
+            </div>
+            <p className="mt-8 text-center text-sm text-neutral-500">
+              <Link href="/pricing" className="font-medium text-[#6C5CE7] hover:underline">
+                View full pricing & FAQ
+              </Link>
+            </p>
+          </div>
         </section>
 
         <ExploreTeamSpacesSection />

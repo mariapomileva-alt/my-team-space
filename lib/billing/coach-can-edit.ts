@@ -91,7 +91,7 @@ export async function assertCoachCanEditTeam(
       );
     case "plan_locked":
       throw new Error(
-        "This team is not your active page on the Single Team plan. Open the dashboard and choose “Make this my active team”, or edit from the team you opened in the builder.",
+        "This team is not your active page on the Team Plan. Open the dashboard and choose “Make this my active team”, or edit from the team you opened in the builder.",
       );
     default:
       throw new Error(
