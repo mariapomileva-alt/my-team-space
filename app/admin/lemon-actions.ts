@@ -1,16 +1,16 @@
 "use server";
 
-import { isBillingConfigured, variantIdForPlan, isSingleTeamVariantConfigured } from "@/lib/billing/config";
+import { variantIdForPlan, isSingleTeamVariantConfigured } from "@/lib/billing/config";
 import type { PlanType } from "@/lib/billing/types";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { redirect } from "next/navigation";
 
 const LEMON_API = "https://api.lemonsqueezy.com/v1";
 
-function pricingRedirect(plan: PlanType = "single_team", reason?: string): never {
-  const q = new URLSearchParams({ startPlan: plan });
-  if (reason) q.set("billing", reason);
-  redirect(`/pricing?${q.toString()}`);
+function adminBillingRedirect(reason: string, plan?: PlanType): never {
+  const q = new URLSearchParams({ billing: reason });
+  if (plan) q.set("startPlan", plan);
+  redirect(`/admin?${q.toString()}`);
 }
 
 export async function startCheckoutForPlan(plan: PlanType) {
@@ -22,7 +22,14 @@ export async function startCheckoutForPlan(plan: PlanType) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   if (!apiKey || !storeId || !variantId || !appUrl) {
-    pricingRedirect(plan, "not_configured");
+    console.error("[lemon] checkout not configured", {
+      hasApiKey: Boolean(apiKey),
+      hasStoreId: Boolean(storeId),
+      hasVariantId: Boolean(variantId),
+      hasAppUrl: Boolean(appUrl),
+      plan,
+    });
+    adminBillingRedirect("not_configured", plan);
   }
 
   const checkout_data: Record<string, unknown> = {
@@ -58,7 +65,9 @@ export async function startCheckoutForPlan(plan: PlanType) {
   });
 
   if (!res.ok) {
-    pricingRedirect(plan, "checkout_failed");
+    const errBody = await res.text().catch(() => "");
+    console.error("[lemon] checkout API failed", res.status, errBody);
+    adminBillingRedirect("checkout_failed", plan);
   }
 
   const json = (await res.json()) as { data?: { attributes?: { url?: string } } };
@@ -66,14 +75,15 @@ export async function startCheckoutForPlan(plan: PlanType) {
   if (url) {
     redirect(url);
   }
-  pricingRedirect(plan, "checkout_failed");
+  console.error("[lemon] checkout API returned no URL", json);
+  adminBillingRedirect("checkout_failed", plan);
 }
 
 /** @deprecated Per-team checkout — use startCheckoutForPlan */
 export async function startCheckoutSession(teamId: string) {
   void teamId;
   if (!isSingleTeamVariantConfigured()) {
-    pricingRedirect("single_team", "not_configured");
+    adminBillingRedirect("not_configured", "single_team");
   }
   await startCheckoutForPlan("single_team");
 }
@@ -82,11 +92,10 @@ export async function startCheckoutSession(teamId: string) {
 export async function openBillingPortal() {
   const { supabase, user } = await requireAuth();
 
-  if (!isBillingConfigured()) {
-    pricingRedirect("single_team", "not_configured");
+  const apiKey = process.env.LEMONSQUEEZY_API_KEY;
+  if (!apiKey) {
+    adminBillingRedirect("not_configured", "single_team");
   }
-
-  const apiKey = process.env.LEMONSQUEEZY_API_KEY!;
 
   const { data: subRow, error } = await supabase
     .from("coach_subscriptions")
@@ -100,7 +109,8 @@ export async function openBillingPortal() {
 
   const subId = (subRow?.lemon_subscription_id as string | undefined)?.trim();
   if (!subId) {
-    pricingRedirect("single_team", "no_subscription");
+    await startCheckoutForPlan("single_team");
+    return;
   }
 
   const lemonSubId = subId;
@@ -112,7 +122,8 @@ export async function openBillingPortal() {
   });
 
   if (!res.ok) {
-    pricingRedirect("single_team", "portal_unavailable");
+    console.error("[lemon] subscription fetch failed", res.status);
+    adminBillingRedirect("portal_unavailable", "single_team");
   }
 
   const json = (await res.json()) as {

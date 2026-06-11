@@ -57,6 +57,9 @@ export default async function AdminHomePage({
   const teamLimit = entitlements?.teamLimit ?? 1;
   const showLimit = isAcademy ? `${teamsUsed} / ${teamLimit} teams used` : `${Math.min(teamsUsed, 1)} / 1 team used`;
   const billingActive = entitlements?.billingActive ?? true;
+  const hasLemonSubscription = Boolean(entitlements?.subscription?.lemonSubscriptionId);
+  const checkoutPlanDefault =
+    startPlan ?? (entitlements?.subscription?.planType === "academy" ? "academy" : "single_team");
 
   const ownedTeams = list.filter((t) => t.role === "coach");
   const assistedTeams = list.filter((t) => t.role === "assistant");
@@ -123,13 +126,38 @@ export default async function AdminHomePage({
             className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
           >
             <p className="font-semibold">Billing portal isn&apos;t available yet.</p>
+            <p className="mt-1">Use checkout below or contact support if you already paid.</p>
+          </div>
+        ) : null}
+
+        {billingNotice === "not_configured" ? (
+          <div
+            role="alert"
+            className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950"
+          >
+            <p className="font-semibold">Checkout is not configured yet.</p>
             <p className="mt-1">
-              Complete checkout on{" "}
-              <Link href="/pricing" className="font-semibold underline">
-                Pricing
-              </Link>{" "}
-              or contact support if you already paid.
+              Lemon Squeezy environment variables are missing on the server. Please try again later or contact
+              support.
             </p>
+          </div>
+        ) : null}
+
+        {billingNotice === "checkout_failed" ? (
+          <div
+            role="alert"
+            className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950"
+          >
+            <p className="font-semibold">Could not start checkout.</p>
+            <p className="mt-1">
+              Lemon Squeezy rejected the checkout request. Check your plan variant IDs in Vercel, then try again.
+            </p>
+            <form action={startCheckoutFormAction} className="mt-3">
+              <input type="hidden" name="plan" value={checkoutPlanDefault} />
+              <button type="submit" className="rounded-full bg-zinc-900 px-4 py-2 text-xs font-bold text-white">
+                Try checkout again
+              </button>
+            </form>
           </div>
         ) : null}
 
@@ -167,13 +195,26 @@ export default async function AdminHomePage({
           >
             <p className="font-semibold">Your subscription is not active.</p>
             <p className="mt-1 text-amber-900/90">
-              Please update your billing to continue editing your team page.
+              {hasLemonSubscription
+                ? "Please update your billing to continue editing your team page."
+                : "Subscribe to Team Plan to unlock editing and publishing."}
             </p>
-            <form action={openBillingPortal} className="mt-3">
-              <button type="submit" className="rounded-full bg-zinc-900 px-4 py-2 text-xs font-bold text-white">
-                Manage billing
-              </button>
-            </form>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {hasLemonSubscription ? (
+                <form action={openBillingPortal}>
+                  <button type="submit" className="rounded-full bg-zinc-900 px-4 py-2 text-xs font-bold text-white">
+                    Manage billing
+                  </button>
+                </form>
+              ) : (
+                <form action={startCheckoutFormAction}>
+                  <input type="hidden" name="plan" value={checkoutPlanDefault} />
+                  <button type="submit" className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-bold text-white">
+                    Subscribe — Team Plan €29/mo
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
         ) : null}
 
@@ -206,14 +247,26 @@ export default async function AdminHomePage({
                 <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-800">
                   {showLimit}
                 </span>
-                <form action={openBillingPortal}>
-                  <button
-                    type="submit"
-                    className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold"
-                  >
-                    Manage billing
-                  </button>
-                </form>
+                {hasLemonSubscription ? (
+                  <form action={openBillingPortal}>
+                    <button
+                      type="submit"
+                      className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold"
+                    >
+                      Manage billing
+                    </button>
+                  </form>
+                ) : (
+                  <form action={startCheckoutFormAction}>
+                    <input type="hidden" name="plan" value={checkoutPlanDefault} />
+                    <button
+                      type="submit"
+                      className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-900"
+                    >
+                      Subscribe
+                    </button>
+                  </form>
+                )}
               </div>
             ) : null}
           </div>
@@ -269,14 +322,14 @@ export default async function AdminHomePage({
           </section>
         ) : null}
 
-        {isCoach && startPlan ? (
+        {isCoach && (startPlan || (!billingActive && !hasLemonSubscription)) ? (
           <section className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm text-indigo-950">
             <p className="font-semibold">
-              {startPlan === "academy" ? "Upgrade to Academy Plan" : "Start Team Plan"}
+              {checkoutPlanDefault === "academy" ? "Upgrade to Academy Plan" : "Start Team Plan"}
             </p>
-            <p className="mt-1 text-indigo-900/90">You will be redirected to Lemon Squeezy checkout.</p>
+            <p className="mt-1 text-indigo-900/90">You will be redirected to Lemon Squeezy secure checkout.</p>
             <form action={startCheckoutFormAction} className="mt-3">
-              <input type="hidden" name="plan" value={startPlan} />
+              <input type="hidden" name="plan" value={checkoutPlanDefault} />
               <button type="submit" className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-bold text-white">
                 Continue to checkout
               </button>
