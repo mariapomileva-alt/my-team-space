@@ -182,7 +182,8 @@
   width: var(--hero-logo-size);
   height: var(--hero-logo-size);
   flex-shrink: 0;
-  border-radius: 1rem;
+  /* Spec: logo is circular (square logos cropped to a circle). */
+  border-radius: 9999px;
 }
 
 .mts-media-frame--logo-hero-card.mts-media-frame--logo-bordered {
@@ -198,7 +199,8 @@
 
 .hero-card__title {
   margin: 0;
-  font-size: 1.125rem;
+  /* Spec: bold title 20–24px on mobile. */
+  font-size: 1.375rem;
   font-weight: 700;
   line-height: 1.22;
   letter-spacing: -0.02em;
@@ -212,7 +214,8 @@
 
 @container team-hero (min-width: 540px) {
   .hero-card {
-    --hero-logo-size: 7rem;
+    /* Spec: tablet logo 80–100px. */
+    --hero-logo-size: 6rem;
     --hero-cover-height: 15.5rem;
     --hero-identity-gap: 0.9375rem;
   }
@@ -225,7 +228,8 @@
   }
 
   .hero-card__title {
-    font-size: 1.3125rem;
+    /* Spec cap: keep title ≤24px. */
+    font-size: 1.5rem;
     line-height: 1.2;
     letter-spacing: -0.022em;
   }
@@ -233,16 +237,20 @@
   .hero-card__subtitle {
     font-size: 0.875rem;
   }
+
+  .hero-card__city {
+    font-size: 0.8125rem;
+  }
 }
 
 @container team-hero (min-width: 720px) {
   .hero-card {
-    --hero-logo-size: 7.5rem;
+    --hero-logo-size: 6.25rem;
     --hero-cover-height: 17rem;
   }
 
   .hero-card__title {
-    font-size: 1.375rem;
+    font-size: 1.5rem;
   }
 }
 
@@ -260,7 +268,8 @@
 
 .hero-card__city {
   margin: 0.1875rem 0 0;
-  font-size: 0.6875rem;
+  /* Spec: location 12–14px. */
+  font-size: 0.75rem;
   font-weight: 400;
   line-height: 1.3;
   color: #a3a3af;

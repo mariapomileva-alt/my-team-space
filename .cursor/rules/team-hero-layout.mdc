@@ -32,7 +32,10 @@ Root gets a modifier class `hero-card--{variant}` (see `heroVariantClass()`).
 - `overlay`: anchor `top: 1rem; bottom: auto; transform: none`; title group in `hero-card__overlay-text` (absolute, bottom-left) painted white over a stronger scrim.
 - Cover `z-index: 2` · body `z-index: 1` so the logo paints above the white band.
 - Use **container queries** on `.hero-card` (`team-hero`), not viewport `@media`.
-- Sizing: logo **76px** (<540px), **112px** (≥540px), **120px** (≥720px). Cover height follows `--hero-cover-height`.
+- Logo is **circular** (`border-radius: 9999px`) — square logos crop to a circle.
+- Sizing (spec): logo **76px** (<540px), **96px** (≥540px), **100px** (≥720px). Cover **140–180px** mobile via `--hero-cover-height`.
+- Typography (spec): title **20–24px** bold, subtitle **13–16px**, location **12–14px** with 📍 icon.
+- Card radius **20–24px**, inner padding **16–20px**. Bottom cover gradient ~**45–60%** black for legibility.
 - Mobile-first, adaptive from **320px** up.
 - Logo: `MtsTeamLogo` + `mts-media-frame--logo-hero-card` (`object-fit: contain`, `scale(1.12)`, shadow `0 8px 24px rgba(0,0,0,0.08)`).
 - Cover: `MtsCoverBanner`, fixed `--hero-cover-height`, `object-fit: cover`.

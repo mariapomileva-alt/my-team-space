@@ -116,7 +116,7 @@ export function HeroLayoutPicker({
 }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-zinc-500">Header layout</label>
+      <label className="block text-xs font-semibold text-zinc-500">Layout variant</label>
       <p className="mt-0.5 text-[11px] leading-relaxed text-zinc-400">
         Same content — pick how the logo and name sit together. The preview updates instantly.
       </p>
