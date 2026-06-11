@@ -36,11 +36,11 @@ export function TeamShareBar({
   }
 
   return (
-    <div className="w-full border-t border-zinc-100/90 pt-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-indigo-600">Share with parents</p>
-          <p className="mt-0.5 text-[11px] text-zinc-500">Copy the link or show a QR code in chat or at practice.</p>
+    <div className="w-full border-t border-zinc-100/90 pt-2.5">
+      <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0 shrink-0 lg:max-w-[11rem]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-indigo-600">Share with parents</p>
+          <p className="mt-0.5 hidden text-[10px] leading-snug text-zinc-500 sm:block">Copy link or QR code.</p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:max-w-xl sm:flex-row sm:items-center">
           <label className="sr-only" htmlFor="team-parent-link">

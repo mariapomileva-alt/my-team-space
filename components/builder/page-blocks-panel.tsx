@@ -2,6 +2,7 @@
 
 import { BlockModuleCard } from "@/components/builder/block-module-card";
 import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
+import { builderBlockDisplayLabel } from "@/lib/builder/display-labels";
 import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
 import { BLOCK_META } from "@/lib/blocks/meta";
 import type { BlockInstance, BlockType, TeamSpace } from "@/lib/types";
@@ -63,8 +64,8 @@ export function PageBlocksPanel({
   return (
     <BuilderCollapsiblePanel
       className={`${BUILDER_PANEL_SURFACE} border-violet-200/40`}
-      title="Step 2 — Build your page"
-      description="Choose what parents and athletes will see — turn sections on and drag to reorder."
+      title="Page sections"
+      description="Turn sections on, drag to reorder, and tap a card to edit content."
       summary={
         <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800">
           {summaryLabel}
@@ -96,9 +97,35 @@ export function PageBlocksPanel({
           </div>
         </div>
       ) : (
-        <p className="mb-3 text-[11px] text-zinc-500">
-          Drag the handle to reorder · tap a card to edit · toggle to show or hide on your page.
-        </p>
+        <>
+          <nav
+            className="mb-4 flex flex-wrap gap-1.5"
+            aria-label="Jump to page section"
+          >
+            {blocks
+              .filter((b) => b.enabled)
+              .map((block) => (
+                <button
+                  key={`nav-${block.id}`}
+                  type="button"
+                  onClick={() => {
+                    if (!expanded.has(block.id)) onToggleExpand(block.id);
+                    window.setTimeout(() => {
+                      document
+                        .querySelector(`[data-builder-block-id="${block.id}"]`)
+                        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }, expanded.has(block.id) ? 0 : 120);
+                  }}
+                  className="rounded-full border border-violet-200/80 bg-white px-2.5 py-1 text-[11px] font-semibold text-violet-900 shadow-sm transition hover:border-violet-300 hover:bg-violet-50"
+                >
+                  {builderBlockDisplayLabel(block.type)}
+                </button>
+              ))}
+          </nav>
+          <p className="mb-3 text-[11px] text-zinc-500">
+            Drag the handle to reorder · tap a card to edit · toggle to show or hide on your page.
+          </p>
+        </>
       )}
 
       <DndContext

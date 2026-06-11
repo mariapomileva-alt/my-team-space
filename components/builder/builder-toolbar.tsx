@@ -41,14 +41,14 @@ export function BuilderToolbar({
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="sticky top-3 z-50 mb-4 w-full"
+      className="sticky top-2 z-50 mb-3 w-full lg:top-3"
     >
       <motion.div className={`${BUILDER_TOOLBAR_SURFACE} flex-col !items-stretch`}>
-        <div className="flex w-full flex-wrap items-center justify-between gap-3">
+        <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:gap-3">
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-indigo-600">Building your team page</p>
-          <h1 className="truncate text-lg font-bold tracking-normal text-zinc-900 sm:text-xl">{teamName}</h1>
-          <p className="mt-0.5 flex items-center gap-1.5 text-xs text-zinc-500">
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-indigo-600">Page builder</p>
+          <h1 className="truncate text-base font-bold tracking-normal text-zinc-900 sm:text-lg">{teamName}</h1>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-zinc-500">
             <span
               className={`inline-block h-1.5 w-1.5 rounded-full ${
                 saveState === "saving"
@@ -102,9 +102,9 @@ export function BuilderToolbar({
           ) : null}
         </div>
         </div>
-        {progress ? <div className="mt-2 w-full">{progress}</div> : null}
+        {progress ? <div className="mt-2 w-full border-t border-zinc-100/80 pt-2">{progress}</div> : null}
         <TeamShareBar url={parentShareUrl} hint={shareHint} />
-        {billingStatus ? <div className="mt-2 w-full">{billingStatus}</div> : null}
+        {billingStatus ? <div className="mt-1 w-full border-t border-zinc-100/60 pt-1.5">{billingStatus}</div> : null}
       </motion.div>
     </motion.div>
   );

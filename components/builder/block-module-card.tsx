@@ -7,6 +7,7 @@ import {
 } from "@/lib/blocks/builder-section-styles";
 import { BUILDER_RADIUS_CHOICE } from "@/lib/builder/layout";
 import { cn } from "@/lib/utils/cn";
+import { builderBlockDisplayLabel } from "@/lib/builder/display-labels";
 import { BLOCK_META } from "@/lib/blocks/meta";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { useSortable } from "@dnd-kit/sortable";
@@ -168,7 +169,7 @@ export function BlockModuleCard({
               <span className="min-w-0 flex-1 pt-0.5">
                 <span className="flex flex-wrap items-center gap-2">
                   <span className={cn("font-bold tracking-tight text-zinc-900", legoLayout ? "text-base" : "text-sm")}>
-                    {meta.title}
+                    {builderBlockDisplayLabel(block.type)}
                   </span>
                   <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1", statusTone)}>
                     {statusLabel}

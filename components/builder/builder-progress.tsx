@@ -16,17 +16,114 @@ export function BuilderProgress({
   team,
   onJump,
   className,
+  variant = "default",
 }: {
   team: TeamSpace;
   onJump: (target: BuilderProgressTarget) => void;
   className?: string;
+  variant?: "default" | "compact";
 }) {
   const [showCompleted, setShowCompleted] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const g = getCompletionGuidance(team);
   const incompleteTips = g.suggestions.filter((i) => !i.done);
   const showRecommendationsToggle = !g.isFullyReady && incompleteTips.length > 0;
+  const compact = variant === "compact";
+
+  if (compact) {
+    return (
+      <div
+        className={cn(
+          "w-full rounded-xl border px-3 py-2.5 ring-1 ring-inset",
+          g.tone === "ready"
+            ? "border-emerald-200/70 bg-emerald-50/30 ring-emerald-100/50"
+            : "border-violet-200/45 bg-white/70 ring-violet-100/35",
+          className,
+        )}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <p className="text-[11px] font-semibold text-zinc-700">{g.primaryHeadline}</p>
+          <p className="text-[10px] font-medium text-zinc-500">{g.summaryLine}</p>
+        </div>
+        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+          {g.primaryCtaLabel ? (
+            <button
+              type="button"
+              onClick={() => onJump(g.primaryTarget)}
+              className="inline-flex min-h-[30px] items-center justify-center rounded-full bg-indigo-600 px-3.5 text-[10px] font-bold text-white shadow-sm transition hover:bg-indigo-700 active:scale-[0.98]"
+            >
+              {g.primaryCtaLabel}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setShowDetails((v) => !v)}
+            className="text-[10px] font-semibold text-zinc-500 underline-offset-2 transition hover:text-zinc-700 hover:underline"
+          >
+            {showDetails ? "Hide details" : "Show details"}
+          </button>
+        </div>
+        {showDetails ? (
+          <div className="mt-2 border-t border-zinc-100/80 pt-2">
+            <p className="text-[10px] font-medium text-zinc-600">{g.emotionalHeadline}</p>
+            <p className="mt-0.5 text-[10px] text-zinc-500">{g.primaryActionText}</p>
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-0.5">
+              {g.completed.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setShowCompleted((v) => !v)}
+                  className="text-[10px] font-semibold text-zinc-500 underline-offset-2 transition hover:text-zinc-700 hover:underline"
+                >
+                  {showCompleted ? "Hide completed" : `Completed (${g.completed.length})`}
+                </button>
+              ) : null}
+              {showRecommendationsToggle ? (
+                <button
+                  type="button"
+                  onClick={() => setShowRecommendations((v) => !v)}
+                  className="text-[10px] font-semibold text-indigo-600/80 underline-offset-2 transition hover:text-indigo-700 hover:underline"
+                >
+                  {showRecommendations ? "Hide tips" : "Recommendations"}
+                </button>
+              ) : null}
+            </div>
+            {showCompleted && g.completed.length > 0 ? (
+              <ul className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5" aria-label="Completed items">
+                {g.completed.map((item) => (
+                  <li key={item.label}>
+                    <button
+                      type="button"
+                      onClick={() => onJump(item.id)}
+                      className="text-[10px] font-medium text-emerald-800/90 hover:text-emerald-900"
+                    >
+                      ✓ {completedCelebrationLabel(item)}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {showRecommendations && incompleteTips.length > 0 ? (
+              <ul className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5" aria-label="Recommendations">
+                {incompleteTips.map((it) => (
+                  <li key={it.label}>
+                    <button
+                      type="button"
+                      onClick={() => onJump(it.id)}
+                      className="text-[10px] font-medium text-zinc-600 hover:text-indigo-700"
+                    >
+                      + {it.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div

@@ -60,7 +60,7 @@ export function BuilderCollapsiblePanel({
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="mt-5">{children}</div>
+            <div className="mt-4">{children}</div>
           </motion.div>
         ) : null}
       </AnimatePresence>

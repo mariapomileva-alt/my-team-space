@@ -310,7 +310,7 @@ export function TeamPageBuilder({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen scroll-smooth bg-gradient-to-b from-violet-50/30 via-zinc-50/80 to-white text-zinc-900"
+      className="min-h-screen scroll-smooth bg-[linear-gradient(180deg,#f8f7ff_0%,#f4f4f5_38%,#ffffff_100%)] text-zinc-900"
     >
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(139,92,246,0.08),transparent)]" />
 
@@ -333,7 +333,7 @@ export function TeamPageBuilder({
           publicUrl={publicUrl}
           parentShareUrl={parentShareUrl}
           shareHint={shareHint}
-          progress={<BuilderProgress team={team} onJump={jumpTo} />}
+          progress={<BuilderProgress team={team} onJump={jumpTo} variant="compact" />}
           billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
           editLocked={editLocked}
           canPublish={memberRole === "coach"}
@@ -402,8 +402,13 @@ export function TeamPageBuilder({
             </div>
 
             <aside className={BUILDER_PREVIEW_COLUMN}>
-              <div className="rounded-2xl border border-zinc-200/70 bg-zinc-50/50 p-3 shadow-sm backdrop-blur-sm">
-                <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Preview</p>
+              <div className="rounded-[1.25rem] border border-zinc-200/80 bg-gradient-to-b from-white via-white to-zinc-50/90 p-4 shadow-[0_12px_48px_-20px_rgba(99,102,241,0.18)] ring-1 ring-white/90 backdrop-blur-sm">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Live preview</p>
+                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
+                    Updates as you edit
+                  </span>
+                </div>
                 <BuilderLivePreview team={team} focusBlockId={focusBlockId} onOpenInTab={previewAsParent} />
               </div>
             </aside>

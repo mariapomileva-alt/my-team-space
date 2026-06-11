@@ -49,8 +49,8 @@ export function TeamIdentityPanel({
   return (
     <BuilderCollapsiblePanel
       className={`${BUILDER_PANEL_SURFACE} border-indigo-200/50 bg-gradient-to-br from-indigo-50/40 via-white to-violet-50/30`}
-      title="Step 1 — Your team"
-      description="Add your logo and team name — that’s enough to go live. Everything else is optional."
+      title="Header"
+      description="Logo, cover photo, team name, and social links — your club’s first impression."
       summary={
         <span className="inline-flex max-w-[220px] items-center gap-2 truncate rounded-full bg-white/80 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-700 ring-1 ring-zinc-200/80">
           <span
@@ -77,9 +77,14 @@ export function TeamIdentityPanel({
         </p>
       )}
 
-      <div className="mt-6 border-t border-zinc-100 pt-5">
-        <p className="text-xs font-bold uppercase tracking-wide text-zinc-500">Team style</p>
-        <p className="mt-1 text-sm text-zinc-500">Pick a mood — colors, spacing & cards update together.</p>
+      <details className="mt-5 border-t border-zinc-100/90 pt-4">
+        <summary className="cursor-pointer list-none text-xs font-bold uppercase tracking-wide text-zinc-500 marker:content-none [&::-webkit-details-marker]:hidden">
+          <span className="inline-flex items-center gap-2">
+            Team style
+            <span className="text-[10px] font-semibold normal-case tracking-normal text-zinc-400">Optional</span>
+          </span>
+        </summary>
+        <p className="mt-2 text-[13px] text-zinc-500">Pick a mood — colors, spacing & cards update together.</p>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
           {STYLE_PRESETS.map((preset) => {
             const selected =
@@ -125,7 +130,7 @@ export function TeamIdentityPanel({
             ))}
           </div>
         ) : null}
-      </div>
+      </details>
     </BuilderCollapsiblePanel>
   );
 }
