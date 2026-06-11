@@ -19,7 +19,8 @@ Every team page header uses the **business-card** pattern. One block, one identi
 ## Mandatory rules
 
 - Logo **left**, text **right** — same row (`hero-card__identity`). Never center logo alone.
-- Logo overlap: `margin-top: calc(var(--hero-logo-size) * -0.5 - var(--hero-logo-lift))` — center on cover edge (+10px lift).
+- Logo overlap: `margin-top: calc(var(--hero-logo-size) * -0.5 - var(--hero-logo-lift))` — center on cover edge (+17px lift).
+- Hero logo artwork: `scale(1.12)` inside fixed container; shadow `0 8px 24px rgba(0,0,0,0.08)`.
 - Use **container queries** on `.hero-card` (`team-hero`), not viewport `@media`.
 - **Narrow (<540px):** logo **76px**, text `flex:1` (~80%), `align-items: center`.
 - **Wide (≥540px):** logo **112px**, zone **25%**; **≥720px:** logo **120px**.

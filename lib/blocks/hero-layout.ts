@@ -5,8 +5,8 @@
 
 export const HERO_LAYOUT = {
   logoOverlapRatio: 0.5,
-  /** Extra lift so logo center sits on cover/content boundary (~10px). */
-  logoLift: "0.625rem",
+  /** Extra lift so logo center sits on cover/content boundary (~17px). */
+  logoLift: "1.0625rem",
 
   identityGapMobile: "0.8125rem",
   identityGapDesktop: "0.9375rem",
