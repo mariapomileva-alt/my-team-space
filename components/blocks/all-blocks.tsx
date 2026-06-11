@@ -28,6 +28,7 @@ import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid, validQuickActions } from "@/components/blocks/quick-actions-grid";
 import { TeamShopGrid, validTeamShopProducts } from "@/components/blocks/team-shop-grid";
 import { TeamHeroCard } from "@/components/blocks/team-hero-card";
+import { resolveHeroVariant, type HeroLayoutVariant } from "@/lib/blocks/hero-layout";
 import { MtsGalleryPhoto } from "@/components/mts/media/mts-media";
 import {
   SocialLinkButtons,
@@ -39,6 +40,7 @@ import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
 
 type HeroSettings = {
+  heroLayout?: HeroLayoutVariant;
   quote: string;
   description?: string;
   city: string;
@@ -67,6 +69,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
       description={description}
       motto={motto}
       socialLinks={socialLinks}
+      variant={resolveHeroVariant(s.heroLayout)}
     />
   );
 }

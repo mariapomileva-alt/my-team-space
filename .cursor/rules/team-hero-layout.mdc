@@ -1,48 +1,55 @@
 ---
-description: Mandatory business-card layout for team hero (logo overlap + text zone)
-globs: components/blocks/**,components/mts/media/**,app/globals.css,lib/blocks/hero-layout.ts
+description: Team hero layout system — one card, four logo + name variants
+globs: components/blocks/**,components/builder/editors/hero-*,components/mts/media/**,app/globals.css,lib/blocks/hero-layout.ts
 alwaysApply: true
 ---
 
 # Team hero layout (always)
 
-Every team page header uses the **business-card** pattern. One block, one identity row.
+Every team page header is **one** `TeamHeroCard`. The coach picks one of **four**
+logo + name compositions in the builder (Hero settings → "Header layout").
+**Content never changes between variants** — cover, logo, name, subtitle, city, Live,
+description/motto/social are identical. Only placement changes.
 
-## Structure
+## The four variants (`HeroLayoutVariant`)
 
-```
-[cover photo — object-fit: cover, Live top-right, identity anchored to cover bottom]
-[logo 50% on cover / 50% on white] [team name + subtitle + city]  ← inside cover, translateY(50%)
-[description · motto · social — in body below]
-```
+1. `stack` (**default**) — logo left overlapping the cover, name **below** it (Facebook-style).
+2. `inline` — logo left overlapping, name **beside** it on the right (business card).
+3. `center` — logo **centered** on the cover edge, name centered below.
+4. `overlay` — logo **inside** the photo (top-left, no overlap), name over the bottom gradient; white band only if details exist.
+
+Variant is stored in hero settings as `heroLayout` and read via `resolveHeroVariant()`.
+Root gets a modifier class `hero-card--{variant}` (see `heroVariantClass()`).
 
 ## Mandatory rules
 
-- Identity row lives **inside** `hero-card__cover` — logo is part of the cover, not the body.
-- Logo overlap: `bottom: 0; transform: translateY(50%)` on `hero-card__identity` — cover bottom passes through logo center.
-- Cover `z-index: 2` · body `z-index: 1` so logo paints above the white content band.
-- Body `padding-top: calc(var(--hero-logo-size) * 0.5)` reserves space for the logo’s lower half.
-- Logo **left**, text **right** — same row (`hero-card__identity`). Never center logo alone.
-- Hero logo artwork: `scale(1.12)` inside fixed container; shadow `0 8px 24px rgba(0,0,0,0.08)`.
+- One source of truth: `TeamHeroCard` / `BlockHero`. Never duplicate hero markup in the builder preview.
+- Variants are **CSS modifiers** on `.hero-card`. Never fork the component per variant beyond the small JSX branches already there.
+- Shared primitives stay shared: `hero-card__cover`, `hero-card__logo-anchor`, `hero-card__title/subtitle/city`, `hero-card__details`.
+- Overlap variants (`stack`, `inline`, `center`): logo anchor lives **inside** `hero-card__cover` with `transform: translateY(50%)`; body `padding-top: calc(var(--hero-logo-size) * 0.5)` clears the logo's lower half.
+- `inline` only: `hero-card__logo-spacer` + `hero-card__text-zone` with `padding-top: calc(var(--hero-logo-size) * 0.48)`.
+- `center`: anchor `left: 50%; transform: translate(-50%, 50%)`, body `text-align: center`, identity column-centered.
+- `overlay`: anchor `top: 1rem; bottom: auto; transform: none`; title group in `hero-card__overlay-text` (absolute, bottom-left) painted white over a stronger scrim.
+- Cover `z-index: 2` · body `z-index: 1` so the logo paints above the white band.
 - Use **container queries** on `.hero-card` (`team-hero`), not viewport `@media`.
-- **Narrow (<540px):** logo **76px**, text `flex:1` (~80%), `align-items: center`.
-- **Wide (≥540px):** logo **112px**, zone **25%**; **≥720px:** logo **120px**.
-- Gap **13–15px**. Title 2 lines · subtitle/city 1 line each. Typography: name bold → subtitle light → city lightest.
-- Logo: `MtsTeamLogo` + `mts-media-frame--logo-hero-card`, `object-fit: contain`, `z-index: 20`.
+- Sizing: logo **76px** (<540px), **112px** (≥540px), **120px** (≥720px). Cover height follows `--hero-cover-height`.
+- Mobile-first, adaptive from **320px** up.
+- Logo: `MtsTeamLogo` + `mts-media-frame--logo-hero-card` (`object-fit: contain`, `scale(1.12)`, shadow `0 8px 24px rgba(0,0,0,0.08)`).
 - Cover: `MtsCoverBanner`, fixed `--hero-cover-height`, `object-fit: cover`.
 - Title: max **2 lines** + ellipsis. Subtitle/city: max **1 line** + ellipsis.
+- Builder picker (`HeroLayoutPicker`) shows a schematic mini-preview per variant and writes `heroLayout` to block settings.
 
 ## Do not
 
-- Stack title under logo on its own row
-- Use `justify-center` on logo without text beside it
-- Use `align-items: end` grid that pins logo to city line
-- Invent new hero class names — extend `hero-card*` in `globals.css`
-- Duplicate layout in builder preview — use `TeamHeroCard` / `BlockHero`
+- Invent new hero class names — extend `hero-card*` / `hero-card--*` in `globals.css`.
+- Add per-variant data fields — all variants share the same content.
+- Duplicate layout in builder preview — use `TeamHeroCard` / `BlockHero`.
+- Hardcode a single composition as the only layout — always honor `variant`.
 
 ## Source files
 
 - Component: `components/blocks/team-hero-card.tsx`
 - Block wrapper: `BlockHero` in `components/blocks/all-blocks.tsx`
-- Tokens: `lib/blocks/hero-layout.ts`
-- Styles: `app/globals.css` (`.hero-card*`)
+- Builder picker: `components/builder/editors/hero-layout-picker.tsx` (in `hero-identity-editor.tsx`)
+- Tokens & variants: `lib/blocks/hero-layout.ts`
+- Styles: `app/globals.css` (`.hero-card*`, `.hero-card--*`)

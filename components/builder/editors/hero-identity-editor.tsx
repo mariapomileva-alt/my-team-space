@@ -1,7 +1,9 @@
 "use client";
 
+import { HeroLayoutPicker } from "@/components/builder/editors/hero-layout-picker";
 import { ImageUploadField } from "@/components/builder/media/image-upload-field";
 import { SocialIcon } from "@/components/social/social-icons";
+import { resolveHeroVariant, type HeroLayoutVariant } from "@/lib/blocks/hero-layout";
 import { BUILDER_FIELD_INPUT } from "@/lib/builder/layout";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { getBlockSettings, type SocialKey } from "@/lib/blocks/settings";
@@ -11,6 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 
 type Settings = {
+  heroLayout?: HeroLayoutVariant;
   quote: string;
   description?: string;
   city: string;
@@ -96,6 +99,11 @@ export function HeroIdentityEditor({
           onChange={(e) => onPatchTeam({ name: e.target.value })}
         />
       </div>
+
+      <HeroLayoutPicker
+        value={resolveHeroVariant(s.heroLayout)}
+        onChange={(heroLayout) => set({ heroLayout })}
+      />
 
       <div className="border-t border-zinc-100 pt-1">
         <button
