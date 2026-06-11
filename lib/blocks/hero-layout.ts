@@ -1,31 +1,27 @@
 /**
  * Team hero — business-card layout (single source of truth).
- *
- * Mobile priority: readable title > correct overlap > balanced proportions.
- * Logo zone is logo-width only (~20%); text takes the rest (~80%).
+ * Container queries on `.hero-card` — not viewport @media.
  */
 
 export const HERO_LAYOUT = {
   logoOverlapRatio: 0.5,
+  /** Extra lift so logo center sits on cover/content boundary (~10px). */
+  logoLift: "0.625rem",
 
-  identityGapMobile: "0.75rem",
-  identityGapDesktop: "1rem",
+  identityGapMobile: "0.8125rem",
+  identityGapDesktop: "0.9375rem",
 
-  /** Mobile 76px; desktop 128–140px. */
   logoSizeMobile: "4.75rem",
-  logoSizeDesktop: "8rem",
-  logoSizeDesktopLg: "8.75rem",
+  logoSizeDesktop: "7rem",
+  logoSizeDesktopLg: "7.5rem",
 
-  coverHeightMobile: "9.75rem",
-  coverHeightDesktop: "15.625rem",
-  coverHeightDesktopLg: "17.5rem",
+  coverHeightMobile: "9.5rem",
+  coverHeightDesktop: "14.5rem",
+  coverHeightDesktopLg: "16rem",
 
-  /** Wide card (container ≥540px) only — narrow cards use flex remainder. */
-  logoZonePercent: "27%",
+  logoZonePercent: "25%",
   containerBreakpointDesktop: "540px",
   containerBreakpointWide: "720px",
-
-  textOffsetRatio: 0.42,
 
   titleMaxLines: 2,
   subtitleMaxLines: 1,
