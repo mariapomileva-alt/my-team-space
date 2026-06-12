@@ -178,7 +178,9 @@
   padding-top: 1.1rem;
 }
 
-.mts-media-frame--logo-hero-card {
+/* Scoped under .hero-card to outrank the generic `.mts-media-frame--logo`
+   rule (same specificity, defined later) that would otherwise force 56px / square. */
+.hero-card .mts-media-frame--logo-hero-card {
   width: var(--hero-logo-size);
   height: var(--hero-logo-size);
   flex-shrink: 0;
@@ -186,12 +188,12 @@
   border-radius: 9999px;
 }
 
-.mts-media-frame--logo-hero-card.mts-media-frame--logo-bordered {
+.hero-card .mts-media-frame--logo-hero-card.mts-media-frame--logo-bordered {
   border-width: 3px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-.mts-media-frame--logo-hero-card .mts-media-frame__img--contain {
+.hero-card .mts-media-frame--logo-hero-card .mts-media-frame__img--contain {
   padding: 0;
   transform: scale(1.12);
   transform-origin: center;
