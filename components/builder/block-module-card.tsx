@@ -80,8 +80,8 @@ export function BlockModuleCard({
 
   const statusLabel = block.enabled ? "On your page" : "Hidden";
   const statusTone = block.enabled
-    ? "bg-emerald-50 text-emerald-800 ring-emerald-200/70"
-    : "bg-zinc-100 text-zinc-500 ring-zinc-200/80";
+    ? "bg-emerald-50/80 text-emerald-700 ring-emerald-100"
+    : "bg-zinc-100/80 text-zinc-500 ring-zinc-200/60";
 
   const iconGradient = LEGO_ACCENTS[block.type] ?? "from-indigo-100 to-violet-100";
 
@@ -105,11 +105,11 @@ export function BlockModuleCard({
           legoLayout ? "rounded-2xl" : BUILDER_RADIUS_CHOICE,
           block.enabled
             ? expanded
-              ? "border-indigo-300/90 shadow-[0_0_0_3px_rgba(99,102,241,0.12),0_16px_48px_-20px_rgba(99,102,241,0.25)]"
+              ? "border-violet-200/80 shadow-[0_0_0_3px_rgba(139,92,246,0.08),0_12px_32px_-16px_rgba(15,23,42,0.12)]"
               : legoLayout
-                ? "border-zinc-200/90 shadow-[0_4px_20px_-12px_rgba(15,23,42,0.12)] hover:border-indigo-200 hover:shadow-[0_12px_32px_-16px_rgba(99,102,241,0.2)]"
-                : "border-zinc-200/90 shadow-sm hover:border-indigo-200 hover:shadow-md"
-            : "border-zinc-200/80 bg-zinc-50/50 opacity-90 shadow-sm",
+                ? "border-zinc-200/60 shadow-[0_2px_16px_-10px_rgba(15,23,42,0.08)] hover:border-zinc-300/80 hover:shadow-[0_8px_24px_-12px_rgba(15,23,42,0.1)]"
+                : "border-zinc-200/60 shadow-sm hover:border-zinc-300/80 hover:shadow-md"
+            : "border-zinc-200/50 bg-zinc-50/40 opacity-85 shadow-sm",
           isDragging && !isDraggingOverlay && "z-30 opacity-40",
           isDraggingOverlay && "border-indigo-300 shadow-2xl ring-2 ring-indigo-300",
           isResults && block.enabled && !legoLayout && "ring-1 ring-orange-100/80",
@@ -138,8 +138,8 @@ export function BlockModuleCard({
               <button
                 type="button"
                 className={cn(
-                  "mt-1 flex shrink-0 cursor-grab touch-manipulation flex-col items-center justify-center gap-1 rounded-xl border border-zinc-200/80 bg-zinc-50/80 text-zinc-400 transition hover:border-zinc-300 hover:bg-white hover:text-zinc-600 active:cursor-grabbing",
-                  legoLayout ? "h-12 w-8" : "h-9 w-7",
+                  "mt-1 flex shrink-0 cursor-grab touch-manipulation flex-col items-center justify-center gap-1 rounded-lg border border-zinc-200/50 bg-zinc-50/60 text-zinc-400 transition hover:border-zinc-300/70 hover:bg-white hover:text-zinc-500 active:cursor-grabbing",
+                  legoLayout ? "h-11 w-7" : "h-9 w-7",
                 )}
                 aria-label="Drag to reorder"
                 {...attributes}

@@ -48,7 +48,7 @@ export function TeamIdentityPanel({
 
   return (
     <BuilderCollapsiblePanel
-      className={`${BUILDER_PANEL_SURFACE} border-indigo-200/50 bg-gradient-to-br from-indigo-50/40 via-white to-violet-50/30`}
+      className={BUILDER_PANEL_SURFACE}
       title="Header"
       description="Logo, cover photo, team name, and social links — your club’s first impression."
       summary={
@@ -77,7 +77,7 @@ export function TeamIdentityPanel({
         </p>
       )}
 
-      <details className="mt-5 border-t border-zinc-100/90 pt-4">
+      <details id="builder-design" className="mt-5 scroll-mt-28 border-t border-zinc-100/90 pt-4">
         <summary className="cursor-pointer list-none text-xs font-bold uppercase tracking-wide text-zinc-500 marker:content-none [&::-webkit-details-marker]:hidden">
           <span className="inline-flex items-center gap-2">
             Team style

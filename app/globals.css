@@ -108,7 +108,7 @@
 /* === Variant 2 — logo left, name beside (business card) === */
 .hero-card--inline .hero-card__identity {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--hero-identity-gap);
   margin-top: calc(var(--hero-logo-size) * -0.5);
 }
@@ -120,7 +120,7 @@
 
 .hero-card--inline .hero-card__text-zone {
   flex: 1 1 0;
-  padding-top: calc(var(--hero-logo-size) * 0.48);
+  padding-top: 0;
 }
 
 /* === Variant 3 — logo centered on the cover edge, name centered below === */
@@ -458,10 +458,18 @@
 }
 
 .builder-live-preview .builder-preview-viewport [data-preview-block-id].preview-block-focus {
-  outline: 2px solid rgba(99, 102, 241, 0.85);
+  outline: 2px solid rgba(139, 92, 246, 0.55);
   outline-offset: 3px;
   border-radius: 1rem;
   transition: outline-color 0.2s ease;
+}
+
+.builder-page {
+  -webkit-font-smoothing: antialiased;
+}
+
+.builder-mobile-nav {
+  box-shadow: 0 -4px 24px -12px rgba(15, 23, 42, 0.12);
 }
 
 .builder-live-preview .builder-preview-viewport::-webkit-scrollbar {

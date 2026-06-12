@@ -101,7 +101,7 @@ export function BuilderPreviewViewport({
             style={phoneStyle}
           >
             <div
-              className="builder-phone-frame relative shrink-0 overflow-hidden rounded-[1.75rem] border-[5px] border-zinc-800/90 bg-zinc-900 shadow-[0_12px_40px_-16px_rgba(15,23,42,0.35)]"
+              className="builder-phone-frame relative shrink-0 overflow-hidden rounded-[2rem] border-[6px] border-zinc-900/95 bg-zinc-950 shadow-[0_20px_60px_-24px_rgba(15,23,42,0.45),0_0_0_1px_rgba(255,255,255,0.06)_inset]"
               style={{
                 width: BUILDER_PHONE_W,
                 height: BUILDER_PHONE_H,
@@ -138,7 +138,7 @@ export function BuilderPreviewViewport({
             className={cn("mx-auto w-full", desktopClassName)}
             style={{ maxWidth: BUILDER_PREVIEW_COLUMN_W }}
           >
-            <div className="builder-desktop-frame overflow-hidden rounded-xl border border-zinc-200/90 bg-zinc-100 shadow-[0_8px_28px_-12px_rgba(15,23,42,0.15)]">
+            <div className="builder-desktop-frame overflow-hidden rounded-2xl border border-zinc-200/60 bg-zinc-100/90 shadow-[0_16px_48px_-20px_rgba(15,23,42,0.18)] ring-1 ring-black/[0.03]">
               <div
                 className="flex items-center gap-1.5 border-b border-zinc-200/80 bg-zinc-50/95 px-2.5"
                 style={{ height: BUILDER_DESKTOP_CHROME_H }}

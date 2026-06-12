@@ -63,7 +63,7 @@ export function PageBlocksPanel({
 
   return (
     <BuilderCollapsiblePanel
-      className={`${BUILDER_PANEL_SURFACE} border-violet-200/40`}
+      className={BUILDER_PANEL_SURFACE}
       title="Page sections"
       description="Turn sections on, drag to reorder, and tap a card to edit content."
       summary={

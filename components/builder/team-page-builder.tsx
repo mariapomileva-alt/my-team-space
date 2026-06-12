@@ -6,14 +6,18 @@ import { PageBlocksPanel } from "@/components/builder/page-blocks-panel";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderBillingStatus } from "@/components/builder/builder-billing-status";
 import { BuilderEditAccessBanner } from "@/components/builder/builder-edit-access-banner";
+import { BuilderMobileNav, type BuilderMobileTab } from "@/components/builder/builder-mobile-nav";
+import { BuilderSidebar, type BuilderNavSection } from "@/components/builder/builder-sidebar";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
 import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
 import {
   BUILDER_EDITOR_COLUMN,
   BUILDER_PAGE_SHELL,
+  BUILDER_PREVIEW_CHROME,
   BUILDER_PREVIEW_COLUMN,
   BUILDER_WORKSPACE_GRID,
+  BUILDER_WORKSPACE_ROW,
 } from "@/lib/builder/layout";
 import { BuilderProgress, type BuilderProgressTarget } from "@/components/builder/builder-progress";
 import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
@@ -65,8 +69,15 @@ export function TeamPageBuilder({
   const dirtyRef = useRef(false);
   const teamRef = useRef(team);
   teamRef.current = team;
+  const topRef = useRef<HTMLDivElement>(null);
   const identityRef = useRef<HTMLDivElement>(null);
   const blocksRef = useRef<HTMLDivElement>(null);
+  const paymentsRef = useRef<HTMLDivElement>(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
+  const previewColumnRef = useRef<HTMLElement>(null);
+  const [activeSection, setActiveSection] = useState<BuilderNavSection>("header");
+  const [mobileTab, setMobileTab] = useState<BuilderMobileTab>("edit");
+  const [fullPreviewOpen, setFullPreviewOpen] = useState(false);
 
   useEffect(() => {
     if (dirtyRef.current) return;
@@ -281,6 +292,58 @@ export function TeamPageBuilder({
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function navigateSection(section: BuilderNavSection) {
+    setActiveSection(section);
+    if (section === "overview") {
+      scrollTo(topRef.current);
+      return;
+    }
+    if (section === "header") {
+      scrollTo(identityRef.current);
+      return;
+    }
+    if (section === "sections") {
+      scrollTo(blocksRef.current);
+      return;
+    }
+    if (section === "design") {
+      const designEl = document.getElementById("builder-design");
+      if (designEl instanceof HTMLDetailsElement) designEl.open = true;
+      scrollTo(designEl);
+      return;
+    }
+    if (section === "payments") {
+      scrollTo(paymentsRef.current);
+      return;
+    }
+    if (section === "settings") {
+      scrollTo(settingsRef.current);
+      return;
+    }
+    if (section === "preview") {
+      scrollTo(previewColumnRef.current);
+    }
+  }
+
+  function onMobileTab(tab: BuilderMobileTab) {
+    setMobileTab(tab);
+    if (tab === "edit") {
+      navigateSection("header");
+      return;
+    }
+    if (tab === "sections") {
+      navigateSection("sections");
+      return;
+    }
+    if (tab === "preview") {
+      setFullPreviewOpen(true);
+      return;
+    }
+    if (tab === "publish") {
+      publish();
+    }
+  }
+
   function jumpTo(target: BuilderProgressTarget) {
     if (target === "identity" || target === "cover" || target === "social") {
       scrollTo(identityRef.current);
@@ -310,13 +373,13 @@ export function TeamPageBuilder({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen scroll-smooth bg-[linear-gradient(180deg,#f8f7ff_0%,#f4f4f5_38%,#ffffff_100%)] text-zinc-900"
+      className="builder-page min-h-screen scroll-smooth bg-[#f7f7f8] text-zinc-900"
     >
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(139,92,246,0.08),transparent)]" />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_90%_60%_at_50%_-30%,rgba(139,92,246,0.06),transparent)]" />
 
-      <div className={`${BUILDER_PAGE_SHELL} pt-4`}>
+      <div ref={topRef} className={`${BUILDER_PAGE_SHELL} scroll-mt-4 pt-4`}>
         {memberRole === "assistant" ? (
-          <p className="mb-3 rounded-xl border border-violet-200/80 bg-violet-50/50 px-3 py-2 text-[11px] text-violet-950">
+          <p className="mb-3 rounded-xl border border-violet-200/60 bg-violet-50/40 px-3 py-2 text-[11px] text-violet-950">
             You&apos;re editing as a <strong>page admin</strong>. Changes save automatically. Only the team owner can
             publish.
           </p>
@@ -337,8 +400,15 @@ export function TeamPageBuilder({
           billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
           editLocked={editLocked}
           canPublish={memberRole === "coach"}
+          shareExpanded={activeSection === "overview"}
           onPublish={publish}
-          onPreview={previewAsParent}
+          onPreview={() => {
+            if (typeof window !== "undefined" && window.innerWidth < 1280) {
+              setFullPreviewOpen(true);
+              return;
+            }
+            previewAsParent();
+          }}
         />
       </div>
 
@@ -352,69 +422,85 @@ export function TeamPageBuilder({
         </motion.p>
       ) : null}
 
-      <div className={`${BUILDER_PAGE_SHELL} pb-4 lg:hidden`}>
-        <BuilderLivePreview team={team} focusBlockId={focusBlockId} onOpenInTab={previewAsParent} />
-      </div>
+      <div className={`${BUILDER_PAGE_SHELL} pb-24 pt-1 xl:pb-10`}>
+        <div className={BUILDER_WORKSPACE_ROW}>
+          <BuilderSidebar active={activeSection} onNavigate={navigateSection} />
 
-      <div className={`${BUILDER_PAGE_SHELL} pb-16 pt-1`}>
-        <main className="min-w-0">
-          <div className={BUILDER_WORKSPACE_GRID}>
-            <div
-              className={`${BUILDER_EDITOR_COLUMN}${editLocked ? " pointer-events-none select-none opacity-[0.72]" : ""}`}
-              aria-disabled={editLocked}
-            >
-              <div ref={identityRef} id="builder-team-identity" className="scroll-mt-28">
-                <TeamIdentityPanel
-                  team={team}
-                  heroBlock={heroBlock}
-                  onPatchTeam={patchTeam}
-                  onPatchBlock={patchBlock}
-                  onSelectTheme={setTheme}
-                />
-              </div>
-
-              <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-28">
-                <PageBlocksPanel
-                  blocks={pageBlocks}
-                  team={team}
-                  expanded={expanded}
-                  onToggleExpand={toggleExpand}
-                  onToggleEnabled={toggleBlock}
-                  onPatchBlock={patchBlock}
-                  onPatchTeam={patchTeam}
-                  onPreviewBlock={setFocusBlockId}
-                  onMoveUp={(id) => moveBlock(id, -1)}
-                  onMoveDown={(id) => moveBlock(id, 1)}
-                  onDragEnd={onDragEnd}
-                  onQuickAdd={quickAddBlock}
-                />
-              </div>
-
-              <AdvancedSettingsPanel
-                team={team}
-                teamId={teamId}
-                siteUrl={siteUrl}
-                memberRole={memberRole}
-                onPatchTeam={patchTeam}
-              />
-
-              <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
-            </div>
-
-            <aside className={BUILDER_PREVIEW_COLUMN}>
-              <div className="rounded-[1.25rem] border border-zinc-200/80 bg-gradient-to-b from-white via-white to-zinc-50/90 p-4 shadow-[0_12px_48px_-20px_rgba(99,102,241,0.18)] ring-1 ring-white/90 backdrop-blur-sm">
-                <div className="mb-3 flex items-center justify-between gap-2">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Live preview</p>
-                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
-                    Updates as you edit
-                  </span>
+          <main className="min-w-0 flex-1">
+            <div className={BUILDER_WORKSPACE_GRID}>
+              <div
+                className={`${BUILDER_EDITOR_COLUMN}${editLocked ? " pointer-events-none select-none opacity-[0.72]" : ""}`}
+                aria-disabled={editLocked}
+              >
+                <div ref={identityRef} id="builder-team-identity" className="scroll-mt-28">
+                  <TeamIdentityPanel
+                    team={team}
+                    heroBlock={heroBlock}
+                    onPatchTeam={patchTeam}
+                    onPatchBlock={patchBlock}
+                    onSelectTheme={setTheme}
+                  />
                 </div>
-                <BuilderLivePreview team={team} focusBlockId={focusBlockId} onOpenInTab={previewAsParent} />
+
+                <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-28">
+                  <PageBlocksPanel
+                    blocks={pageBlocks}
+                    team={team}
+                    expanded={expanded}
+                    onToggleExpand={toggleExpand}
+                    onToggleEnabled={toggleBlock}
+                    onPatchBlock={patchBlock}
+                    onPatchTeam={patchTeam}
+                    onPreviewBlock={setFocusBlockId}
+                    onMoveUp={(id) => moveBlock(id, -1)}
+                    onMoveDown={(id) => moveBlock(id, 1)}
+                    onDragEnd={onDragEnd}
+                    onQuickAdd={quickAddBlock}
+                  />
+                </div>
+
+                <div ref={settingsRef} id="builder-settings" className="scroll-mt-28">
+                  <AdvancedSettingsPanel
+                    team={team}
+                    teamId={teamId}
+                    siteUrl={siteUrl}
+                    memberRole={memberRole}
+                    onPatchTeam={patchTeam}
+                  />
+                </div>
+
+                <div ref={paymentsRef} id="builder-payments" className="scroll-mt-28">
+                  <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
+                </div>
               </div>
-            </aside>
-          </div>
-        </main>
+
+              <aside ref={previewColumnRef} className={BUILDER_PREVIEW_COLUMN}>
+                <div className={BUILDER_PREVIEW_CHROME}>
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Live preview</p>
+                    <span className="rounded-full bg-emerald-50/80 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-100/80">
+                      Live
+                    </span>
+                  </div>
+                  <BuilderLivePreview
+                    team={team}
+                    focusBlockId={focusBlockId}
+                    onOpenInTab={previewAsParent}
+                    fullPreviewOpen={fullPreviewOpen}
+                    onFullPreviewOpenChange={setFullPreviewOpen}
+                  />
+                </div>
+              </aside>
+            </div>
+          </main>
+        </div>
       </div>
+
+      <BuilderMobileNav
+        active={mobileTab}
+        onTab={onMobileTab}
+        publishDisabled={editLocked || pending || memberRole !== "coach"}
+      />
     </motion.div>
   );
 }

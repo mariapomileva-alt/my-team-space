@@ -36,10 +36,10 @@ export function TeamShareBar({
   }
 
   return (
-    <div className="w-full border-t border-zinc-100/90 pt-2.5">
+    <div className="w-full border-t border-zinc-100/80 pt-2.5">
       <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0 shrink-0 lg:max-w-[11rem]">
-          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-indigo-600">Share with parents</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">Share with parents</p>
           <p className="mt-0.5 hidden text-[10px] leading-snug text-zinc-500 sm:block">Copy link or QR code.</p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:max-w-xl sm:flex-row sm:items-center">
@@ -57,10 +57,10 @@ export function TeamShareBar({
             <button
               type="button"
               onClick={() => void copyLink()}
-              className={`rounded-full px-4 py-2 text-xs font-bold transition active:scale-[0.98] ${
+              className={`rounded-full px-4 py-2 text-xs font-semibold transition active:scale-[0.98] ${
                 copied
                   ? "bg-emerald-600 text-white shadow-sm"
-                  : "bg-indigo-600 text-white shadow-[0_4px_14px_-4px_rgba(99,102,241,0.5)] hover:bg-indigo-700"
+                  : "bg-violet-600 text-white shadow-[0_4px_14px_-4px_rgba(124,58,237,0.35)] hover:bg-violet-700"
               }`}
             >
               {copied ? "Copied ✓" : "Copy link"}

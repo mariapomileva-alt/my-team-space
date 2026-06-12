@@ -15,13 +15,19 @@ export function BuilderLivePreview({
   team,
   focusBlockId,
   onOpenInTab,
+  fullPreviewOpen,
+  onFullPreviewOpenChange,
 }: {
   team: TeamSpace;
   focusBlockId?: string | null;
   onOpenInTab?: () => void;
+  fullPreviewOpen?: boolean;
+  onFullPreviewOpenChange?: (open: boolean) => void;
 }) {
   const [mode, setMode] = useState<BuilderPreviewMode>("mobile");
-  const [fullOpen, setFullOpen] = useState(false);
+  const [fullOpenInternal, setFullOpenInternal] = useState(false);
+  const fullOpen = fullPreviewOpen ?? fullOpenInternal;
+  const setFullOpen = onFullPreviewOpenChange ?? setFullOpenInternal;
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
