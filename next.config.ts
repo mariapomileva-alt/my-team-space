@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 /**
  * SaaS mode: full Next.js (SSR, API routes, Supabase auth, Lemon Squeezy webhooks).
- * Multi-tenant: one deployment, one Supabase project; team data keyed by team_id; public `/team/[slug]` uses ISR + tags.
+ * Multi-tenant: one deployment, one Supabase project; team data keyed by team_id; public `/{slug}` uses ISR + tags.
  * For legacy static GitHub Pages export, use BASE_PATH + `output: "export"` in a branch or script — not compatible with this stack.
  */
 const nextConfig: NextConfig = {

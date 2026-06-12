@@ -1,6 +1,7 @@
 import { createPublicSupabase } from "@/lib/supabase/public-client";
-import { mapTeamRowToTeamSpace, publicLogoUrlFromPath, type TeamDbRow } from "@/lib/teams/map-row";
-import { unstable_cache } from "next/cache";
+import { mapTeamRowToTeamSpace, type TeamDbRow } from "@/lib/teams/map-row";
+import { legacyTeamPath, publicTeamPath } from "@/lib/teams/public-url";
+import { revalidatePath, unstable_cache } from "next/cache";
 import { cache } from "react";
 
 export type PublicTeamBundle = {
@@ -13,6 +14,13 @@ export type PublicTeamBundle = {
 /** Invalidate with `revalidateTag(publicTeamCacheTag(slug), "default")` (Next.js 16) after coach edits or billing changes. */
 export function publicTeamCacheTag(slug: string): string {
   return `public-team:${slug.trim().toLowerCase()}`;
+}
+
+/** Revalidate canonical /{slug} and legacy /team/{slug} redirect. */
+export function revalidatePublicTeamPaths(slug: string) {
+  const normalized = slug.trim().toLowerCase();
+  revalidatePath(publicTeamPath(normalized));
+  revalidatePath(legacyTeamPath(normalized));
 }
 
 async function loadPublicTeamBySlugImpl(normalizedSlug: string): Promise<PublicTeamBundle | null> {
@@ -59,10 +67,10 @@ export const loadPublicTeamBySlug = cache((slug: string) => {
   return unstable_cache(
     async () => loadPublicTeamBySlugImpl(normalized),
     ["public-team-bundle", normalized],
-    { revalidate: 60, tags: [publicTeamCacheTag(normalized)] }
+    { revalidate: 15, tags: [publicTeamCacheTag(normalized)] }
   )();
 });
 
 export function bundleToTeamSpace(bundle: PublicTeamBundle) {
-  return mapTeamRowToTeamSpace(bundle.team, publicLogoUrlFromPath(bundle.team.logo_path));
+  return mapTeamRowToTeamSpace(bundle.team);
 }

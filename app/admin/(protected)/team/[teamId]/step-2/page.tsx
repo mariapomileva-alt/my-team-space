@@ -2,7 +2,8 @@ import { TeamStep2Client } from "../team-step2-client";
 import { loadBuilderBillingContext } from "@/lib/billing/load-builder-billing";
 import type { BuilderBillingContext } from "@/lib/billing/builder-context-types";
 import { requireAuth } from "@/lib/auth/require-auth";
-import { mapTeamRowToTeamSpace, publicLogoUrlFromPath, type TeamDbRow } from "@/lib/teams/map-row";
+import { mapTeamRowToTeamSpace, type TeamDbRow } from "@/lib/teams/map-row";
+import { publicTeamUrl } from "@/lib/teams/public-url";
 import type { TeamSpace } from "@/lib/types";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -51,7 +52,7 @@ export default async function TeamStep2Page({ params }: Props) {
     const team = teamRow as TeamDbRow;
     let teamSpace: TeamSpace;
     try {
-      teamSpace = mapTeamRowToTeamSpace(team, publicLogoUrlFromPath(team.logo_path));
+      teamSpace = mapTeamRowToTeamSpace(team);
     } catch (e) {
       console.error("[TeamStep2Page] mapTeamRowToTeamSpace:", e);
       return (
@@ -62,7 +63,7 @@ export default async function TeamStep2Page({ params }: Props) {
     const h = await headers();
     const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
     const proto = h.get("x-forwarded-proto") ?? "http";
-    const publicUrl = `${proto}://${host}/team/${team.slug}`;
+    const publicUrl = publicTeamUrl(`${proto}://${host}`, team.slug as string);
 
     let billing: BuilderBillingContext | null = null;
     if (memberRole === "coach") {

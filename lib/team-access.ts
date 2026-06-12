@@ -52,7 +52,7 @@ export function filterBlocksForViewer(
 
 export function magicInviteUrl(siteUrl: string, slug: string, token: string): string {
   const base = siteUrl.replace(/\/$/, "");
-  return `${base}/team/${slug}?invite=${encodeURIComponent(token)}`;
+  return `${base}/${slug.trim().toLowerCase()}?invite=${encodeURIComponent(token)}`;
 }
 
 export function parseVisibility(raw: string | null | undefined): TeamVisibility {

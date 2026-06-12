@@ -11,7 +11,8 @@ import { BuilderMobileNav, type BuilderMobileTab } from "@/components/builder/bu
 import { BuilderSidebar, type BuilderNavSection } from "@/components/builder/builder-sidebar";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
-import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
+import { loadTeamForBuilder, saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
+import { STALE_TEAM_VERSION } from "@/lib/teams/save-version";
 import {
   BUILDER_EDITOR_COLUMN,
   BUILDER_PAGE_SHELL,
@@ -22,14 +23,16 @@ import {
 } from "@/lib/builder/layout";
 import { BuilderProgress, type BuilderProgressTarget } from "@/components/builder/builder-progress";
 import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
-import { applyBlockOrder, builderSortBlocks } from "@/lib/blocks/meta";
+import { applyBlockOrder, builderSortBlocks, partitionBlocksByEnabled } from "@/lib/blocks/meta";
 import {
   readStoredPreviewMode,
   storePreviewMode,
   type BuilderPreviewMode,
 } from "@/lib/builder/preview";
 import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
-import { saveTeamPreviewLocal } from "@/lib/preview-storage";
+import { clearTeamPreviewLocal, purgeStaleTeamPreview } from "@/lib/preview-storage";
+import { publicTeamPath, siteOriginFromPublicTeamUrl } from "@/lib/teams/public-url";
+import { shouldReplaceLocalWithServer } from "@/lib/teams/sync-policy";
 import { magicInviteUrl } from "@/lib/team-access";
 import { THEMES } from "@/lib/themes";
 import type { BuilderBillingContext } from "@/lib/billing/builder-context-types";
@@ -61,7 +64,7 @@ export function TeamPageBuilder({
   const canEdit =
     billing == null ? true : billing.canEdit || billing.teamsUsed <= 1;
   const editLocked = billing != null && !canEdit;
-  const siteUrl = publicUrl.replace(/\/team\/[^/]+$/, "");
+  const siteUrl = siteOriginFromPublicTeamUrl(publicUrl);
   const router = useRouter();
   const [team, setTeam] = useState<TeamSpace>(initialTeam);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
@@ -75,6 +78,7 @@ export function TeamPageBuilder({
   const dirtyRef = useRef(false);
   const teamRef = useRef(team);
   teamRef.current = team;
+  const syncingRef = useRef(false);
   const topRef = useRef<HTMLDivElement>(null);
   const identityRef = useRef<HTMLDivElement>(null);
   const blocksRef = useRef<HTMLDivElement>(null);
@@ -90,10 +94,69 @@ export function TeamPageBuilder({
     setPreviewMode(readStoredPreviewMode());
   }, []);
 
+  const applyServerTeam = useCallback((fresh: TeamSpace) => {
+    dirtyRef.current = false;
+    setTeam(fresh);
+  }, []);
+
   useEffect(() => {
     if (dirtyRef.current) return;
-    setTeam(initialTeam);
-  }, [initialTeam]);
+    applyServerTeam(initialTeam);
+  }, [initialTeam, applyServerTeam]);
+
+  useEffect(() => {
+    purgeStaleTeamPreview(initialTeam.slug, initialTeam.updatedAt);
+    void (async () => {
+      try {
+        const fresh = await loadTeamForBuilder(teamId);
+        purgeStaleTeamPreview(fresh.slug, fresh.updatedAt);
+        applyServerTeam(fresh);
+      } catch {
+        applyServerTeam(initialTeam);
+      }
+    })();
+    // Always pull cloud truth when opening the builder for this team.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per teamId
+  }, [teamId]);
+
+  const syncFromServer = useCallback(async () => {
+    if (syncingRef.current) return;
+    syncingRef.current = true;
+    try {
+      const fresh = await loadTeamForBuilder(teamId);
+      const local = teamRef.current;
+      const shouldReplace = shouldReplaceLocalWithServer(
+        { updatedAt: local.updatedAt, dirty: dirtyRef.current },
+        { updatedAt: fresh.updatedAt },
+      );
+      if (shouldReplace) {
+        if (dirtyRef.current && fresh.updatedAt && local.updatedAt && fresh.updatedAt > local.updatedAt) {
+          setMsg("Loaded the latest saved version from the cloud.");
+        }
+        purgeStaleTeamPreview(fresh.slug, fresh.updatedAt);
+        applyServerTeam(fresh);
+      }
+    } catch {
+      /* background sync — ignore */
+    } finally {
+      syncingRef.current = false;
+    }
+  }, [teamId, applyServerTeam]);
+
+  useEffect(() => {
+    function onFocus() {
+      void syncFromServer();
+    }
+    function onVisible() {
+      if (document.visibilityState === "visible") void syncFromServer();
+    }
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [syncFromServer]);
 
   useEffect(() => {
     const id = window.setInterval(() => setSaveTick((t) => t + 1), 8000);
@@ -120,10 +183,10 @@ export function TeamPageBuilder({
   }, [team.pageVisibility, team.inviteToken]);
 
   const orderedBlocks = useMemo(() => builderSortBlocks(team.blocks), [team.blocks]);
-  const pageBlocks = useMemo(
-    () => orderedBlocks.filter((b) => !PAGE_BLOCK_TYPES.has(b.type)),
-    [orderedBlocks],
-  );
+  const pageBlocks = useMemo(() => {
+    const filtered = orderedBlocks.filter((b) => !PAGE_BLOCK_TYPES.has(b.type));
+    return partitionBlocksByEnabled(filtered);
+  }, [orderedBlocks]);
 
   const patchTeam = useCallback((patch: Partial<TeamSpace>) => {
     dirtyRef.current = true;
@@ -152,8 +215,15 @@ export function TeamPageBuilder({
     setSaveState("saving");
     if (!silent) setMsg(null);
     try {
-      await saveTeamContent(teamId, teamRef.current, options);
+      let payload = teamRef.current;
+      if (!payload.updatedAt?.trim()) {
+        const fresh = await loadTeamForBuilder(teamId);
+        payload = { ...payload, updatedAt: fresh.updatedAt };
+      }
+      const { updatedAt } = await saveTeamContent(teamId, payload, options);
       dirtyRef.current = false;
+      clearTeamPreviewLocal(teamRef.current.slug);
+      setTeam((prev) => ({ ...prev, updatedAt }));
       setLastSaved(new Date());
       setSaveState("saved");
       setSaveError(null);
@@ -162,8 +232,23 @@ export function TeamPageBuilder({
       }
       return true;
     } catch (e) {
-      dirtyRef.current = true;
       const detail = e instanceof Error ? e.message : "Save failed";
+      if (detail === STALE_TEAM_VERSION) {
+        try {
+          const fresh = await loadTeamForBuilder(teamId);
+          applyServerTeam(fresh);
+          setLastSaved(new Date());
+          setSaveState("saved");
+          setSaveError(null);
+          setMsg(humanizeSaveError(STALE_TEAM_VERSION));
+          router.refresh();
+        } catch {
+          setSaveState("error");
+          setSaveError(humanizeSaveError(STALE_TEAM_VERSION));
+        }
+        return false;
+      }
+      dirtyRef.current = true;
       setSaveState("error");
       setSaveError(humanizeSaveError(detail));
       if (silent) {
@@ -174,7 +259,7 @@ export function TeamPageBuilder({
       return false;
     }
     },
-    [teamId, router, canEdit],
+    [teamId, router, canEdit, applyServerTeam],
   );
 
   useEffect(() => {
@@ -199,7 +284,7 @@ export function TeamPageBuilder({
     const block = team.blocks.find((b) => b.id === id);
     if (!block) return;
     const next = !block.enabled;
-    patchBlock(id, { enabled: next });
+
     if (!next) {
       setExpanded((prev) => {
         const s = new Set(prev);
@@ -210,6 +295,25 @@ export function TeamPageBuilder({
     } else {
       setFocusBlockId(id);
     }
+
+    if (PAGE_BLOCK_TYPES.has(block.type)) {
+      patchBlock(id, { enabled: next });
+      return;
+    }
+
+    const updatedBlock = { ...block, enabled: next };
+    const without = pageBlocks.filter((b) => b.id !== id);
+    const reordered = partitionBlocksByEnabled([...without, updatedBlock]);
+
+    dirtyRef.current = true;
+    const hero = orderedBlocks.filter((b) => PAGE_BLOCK_TYPES.has(b.type));
+    setTeam((prev) => ({
+      ...prev,
+      blocks: applyBlockOrder(
+        prev.blocks.map((b) => (b.id === id ? { ...b, enabled: next } : b)),
+        [...hero, ...reordered],
+      ),
+    }));
   }
 
   function toggleExpand(id: string) {
@@ -245,20 +349,24 @@ export function TeamPageBuilder({
   }
 
   function moveBlock(id: string, dir: -1 | 1) {
-    const i = pageBlocks.findIndex((b) => b.id === id);
+    const enabled = pageBlocks.filter((b) => b.enabled);
+    const hidden = pageBlocks.filter((b) => !b.enabled);
+    const i = enabled.findIndex((b) => b.id === id);
     if (i < 0) return;
     const j = i + dir;
-    if (j < 0 || j >= pageBlocks.length) return;
-    setBlocksOrder(arrayMove(pageBlocks, i, j));
+    if (j < 0 || j >= enabled.length) return;
+    setBlocksOrder([...arrayMove(enabled, i, j), ...hidden]);
   }
 
   function onDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = pageBlocks.findIndex((b) => b.id === active.id);
-    const newIndex = pageBlocks.findIndex((b) => b.id === over.id);
+    const enabled = pageBlocks.filter((b) => b.enabled);
+    const hidden = pageBlocks.filter((b) => !b.enabled);
+    const oldIndex = enabled.findIndex((b) => b.id === active.id);
+    const newIndex = enabled.findIndex((b) => b.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
-    setBlocksOrder(arrayMove(pageBlocks, oldIndex, newIndex));
+    setBlocksOrder([...arrayMove(enabled, oldIndex, newIndex), ...hidden]);
   }
 
   function publish() {
@@ -278,8 +386,7 @@ export function TeamPageBuilder({
   }
 
   function previewAsParent() {
-    saveTeamPreviewLocal(team);
-    window.open(`/team/${team.slug}`, "_blank", "noopener,noreferrer");
+    window.open(publicTeamPath(team.slug), "_blank", "noopener,noreferrer");
   }
 
   const autosaveLabel = useMemo(
@@ -436,7 +543,6 @@ export function TeamPageBuilder({
           billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
           editLocked={editLocked}
           canPublish={memberRole === "coach"}
-          shareExpanded={activeSection === "overview"}
           onPublish={publish}
           onPreview={() => {
             if (typeof window !== "undefined" && window.innerWidth < 1280) {

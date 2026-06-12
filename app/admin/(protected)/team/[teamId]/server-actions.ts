@@ -5,7 +5,9 @@ import { assertTeamMember } from "@/lib/team-member-access";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TeamSpace } from "@/lib/types";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { publicTeamCacheTag } from "@/lib/teams/public";
+import { mapTeamRowToTeamSpace, type TeamDbRow } from "@/lib/teams/map-row";
+import { publicTeamCacheTag, revalidatePublicTeamPaths } from "@/lib/teams/public";
+import { STALE_TEAM_VERSION } from "@/lib/teams/save-version";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -22,12 +24,31 @@ async function assertMember(supabase: SupabaseClient, userId: string, teamId: st
   await assertTeamMember(supabase, userId, teamId);
 }
 
-function revalidatePublicTeamBySlug(slug: string) {
-  revalidatePath(`/team/${slug}`);
+function revalidateTeamSurfaces(teamId: string, slug: string) {
+  revalidatePublicTeamPaths(slug);
   revalidateTag(publicTeamCacheTag(slug), "default");
+  revalidatePath(`/admin/team/${teamId}/step-1`);
+  revalidatePath(`/admin/team/${teamId}/step-2`);
 }
 
-export async function saveTeamContent(teamId: string, team: TeamSpace, options?: { publish?: boolean }) {
+async function loadTeamRow(supabase: SupabaseClient, teamId: string) {
+  const { data: teamRow, error } = await supabase.from("teams").select("*").eq("id", teamId).single();
+  if (error || !teamRow) throw new Error("Team not found");
+  return teamRow as TeamDbRow;
+}
+
+export async function loadTeamForBuilder(teamId: string): Promise<TeamSpace> {
+  const { supabase, user } = await getCoachContext();
+  await assertMember(supabase, user.id, teamId);
+  const teamRow = await loadTeamRow(supabase, teamId);
+  return mapTeamRowToTeamSpace(teamRow);
+}
+
+export async function saveTeamContent(
+  teamId: string,
+  team: TeamSpace,
+  options?: { publish?: boolean },
+): Promise<{ updatedAt: string }> {
   const { supabase, user } = await getCoachContext();
   const membership = await assertTeamMember(supabase, user.id, teamId);
 
@@ -38,13 +59,23 @@ export async function saveTeamContent(teamId: string, team: TeamSpace, options?:
   if (membership.role === "coach") {
     await assertTeamEditable(supabase, user.id, teamId);
   }
-  const logoUrl = team.logoUrl?.trim().slice(0, 2048) || null;
+
+  let payload = team;
+  if (!payload.updatedAt?.trim()) {
+    const current = await loadTeamRow(supabase, teamId);
+    if (!current.updated_at) {
+      throw new Error(STALE_TEAM_VERSION);
+    }
+    payload = { ...payload, updatedAt: current.updated_at };
+  }
+
+  const logoUrl = payload.logoUrl?.trim().slice(0, 2048) || null;
   const pageSettings = {
-    ...(team.pageSettings ?? {}),
+    ...(payload.pageSettings ?? {}),
     logoUrl,
   };
 
-  const blocks = team.blocks.map((block) => {
+  const blocks = payload.blocks.map((block) => {
     if (block.type !== "hero") return block;
     const settings =
       block.settings && typeof block.settings === "object"
@@ -55,28 +86,37 @@ export async function saveTeamContent(teamId: string, team: TeamSpace, options?:
   });
 
   const patch: Record<string, unknown> = {
-    name: team.name.slice(0, 200),
-    tagline: team.tagline?.slice(0, 220) ?? null,
+    name: payload.name.slice(0, 200),
+    tagline: payload.tagline?.slice(0, 220) ?? null,
     logo_url: logoUrl,
-    theme_id: team.themeId,
-    primary_color: team.primaryColor.slice(0, 32),
-    secondary_color: team.secondaryColor.slice(0, 32),
+    ...(logoUrl ? { logo_path: null } : {}),
+    theme_id: payload.themeId,
+    primary_color: payload.primaryColor.slice(0, 32),
+    secondary_color: payload.secondaryColor.slice(0, 32),
     blocks: blocks as unknown as object,
-    page_visibility: team.pageVisibility ?? "public",
-    access_code: team.accessCode?.slice(0, 64) ?? null,
-    invite_token: team.inviteToken?.slice(0, 64) ?? null,
+    page_visibility: payload.pageVisibility ?? "public",
+    access_code: payload.accessCode?.slice(0, 64) ?? null,
+    invite_token: payload.inviteToken?.slice(0, 64) ?? null,
     page_settings: pageSettings as object,
   };
   if (options?.publish) {
     patch.publish_status = "published";
   }
 
-  let { error } = await supabase.from("teams").update(patch).eq("id", teamId);
+  const lockUpdatedAt = payload.updatedAt?.trim();
+  let query = supabase.from("teams").update(patch).eq("id", teamId);
+  if (lockUpdatedAt) {
+    query = query.eq("updated_at", lockUpdatedAt);
+  }
+
+  let { data: row, error } = await query.select("slug, updated_at").maybeSingle();
 
   if (error?.message?.includes("publish_status") && options?.publish) {
     const { publish_status: _removed, ...withoutPublish } = patch;
-    ({ error } = await supabase.from("teams").update(withoutPublish).eq("id", teamId));
-    if (!error) {
+    let retry = supabase.from("teams").update(withoutPublish).eq("id", teamId);
+    if (lockUpdatedAt) retry = retry.eq("updated_at", lockUpdatedAt);
+    ({ data: row, error } = await retry.select("slug, updated_at").maybeSingle());
+    if (!error && row) {
       throw new Error(
         "Published in app, but publish_status column is missing — run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase.",
       );
@@ -84,8 +124,12 @@ export async function saveTeamContent(teamId: string, team: TeamSpace, options?:
   }
 
   if (error) throw new Error(error.message);
-  const { data: row } = await supabase.from("teams").select("slug").eq("id", teamId).single();
-  if (row?.slug) revalidatePublicTeamBySlug(row.slug);
+  if (!row) {
+    throw new Error(STALE_TEAM_VERSION);
+  }
+
+  if (row.slug) revalidateTeamSurfaces(teamId, row.slug);
+  return { updatedAt: String(row.updated_at) };
 }
 
 export async function addScheduleEvent(teamId: string, formData: FormData) {
@@ -103,7 +147,7 @@ export async function addScheduleEvent(teamId: string, formData: FormData) {
   });
   if (error) throw new Error(error.message);
   const { data: row } = await supabase.from("teams").select("slug").eq("id", teamId).single();
-  if (row?.slug) revalidatePublicTeamBySlug(row.slug);
+  if (row?.slug) revalidateTeamSurfaces(teamId, row.slug);
 }
 
 export async function addTeamUpdate(teamId: string, formData: FormData) {
@@ -119,7 +163,7 @@ export async function addTeamUpdate(teamId: string, formData: FormData) {
   });
   if (error) throw new Error(error.message);
   const { data: row } = await supabase.from("teams").select("slug").eq("id", teamId).single();
-  if (row?.slug) revalidatePublicTeamBySlug(row.slug);
+  if (row?.slug) revalidateTeamSurfaces(teamId, row.slug);
 }
 
 export async function addAchievement(teamId: string, formData: FormData) {
@@ -137,5 +181,5 @@ export async function addAchievement(teamId: string, formData: FormData) {
   });
   if (error) throw new Error(error.message);
   const { data: row } = await supabase.from("teams").select("slug").eq("id", teamId).single();
-  if (row?.slug) revalidatePublicTeamBySlug(row.slug);
+  if (row?.slug) revalidateTeamSurfaces(teamId, row.slug);
 }

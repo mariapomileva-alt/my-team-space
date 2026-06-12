@@ -67,7 +67,7 @@ function DesktopTeamPreview({ phase }: { phase: "simple" | "rich" }) {
         </div>
         <div className="mx-auto flex max-w-[55%] flex-1 items-center gap-1.5 rounded-lg bg-white px-2 py-1 ring-1 ring-neutral-100">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
-            <span className="truncate text-[10px] font-medium text-neutral-500">myteamspace.cc/team/city-juniors</span>
+            <span className="truncate text-[10px] font-medium text-neutral-500">myteamspace.cc/city-juniors</span>
         </div>
       </div>
 
@@ -383,7 +383,7 @@ type ExploreDemo = {
 
 const EXPLORE_DEMOS: ExploreDemo[] = [
   {
-    href: "/team/city-juniors",
+    href: "/city-juniors",
     name: "Tigers Basketball Academy",
     category: "Basketball",
     headerBg: "bg-gradient-to-r from-amber-100/95 via-orange-50/90 to-amber-50/80",
@@ -397,7 +397,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/team/riga-swim",
+    href: "/riga-swim",
     name: "Blue Wave Swim Team",
     category: "Swimming",
     headerBg: "bg-gradient-to-r from-sky-100/95 via-cyan-50/90 to-blue-50/80",
@@ -411,7 +411,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/team/dance-kids",
+    href: "/dance-kids",
     name: "Little Stars Gymnastics",
     category: "Gymnastics",
     headerBg: "bg-gradient-to-r from-fuchsia-100/90 via-pink-50/85 to-violet-50/75",
@@ -425,7 +425,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/team/city-juniors",
+    href: "/city-juniors",
     name: "Future FC Academy",
     category: "Football",
     headerBg: "bg-gradient-to-r from-emerald-100/95 via-lime-50/80 to-green-50/75",
@@ -439,7 +439,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/team/riga-swim",
+    href: "/riga-swim",
     name: "North Tennis Club",
     category: "Tennis",
     headerBg: "bg-gradient-to-r from-slate-200/90 via-teal-50/85 to-cyan-50/70",
@@ -453,7 +453,7 @@ const EXPLORE_DEMOS: ExploreDemo[] = [
     ],
   },
   {
-    href: "/team/dance-kids",
+    href: "/dance-kids",
     name: "Riga Dance Kids",
     category: "Dance",
     headerBg: "bg-gradient-to-r from-violet-100/90 via-rose-50/80 to-orange-50/65",
@@ -577,7 +577,7 @@ export function HomeLanding() {
                   Create Your Team Space
                 </Link>
                 <Link
-                  href="/team/city-juniors"
+                  href="/city-juniors"
                   className="inline-flex min-h-12 items-center justify-center rounded-full border border-neutral-200/90 bg-white/90 px-7 text-[15px] font-medium text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-[#6C5CE7]/30 hover:text-[#6C5CE7] active:scale-[0.99]"
                 >
                   View Demo

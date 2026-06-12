@@ -7,6 +7,7 @@ import type { CoachTeamListItem } from "@/lib/admin/load-coach-teams";
 import { loadCoachEntitlements } from "@/lib/billing/coach-subscription";
 import { loadCoachTeams } from "@/lib/admin/load-coach-teams";
 import { requireAuth } from "@/lib/auth/require-auth";
+import { publicTeamUrl } from "@/lib/teams/public-url";
 import { CopyLinkButton } from "@/components/mts/copy-link-button";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -295,7 +296,7 @@ export default async function AdminHomePage({
                   <div key={t.id} className="flex items-center justify-between gap-2 rounded-2xl bg-white px-4 py-3">
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-zinc-900">{t.name}</p>
-                      <p className="truncate text-xs text-zinc-500">{siteUrl}/team/{t.slug}</p>
+                      <p className="truncate text-xs text-zinc-500">{publicTeamUrl(siteUrl, t.slug)}</p>
                     </div>
                     <form action={setPrimaryTeamFormAction}>
                       <input type="hidden" name="teamId" value={t.id} />
@@ -352,7 +353,7 @@ export default async function AdminHomePage({
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {ownedTeams.map((t) => {
-                const url = `${siteUrl}/team/${t.slug}`;
+                const url = publicTeamUrl(siteUrl, t.slug);
                 const locked = teamEditLocked(t, billingActive);
                 return (
                   <div
@@ -415,17 +416,17 @@ export default async function AdminHomePage({
                     label="Edit team"
                     size="md"
                   />
-                  <CopyLinkButton url={`${siteUrl}/team/${primaryTeam.slug}`} />
+                  <CopyLinkButton url={publicTeamUrl(siteUrl, primaryTeam.slug)} />
                 </div>
               </div>
               <div className="mt-4">
                 <a
-                  href={`${siteUrl}/team/${primaryTeam.slug}`}
+                  href={publicTeamUrl(siteUrl, primaryTeam.slug)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block truncate rounded-xl bg-zinc-50 px-3 py-2 text-xs font-mono text-zinc-700 ring-1 ring-zinc-100"
                 >
-                  {siteUrl}/team/{primaryTeam.slug}
+                  {publicTeamUrl(siteUrl, primaryTeam.slug)}
                 </a>
               </div>
               {!billingActive ? (
@@ -449,7 +450,7 @@ export default async function AdminHomePage({
             </h2>
             <div className={`grid gap-3 ${isAssistantOnly ? "" : "sm:grid-cols-2"}`}>
               {assistedTeams.map((t) => {
-                const url = `${siteUrl}/team/${t.slug}`;
+                const url = publicTeamUrl(siteUrl, t.slug);
                 return (
                   <div key={t.id} className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
                     <p className="truncate text-base font-bold">{t.name}</p>

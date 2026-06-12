@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 /**
  * Anonymous Supabase client (no cookies / no user session).
  * Use for public team pages only — RLS allows anon SELECT where policies permit.
- * Keeps `/team/[slug]` compatible with ISR and `unstable_cache` (no `cookies()` dynamic).
+ * Keeps public `/{slug}` pages compatible with ISR and `unstable_cache` (no `cookies()` dynamic).
  */
 export function createPublicSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

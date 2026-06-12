@@ -2,7 +2,7 @@ import { planFromVariantId } from "@/lib/billing/config";
 import { lemonStatusToCoachStatus } from "@/lib/billing/map-status";
 import type { PlanType } from "@/lib/billing/types";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
-import { publicTeamCacheTag } from "@/lib/teams/public";
+import { publicTeamCacheTag, revalidatePublicTeamPaths } from "@/lib/teams/public";
 import { verifyLemonWebhookSignature } from "@/lib/lemon/verify-webhook-signature";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
@@ -56,7 +56,7 @@ async function invalidateCoachTeams(
   for (const row of memberships ?? []) {
     const slug = (row.teams as { slug?: string } | null)?.slug;
     if (!slug) continue;
-    revalidatePath(`/team/${slug}`);
+    revalidatePublicTeamPaths(slug);
     revalidateTag(publicTeamCacheTag(slug), "default");
   }
   revalidatePath("/admin");

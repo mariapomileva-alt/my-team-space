@@ -3,7 +3,7 @@
 import { assertTeamEditable } from "@/lib/billing/coach-can-edit";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { getTeamMembership } from "@/lib/team-member-access";
-import { publicTeamCacheTag } from "@/lib/teams/public";
+import { publicTeamCacheTag, revalidatePublicTeamPaths } from "@/lib/teams/public";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function setPrimaryTeamAction(teamId: string) {
@@ -17,7 +17,7 @@ export async function setPrimaryTeamAction(teamId: string) {
 
   const { data: team } = await supabase.from("teams").select("slug").eq("id", teamId).single();
   if (team?.slug) {
-    revalidatePath(`/team/${team.slug}`);
+    revalidatePublicTeamPaths(team.slug as string);
     revalidateTag(publicTeamCacheTag(team.slug as string), "default");
   }
   revalidatePath("/admin");

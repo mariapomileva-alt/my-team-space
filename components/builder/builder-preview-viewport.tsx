@@ -147,7 +147,7 @@ export function BuilderPreviewViewport({
                 <span className="h-2 w-2 rounded-full bg-amber-400/90" aria-hidden />
                 <span className="h-2 w-2 rounded-full bg-emerald-400/90" aria-hidden />
                 <span className="ml-1 min-w-0 flex-1 truncate rounded-md bg-white px-2 py-0.5 text-[9px] text-zinc-400 ring-1 ring-zinc-200/80">
-                  myteamspace.cc/team/{team.slug}
+                  myteamspace.cc/{team.slug}
                 </span>
               </div>
               <div
