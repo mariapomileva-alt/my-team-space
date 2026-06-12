@@ -3,6 +3,7 @@
 import { AdvancedSettingsPanel } from "@/components/builder/advanced-settings-panel";
 import { TeamIdentityPanel } from "@/components/builder/team-identity-panel";
 import { PageBlocksPanel } from "@/components/builder/page-blocks-panel";
+import { BuilderFullPreviewModal } from "@/components/builder/builder-full-preview-modal";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderBillingStatus } from "@/components/builder/builder-billing-status";
 import { BuilderEditAccessBanner } from "@/components/builder/builder-edit-access-banner";
@@ -22,6 +23,11 @@ import {
 import { BuilderProgress, type BuilderProgressTarget } from "@/components/builder/builder-progress";
 import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
 import { applyBlockOrder, builderSortBlocks } from "@/lib/blocks/meta";
+import {
+  readStoredPreviewMode,
+  storePreviewMode,
+  type BuilderPreviewMode,
+} from "@/lib/builder/preview";
 import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
 import { saveTeamPreviewLocal } from "@/lib/preview-storage";
 import { magicInviteUrl } from "@/lib/team-access";
@@ -78,6 +84,11 @@ export function TeamPageBuilder({
   const [activeSection, setActiveSection] = useState<BuilderNavSection>("header");
   const [mobileTab, setMobileTab] = useState<BuilderMobileTab>("edit");
   const [fullPreviewOpen, setFullPreviewOpen] = useState(false);
+  const [previewMode, setPreviewMode] = useState<BuilderPreviewMode>("mobile");
+
+  useEffect(() => {
+    setPreviewMode(readStoredPreviewMode());
+  }, []);
 
   useEffect(() => {
     if (dirtyRef.current) return;
@@ -325,8 +336,26 @@ export function TeamPageBuilder({
     }
   }
 
+  function changePreviewMode(next: BuilderPreviewMode) {
+    setPreviewMode(next);
+    storePreviewMode(next);
+  }
+
+  function closeFullPreview() {
+    setFullPreviewOpen(false);
+    setMobileTab((cur) => (cur === "preview" ? "edit" : cur));
+  }
+
   function onMobileTab(tab: BuilderMobileTab) {
+    if (tab === "preview") {
+      setMobileTab("preview");
+      setFullPreviewOpen(true);
+      return;
+    }
+
+    setFullPreviewOpen(false);
     setMobileTab(tab);
+
     if (tab === "edit") {
       navigateSection("header");
       return;
@@ -335,12 +364,19 @@ export function TeamPageBuilder({
       navigateSection("sections");
       return;
     }
-    if (tab === "preview") {
-      setFullPreviewOpen(true);
-      return;
-    }
     if (tab === "publish") {
+      if (memberRole !== "coach") {
+        setMsg("Only the team owner can publish.");
+        scrollTo(topRef.current);
+        return;
+      }
+      if (editLocked) {
+        setMsg("Update billing in the dashboard to publish your team page.");
+        scrollTo(topRef.current);
+        return;
+      }
       publish();
+      scrollTo(topRef.current);
     }
   }
 
@@ -488,6 +524,9 @@ export function TeamPageBuilder({
                     onOpenInTab={previewAsParent}
                     fullPreviewOpen={fullPreviewOpen}
                     onFullPreviewOpenChange={setFullPreviewOpen}
+                    hideFullPreviewModal
+                    previewMode={previewMode}
+                    onPreviewModeChange={changePreviewMode}
                   />
                 </div>
               </aside>
@@ -496,10 +535,21 @@ export function TeamPageBuilder({
         </div>
       </div>
 
+      <BuilderFullPreviewModal
+        open={fullPreviewOpen}
+        onClose={closeFullPreview}
+        team={team}
+        mode={previewMode}
+        onModeChange={changePreviewMode}
+        focusBlockId={focusBlockId}
+        onOpenInTab={previewAsParent}
+      />
+
       <BuilderMobileNav
         active={mobileTab}
         onTab={onMobileTab}
-        publishDisabled={editLocked || pending || memberRole !== "coach"}
+        publishDisabled={pending || memberRole !== "coach"}
+        publishLocked={editLocked}
       />
     </motion.div>
   );

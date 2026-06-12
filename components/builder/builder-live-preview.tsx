@@ -17,26 +17,36 @@ export function BuilderLivePreview({
   onOpenInTab,
   fullPreviewOpen,
   onFullPreviewOpenChange,
+  hideFullPreviewModal = false,
+  previewMode,
+  onPreviewModeChange,
 }: {
   team: TeamSpace;
   focusBlockId?: string | null;
   onOpenInTab?: () => void;
   fullPreviewOpen?: boolean;
   onFullPreviewOpenChange?: (open: boolean) => void;
+  /** When true, parent renders BuilderFullPreviewModal (e.g. mobile — modal must not live inside hidden aside). */
+  hideFullPreviewModal?: boolean;
+  previewMode?: BuilderPreviewMode;
+  onPreviewModeChange?: (mode: BuilderPreviewMode) => void;
 }) {
-  const [mode, setMode] = useState<BuilderPreviewMode>("mobile");
+  const [modeInternal, setModeInternal] = useState<BuilderPreviewMode>("mobile");
+  const mode = previewMode ?? modeInternal;
   const [fullOpenInternal, setFullOpenInternal] = useState(false);
   const fullOpen = fullPreviewOpen ?? fullOpenInternal;
   const setFullOpen = onFullPreviewOpenChange ?? setFullOpenInternal;
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setMode(readStoredPreviewMode());
+    const stored = readStoredPreviewMode();
+    if (previewMode == null) setModeInternal(stored);
     setHydrated(true);
-  }, []);
+  }, [previewMode]);
 
   function changeMode(next: BuilderPreviewMode) {
-    setMode(next);
+    if (onPreviewModeChange) onPreviewModeChange(next);
+    else setModeInternal(next);
     storePreviewMode(next);
   }
 
@@ -64,7 +74,7 @@ export function BuilderLivePreview({
         </button>
       ) : null}
 
-      {onOpenInTab ? (
+      {onOpenInTab && !hideFullPreviewModal ? (
         <BuilderFullPreviewModal
           open={fullOpen}
           onClose={() => setFullOpen(false)}
