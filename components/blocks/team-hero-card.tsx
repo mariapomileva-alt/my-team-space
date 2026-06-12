@@ -114,7 +114,7 @@ export function TeamHeroCard({
 
           <div className="absolute right-3 top-3 z-20">{liveBadge}</div>
 
-          <div className={cn(HERO_LAYOUT.logoZone, "hero-card__logo-anchor")}>{logo}</div>
+          <div className="hero-card__logo-anchor">{logo}</div>
 
           {isOverlay ? <div className={HERO_LAYOUT.overlayText}>{titleGroup}</div> : null}
         </div>

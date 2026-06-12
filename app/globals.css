@@ -81,13 +81,8 @@
   left: 1rem;
   bottom: 0;
   z-index: 30;
-  transform: translateY(50%);
-}
-
-.hero-card__logo-zone {
-  position: relative;
-  flex: 0 0 var(--hero-logo-size);
   width: var(--hero-logo-size);
+  transform: translateY(50%);
 }
 
 .hero-card__identity {
