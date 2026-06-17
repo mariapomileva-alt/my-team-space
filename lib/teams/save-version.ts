@@ -1,0 +1,1 @@
+export const STALE_TEAM_VERSION = "STALE_TEAM_VERSION";

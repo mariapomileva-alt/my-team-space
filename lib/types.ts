@@ -90,4 +90,6 @@ export type TeamSpace = {
   accessCode?: string;
   inviteToken?: string;
   pageSettings?: TeamPageSettings;
+  /** ISO timestamp from `teams.updated_at` — used to prevent stale cross-device overwrites */
+  updatedAt?: string;
 };

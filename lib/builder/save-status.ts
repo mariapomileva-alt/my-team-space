@@ -29,6 +29,9 @@ export function humanizeSaveError(message: string): string {
   if (/Failed to fetch|NetworkError|load failed/i.test(raw)) {
     return "Network error — check connection. Static GitHub Pages cannot autosave; use Vercel or npm run dev.";
   }
+  if (/STALE_TEAM_VERSION/i.test(raw)) {
+    return "Someone saved newer changes from another device — we loaded the latest version.";
+  }
   return raw.length > 120 ? `${raw.slice(0, 117)}…` : raw;
 }
 

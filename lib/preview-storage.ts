@@ -1,5 +1,7 @@
 import type { BlockInstance, TeamSpace, ThemeId } from "@/lib/types";
 import { THEMES } from "@/lib/themes";
+import { usesCloudTeamStorage } from "@/lib/teams/cloud-storage";
+import { isTeamVersionNewer, parseTeamUpdatedAt } from "@/lib/teams/team-timestamp";
 
 const PREFIX = "mts_team_preview_";
 
@@ -43,14 +45,25 @@ function normalizeBlocks(input: unknown, fallback: BlockInstance[]): BlockInstan
   return merged.sort((a, b) => a.order - b.order);
 }
 
-/** Merge coach preview from localStorage (same browser, survives new tab). */
+/**
+ * Local-only draft overlay for offline/demo mode.
+ * In cloud mode the database is the only source of truth — never merge browser storage.
+ */
 export function mergeStoredPreview(fallback: TeamSpace): TeamSpace {
+  if (usesCloudTeamStorage()) return fallback;
   if (typeof window === "undefined") return fallback;
   const raw = window.localStorage.getItem(previewStorageKey(fallback.slug));
   if (!raw) return fallback;
   try {
     const o = JSON.parse(raw) as Record<string, unknown>;
     if (typeof o.slug !== "string" || o.slug !== fallback.slug) return fallback;
+
+    const serverAt = parseTeamUpdatedAt(fallback.updatedAt);
+    const storedAt = parseTeamUpdatedAt(o.updatedAt);
+    if (serverAt != null && storedAt != null && storedAt <= serverAt) {
+      return fallback;
+    }
+
     const rawTheme = typeof o.themeId === "string" ? o.themeId : "";
     const storedTheme = rawTheme === "sharky_aqua" ? "ocean_aqua" : rawTheme;
     const logoUrl =
@@ -71,13 +84,37 @@ export function mergeStoredPreview(fallback: TeamSpace): TeamSpace {
           ? o.secondaryColor.slice(0, 32)
           : fallback.secondaryColor,
       blocks: normalizeBlocks(o.blocks, fallback.blocks),
+      updatedAt: typeof o.updatedAt === "string" ? o.updatedAt : fallback.updatedAt,
     };
   } catch {
     return fallback;
   }
 }
 
+/** Drop stale browser draft if the server copy is newer (or always in cloud mode). */
+export function purgeStaleTeamPreview(slug: string, serverUpdatedAt?: string): void {
+  if (typeof window === "undefined") return;
+  const key = previewStorageKey(slug);
+  if (usesCloudTeamStorage()) {
+    window.localStorage.removeItem(key);
+    return;
+  }
+  const raw = window.localStorage.getItem(key);
+  if (!raw) return;
+  try {
+    const o = JSON.parse(raw) as Record<string, unknown>;
+    const storedAt = parseTeamUpdatedAt(o.updatedAt);
+    const serverAt = parseTeamUpdatedAt(serverUpdatedAt);
+    if (serverAt == null || storedAt == null || storedAt <= serverAt) {
+      window.localStorage.removeItem(key);
+    }
+  } catch {
+    window.localStorage.removeItem(key);
+  }
+}
+
 export function saveTeamPreviewLocal(team: TeamSpace): void {
+  if (usesCloudTeamStorage()) return;
   if (typeof window === "undefined") return;
   window.localStorage.setItem(previewStorageKey(team.slug), JSON.stringify(team));
   window.dispatchEvent(new Event("mts-team-preview"));
@@ -87,4 +124,18 @@ export function clearTeamPreviewLocal(slug: string): void {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(previewStorageKey(slug));
   window.dispatchEvent(new Event("mts-team-preview"));
+}
+
+export function shouldApplyStoredPreviewOver(server: TeamSpace): boolean {
+  if (usesCloudTeamStorage()) return false;
+  if (typeof window === "undefined") return false;
+  const raw = window.localStorage.getItem(previewStorageKey(server.slug));
+  if (!raw) return false;
+  try {
+    const o = JSON.parse(raw) as Record<string, unknown>;
+    const storedAt = typeof o.updatedAt === "string" ? o.updatedAt : undefined;
+    return isTeamVersionNewer(storedAt, server.updatedAt);
+  } catch {
+    return false;
+  }
 }

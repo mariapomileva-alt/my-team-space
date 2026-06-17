@@ -27,6 +27,7 @@ export type TeamDbRow = {
   access_code?: string | null;
   invite_token?: string | null;
   page_settings?: unknown;
+  updated_at?: string | null;
 };
 
 const THEME_IDS = new Set(THEMES.map((t) => t.id));
@@ -109,7 +110,8 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
   const fromHeroRaw = logoFromRawBlocks(row.blocks);
   const blocks = normalizeBlocks(row.blocks, fallback);
   const fromHero = logoFromHeroBlock(blocks);
-  const logoUrl = fromColumn || fromSettings || fromHeroRaw || fromHero || logoPublicUrl;
+  const pathFallback = logoPathFallback(row);
+  const logoUrl = fromColumn || fromSettings || fromHeroRaw || fromHero || pathFallback || logoPublicUrl;
   return {
     id: row.id,
     slug: row.slug,
@@ -129,6 +131,7 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
     accessCode: row.access_code ?? undefined,
     inviteToken: row.invite_token ?? undefined,
     pageSettings,
+    updatedAt: row.updated_at ?? undefined,
   };
 }
 
@@ -137,4 +140,10 @@ export function publicLogoUrlFromPath(logoPath: string | null): string | undefin
   const base = getSupabaseUrl();
   if (!base) return undefined;
   return `${base}/storage/v1/object/public/team-assets/${logoPath}`;
+}
+
+/** Legacy storage path — only when `logo_url` is not set (avoids stale logo_path overriding uploads). */
+export function logoPathFallback(row: Pick<TeamDbRow, "logo_path" | "logo_url">): string | undefined {
+  if (row.logo_url?.trim()) return undefined;
+  return publicLogoUrlFromPath(row.logo_path ?? null);
 }

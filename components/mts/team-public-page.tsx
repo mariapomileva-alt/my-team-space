@@ -5,7 +5,8 @@ import { TeamPageBlocks } from "@/components/mts/team-page-blocks";
 import { TeamAccessGate } from "@/components/mts/team-access-gate";
 import { teamRequiresAccess } from "@/lib/team-access";
 import type { TeamSpace } from "@/lib/types";
-import { mergeStoredPreview, previewStorageKey } from "@/lib/preview-storage";
+import { usesCloudTeamStorage } from "@/lib/teams/cloud-storage";
+import { mergeStoredPreview, purgeStaleTeamPreview } from "@/lib/preview-storage";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { useEffect, useState } from "react";
@@ -90,40 +91,27 @@ export function TeamPublicPage({
   enableLocalPreview?: boolean;
   saasExtras?: ReactNode;
 }) {
+  const cloud = usesCloudTeamStorage();
+  const allowLocalDraft = enableLocalPreview && !cloud;
   const [team, setTeam] = useState(initialTeam);
 
   useEffect(() => {
-    if (!enableLocalPreview) {
+    purgeStaleTeamPreview(initialTeam.slug, initialTeam.updatedAt);
+    if (!allowLocalDraft) {
       setTeam(initialTeam);
       return;
     }
     setTeam(mergeStoredPreview(initialTeam));
-  }, [initialTeam, enableLocalPreview]);
+  }, [initialTeam, allowLocalDraft]);
 
   useEffect(() => {
-    if (!enableLocalPreview) return;
-    const key = previewStorageKey(initialTeam.slug);
-    function onStorage(e: StorageEvent) {
-      if (e.key === key || e.key === null) {
-        setTeam(mergeStoredPreview(initialTeam));
-      }
-    }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, [initialTeam, enableLocalPreview]);
-
-  useEffect(() => {
-    if (!enableLocalPreview) return;
+    if (!allowLocalDraft) return;
     function refresh() {
       setTeam(mergeStoredPreview(initialTeam));
     }
     window.addEventListener("mts-team-preview", refresh);
-    window.addEventListener("focus", refresh);
-    return () => {
-      window.removeEventListener("mts-team-preview", refresh);
-      window.removeEventListener("focus", refresh);
-    };
-  }, [initialTeam, enableLocalPreview]);
+    return () => window.removeEventListener("mts-team-preview", refresh);
+  }, [initialTeam, allowLocalDraft]);
 
   return (
     <TeamShell themeId={team.themeId}>
