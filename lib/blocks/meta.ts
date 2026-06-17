@@ -298,6 +298,11 @@ export function builderSortBlocks(blocks: BlockInstance[]): BlockInstance[] {
   return [...blocks].sort((a, b) => a.order - b.order);
 }
 
+/** Active blocks first (stable order), then hidden — for builder lists and archives. */
+export function partitionBlocksByEnabled(blocks: BlockInstance[]): BlockInstance[] {
+  return [...blocks.filter((b) => b.enabled), ...blocks.filter((b) => !b.enabled)];
+}
+
 export function groupBlocksBySection(blocks: BlockInstance[]): Record<BuilderSection, BlockInstance[]> {
   const groups: Record<BuilderSection, BlockInstance[]> = {
     essential: [],
