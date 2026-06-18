@@ -181,16 +181,18 @@
   flex-shrink: 0;
   /* Spec: logo is circular (square logos cropped to a circle). */
   border-radius: 9999px;
+  background: #fff;
 }
 
 .hero-card .mts-media-frame--logo-hero-card.mts-media-frame--logo-bordered {
   border-width: 3px;
+  border-color: #fff;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .hero-card .mts-media-frame--logo-hero-card .mts-media-frame__img--contain {
-  padding: 0;
-  transform: scale(1.12);
+  padding: 0.45rem;
+  transform: none;
   transform-origin: center;
 }
 
@@ -310,6 +312,10 @@
   flex-shrink: 0;
   border-radius: 1rem;
   background: #fff;
+}
+
+.mts-media-frame--logo .mts-media-frame__img--contain {
+  padding: 0.3rem;
 }
 
 .mts-media-frame--logo-bordered {
