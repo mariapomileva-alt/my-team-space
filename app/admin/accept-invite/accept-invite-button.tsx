@@ -35,7 +35,7 @@ export function AcceptInviteButton({ token }: { token: string }) {
             try {
               setErr(null);
               const { teamId } = await acceptTeamAdminInvite(token);
-              router.push(`/admin/team/${teamId}/step-2`);
+              router.push(`/admin/team/${teamId}`);
               router.refresh();
             } catch (e) {
               const message = e instanceof Error ? e.message : "Could not accept invite";

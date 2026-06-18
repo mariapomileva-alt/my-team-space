@@ -21,7 +21,9 @@ import {
   BUILDER_WORKSPACE_GRID,
   BUILDER_WORKSPACE_ROW,
 } from "@/lib/builder/layout";
-import { BuilderProgress, type BuilderProgressTarget } from "@/components/builder/builder-progress";
+import type { BuilderProgressTarget } from "@/components/builder/builder-progress";
+import { BuilderSuggestionsCard } from "@/components/builder/builder-suggestions-card";
+import { SetupProgressCenter } from "@/components/builder/setup-progress-center";
 import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
 import { applyBlockOrder, builderSortBlocks, partitionBlocksByEnabled } from "@/lib/blocks/meta";
 import {
@@ -41,7 +43,7 @@ import type { BlockInstance, BlockType, TeamSpace, ThemeId } from "@/lib/types";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
 const AUTOSAVE_MS = 2500;
@@ -53,12 +55,14 @@ export function TeamPageBuilder({
   publicUrl,
   memberRole = "coach",
   billing = null,
+  embedded = false,
 }: {
   teamId: string;
   initialTeam: TeamSpace;
   publicUrl: string;
   memberRole?: TeamMemberRole;
   billing?: BuilderBillingContext | null;
+  embedded?: boolean;
 }) {
   /** One team on Single Team plan is always editable in the builder. */
   const canEdit =
@@ -66,6 +70,7 @@ export function TeamPageBuilder({
   const editLocked = billing != null && !canEdit;
   const siteUrl = siteOriginFromPublicTeamUrl(publicUrl);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [team, setTeam] = useState<TeamSpace>(initialTeam);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -443,6 +448,24 @@ export function TeamPageBuilder({
     }
   }
 
+  useEffect(() => {
+    const focus = searchParams.get("focus");
+    if (!focus) return;
+    const map: Record<string, BuilderNavSection> = {
+      header: "header",
+      sections: "sections",
+      settings: "settings",
+      design: "design",
+      payments: "payments",
+    };
+    const section = map[focus];
+    if (!section) return;
+    const id = window.setTimeout(() => navigateSection(section), 150);
+    return () => window.clearTimeout(id);
+    // Deep-link from dashboard quick actions
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   function changePreviewMode(next: BuilderPreviewMode) {
     setPreviewMode(next);
     storePreviewMode(next);
@@ -516,9 +539,11 @@ export function TeamPageBuilder({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="builder-page min-h-screen scroll-smooth bg-[#f7f7f8] text-zinc-900"
+      className={embedded ? "builder-page text-zinc-900" : "builder-page min-h-screen scroll-smooth bg-[#f7f7f8] text-zinc-900"}
     >
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_90%_60%_at_50%_-30%,rgba(139,92,246,0.06),transparent)]" />
+      {!embedded ? (
+        <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_90%_60%_at_50%_-30%,rgba(139,92,246,0.06),transparent)]" />
+      ) : null}
 
       <div ref={topRef} className={`${BUILDER_PAGE_SHELL} scroll-mt-4 pt-4`}>
         {memberRole === "assistant" ? (
@@ -531,7 +556,7 @@ export function TeamPageBuilder({
           <BuilderEditAccessBanner teamId={teamId} billing={billing} />
         ) : null}
         <BuilderToolbar
-          teamName={team.name}
+          team={team}
           saveLabel={toolbarStatusLabel}
           saveState={editLocked ? "idle" : saveState}
           saveError={saveError}
@@ -539,7 +564,7 @@ export function TeamPageBuilder({
           publicUrl={publicUrl}
           parentShareUrl={parentShareUrl}
           shareHint={shareHint}
-          progress={<BuilderProgress team={team} onJump={jumpTo} variant="compact" />}
+          progress={<SetupProgressCenter team={team} onJump={jumpTo} />}
           billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
           editLocked={editLocked}
           canPublish={memberRole === "coach"}
@@ -564,9 +589,9 @@ export function TeamPageBuilder({
         </motion.p>
       ) : null}
 
-      <div className={`${BUILDER_PAGE_SHELL} pb-24 pt-1 xl:pb-10`}>
+      <div className={`${BUILDER_PAGE_SHELL} ${embedded ? "pb-8 pt-2" : "pb-24 pt-1"} xl:pb-10`}>
         <div className={BUILDER_WORKSPACE_ROW}>
-          <BuilderSidebar active={activeSection} onNavigate={navigateSection} />
+          <BuilderSidebar active={activeSection} onNavigate={navigateSection} team={team} />
 
           <main className="min-w-0 flex-1">
             <div className={BUILDER_WORKSPACE_GRID}>
@@ -583,6 +608,8 @@ export function TeamPageBuilder({
                     onSelectTheme={setTheme}
                   />
                 </div>
+
+                <BuilderSuggestionsCard team={team} onJump={jumpTo} />
 
                 <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-28">
                   <PageBlocksPanel
@@ -618,11 +645,18 @@ export function TeamPageBuilder({
 
               <aside ref={previewColumnRef} className={BUILDER_PREVIEW_COLUMN}>
                 <div className={BUILDER_PREVIEW_CHROME}>
-                  <div className="mb-3 flex items-center justify-between gap-2">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Live preview</p>
-                    <span className="rounded-full bg-emerald-50/80 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-100/80">
-                      Live
-                    </span>
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-600/80">
+                        Live preview
+                      </p>
+                      <span className="rounded-full bg-emerald-50/80 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-100/80">
+                        Visible to visitors
+                      </span>
+                    </div>
+                    <p className="mt-1.5 text-[12px] leading-snug text-zinc-500">
+                      This is exactly what parents and athletes will see.
+                    </p>
                   </div>
                   <BuilderLivePreview
                     team={team}
@@ -651,12 +685,14 @@ export function TeamPageBuilder({
         onOpenInTab={previewAsParent}
       />
 
-      <BuilderMobileNav
-        active={mobileTab}
-        onTab={onMobileTab}
-        publishDisabled={pending || memberRole !== "coach"}
-        publishLocked={editLocked}
-      />
+      {!embedded ? (
+        <BuilderMobileNav
+          active={mobileTab}
+          onTab={onMobileTab}
+          publishDisabled={pending || memberRole !== "coach"}
+          publishLocked={editLocked}
+        />
+      ) : null}
     </motion.div>
   );
 }

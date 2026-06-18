@@ -21,7 +21,7 @@ export type CompletionItem = {
   priority: number;
 };
 
-const SUGGESTION_LABELS = ["Logo", "Schedule", "Contacts"] as const;
+const SUGGESTION_LABELS = ["Logo", "First event", "Gallery", "Contacts", "Results"] as const;
 
 const REQUIRED_LABELS = new Set(["Team name", "Logo"]);
 
@@ -70,6 +70,9 @@ export function getCompletionItems(team: TeamSpace): CompletionItem[] {
   );
 
   const hasSocial = Boolean(Object.values(hs?.social ?? {}).some((v) => Boolean(v?.trim())));
+  const hasDescription = Boolean(
+    team.tagline?.trim() || hs?.description?.trim() || hs?.quote?.trim(),
+  );
 
   const resultsBlock = team.blocks.find((b) => b.type === "results");
   const resultsSettings = resultsBlock
@@ -83,14 +86,15 @@ export function getCompletionItems(team: TeamSpace): CompletionItem[] {
   );
 
   return [
-    { id: "identity", emoji: "🏷️", label: "Team name", done: hasName, weight: 22, priority: 1 },
-    { id: "identity", emoji: "🖼️", label: "Logo", done: hasLogo, weight: 18, priority: 2 },
-    { id: "schedule", emoji: "📅", label: "Schedule", done: hasSchedule, weight: 16, priority: 3 },
-    { id: "contacts", emoji: "📞", label: "Contacts", done: hasContacts, weight: 12, priority: 4 },
-    { id: "cover", emoji: "🌄", label: "Cover image", done: hasCover, weight: 10, priority: 5 },
-    { id: "gallery", emoji: "📸", label: "Gallery", done: hasGallery, weight: 10, priority: 6 },
-    { id: "results", emoji: "🏆", label: "Results", done: hasResults, weight: 8, priority: 7 },
-    { id: "social", emoji: "🔗", label: "Social links", done: hasSocial, weight: 4, priority: 8 },
+    { id: "identity", emoji: "🏷️", label: "Team name", done: hasName, weight: 18, priority: 1 },
+    { id: "identity", emoji: "🖼️", label: "Logo", done: hasLogo, weight: 16, priority: 2 },
+    { id: "cover", emoji: "🌄", label: "Cover image", done: hasCover, weight: 10, priority: 3 },
+    { id: "identity", emoji: "✍️", label: "Team description", done: hasDescription, weight: 10, priority: 4 },
+    { id: "contacts", emoji: "📞", label: "Contacts", done: hasContacts, weight: 12, priority: 5 },
+    { id: "schedule", emoji: "📅", label: "First event", done: hasSchedule, weight: 14, priority: 6 },
+    { id: "gallery", emoji: "📸", label: "Gallery", done: hasGallery, weight: 10, priority: 7 },
+    { id: "results", emoji: "🏆", label: "Results", done: hasResults, weight: 8, priority: 8 },
+    { id: "social", emoji: "🔗", label: "Social links", done: hasSocial, weight: 6, priority: 9 },
   ];
 }
 
@@ -100,6 +104,36 @@ export function builderCompletionPercent(team: TeamSpace): number {
   const done = items.reduce((sum, i) => sum + (i.done ? i.weight : 0), 0);
   if (total <= 0) return 0;
   return Math.max(0, Math.min(100, Math.round((done / total) * 100)));
+}
+
+export type SetupSnapshot = {
+  percent: number;
+  next: CompletionItem | null;
+  completed: CompletionItem[];
+  recommended: CompletionItem[];
+};
+
+export function formatSetupAction(item: CompletionItem): string {
+  if (item.label === "Logo") return "Upload your team logo";
+  if (item.label === "Team name") return "Add your team name";
+  if (item.label === "First event") return "Add your first event";
+  if (item.label === "Cover image") return "Add a cover image";
+  if (item.label === "Team description") return "Write your team story";
+  if (item.label === "Social links") return "Add Instagram link";
+  return `Add ${item.label.toLowerCase()}`;
+}
+
+/** Action-focused setup snapshot for progress center & suggestions. */
+export function getSetupSnapshot(team: TeamSpace): SetupSnapshot {
+  const items = getCompletionItems(team);
+  const incomplete = items.filter((i) => !i.done).sort((a, b) => a.priority - b.priority);
+  const completed = items.filter((i) => i.done).sort((a, b) => a.priority - b.priority);
+  return {
+    percent: builderCompletionPercent(team),
+    next: incomplete[0] ?? null,
+    completed: completed.slice(0, 5),
+    recommended: incomplete.slice(1, 4),
+  };
 }
 
 export type CompletionGuidance = {
@@ -125,11 +159,12 @@ export type CompletionGuidance = {
 const COMPLETED_LABELS: Record<string, string> = {
   "Team name": "Team name",
   Logo: "Logo",
-  Schedule: "Schedule",
   Contacts: "Contacts",
   "Cover image": "Cover image",
+  "Team description": "Team description",
   Gallery: "Gallery",
   Results: "Results",
+  "First event": "First event",
   "Social links": "Social links",
 };
 

@@ -36,5 +36,5 @@ export async function createTeamAction(formData: FormData) {
   }
   revalidatePublicTeamPaths(normalized);
   revalidateTag(publicTeamCacheTag(normalized), "default");
-  redirect(`/admin/team/${data as string}/step-2`);
+  redirect(`/admin/team/${data as string}`);
 }

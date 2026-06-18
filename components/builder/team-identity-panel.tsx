@@ -50,7 +50,7 @@ export function TeamIdentityPanel({
     <BuilderCollapsiblePanel
       className={BUILDER_PANEL_SURFACE}
       title="Header"
-      description="Logo, cover photo, team name, and social links — your club’s first impression."
+      description="Logo, name and cover — how families recognize your team."
       summary={
         <span className="inline-flex max-w-[220px] items-center gap-2 truncate rounded-full bg-white/80 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-700 ring-1 ring-zinc-200/80">
           <span

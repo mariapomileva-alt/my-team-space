@@ -8,6 +8,7 @@ import {
 import { BUILDER_RADIUS_CHOICE } from "@/lib/builder/layout";
 import { cn } from "@/lib/utils/cn";
 import { builderBlockDisplayLabel } from "@/lib/builder/display-labels";
+import { coachBlockDescription } from "@/lib/builder/block-coach-copy";
 import { BLOCK_META } from "@/lib/blocks/meta";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { useSortable } from "@dnd-kit/sortable";
@@ -31,6 +32,8 @@ type Props = {
   isDraggingOverlay?: boolean;
   /** Single-column visual builder cards (Step 2) */
   legoLayout?: boolean;
+  /** In the hidden-sections archive — no drag handle */
+  archived?: boolean;
 };
 
 const RESULTS_TYPES = new Set(["results", "achievements"]);
@@ -65,13 +68,14 @@ export function BlockModuleCard({
   onPreviewBlock,
   isDraggingOverlay = false,
   legoLayout = false,
+  archived = false,
 }: Props) {
   const meta = BLOCK_META[block.type];
   const isGallery = block.type === "gallery";
   const isResults = RESULTS_TYPES.has(block.type);
   const sortable = useSortable({
     id: block.id,
-    disabled: !block.enabled || isDraggingOverlay,
+    disabled: !block.enabled || isDraggingOverlay || archived,
   });
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = sortable;
   const style = isDraggingOverlay
@@ -134,7 +138,7 @@ export function BlockModuleCard({
           className={cn("relative z-[1] flex flex-col", legoLayout ? "p-4" : "p-3 sm:p-3.5")}
         >
           <div className="flex items-start gap-3">
-            {!isDraggingOverlay ? (
+            {!isDraggingOverlay && block.enabled && !archived ? (
               <button
                 type="button"
                 className={cn(
@@ -177,11 +181,12 @@ export function BlockModuleCard({
                 </span>
                 <span
                   className={cn(
-                    "mt-1 line-clamp-2 leading-snug text-zinc-500",
-                    legoLayout ? "text-xs" : expanded ? "text-[11px]" : "text-[11px]",
+                    "mt-1 leading-snug text-zinc-500",
+                    expanded ? "text-[12px] leading-relaxed text-zinc-600" : "line-clamp-2 text-[11px]",
+                    legoLayout && "text-xs",
                   )}
                 >
-                  {meta.description}
+                  {coachBlockDescription(block.type, meta.description)}
                 </span>
               </span>
               <motion.span

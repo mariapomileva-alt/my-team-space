@@ -1,6 +1,8 @@
 "use client";
 
+import { TeamProgressWidget } from "@/components/admin/team-progress-widget";
 import { cn } from "@/lib/utils/cn";
+import type { TeamSpace } from "@/lib/types";
 
 export type BuilderNavSection =
   | "overview"
@@ -29,10 +31,12 @@ const NAV_ITEMS: {
 export function BuilderSidebar({
   active,
   onNavigate,
+  team,
   className,
 }: {
   active: BuilderNavSection;
   onNavigate: (section: BuilderNavSection) => void;
+  team?: TeamSpace;
   className?: string;
 }) {
   return (
@@ -44,8 +48,9 @@ export function BuilderSidebar({
       aria-label="Builder sections"
     >
       <div className="flex flex-1 flex-col gap-1 rounded-2xl border border-zinc-200/60 bg-white/70 p-2 shadow-[0_8px_40px_-24px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+        {team ? <TeamProgressWidget team={team} compact className="mb-2 border-0 shadow-none" /> : null}
         <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
-          Builder
+          Page sections
         </p>
         {NAV_ITEMS.map((item) => {
           const isActive = active === item.id;

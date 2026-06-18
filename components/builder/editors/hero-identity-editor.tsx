@@ -36,13 +36,12 @@ const SOCIALS = (Object.keys(SOCIAL_LABELS) as SocialKey[]).map((key) => ({
   label: SOCIAL_LABELS[key],
 }));
 
-function hasOptionalIdentityFields(team: TeamSpace, s: Settings) {
+function hasMoreDetailsFields(team: TeamSpace, s: Settings) {
   return Boolean(
     team.tagline?.trim() ||
       s.city?.trim() ||
       s.quote?.trim() ||
       s.description?.trim() ||
-      s.coverImageUrl?.trim() ||
       Object.values(s.social ?? {}).some((v) => v?.trim()),
   );
 }
@@ -61,9 +60,9 @@ export function HeroIdentityEditor({
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
 }) {
   const s = getBlockSettings<Settings>(block);
-  const [moreOpen, setMoreOpen] = useState(() => hasOptionalIdentityFields(team, s));
+  const [moreOpen, setMoreOpen] = useState(() => hasMoreDetailsFields(team, s));
 
-  const optionalFilled = useMemo(() => hasOptionalIdentityFields(team, s), [team, s]);
+  const optionalFilled = useMemo(() => hasMoreDetailsFields(team, s), [team, s]);
 
   function set(patch: Partial<Settings>) {
     onPatchBlock(block.id, { settings: { ...s, ...patch } });
@@ -72,9 +71,9 @@ export function HeroIdentityEditor({
   const logo = team.logoUrl ?? s.teamPhotoUrl ?? "";
 
   return (
-    <div className="space-y-5">
-      <p className="text-sm text-zinc-500">
-        Start with your logo and team name — you can publish right after that.
+    <div className="space-y-6">
+      <p className="text-[13px] leading-relaxed text-zinc-500">
+        Your team&apos;s face to the world — logo, name and cover photo.
       </p>
 
       <ImageUploadField
@@ -82,7 +81,7 @@ export function HeroIdentityEditor({
         label="Team logo"
         folder="logos"
         aspect="square"
-        hint="Shows on your team page header."
+        hint="Parents recognize your team instantly."
         value={logo}
         onChange={(url) => {
           onPatchTeam({ logoUrl: url || undefined });
@@ -93,32 +92,34 @@ export function HeroIdentityEditor({
       <div>
         <label className={fieldLabel}>Team name</label>
         <input
-          className={cn(BUILDER_FIELD_INPUT, "mt-1.5 text-base font-semibold")}
-          placeholder="e.g. North Stars FC"
+          className={cn(BUILDER_FIELD_INPUT, "mt-2 text-base font-semibold")}
+          placeholder="e.g. Dance Stars"
           value={team.name}
           onChange={(e) => onPatchTeam({ name: e.target.value })}
         />
       </div>
 
-      <HeroLayoutPicker
-        value={resolveHeroVariant(s.heroLayout)}
-        onChange={(heroLayout) => set({ heroLayout })}
+      <ImageUploadField
+        teamId={team.id}
+        label="Cover image"
+        folder="hero"
+        aspect="wide"
+        hint="Banner at the top of your team page."
+        value={s.coverImageUrl}
+        onChange={(url) => set({ coverImageUrl: url })}
       />
 
-      <div className="border-t border-zinc-100 pt-1">
+      <div className="border-t border-zinc-100/90 pt-2">
         <button
           type="button"
           onClick={() => setMoreOpen((v) => !v)}
-          className="flex w-full items-center justify-between gap-2 rounded-xl py-2 text-left transition hover:bg-zinc-50/80"
+          className="flex w-full items-center justify-between gap-2 rounded-xl py-2.5 text-left transition hover:bg-zinc-50/80"
           aria-expanded={moreOpen}
         >
           <span className="flex items-center gap-2 text-sm font-semibold text-zinc-800">
-            <span className="text-base" aria-hidden>
-              ➕
-            </span>
             More details
             {optionalFilled && !moreOpen ? (
-              <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
+              <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-700">
                 Filled
               </span>
             ) : null}
@@ -142,11 +143,11 @@ export function HeroIdentityEditor({
               transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
               className="overflow-hidden"
             >
-              <div className="space-y-4 pb-1 pt-2">
+              <div className="space-y-5 pb-1 pt-3">
                 <div>
                   <label className={fieldLabel}>Team slogan</label>
                   <input
-                    className={cn(BUILDER_FIELD_INPUT, "mt-1.5")}
+                    className={cn(BUILDER_FIELD_INPUT, "mt-2")}
                     placeholder="Short line under your team name"
                     value={team.tagline ?? ""}
                     onChange={(e) => onPatchTeam({ tagline: e.target.value || undefined })}
@@ -156,7 +157,7 @@ export function HeroIdentityEditor({
                 <div>
                   <label className={fieldLabel}>City / location</label>
                   <input
-                    className={cn(BUILDER_FIELD_INPUT, "mt-1.5")}
+                    className={cn(BUILDER_FIELD_INPUT, "mt-2")}
                     placeholder="e.g. Riga, Latvia"
                     value={s.city}
                     onChange={(e) => set({ city: e.target.value })}
@@ -166,7 +167,7 @@ export function HeroIdentityEditor({
                 <div>
                   <label className={fieldLabel}>Team motto</label>
                   <input
-                    className={cn(BUILDER_FIELD_INPUT, "mt-1.5 italic")}
+                    className={cn(BUILDER_FIELD_INPUT, "mt-2 italic")}
                     placeholder="A quote your team lives by"
                     value={s.quote}
                     onChange={(e) => set({ quote: e.target.value })}
@@ -176,30 +177,18 @@ export function HeroIdentityEditor({
                 <div>
                   <label className={fieldLabel}>Team description</label>
                   <textarea
-                    className={cn(BUILDER_FIELD_INPUT, "mt-1.5")}
+                    className={cn(BUILDER_FIELD_INPUT, "mt-2")}
                     rows={3}
-                    placeholder="A few sentences about your team — only shown if you fill this in"
+                    placeholder="Tell families what makes your team special"
                     value={s.description ?? ""}
                     onChange={(e) => set({ description: e.target.value })}
                   />
                 </div>
 
-                <div className="border-t border-zinc-100 pt-4">
-                  <ImageUploadField
-                    teamId={team.id}
-                    label="Cover image"
-                    folder="hero"
-                    aspect="wide"
-                    hint="Optional banner at the top of your page."
-                    value={s.coverImageUrl}
-                    onChange={(url) => set({ coverImageUrl: url })}
-                  />
-                </div>
-
                 <div>
                   <p className={fieldLabel}>Social links</p>
-                  <p className="mt-0.5 text-[11px] text-zinc-400">Only filled icons appear on your page.</p>
-                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <p className="mt-1 text-[11px] text-zinc-400">Only filled icons appear on your page.</p>
+                  <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
                     {SOCIALS.map(({ key, label }) => (
                       <label key={key} className="relative block">
                         <span
@@ -217,6 +206,17 @@ export function HeroIdentityEditor({
                         />
                       </label>
                     ))}
+                  </div>
+                </div>
+
+                <div className="border-t border-zinc-100 pt-4">
+                  <p className={fieldLabel}>Header layout</p>
+                  <p className="mt-1 text-[11px] text-zinc-400">How logo and name appear on your page.</p>
+                  <div className="mt-3">
+                    <HeroLayoutPicker
+                      value={resolveHeroVariant(s.heroLayout)}
+                      onChange={(heroLayout) => set({ heroLayout })}
+                    />
                   </div>
                 </div>
               </div>

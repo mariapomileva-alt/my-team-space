@@ -12,7 +12,7 @@ export const BUILDER_RADIUS_SHELL = "rounded-2xl";
 /** Pickers inside a panel (palette, visibility, block cards) */
 export const BUILDER_RADIUS_CHOICE = "rounded-xl";
 
-export const BUILDER_PANEL_PADDING = "p-4 sm:p-5";
+export const BUILDER_PANEL_PADDING = "p-5 sm:p-6";
 
 const BUILDER_PANEL_SHADOW =
   "shadow-[0_2px_24px_-12px_rgba(15,23,42,0.08)]";
@@ -29,7 +29,7 @@ export const BUILDER_PANEL_SURFACE = cn(
 export const BUILDER_TOOLBAR_SURFACE = cn(
   "flex w-full flex-wrap items-center justify-between gap-3 border border-zinc-200/40 bg-white/85 backdrop-blur-xl",
   BUILDER_RADIUS_SHELL,
-  "px-4 py-2.5 sm:px-5 sm:py-3",
+  "px-5 py-3.5 sm:px-6 sm:py-4",
   "shadow-[0_4px_24px_-16px_rgba(15,23,42,0.1)]",
 );
 
@@ -75,12 +75,12 @@ export function builderChoiceClass(selected: boolean, extra?: string) {
 /** Desktop workspace — sidebar + editor + preview */
 export const BUILDER_PREVIEW_WIDTH_PX = 480;
 
-export const BUILDER_WORKSPACE_ROW = "flex w-full items-start gap-5 xl:gap-6";
+export const BUILDER_WORKSPACE_ROW = "flex w-full items-start gap-6 xl:gap-7";
 
 export const BUILDER_WORKSPACE_GRID =
-  "grid w-full min-w-0 flex-1 grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(380px,42%)] lg:gap-6 xl:gap-7";
+  "grid w-full min-w-0 flex-1 grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(380px,42%)] lg:gap-7 xl:gap-8";
 
-export const BUILDER_EDITOR_COLUMN = "min-w-0 w-full space-y-4 overflow-x-clip lg:space-y-5";
+export const BUILDER_EDITOR_COLUMN = "min-w-0 w-full space-y-5 overflow-x-clip lg:space-y-6";
 
 export const BUILDER_PREVIEW_COLUMN = cn(
   "mx-auto hidden w-full shrink-0",
@@ -91,6 +91,6 @@ export const BUILDER_PREVIEW_COLUMN = cn(
 
 /** Premium preview chrome wrapper */
 export const BUILDER_PREVIEW_CHROME = cn(
-  "rounded-[1.35rem] border border-zinc-200/50 bg-gradient-to-b from-zinc-50/80 via-white to-white p-3.5 sm:p-4",
+  "rounded-[1.35rem] border border-zinc-200/50 bg-gradient-to-b from-zinc-50/80 via-white to-white p-4 sm:p-5",
   "shadow-[0_8px_40px_-20px_rgba(139,92,246,0.12)]",
 );

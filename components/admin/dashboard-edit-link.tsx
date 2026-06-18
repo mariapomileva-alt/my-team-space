@@ -21,7 +21,7 @@ export function DashboardEditLink({
   }
 
   return (
-    <Link href={`/admin/team/${teamId}/step-2`} className={`${sizeClass} ${enabledClass}`}>
+    <Link href={`/admin/team/${teamId}`} className={`${sizeClass} ${enabledClass}`}>
       {label}
     </Link>
   );
