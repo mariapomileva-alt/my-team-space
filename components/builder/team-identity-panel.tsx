@@ -11,17 +11,23 @@ export function TeamIdentityPanel({
   heroBlock,
   onPatchTeam,
   onPatchBlock,
+  expanded,
+  onExpandedChange,
 }: {
   team: TeamSpace;
   heroBlock: BlockInstance | undefined;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
 }) {
   const activeTheme = THEMES.find((t) => t.id === team.themeId) ?? THEMES[0];
 
   return (
     <BuilderCollapsiblePanel
       className={BUILDER_PANEL_SURFACE}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
       title="Header"
       description="Logo, cover image and team name."
       summary={
@@ -35,7 +41,7 @@ export function TeamIdentityPanel({
           {team.name || "Untitled team"}
         </span>
       }
-      defaultExpanded
+      defaultExpanded={expanded === undefined}
     >
       {heroBlock ? (
         <HeroIdentityEditor

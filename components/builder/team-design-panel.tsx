@@ -10,9 +10,13 @@ import { useState } from "react";
 export function TeamDesignPanel({
   team,
   onSelectTheme,
+  expanded,
+  onExpandedChange,
 }: {
   team: TeamSpace;
   onSelectTheme: (id: ThemeId) => void;
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
 }) {
   const activePreset = stylePresetForTheme(team.themeId);
   const [showCustomPalettes, setShowCustomPalettes] = useState(activePreset === "custom");
@@ -32,8 +36,10 @@ export function TeamDesignPanel({
   return (
     <BuilderCollapsiblePanel
       className={BUILDER_PANEL_SURFACE}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
       title="Design"
-      description="Colors and visual theme for your team page."
+      description="Colors and theme."
       summary={
         <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-700 ring-1 ring-zinc-200/80">
           <span
@@ -45,7 +51,7 @@ export function TeamDesignPanel({
           {activeTheme.label}
         </span>
       }
-      defaultExpanded={false}
+      defaultExpanded={expanded === undefined ? false : undefined}
     >
       <p className="text-[13px] text-zinc-500">Pick a mood — colors, spacing and cards update together.</p>
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">

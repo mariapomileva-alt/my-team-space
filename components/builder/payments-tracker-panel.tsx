@@ -30,9 +30,13 @@ function nextStatus(current: PaymentStatus): PaymentStatus {
 export function PaymentsTrackerPanel({
   team,
   onPatchTeam,
+  expanded,
+  onExpandedChange,
 }: {
   team: TeamSpace;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
 }) {
   const rows = team.pageSettings?.payments ?? [];
 
@@ -88,8 +92,10 @@ export function PaymentsTrackerPanel({
   return (
     <BuilderCollapsiblePanel
       className={`${BUILDER_PANEL_SURFACE} border-amber-200/50 bg-gradient-to-br from-amber-50/30 via-white to-orange-50/20`}
-      title="Payments tracker"
-      description="Track membership fees privately — parents never see this."
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      title="Payments"
+      description="Fee tracker."
       summary={
         <span className="max-w-[200px] truncate rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-900">
           {summaryPill}
@@ -100,7 +106,7 @@ export function PaymentsTrackerPanel({
           Just for you
         </span>
       }
-      defaultExpanded={false}
+      defaultExpanded={expanded === undefined ? false : undefined}
     >
       {rows.length > 0 ? (
         <div className="mb-4 grid grid-cols-3 gap-2">

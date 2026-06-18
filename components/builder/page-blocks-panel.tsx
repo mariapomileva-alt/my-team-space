@@ -35,6 +35,8 @@ type Props = {
   onMoveDown: (id: string) => void;
   onDragEnd: (event: DragEndEvent) => void;
   onQuickAdd: (type: BlockType) => void;
+  workspaceExpanded?: boolean;
+  onWorkspaceExpandedChange?: (expanded: boolean) => void;
 };
 
 export function PageBlocksPanel({
@@ -50,6 +52,8 @@ export function PageBlocksPanel({
   onMoveDown,
   onDragEnd,
   onQuickAdd,
+  workspaceExpanded,
+  onWorkspaceExpandedChange,
 }: Props) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -75,14 +79,16 @@ export function PageBlocksPanel({
   return (
     <BuilderCollapsiblePanel
       className={BUILDER_PANEL_SURFACE}
+      expanded={workspaceExpanded}
+      onExpandedChange={onWorkspaceExpandedChange}
       title="Sections"
-      description="Manage blocks on your page."
+      description="Manage page blocks."
       summary={
         <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800">
           {summaryLabel}
         </span>
       }
-      defaultExpanded
+      defaultExpanded={workspaceExpanded === undefined ? false : undefined}
     >
       {enabledBlocks.length === 0 ? (
         <div className="mb-5 rounded-2xl border border-dashed border-violet-200 bg-gradient-to-br from-violet-50/80 to-indigo-50/40 px-5 py-8 text-center">

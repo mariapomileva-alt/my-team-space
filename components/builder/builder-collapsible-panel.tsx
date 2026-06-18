@@ -9,6 +9,8 @@ export function BuilderCollapsiblePanel({
   description,
   summary,
   headerRight,
+  expanded: expandedProp,
+  onExpandedChange,
   defaultExpanded = true,
   className,
   children,
@@ -17,17 +19,26 @@ export function BuilderCollapsiblePanel({
   description?: string;
   summary?: ReactNode;
   headerRight?: ReactNode;
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
   defaultExpanded?: boolean;
   className?: string;
   children: ReactNode;
 }) {
-  const [expanded, setExpanded] = useState(defaultExpanded);
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
+  const controlled = expandedProp !== undefined;
+  const expanded = controlled ? expandedProp : internalExpanded;
+
+  function setExpanded(next: boolean) {
+    if (!controlled) setInternalExpanded(next);
+    onExpandedChange?.(next);
+  }
 
   return (
     <motion.section className={className}>
       <button
         type="button"
-        onClick={() => setExpanded((v) => !v)}
+        onClick={() => setExpanded(!expanded)}
         className="flex w-full items-start justify-between gap-3 text-left"
         aria-expanded={expanded}
       >

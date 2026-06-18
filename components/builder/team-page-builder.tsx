@@ -8,10 +8,6 @@ import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderBillingStatus } from "@/components/builder/builder-billing-status";
 import { BuilderEditAccessBanner } from "@/components/builder/builder-edit-access-banner";
 import { BuilderMobileNav, type BuilderMobileTab } from "@/components/builder/builder-mobile-nav";
-import {
-  BuilderWorkspaceTabs,
-  type BuilderWorkspaceSection,
-} from "@/components/builder/builder-workspace-tabs";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
 import { loadTeamForBuilder, saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
@@ -50,6 +46,8 @@ import { motion } from "framer-motion";
 
 const AUTOSAVE_MS = 2500;
 const PAGE_BLOCK_TYPES = new Set<BlockType>(["hero"]);
+
+type WorkspaceSection = "header" | "sections" | "design" | "payments";
 
 export function TeamPageBuilder({
   teamId,
@@ -92,7 +90,7 @@ export function TeamPageBuilder({
   const designRef = useRef<HTMLDivElement>(null);
   const paymentsRef = useRef<HTMLDivElement>(null);
   const previewColumnRef = useRef<HTMLElement>(null);
-  const [activeSection, setActiveSection] = useState<BuilderWorkspaceSection>("header");
+  const [openSection, setOpenSection] = useState<WorkspaceSection | null>("header");
   const [mobileTab, setMobileTab] = useState<BuilderMobileTab>("edit");
   const [fullPreviewOpen, setFullPreviewOpen] = useState(false);
   const [previewMode, setPreviewMode] = useState<BuilderPreviewMode>("mobile");
@@ -417,12 +415,22 @@ export function TeamPageBuilder({
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function navigateWorkspace(section: BuilderWorkspaceSection) {
-    setActiveSection(section);
-    if (section === "header") scrollTo(identityRef.current);
-    if (section === "sections") scrollTo(blocksRef.current);
-    if (section === "design") scrollTo(designRef.current);
-    if (section === "payments") scrollTo(paymentsRef.current);
+  const setWorkspaceExpanded = useCallback((section: WorkspaceSection, open: boolean) => {
+    if (open) setOpenSection(section);
+    else setOpenSection((cur) => (cur === section ? null : cur));
+  }, []);
+
+  function focusWorkspaceSection(section: WorkspaceSection) {
+    setOpenSection(section);
+    const ref =
+      section === "header"
+        ? identityRef
+        : section === "sections"
+          ? blocksRef
+          : section === "design"
+            ? designRef
+            : paymentsRef;
+    scrollTo(ref.current);
   }
 
   useEffect(() => {
@@ -432,7 +440,7 @@ export function TeamPageBuilder({
       router.replace(`/admin/team/${teamId}/settings`);
       return;
     }
-    const map: Record<string, BuilderWorkspaceSection> = {
+    const map: Record<string, WorkspaceSection> = {
       header: "header",
       sections: "sections",
       design: "design",
@@ -440,7 +448,7 @@ export function TeamPageBuilder({
     };
     const section = map[focus];
     if (!section) return;
-    const id = window.setTimeout(() => navigateWorkspace(section), 150);
+    const id = window.setTimeout(() => focusWorkspaceSection(section), 150);
     return () => window.clearTimeout(id);
     // Deep-link from dashboard quick actions
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -467,11 +475,11 @@ export function TeamPageBuilder({
     setMobileTab(tab);
 
     if (tab === "edit") {
-      navigateWorkspace("header");
+      focusWorkspaceSection("header");
       return;
     }
     if (tab === "sections") {
-      navigateWorkspace("sections");
+      focusWorkspaceSection("sections");
       return;
     }
     if (tab === "publish") {
@@ -492,7 +500,7 @@ export function TeamPageBuilder({
 
   function jumpTo(target: BuilderProgressTarget) {
     if (target === "identity" || target === "cover" || target === "social") {
-      scrollTo(identityRef.current);
+      focusWorkspaceSection("header");
       return;
     }
 
@@ -504,6 +512,7 @@ export function TeamPageBuilder({
     };
     const types = typeToBlock[target] ?? [];
     const block = teamRef.current.blocks.find((b) => types.includes(b.type));
+    setOpenSection("sections");
     if (!block) {
       scrollTo(blocksRef.current);
       return;
@@ -577,24 +586,20 @@ export function TeamPageBuilder({
             className={`${BUILDER_EDITOR_COLUMN}${editLocked ? " pointer-events-none select-none opacity-[0.72]" : ""}`}
             aria-disabled={editLocked}
           >
-            <BuilderWorkspaceTabs
-              active={activeSection}
-              onSelect={navigateWorkspace}
-              className="hidden lg:block"
-            />
-
-            <div ref={identityRef} id="builder-team-identity" className="scroll-mt-24">
+            <div ref={identityRef} id="builder-team-identity" className="scroll-mt-6">
               <TeamIdentityPanel
                 team={team}
                 heroBlock={heroBlock}
                 onPatchTeam={patchTeam}
                 onPatchBlock={patchBlock}
+                expanded={openSection === "header"}
+                onExpandedChange={(open) => setWorkspaceExpanded("header", open)}
               />
             </div>
 
             <BuilderSuggestionsCard team={team} onJump={jumpTo} />
 
-            <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-24">
+            <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-6">
               <PageBlocksPanel
                 blocks={pageBlocks}
                 team={team}
@@ -608,15 +613,27 @@ export function TeamPageBuilder({
                 onMoveDown={(id) => moveBlock(id, 1)}
                 onDragEnd={onDragEnd}
                 onQuickAdd={quickAddBlock}
+                workspaceExpanded={openSection === "sections"}
+                onWorkspaceExpandedChange={(open) => setWorkspaceExpanded("sections", open)}
               />
             </div>
 
-            <div ref={designRef} id="builder-design" className="scroll-mt-24">
-              <TeamDesignPanel team={team} onSelectTheme={setTheme} />
+            <div ref={designRef} id="builder-design" className="scroll-mt-6">
+              <TeamDesignPanel
+                team={team}
+                onSelectTheme={setTheme}
+                expanded={openSection === "design"}
+                onExpandedChange={(open) => setWorkspaceExpanded("design", open)}
+              />
             </div>
 
-            <div ref={paymentsRef} id="builder-payments" className="scroll-mt-24">
-              <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
+            <div ref={paymentsRef} id="builder-payments" className="scroll-mt-6">
+              <PaymentsTrackerPanel
+                team={team}
+                onPatchTeam={patchTeam}
+                expanded={openSection === "payments"}
+                onExpandedChange={(open) => setWorkspaceExpanded("payments", open)}
+              />
             </div>
           </div>
 
