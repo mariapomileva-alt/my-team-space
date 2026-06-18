@@ -92,31 +92,25 @@ export function buildDashboardRows(blocks: BlockInstance[]): DashboardRow[] {
       continue;
     }
 
-    if (b && layoutB && layoutsCanShareRow(layoutA, layoutB)) {
-      const compact = isCompactLayout(layoutA) || isCompactLayout(layoutB);
-      const pv = pairVariant(a.type, b.type);
-      if (pv) {
-        const { left, right } = pairSides(a, b, pv);
-        rows.push({ kind: "pair", variant: pv, left, right, compact });
-      } else {
-        rows.push({ kind: "pair-compact", left: a, right: b, compact });
-      }
-      i += 2;
-      continue;
-    }
-
-    if (layoutA === "full") {
-      rows.push({ kind: "solo", block: a, size: "full", compact: false, featured: false });
-      i += 1;
-      continue;
-    }
-
     if (layoutA === "half" || layoutA === "card") {
+      if (b && layoutB && layoutsCanShareRow(layoutA, layoutB)) {
+        const compact = isCompactLayout(layoutA) || isCompactLayout(layoutB);
+        const pv = pairVariant(a.type, b.type);
+        if (pv) {
+          const { left, right } = pairSides(a, b, pv);
+          rows.push({ kind: "pair", variant: pv, left, right, compact });
+        } else {
+          rows.push({ kind: "pair-compact", left: a, right: b, compact });
+        }
+        i += 2;
+        continue;
+      }
+      // Lone half/card tile — span full width so the grid never looks broken.
       rows.push({
         kind: "solo",
         block: a,
-        size: "half",
-        compact: isCompactLayout(layoutA),
+        size: "full",
+        compact: true,
         featured: false,
       });
       i += 1;

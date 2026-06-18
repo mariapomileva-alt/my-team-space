@@ -406,6 +406,25 @@
   scroll-snap-align: start;
 }
 
+.team-app-dashboard .dashboard-grid-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  align-items: stretch;
+}
+
+.team-app-dashboard .dashboard-tile-shell {
+  display: flex;
+  min-height: 8.75rem;
+  height: 100%;
+}
+
+.team-app-dashboard .dashboard-tile-shell > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
 .integrations-scroll-rail,
 .integrations-pills-rail {
   scroll-snap-type: x proximity;

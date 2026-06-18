@@ -18,6 +18,10 @@ import {
 import { buildDashboardRows, type DashboardRow } from "@/lib/blocks/dashboard-layout";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils/cn";
+
+const PAIR_GRID = "dashboard-grid-pair";
+const TILE_SHELL = "dashboard-tile-shell";
 
 function SoloWidget({
   team,
@@ -165,7 +169,7 @@ function PairCell({
 
 function PreviewAnchor({ blockId, children }: { blockId: string; children: React.ReactNode }) {
   return (
-    <div data-preview-block-id={blockId} className="h-full rounded-[inherit]">
+    <div data-preview-block-id={blockId} className={cn(TILE_SHELL, "rounded-[inherit]")}>
       {children}
     </div>
   );
@@ -196,45 +200,35 @@ function DashboardRowView({
       />
     );
     if (isHalf) {
-      return (
-        <div className="grid grid-cols-2 gap-2.5">
-          <PreviewAnchor blockId={row.block.id}>
-            <div className={row.layout === "card" ? "min-h-[108px]" : "min-h-[148px]"}>{content}</div>
-          </PreviewAnchor>
-        </div>
-      );
+      return <PreviewAnchor blockId={row.block.id}>{content}</PreviewAnchor>;
     }
     return <PreviewAnchor blockId={row.block.id}>{content}</PreviewAnchor>;
   }
 
   if (row.kind === "pair") {
     return (
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className={PAIR_GRID}>
         <PreviewAnchor blockId={row.left.id}>
-          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
-            <PairCell
-              team={team}
-              block={row.left}
-              variant={row.variant}
-              side="left"
-              onOpen={onOpen}
-              index={base}
-              compact={row.compact}
-            />
-          </div>
+          <PairCell
+            team={team}
+            block={row.left}
+            variant={row.variant}
+            side="left"
+            onOpen={onOpen}
+            index={base}
+            compact={row.compact}
+          />
         </PreviewAnchor>
         <PreviewAnchor blockId={row.right.id}>
-          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
-            <PairCell
-              team={team}
-              block={row.right}
-              variant={row.variant}
-              side="right"
-              onOpen={onOpen}
-              index={base + 1}
-              compact={row.compact}
-            />
-          </div>
+          <PairCell
+            team={team}
+            block={row.right}
+            variant={row.variant}
+            side="right"
+            onOpen={onOpen}
+            index={base + 1}
+            compact={row.compact}
+          />
         </PreviewAnchor>
       </div>
     );
@@ -271,47 +265,24 @@ function DashboardRowView({
 
   if (row.kind === "pair-compact") {
     return (
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className={PAIR_GRID}>
         <PreviewAnchor blockId={row.left.id}>
-          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
-            <SoloWidget
-              team={team}
-              block={row.left}
-              onOpen={onOpen}
-              index={base}
-              compact={row.compact}
-            />
-          </div>
+          <SoloWidget
+            team={team}
+            block={row.left}
+            onOpen={onOpen}
+            index={base}
+            compact={row.compact}
+          />
         </PreviewAnchor>
         <PreviewAnchor blockId={row.right.id}>
-          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
-            <SoloWidget
-              team={team}
-              block={row.right}
-              onOpen={onOpen}
-              index={base + 1}
-              compact={row.compact}
-            />
-          </div>
-        </PreviewAnchor>
-      </div>
-    );
-  }
-
-  if (row.size === "half") {
-    return (
-      <div className="grid grid-cols-2 gap-2.5">
-        <PreviewAnchor blockId={row.block.id}>
-          <div className={row.compact ? "min-h-[108px]" : "min-h-[148px]"}>
-            <SoloWidget
-              team={team}
-              block={row.block}
-              onOpen={onOpen}
-              index={base}
-              compact={row.compact}
-              featured={row.featured}
-            />
-          </div>
+          <SoloWidget
+            team={team}
+            block={row.right}
+            onOpen={onOpen}
+            index={base + 1}
+            compact={row.compact}
+          />
         </PreviewAnchor>
       </div>
     );
@@ -319,16 +290,14 @@ function DashboardRowView({
 
   return (
     <PreviewAnchor blockId={row.block.id}>
-      <div className={row.featured ? "min-h-[168px]" : undefined}>
-        <SoloWidget
-          team={team}
-          block={row.block}
-          onOpen={onOpen}
-          index={base}
-          compact={row.compact}
-          featured={row.featured}
-        />
-      </div>
+      <SoloWidget
+        team={team}
+        block={row.block}
+        onOpen={onOpen}
+        index={base}
+        compact={row.compact}
+        featured={row.featured}
+      />
     </PreviewAnchor>
   );
 }

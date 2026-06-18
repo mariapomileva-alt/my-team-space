@@ -67,7 +67,7 @@ function schedule(events: { title: string; when: string; place?: string }[]) {
       when: e.when,
       place: e.place ?? "",
     })),
-  });
+  }, "card");
 }
 
 function gallery(urls: string[]) {
@@ -92,7 +92,7 @@ function contacts(rows: { name: string; role: string; url?: string }[]) {
       url: r.url ?? "",
       photoUrl: "",
     })),
-  });
+  }, "card");
 }
 
 function quickLinks(links: Partial<Record<string, string>>) {
@@ -100,7 +100,7 @@ function quickLinks(links: Partial<Record<string, string>>) {
 }
 
 function poll(question: string, yes = "I'm in", no = "Can't make it") {
-  return blk("blk_poll", "polls", 18, { question, optionYes: yes, optionNo: no });
+  return blk("blk_poll", "polls", 18, { question, optionYes: yes, optionNo: no }, "card");
 }
 
 function feed(posts: { title: string; body: string }[]) {
@@ -188,7 +188,7 @@ function countdown(label: string, targetDate: string) {
   return blk("blk_cd", "countdown", 30, { label, targetDate }, "half");
 }
 
-function shop(products: { name: string; price: string }[]) {
+function shop(products: { name: string; price: string }[], layout: BlockLayout = "half") {
   return blk("blk_shop", "team_shop", 32, {
     sectionTitle: "Team shop",
     subtitle: "Order kit & merch",
@@ -200,7 +200,7 @@ function shop(products: { name: string; price: string }[]) {
       buttonLabel: "Order",
       productUrl: "https://example.com/shop",
     })),
-  }, "half");
+  }, layout);
 }
 
 function weather(temp: string, note: string, location: string) {
@@ -324,15 +324,15 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
           social: { instagram: "thunderhoopsbc", whatsapp: "+34600000001" },
         }),
         schedule([{ title: "Practice", when: "Mon/Wed 18:00", place: "Court A" }]),
-        resultsSimple([{ athlete: "Lucas M.", comp: "City Cup", place: 1, date: "2026-03-15" }]),
         blk("blk_att", "attendance", 11, {
           enabledFeatures: { streaks: true, history: true },
           roster: [{ id: "p1", name: "Lucas M.", role: "#7" }],
-        }),
+        }, "card"),
+        resultsSimple([{ athlete: "Lucas M.", comp: "City Cup", place: 1, date: "2026-03-15" }]),
         contacts([{ name: "Coach Miguel", role: "Head coach", url: "tel:+34600000001" }]),
-        integrations([{ url: "https://www.hudl.com/", label: "Game film" }]),
+        shop([{ name: "Thunder jersey", price: "€38" }], "card"),
         payments("March fee", "€55", "https://pay.example.com/hoops"),
-        shop([{ name: "Thunder jersey", price: "€38" }]),
+        integrations([{ url: "https://www.hudl.com/", label: "Game film" }]),
       ],
     ),
   },
