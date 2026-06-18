@@ -30,7 +30,7 @@ import {
 } from "@/lib/builder/layout";
 import type { BuilderProgressTarget } from "@/components/builder/builder-progress";
 import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
-import { PAGE_STRUCTURE_BLOCK_MAP, type PageStructureNavId } from "@/lib/builder/page-structure";
+import { PAGE_STRUCTURE_BLOCK_MAP, resolvePreviewBlockId, structureNavIdForBlockType, type PageStructureNavId } from "@/lib/builder/page-structure";
 import { applyBlockOrder, builderSortBlocks, partitionBlocksByEnabled } from "@/lib/blocks/meta";
 import {
   readStoredPreviewMode,
@@ -101,6 +101,7 @@ export function TeamPageBuilder({
   const [openSection, setOpenSection] = useState<WorkspaceSection | null>("header");
   const [activeStructureNav, setActiveStructureNav] = useState<PageStructureNavId | null>("header");
   const [aboutFocusKey, setAboutFocusKey] = useState(0);
+  const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [mobileTab, setMobileTab] = useState<BuilderMobileTab>("edit");
   const [fullPreviewOpen, setFullPreviewOpen] = useState(false);
   const [previewMode, setPreviewMode] = useState<BuilderPreviewMode>("mobile");
@@ -342,9 +343,19 @@ export function TeamPageBuilder({
       } else {
         s.add(id);
         setFocusBlockId(id);
+        const block = teamRef.current.blocks.find((b) => b.id === id);
+        const navId = block ? structureNavIdForBlockType(block.type) : null;
+        if (navId) setActiveStructureNav(navId);
       }
       return s;
     });
+  }
+
+  function handlePreviewBlock(id: string) {
+    setFocusBlockId(id);
+    const block = teamRef.current.blocks.find((b) => b.id === id);
+    const navId = block ? structureNavIdForBlockType(block.type) : null;
+    if (navId) setActiveStructureNav(navId);
   }
 
   function quickAddBlock(type: BlockType) {
@@ -428,8 +439,16 @@ export function TeamPageBuilder({
   }
 
   const setWorkspaceExpanded = useCallback((section: WorkspaceSection, open: boolean) => {
-    if (open) setOpenSection(section);
-    else setOpenSection((cur) => (cur === section ? null : cur));
+    if (open) {
+      setOpenSection(section);
+      if (section === "header") {
+        setActiveStructureNav("header");
+        const heroId = resolvePreviewBlockId(teamRef.current, "header");
+        if (heroId) setFocusBlockId(heroId);
+      }
+    } else {
+      setOpenSection((cur) => (cur === section ? null : cur));
+    }
   }, []);
 
   function focusWorkspaceSection(section: WorkspaceSection) {
@@ -447,6 +466,8 @@ export function TeamPageBuilder({
 
   function navigateToStructureItem(id: PageStructureNavId) {
     setActiveStructureNav(id);
+    const previewId = resolvePreviewBlockId(teamRef.current, id);
+    if (previewId) setFocusBlockId(previewId);
 
     if (id === "header") {
       focusWorkspaceSection("header");
@@ -472,7 +493,6 @@ export function TeamPageBuilder({
       quickAddBlock(block.type);
     } else {
       setExpanded((prev) => new Set(prev).add(block.id));
-      setFocusBlockId(block.id);
     }
 
     window.setTimeout(() => {
@@ -682,7 +702,7 @@ export function TeamPageBuilder({
                 onToggleEnabled={toggleBlock}
                 onPatchBlock={patchBlock}
                 onPatchTeam={patchTeam}
-                onPreviewBlock={setFocusBlockId}
+                onPreviewBlock={handlePreviewBlock}
                 onMoveUp={(id) => moveBlock(id, -1)}
                 onMoveDown={(id) => moveBlock(id, 1)}
                 onDragEnd={onDragEnd}
@@ -716,29 +736,51 @@ export function TeamPageBuilder({
             className={embedded ? BUILDER_PREVIEW_IN_NAV_GRID : BUILDER_PREVIEW_COLUMN}
           >
             <div className={BUILDER_PREVIEW_CHROME}>
-              <div className="mb-4">
+              <div className="mb-3">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-600/80">
                     Live preview
                   </p>
-                  <span className="rounded-full bg-emerald-50/80 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-100/80">
-                    Visible to visitors
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="rounded-full bg-emerald-50/80 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-100/80">
+                      Visible to visitors
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewCollapsed((v) => !v)}
+                      className="rounded-full border border-zinc-200/70 bg-white px-2 py-0.5 text-[10px] font-semibold text-zinc-500 transition hover:bg-zinc-50"
+                      aria-expanded={!previewCollapsed}
+                    >
+                      {previewCollapsed ? "Show" : "Collapse"}
+                    </button>
+                  </div>
                 </div>
-                <p className="mt-1.5 text-[12px] leading-snug text-zinc-500">
-                  This is exactly what parents and athletes will see.
-                </p>
+                {!previewCollapsed ? (
+                  <p className="mt-1.5 text-[12px] leading-snug text-zinc-500">
+                    This is exactly what parents and athletes will see.
+                  </p>
+                ) : null}
               </div>
-              <BuilderLivePreview
-                team={team}
-                focusBlockId={focusBlockId}
-                onOpenInTab={previewAsParent}
-                fullPreviewOpen={fullPreviewOpen}
-                onFullPreviewOpenChange={setFullPreviewOpen}
-                hideFullPreviewModal
-                previewMode={previewMode}
-                onPreviewModeChange={changePreviewMode}
-              />
+              {!previewCollapsed ? (
+                <BuilderLivePreview
+                  team={team}
+                  focusBlockId={focusBlockId}
+                  onOpenInTab={previewAsParent}
+                  fullPreviewOpen={fullPreviewOpen}
+                  onFullPreviewOpenChange={setFullPreviewOpen}
+                  hideFullPreviewModal
+                  previewMode={previewMode}
+                  onPreviewModeChange={changePreviewMode}
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setPreviewCollapsed(false)}
+                  className="flex w-full items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/80 py-8 text-[12px] font-semibold text-zinc-500 transition hover:border-violet-200 hover:text-violet-700"
+                >
+                  Show live preview
+                </button>
+              )}
             </div>
           </aside>
         </div>

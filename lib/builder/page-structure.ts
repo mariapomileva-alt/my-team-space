@@ -174,3 +174,24 @@ export const PAGE_STRUCTURE_BLOCK_MAP: Record<
   contacts: ["contacts"],
   sponsors: ["sponsors"],
 };
+
+/** Block id to highlight in live preview when a sidebar section is selected. */
+export function resolvePreviewBlockId(team: TeamSpace, id: PageStructureNavId): string | null {
+  if (id === "header" || id === "about") {
+    return team.blocks.find((b) => b.type === "hero")?.id ?? null;
+  }
+  const types = PAGE_STRUCTURE_BLOCK_MAP[id];
+  const enabled = team.blocks.find((b) => types.includes(b.type) && b.enabled);
+  if (enabled) return enabled.id;
+  return team.blocks.find((b) => types.includes(b.type))?.id ?? null;
+}
+
+export function structureNavIdForBlockType(type: BlockType): PageStructureNavId | null {
+  if (type === "gallery") return "gallery";
+  if (type === "calendar" || type === "schedule") return "calendar";
+  if (type === "results") return "results";
+  if (type === "contacts") return "contacts";
+  if (type === "sponsors") return "sponsors";
+  if (type === "hero") return "header";
+  return null;
+}

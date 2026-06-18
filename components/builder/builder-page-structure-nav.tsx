@@ -30,24 +30,27 @@ export function BuilderPageStructureNav({
 
   return (
     <nav className={cn("flex flex-col", className)} aria-label="Page sections">
-      <div className="mb-4 rounded-2xl border border-zinc-200/50 bg-white/80 px-3.5 py-3 shadow-sm">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-400">Page progress</p>
-        <p className="mt-1 text-lg font-bold text-zinc-900">{percent}% Ready</p>
-        <p className="mt-0.5 text-[11px] text-zinc-500">
-          {doneCount} of {items.length} sections complete
-        </p>
-        {snap.next ? (
-          <p className="mt-2 text-[11px] leading-snug text-zinc-600">
-            <span className="font-semibold text-zinc-500">Next:</span> {formatSetupAction(snap.next)}
+      <div className="mb-3 rounded-xl border border-zinc-200/50 bg-white/80 px-3 py-2 shadow-sm">
+        <div className="flex items-baseline justify-between gap-2">
+          <p className="text-[15px] font-bold text-zinc-900">{percent}% Ready</p>
+          <p className="text-[10px] font-medium text-zinc-500">
+            {doneCount}/{items.length}
           </p>
-        ) : null}
+        </div>
+        {snap.next ? (
+          <p className="mt-1 text-[11px] leading-snug text-zinc-600">
+            <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
+          </p>
+        ) : (
+          <p className="mt-1 text-[11px] font-medium text-emerald-700">All sections complete</p>
+        )}
       </div>
 
-      <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+      <p className="mb-1.5 px-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
         Your page
       </p>
 
-      <ul className="space-y-1">
+      <ul className="space-y-0.5">
         {items.map((item) => {
           const isActive = activeId === item.id;
           return (
@@ -56,16 +59,16 @@ export function BuilderPageStructureNav({
                 type="button"
                 onClick={() => onSelect(item.id)}
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-[13px] font-semibold transition",
+                  "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold transition-colors duration-150",
                   isActive
-                    ? "bg-violet-50 text-violet-950 shadow-[inset_0_0_0_1px_rgba(139,92,246,0.15)]"
-                    : "text-zinc-700 hover:bg-white/70",
+                    ? "bg-violet-600 text-white shadow-sm"
+                    : "text-zinc-700 hover:bg-white/80",
                 )}
               >
                 <span
                   className={cn(
-                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[13px]",
-                    isActive ? "bg-violet-600 text-white" : "bg-zinc-100",
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[12px]",
+                    isActive ? "bg-white/20" : "bg-zinc-100",
                   )}
                   aria-hidden
                 >
@@ -74,12 +77,16 @@ export function BuilderPageStructureNav({
                 <span className="min-w-0 flex-1 truncate">{item.label}</span>
                 <span
                   className={cn(
-                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold",
+                    "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[9px] font-bold",
                     item.done
-                      ? "bg-emerald-100 text-emerald-700"
-                      : item.enabled
-                        ? "bg-zinc-100 text-zinc-400"
-                        : "bg-zinc-50 text-zinc-300",
+                      ? isActive
+                        ? "bg-white/25 text-white"
+                        : "bg-emerald-100 text-emerald-700"
+                      : isActive
+                        ? "bg-white/15 text-white/80"
+                        : item.enabled
+                          ? "bg-zinc-100 text-zinc-400"
+                          : "bg-zinc-50 text-zinc-300",
                   )}
                   aria-label={item.done ? "Complete" : item.enabled ? "Incomplete" : "Not on page"}
                 >
@@ -91,16 +98,16 @@ export function BuilderPageStructureNav({
         })}
       </ul>
 
-      <div className="mt-6 space-y-1 border-t border-zinc-200/60 pt-4">
+      <div className="mt-5 space-y-0.5 border-t border-zinc-200/60 pt-3">
         <Link
           href={`/admin/team/${teamId}`}
-          className="flex items-center gap-2 rounded-xl px-3 py-2 text-[12px] font-semibold text-zinc-500 transition hover:bg-white/60 hover:text-zinc-800"
+          className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-zinc-500 transition hover:bg-white/60 hover:text-zinc-800"
         >
           ← Dashboard
         </Link>
         <Link
           href={`/admin/team/${teamId}/settings`}
-          className="flex items-center gap-2 rounded-xl px-3 py-2 text-[12px] font-semibold text-zinc-500 transition hover:bg-white/60 hover:text-zinc-800"
+          className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-zinc-500 transition hover:bg-white/60 hover:text-zinc-800"
         >
           ⚙️ Settings
         </Link>
@@ -125,7 +132,7 @@ export function BuilderPageStructureNavMobile({
   return (
     <nav
       className={cn(
-        "flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        "flex gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className,
       )}
       aria-label="Page sections"
@@ -138,9 +145,9 @@ export function BuilderPageStructureNavMobile({
             type="button"
             onClick={() => onSelect(item.id)}
             className={cn(
-              "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition",
+              "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition-colors duration-150",
               isActive
-                ? "bg-violet-600 text-white"
+                ? "bg-violet-600 text-white shadow-sm"
                 : "bg-white text-zinc-600 ring-1 ring-zinc-200/80",
             )}
           >

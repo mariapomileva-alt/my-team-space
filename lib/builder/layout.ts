@@ -90,7 +90,7 @@ export const BUILDER_PREVIEW_IN_NAV_GRID = cn(
   "mx-auto hidden w-full shrink-0",
   "lg:sticky lg:top-4 lg:z-10 lg:col-start-3 lg:row-start-1",
   "lg:mx-0 lg:block lg:w-full lg:max-w-none lg:justify-self-stretch",
-  "lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto lg:overscroll-contain",
+  "lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto lg:overscroll-contain lg:scroll-smooth",
 );
 
 export const BUILDER_EDITOR_COLUMN = "min-w-0 w-full space-y-5 overflow-x-clip lg:space-y-6";
@@ -99,7 +99,7 @@ export const BUILDER_PREVIEW_COLUMN = cn(
   "mx-auto hidden w-full shrink-0",
   "lg:sticky lg:top-4 lg:z-10 lg:col-start-2 lg:row-start-1",
   "lg:mx-0 lg:block lg:w-full lg:max-w-none lg:justify-self-stretch",
-  "lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto lg:overscroll-contain",
+  "lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto lg:overscroll-contain lg:scroll-smooth",
 );
 
 /** Premium preview chrome wrapper */

@@ -21,8 +21,9 @@ import { useEffect, useRef, type CSSProperties, type RefObject } from "react";
 function scrollPreviewToBlock(viewport: HTMLElement, target: Element) {
   const vpRect = viewport.getBoundingClientRect();
   const tRect = target.getBoundingClientRect();
-  const offset = tRect.top - vpRect.top - vpRect.height / 2 + tRect.height / 2;
-  viewport.scrollTop += offset;
+  const offset = tRect.top - vpRect.top - vpRect.height * 0.32 + tRect.height * 0.5;
+  const nextTop = Math.max(0, viewport.scrollTop + offset);
+  viewport.scrollTo({ top: nextTop, behavior: "smooth" });
 }
 
 function usePreviewFocus(

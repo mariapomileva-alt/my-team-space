@@ -457,6 +457,10 @@
   padding-bottom: 2rem;
 }
 
+.builder-live-preview .builder-preview-viewport {
+  scroll-behavior: smooth;
+}
+
 .builder-live-preview .builder-preview-viewport [data-preview-block-id].preview-block-focus {
   outline: 2px solid rgba(139, 92, 246, 0.55);
   outline-offset: 3px;
@@ -486,6 +490,28 @@
   border-color: var(--mts-card-border);
   border-radius: var(--mts-radius);
   box-shadow: var(--mts-shadow);
+}
+
+/* Team app dashboard tiles, hero shell, detail sheets — follow active theme */
+.mts-app-surface {
+  background: var(--mts-card);
+  border: 1px solid var(--mts-card-border);
+  box-shadow: var(--mts-shadow);
+  color: var(--mts-text);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.35s ease;
+}
+
+.mts-app-surface--interactive:hover {
+  border-color: color-mix(in srgb, var(--mts-ring) 40%, var(--mts-card-border));
+  box-shadow: var(--mts-glow), var(--mts-shadow);
+}
+
+.mts-app-badge {
+  background: var(--mts-accent-soft);
+  color: var(--mts-primary);
 }
 
 @theme inline {

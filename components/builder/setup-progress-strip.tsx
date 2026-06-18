@@ -27,8 +27,8 @@ export function SetupProgressStrip({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           {snap.next && !isReady ? (
-            <p className="text-[12px] text-zinc-600">
-              <span className="font-semibold text-zinc-500">Next step:</span> {formatSetupAction(snap.next)}
+            <p className="text-[12px] leading-snug text-zinc-600">
+              <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
             </p>
           ) : (
             <p className="text-[12px] font-medium text-emerald-700">Ready to share with families.</p>
