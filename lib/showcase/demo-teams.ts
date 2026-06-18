@@ -58,26 +58,52 @@ function ann(message: string, tone: "info" | "urgent" | "confirm" = "info") {
   return blk("blk_ann", "announcement_bar", 0, { message, tone, pinned: true }, "full");
 }
 
-function schedule(events: { title: string; when: string; place?: string }[]) {
-  return blk("blk_sched", "schedule", 10, {
-    mode: "manual",
-    events: events.map((e, i) => ({
-      id: `ev_${i}`,
-      title: e.title,
-      when: e.when,
-      place: e.place ?? "",
-    })),
-  }, "card");
+const DAY_INDEX: Record<string, number> = {
+  Sun: 0,
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+};
+
+function schedule(
+  events: { title: string; day: string; time: string; place?: string; type?: "training" | "competition" | "camp" | "meeting" }[],
+) {
+  return blk(
+    "blk_sched",
+    "schedule",
+    10,
+    {
+      mode: "manual",
+      events: events.map((e, i) => ({
+        id: `ev_${i}`,
+        title: e.title,
+        eventType: e.type ?? "training",
+        dayOfWeek: DAY_INDEX[e.day] ?? 2,
+        time: e.time,
+        location: e.place ?? "",
+        repeat: "weekly",
+        ends: "never",
+      })),
+    },
+    "card",
+  );
 }
 
-function gallery(urls: string[]) {
+function gallery(urls: string[], captions?: string[]) {
   return blk(
     "blk_gal",
     "gallery",
     12,
     {
       mode: "manual",
-      images: urls.map((url, i) => ({ id: `img_${i}`, url, caption: "" })),
+      images: urls.map((url, i) => ({
+        id: `img_${i}`,
+        url,
+        caption: captions?.[i] ?? "",
+      })),
     },
     "featured",
   );
@@ -108,25 +134,35 @@ function feed(posts: { title: string; body: string }[]) {
     items: posts.map((p, i) => ({
       id: `post_${i}`,
       title: p.title,
-      subtitle: p.body,
-      emoji: "📣",
+      body: p.body,
     })),
   });
 }
 
-function achievements(cards: { title: string; body: string; emoji: string }[]) {
+function achievements(
+  cards: { title: string; player: string; icon: string; description?: string }[],
+) {
   return blk(
     "blk_ach",
     "achievements",
     22,
     {
-      cards: cards.map((c, i) => ({ id: `ach_${i}`, ...c })),
+      cards: cards.map((c, i) => ({
+        id: `ach_${i}`,
+        icon: c.icon,
+        title: c.title,
+        player: c.player,
+        description: c.description ?? "",
+      })),
     },
     "featured",
   );
 }
 
-function resultsSimple(rows: { athlete: string; comp: string; place: number; date: string }[]) {
+function resultsSimple(
+  rows: { athlete: string; comp: string; place: number; date: string }[],
+  season = "2026 Season",
+) {
   return blk(
     "blk_results",
     "results",
@@ -135,7 +171,7 @@ function resultsSimple(rows: { athlete: string; comp: string; place: number; dat
       enabled: true,
       mode: "simple",
       blockTitle: "Competition results",
-      seasonName: "2026 Season",
+      seasonName: season,
       simpleResults: rows.map((r, i) => ({
         id: `sr_${i}`,
         competitionName: r.comp,
@@ -188,23 +224,65 @@ function countdown(label: string, targetDate: string) {
   return blk("blk_cd", "countdown", 30, { label, targetDate }, "half");
 }
 
-function shop(products: { name: string; price: string }[], layout: BlockLayout = "half") {
-  return blk("blk_shop", "team_shop", 32, {
-    sectionTitle: "Team shop",
-    subtitle: "Order kit & merch",
-    products: products.map((p, i) => ({
-      id: `prod_${i}`,
-      name: p.name,
-      price: p.price,
-      imageUrl: "",
-      buttonLabel: "Order",
-      productUrl: "https://example.com/shop",
-    })),
-  }, layout);
+function shop(
+  products: { name: string; price: string; imageUrl?: string }[],
+  layout: BlockLayout = "half",
+) {
+  return blk(
+    "blk_shop",
+    "team_shop",
+    32,
+    {
+      sectionTitle: "Team shop",
+      subtitle: "Order kit & merch",
+      products: products.map((p, i) => ({
+        id: `prod_${i}`,
+        name: p.name,
+        price: p.price,
+        imageUrl: p.imageUrl ?? "",
+        buttonLabel: "Order",
+        productUrl: "https://pay.example.com/shop",
+      })),
+    },
+    layout,
+  );
 }
 
-function weather(temp: string, note: string, location: string) {
-  return blk("blk_weather", "weather", 34, { temp, note, location }, "half");
+function trip(items: { title: string; body: string }[]) {
+  return blk(
+    "blk_trip",
+    "camp_trip",
+    13,
+    {
+      items: items.map((item, i) => ({
+        id: `trip_${i}`,
+        title: item.title,
+        body: item.body,
+      })),
+    },
+    "card",
+  );
+}
+
+function attendance(roster: { name: string; role?: string }[]) {
+  return blk(
+    "blk_att",
+    "attendance",
+    11,
+    {
+      enabledFeatures: { streaks: true, history: true },
+      roster: roster.map((p, i) => ({
+        id: `p_${i}`,
+        name: p.name,
+        role: p.role ?? "",
+      })),
+    },
+    "card",
+  );
+}
+
+function weather(temp: string, note: string, location: string, layout: BlockLayout = "half") {
+  return blk("blk_weather", "weather", 34, { temp, note, location }, layout);
 }
 
 function sponsors(names: string[]) {
@@ -258,9 +336,40 @@ function makeTeam(
 }
 
 const GALLERY_DANCE = [
-  "https://images.unsplash.com/photo-1518834107812-67b0bb7c2d2e?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1547159414-26d2a83f8a42?w=400&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1518834107812-67b0bb7c2d2e?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1547159414-26d2a83f8a42?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=480&h=480&fit=crop",
+];
+
+const GALLERY_HOOPS = [
+  "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1519861531473-920026218ac7?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1574623452334-1e0ac2bddd96?w=480&h=480&fit=crop",
+];
+
+const GALLERY_HOCKEY = [
+  "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1515705576963-95ad545555df?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1577225245490-5cca4573a14f?w=480&h=480&fit=crop",
+];
+
+const GALLERY_SWIM = [
+  "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=480&h=480&fit=crop",
+];
+
+const GALLERY_BALLET = [
+  "https://images.unsplash.com/photo-1508807526345-15e9b5f4b89b?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1518834107812-67b0bb7c2d2e?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=480&h=480&fit=crop",
+];
+
+const GALLERY_TENNIS = [
+  "https://images.unsplash.com/photo-1622163649001-09445f787b59?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1595435934249-26df3d350cea?w=480&h=480&fit=crop",
+  "https://images.unsplash.com/photo-1554068865-24cecd4e9b26?w=480&h=480&fit=crop",
 ];
 
 export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
@@ -289,19 +398,28 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
           social: { instagram: "rhythmmotion", whatsapp: "+37129111111" },
         }),
         schedule([
-          { title: "Hip-hop juniors", when: "Tue 16:30", place: "Studio A" },
-          { title: "Recital run-through", when: "Fri 18:30", place: "Main hall" },
+          { title: "Hip-hop juniors", day: "Tue", time: "16:30", place: "Studio A" },
+          { title: "Contemporary teens", day: "Thu", time: "17:15", place: "Studio B" },
+          { title: "Recital run-through", day: "Fri", time: "18:30", place: "Main hall", type: "competition" },
         ]),
-        gallery(GALLERY_DANCE),
-        poll("Who is coming to the recital?"),
+        gallery(GALLERY_DANCE, ["Rehearsal week", "Group routine", "Solo practice", "Spring showcase"]),
+        poll("Who is coming to the recital on June 28?", "We're in!", "Can't make it"),
         contacts([
           { name: "Coach Anna", role: "Artistic director", url: "tel:+37129111111" },
+          { name: "Ms. Līga", role: "Studio manager", url: "mailto:liga@rhythmmotion.lv" },
         ]),
         quickLinks({ whatsapp: "+37129111111", instagram: "rhythmmotion" }),
-        feed([{ title: "Costume fitting done!", body: "Thanks for staying late Tuesday." }]),
-        achievements([{ title: "National showcase", body: "Gold group 2025", emoji: "🌟" }]),
+        feed([
+          { title: "Costume fitting done!", body: "Thanks to everyone who stayed late Tuesday — purple outfits look amazing." },
+          { title: "Recital seating", body: "Doors open 18:00 · free entry for families." },
+        ]),
+        achievements([
+          { icon: "🌟", title: "National showcase", player: "Ensemble", description: "Gold · Riga 2025" },
+          { icon: "💃", title: "Best choreography", player: "Sofia K.", description: "Solo · ages 10–12" },
+          { icon: "🏆", title: "Spring festival", player: "Mini crew", description: "1st place group" },
+        ]),
         countdown("Recital night", "2026-06-28T18:30:00"),
-        payments("March fee", "€45 / month", "https://pay.example.com/dance"),
+        payments("March fee", "€45 / month · includes studio time", "https://pay.example.com/dance"),
       ],
     ),
   },
@@ -323,16 +441,49 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
         hero("inline", "Barcelona, Spain", SHOWCASE_COVERS.basketball, {
           social: { instagram: "thunderhoopsbc", whatsapp: "+34600000001" },
         }),
-        schedule([{ title: "Practice", when: "Mon/Wed 18:00", place: "Court A" }]),
-        blk("blk_att", "attendance", 11, {
-          enabledFeatures: { streaks: true, history: true },
-          roster: [{ id: "p1", name: "Lucas M.", role: "#7" }],
-        }, "card"),
-        resultsSimple([{ athlete: "Lucas M.", comp: "City Cup", place: 1, date: "2026-03-15" }]),
-        contacts([{ name: "Coach Miguel", role: "Head coach", url: "tel:+34600000001" }]),
-        shop([{ name: "Thunder jersey", price: "€38" }], "card"),
-        payments("March fee", "€55", "https://pay.example.com/hoops"),
-        integrations([{ url: "https://www.hudl.com/", label: "Game film" }]),
+        schedule([
+          { title: "Team practice", day: "Mon", time: "18:00", place: "Court A" },
+          { title: "Shooting drills", day: "Wed", time: "18:00", place: "Court A" },
+          { title: "City Cup playoff", day: "Sat", time: "10:00", place: "Pavelló Nord", type: "competition" },
+        ]),
+        attendance([
+          { name: "Lucas M.", role: "#7" },
+          { name: "Marco T.", role: "#11" },
+          { name: "Diego R.", role: "#4" },
+          { name: "Alex P.", role: "#23" },
+          { name: "Noah S.", role: "#9" },
+          { name: "Leo H.", role: "#15" },
+        ]),
+        resultsSimple([
+          { athlete: "Lucas M.", comp: "Barcelona City Cup", place: 1, date: "2026-03-15" },
+          { athlete: "Marco T.", comp: "Catalunya U14", place: 2, date: "2026-02-08" },
+          { athlete: "Diego R.", comp: "Friendly vs L'Hospitalet", place: 3, date: "2026-01-20" },
+        ]),
+        gallery(GALLERY_HOOPS, ["Playoff warm-up", "Team huddle", "City Cup final"]),
+        contacts([
+          { name: "Coach Miguel", role: "Head coach", url: "tel:+34600000001" },
+          { name: "Parents rep", role: "Laura G.", url: "mailto:parents@thunderhoops.es" },
+        ]),
+        shop(
+          [
+            {
+              name: "Thunder home jersey",
+              price: "€38",
+              imageUrl: "https://images.unsplash.com/photo-1574623452334-1e0ac2bddd96?w=200&h=200&fit=crop",
+            },
+            {
+              name: "Practice shorts",
+              price: "€22",
+              imageUrl: "https://images.unsplash.com/photo-1519861531473-920026218ac7?w=200&h=200&fit=crop",
+            },
+          ],
+          "card",
+        ),
+        payments("March membership", "€55 · includes league registration", "https://pay.example.com/hoops"),
+        integrations([
+          { url: "https://www.hudl.com/", label: "Game film" },
+          { url: "https://www.youtube.com/", label: "Highlights" },
+        ]),
       ],
     ),
   },
@@ -355,15 +506,26 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
           quote: "Skate hard. Stick together.",
           social: { instagram: "nordicicewolves" },
         }),
-        schedule([{ title: "Ice practice", when: "Wed 16:00", place: "Rink B" }]),
-        resultsSimple([{ athlete: "Elias V.", comp: "Regional Cup", place: 1, date: "2026-02-20" }]),
-        blk("blk_trip", "camp_trip", 13, {
-          items: [{ id: "trip1", title: "Tallinn tournament", subtitle: "Mar 14–16", emoji: "🚌" }],
-        }),
-        gallery(["https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=400&fit=crop"]),
-        weather("-4°C", "Light snow", "Tampere"),
-        contacts([{ name: "Coach Jari", role: "Head coach", url: "tel:+35840123456" }]),
-        payments("Season fee", "€420", "https://pay.example.com/hockey"),
+        schedule([
+          { title: "Ice practice", day: "Mon", time: "16:00", place: "Rink B" },
+          { title: "Skills & systems", day: "Wed", time: "16:00", place: "Rink B" },
+          { title: "Scrimmage", day: "Fri", time: "17:30", place: "Rink A", type: "competition" },
+        ]),
+        trip([
+          { title: "Tallinn tournament", body: "Mar 14–16 · bus leaves 07:00 · hotel included" },
+          { title: "Gear check", body: "Full kit + mouthguard · parents sign waiver by Mar 10" },
+        ]),
+        weather("-4°C", "Light snow · outdoor rink closed", "Tampere", "card"),
+        resultsSimple([
+          { athlete: "Elias V.", comp: "Regional Cup U14", place: 1, date: "2026-02-20" },
+          { athlete: "Oskar L.", comp: "Nordic Youth League", place: 2, date: "2026-01-12" },
+        ], "2025–26 Season"),
+        gallery(GALLERY_HOCKEY, ["Away game", "Team bench", "Celebration"]),
+        contacts([
+          { name: "Coach Jari", role: "Head coach", url: "tel:+35840123456" },
+          { name: "Team manager", role: "Sanna K.", url: "mailto:manager@nordicice.fi" },
+        ]),
+        payments("Season fee", "€420 · instalments available", "https://pay.example.com/hockey"),
       ],
     ),
   },
@@ -385,13 +547,33 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
         hero("stack", "Tallinn, Estonia", SHOWCASE_COVERS.swim, {
           social: { instagram: "aquawaveswim", whatsapp: "+3725123456" },
         }),
-        schedule([{ title: "Morning squad", when: "Mon/Wed/Fri 06:30", place: "50 m pool" }]),
-        resultsSimple([{ athlete: "Krista L.", comp: "100 m free", place: 1, date: "2026-04-02" }]),
-        poll("Who can help at the meet?", "I can", "Not this time"),
-        achievements([{ title: "Relay gold", body: "County champs", emoji: "🥇" }]),
-        contacts([{ name: "Coach Liis", role: "Head coach", url: "tel:+3725123456" }]),
-        integrations([{ url: "https://www.strava.com/clubs/", label: "Dryland" }]),
-        payments("April fee", "€60", "https://pay.example.com/swim"),
+        schedule([
+          { title: "Morning squad", day: "Mon", time: "06:30", place: "50 m pool" },
+          { title: "Technique session", day: "Wed", time: "06:30", place: "50 m pool" },
+          { title: "Endurance set", day: "Fri", time: "06:30", place: "50 m pool" },
+          { title: "County meet", day: "Sun", time: "08:00", place: "Olympic Centre", type: "competition" },
+        ]),
+        poll("Who can help at the county meet?", "I can volunteer", "Not this time"),
+        contacts([
+          { name: "Coach Liis", role: "Head coach", url: "tel:+3725123456" },
+          { name: "Meet coordinator", role: "Andres P.", url: "mailto:meets@aquawave.ee" },
+        ]),
+        resultsSimple([
+          { athlete: "Krista L.", comp: "100 m freestyle", place: 1, date: "2026-04-02" },
+          { athlete: "Markus T.", comp: "200 m IM", place: 2, date: "2026-03-18" },
+          { athlete: "Relay A", comp: "4×100 free", place: 1, date: "2026-02-25" },
+        ]),
+        gallery(GALLERY_SWIM, ["Morning squad", "Starts practice", "Medal ceremony"]),
+        achievements([
+          { icon: "🥇", title: "County relay gold", player: "Girls 14U", description: "New club record" },
+          { icon: "⭐", title: "Swimmer of the month", player: "Krista L.", description: "March 2026" },
+          { icon: "🏊", title: "Qualifying times", player: "6 athletes", description: "National juniors" },
+        ]),
+        integrations([
+          { url: "https://www.strava.com/clubs/", label: "Dryland club" },
+          { url: "https://www.youtube.com/", label: "Race footage" },
+        ]),
+        payments("April fee", "€60 · pool + coaching", "https://pay.example.com/swim"),
       ],
     ),
   },
@@ -414,13 +596,23 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
           quote: "Grace in every line",
           social: { instagram: "etoileballet", website: "etoileballet.fr" },
         }),
-        gallery(["https://images.unsplash.com/photo-1508807526345-15e9b5f4b89b?w=400&h=400&fit=crop"]),
-        schedule([{ title: "Technique III", when: "Mon/Wed 17:00", place: "Studio 1" }]),
+        gallery(GALLERY_BALLET, ["Studio barre", "Rehearsal", "On stage"]),
+        schedule([
+          { title: "Technique III", day: "Mon", time: "17:00", place: "Studio 1" },
+          { title: "Pointe class", day: "Wed", time: "17:00", place: "Studio 1" },
+          { title: "Repertoire", day: "Sat", time: "10:00", place: "Grand studio" },
+        ]),
         countdown("Summer gala", "2026-07-12T19:00:00"),
-        achievements([{ title: "Paris prize", body: "Silver solo 2025", emoji: "🩰" }]),
-        contacts([{ name: "Madame Claire", role: "Director", url: "mailto:claire@etoileballet.fr" }]),
-        payments("Term fee", "€280", "https://pay.example.com/ballet"),
-        sponsors(["Opéra Friends"]),
+        achievements([
+          { icon: "🩰", title: "Paris prize", player: "Camille R.", description: "Silver solo 2025" },
+          { icon: "✨", title: "Excellence award", player: "Étoile pre-pro", description: "Technique & artistry" },
+        ]),
+        contacts([
+          { name: "Madame Claire", role: "Director", url: "mailto:claire@etoileballet.fr" },
+          { name: "Monsieur Philippe", role: "Ballet master", url: "tel:+33145678900" },
+        ]),
+        payments("Summer term", "€280 · 12 weeks", "https://pay.example.com/ballet"),
+        sponsors(["Opéra Friends", "DanceWear Paris"]),
       ],
     ),
   },
@@ -442,17 +634,37 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
         hero("inline", "Lisbon, Portugal", SHOWCASE_COVERS.tennis, {
           social: { instagram: "acetennisacademy", whatsapp: "+351912345678" },
         }),
-        schedule([{ title: "Red squad", when: "Tue/Thu 16:00", place: "Courts 1–3" }]),
-        resultsSimple([{ athlete: "Inês R.", comp: "Lisbon Open U14", place: 1, date: "2026-05-03" }]),
+        schedule([
+          { title: "Red squad", day: "Tue", time: "16:00", place: "Courts 1–3" },
+          { title: "Match play", day: "Thu", time: "16:00", place: "Courts 1–3" },
+          { title: "Club tournament", day: "Sun", time: "09:00", place: "Center courts", type: "competition" },
+        ]),
+        resultsSimple([
+          { athlete: "Inês R.", comp: "Lisbon Open U14", place: 1, date: "2026-05-03" },
+          { athlete: "Tomás F.", comp: "Estoril Junior", place: 2, date: "2026-04-14" },
+        ]),
+        poll("Can you help with court maintenance Saturday?", "Count me in", "Sorry, no"),
+        contacts([
+          { name: "Coach Pedro", role: "Head pro", url: "tel:+351912345678" },
+          { name: "Academy office", role: "Bookings", url: "mailto:hello@acetennis.pt" },
+        ]),
+        gallery(GALLERY_TENNIS, ["Clay court drills", "Match point", "Academy day"]),
         integrations([
           { url: "https://www.utrsports.net/", label: "UTR ratings" },
-          { url: "https://www.youtube.com/", label: "Highlights" },
+          { url: "https://www.youtube.com/", label: "Match highlights" },
         ]),
-        poll("Court maintenance — can you help?"),
-        contacts([{ name: "Coach Pedro", role: "Head pro", url: "tel:+351912345678" }]),
-        shop([{ name: "Academy polo", price: "€42" }]),
-        payments("Monthly pass", "€120", "https://pay.example.com/tennis"),
-        sponsors(["Lisbon Sports Club"]),
+        shop(
+          [
+            {
+              name: "Academy polo",
+              price: "€42",
+              imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&h=200&fit=crop",
+            },
+          ],
+          "card",
+        ),
+        payments("Monthly pass", "€120 · unlimited court time", "https://pay.example.com/tennis"),
+        sponsors(["Lisbon Sports Club", "Wilson Portugal"]),
       ],
     ),
   },
