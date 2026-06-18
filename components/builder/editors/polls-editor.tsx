@@ -1,6 +1,7 @@
 "use client";
 
 import { PollVotesList } from "@/components/builder/editors/poll-votes-list";
+import { PollWhatsAppShare } from "@/components/builder/poll-whatsapp-share";
 import { getBlockSettings, type PollSettings } from "@/lib/blocks/settings";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 
@@ -62,6 +63,15 @@ export function PollsEditor({
         />
         <p className="mt-3 text-xs font-semibold text-zinc-500">Recent answers</p>
         <PollVotesList teamId={team.id} blockId={block.id} />
+        <PollWhatsAppShare
+          teamId={team.id}
+          teamSlug={team.slug}
+          teamName={team.name}
+          blockId={block.id}
+          question={s.question}
+          optionYes={s.optionYes}
+          optionNo={s.optionNo}
+        />
       </div>
     </div>
   );

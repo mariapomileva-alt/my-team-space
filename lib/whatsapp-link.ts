@@ -5,6 +5,11 @@ export function whatsappClickToChatUrl(phone: string, message: string): string |
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
+/** Coach picks a chat — pre-filled message only (results, payments, poll summary). */
+export function whatsappShareUrl(message: string): string {
+  return `https://wa.me/?text=${encodeURIComponent(message)}`;
+}
+
 export function buildPollNotifyMessage(
   teamName: string,
   question: string,

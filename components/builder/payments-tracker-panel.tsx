@@ -6,7 +6,9 @@ import {
   BUILDER_RADIUS_CHOICE,
 } from "@/lib/builder/layout";
 import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
+import { WhatsAppShareButton } from "@/components/shared/whatsapp-share-button";
 import { cn } from "@/lib/utils/cn";
+import { buildPaymentsShareMessage } from "@/lib/whatsapp-summaries";
 import type { PaymentStatus, PaymentTrackerRow, TeamSpace } from "@/lib/types";
 import { useMemo } from "react";
 
@@ -88,6 +90,11 @@ export function PaymentsTrackerPanel({
     }
     return [...map.entries()];
   }, [rows]);
+
+  const shareMessage = useMemo(
+    () => buildPaymentsShareMessage({ teamName: team.name, rows }),
+    [rows, team.name],
+  );
 
   return (
     <BuilderCollapsiblePanel
@@ -198,6 +205,14 @@ export function PaymentsTrackerPanel({
         <span aria-hidden>➕</span>
         Add athlete
       </button>
+
+      <WhatsAppShareButton
+        className="mt-3"
+        message={shareMessage}
+        label="Share payments in WhatsApp"
+        disabledReason={rows.length === 0 ? "Add athletes first — then share a status summary." : undefined}
+        size="compact"
+      />
     </BuilderCollapsiblePanel>
   );
 }

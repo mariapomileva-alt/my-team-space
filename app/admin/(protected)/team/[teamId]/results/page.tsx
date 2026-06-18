@@ -12,6 +12,7 @@ export default async function TeamResultsPage({ params }: Props) {
     <TeamResultsClient
       teamId={ctx.teamId}
       team={ctx.team}
+      publicUrl={ctx.publicUrl}
       achievementCount={ctx.stats.achievementCount}
     />
   );

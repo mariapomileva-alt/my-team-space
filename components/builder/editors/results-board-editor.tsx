@@ -1,6 +1,7 @@
 "use client";
 
 import { ResultsBoardView } from "@/components/results/results-board-view";
+import { WhatsAppShareButton } from "@/components/shared/whatsapp-share-button";
 import { rosterFromTeam } from "@/lib/blocks/roster";
 import { CategoryPicker, ResultsCategoryEditor } from "@/components/builder/editors/results-category-editor";
 import {
@@ -13,12 +14,14 @@ import {
   newCompetitionResult,
   newSimpleResult,
   pointsForPlace,
+  resultsBoardHasContent,
   type Competition,
   type ResultsBoardSettings,
   type ScoringRules,
   type SimpleResult,
 } from "@/lib/blocks/results-board";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
+import { buildResultsShareMessage } from "@/lib/whatsapp-summaries";
 import { useEffect, useMemo, useState } from "react";
 
 type Tab = "setup" | "competitions" | "scoring" | "preview";
@@ -77,9 +80,19 @@ export function ResultsBoardEditor({
 
   const previewBlock = useMemo(() => ({ ...block, settings: draft }), [block, draft]);
 
+  const resultsShareMessage = useMemo(() => {
+    const publicUrl = typeof window !== "undefined" ? `${window.location.origin}/${team.slug}` : undefined;
+    return buildResultsShareMessage({
+      teamName: team.name,
+      publicUrl,
+      settings: draft,
+    });
+  }, [draft, team.name, team.slug]);
+
   return (
     <div className="relative z-20 space-y-4" onClick={(e) => e.stopPropagation()}>
-      <div className="flex flex-wrap gap-1 rounded-2xl bg-zinc-100/80 p-1">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-1 flex-wrap gap-1 rounded-2xl bg-zinc-100/80 p-1">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -92,6 +105,15 @@ export function ResultsBoardEditor({
             {t.label}
           </button>
         ))}
+        </div>
+        <WhatsAppShareButton
+          message={resultsShareMessage}
+          label="Share in WhatsApp"
+          size="compact"
+          disabledReason={
+            resultsBoardHasContent(draft) ? undefined : "Add results first — then share with parents."
+          }
+        />
       </div>
 
       {tab === "setup" ? (
