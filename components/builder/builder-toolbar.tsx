@@ -39,13 +39,14 @@ export function BuilderToolbar({
   billingStatus?: ReactNode;
   editLocked?: boolean;
   canPublish?: boolean;
-  /** Slim toolbar — progress strip only, share tucked away */
+  /** Slim toolbar — share tucked away, no progress strip */
   compact?: boolean;
   onPublish: () => void;
   onPreview: () => void;
 }) {
   const [shareOpen, setShareOpen] = useState(false);
   const percent = builderCompletionPercent(team);
+  const logoSize = compact ? 44 : 52;
   const publishLabel = team.publishStatus === "published" ? "Published" : "Draft";
   const autosaveLabel =
     saveState === "saving" ? "Saving…" : saveState === "error" ? "Save issue" : "Autosaved";
@@ -56,27 +57,33 @@ export function BuilderToolbar({
     : `${publishLabel} · ${autosaveLabel}`;
 
   return (
-    <header className="sticky top-2 z-40 mb-3 w-full lg:top-3">
+    <header className={cn("sticky z-40 w-full", compact ? "top-1.5 mb-2 lg:top-2" : "top-2 mb-3 lg:top-3")}>
       <div
         className={cn(
           BUILDER_TOOLBAR_SURFACE,
-          "flex-col !items-stretch !gap-0 sm:!px-6",
-          compact ? "!py-3" : "!py-4",
+          "flex-col !items-stretch !gap-0",
+          compact ? "!px-4 !py-2 sm:!px-5" : "!px-5 !py-3 sm:!px-6",
         )}
       >
-        <div className="flex w-full flex-wrap items-center justify-between gap-4">
-          <div className="flex min-w-0 flex-1 items-center gap-3.5">
-            <TeamLogoProgressRing logoUrl={team.logoUrl} percent={percent} size={56} />
+        <div className="flex w-full flex-wrap items-center justify-between gap-2.5 sm:gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-2.5">
+            <TeamLogoProgressRing logoUrl={team.logoUrl} percent={percent} size={logoSize} />
             <div className="min-w-0">
-              <h1 className="truncate text-base font-bold tracking-tight text-zinc-900 sm:text-lg">
+              <h1
+                className={cn(
+                  "truncate font-bold tracking-tight text-zinc-900",
+                  compact ? "text-sm sm:text-[15px]" : "text-base sm:text-lg",
+                )}
+              >
                 {team.name || "Your team"}
               </h1>
               {!compact ? (
-                <p className="mt-0.5 text-[13px] font-semibold text-violet-700">{percent}% Ready</p>
+                <p className="mt-0.5 text-[12px] font-semibold text-violet-700">{percent}% Ready</p>
               ) : null}
               <p
                 className={cn(
-                  "mt-0.5 min-h-[1rem] text-[11px] leading-snug",
+                  "min-h-[0.875rem] leading-snug",
+                  compact ? "mt-0 text-[10px]" : "mt-0.5 text-[11px]",
                   saveError ? "text-red-600" : "text-zinc-500",
                 )}
                 title={saveError ?? undefined}
@@ -86,11 +93,14 @@ export function BuilderToolbar({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
               onClick={onPreview}
-              className="rounded-full border border-zinc-200/70 bg-white px-3.5 py-2 text-xs font-medium text-zinc-700 transition hover:bg-zinc-50 active:scale-[0.98]"
+              className={cn(
+                "rounded-full border border-zinc-200/70 bg-white font-medium text-zinc-700 transition hover:bg-zinc-50 active:scale-[0.98]",
+                compact ? "px-3 py-1.5 text-[11px]" : "px-3.5 py-2 text-xs",
+              )}
             >
               Preview
             </button>
@@ -98,7 +108,7 @@ export function BuilderToolbar({
               <button
                 type="button"
                 onClick={() => setShareOpen((v) => !v)}
-                className="rounded-full border border-zinc-200/70 bg-white px-3.5 py-2 text-xs font-medium text-zinc-600 transition hover:bg-zinc-50"
+                className="rounded-full border border-zinc-200/70 bg-white px-3 py-1.5 text-[11px] font-medium text-zinc-600 transition hover:bg-zinc-50"
               >
                 Share
               </button>
@@ -124,7 +134,10 @@ export function BuilderToolbar({
                       : undefined
                 }
                 onClick={onPublish}
-                className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white shadow-[0_4px_16px_-6px_rgba(124,58,237,0.45)] transition hover:bg-violet-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                className={cn(
+                  "rounded-full bg-violet-600 font-semibold text-white shadow-[0_4px_16px_-6px_rgba(124,58,237,0.45)] transition hover:bg-violet-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50",
+                  compact ? "px-3.5 py-1.5 text-[11px]" : "px-4 py-2 text-xs",
+                )}
               >
                 {pending ? "Publishing…" : editLocked ? "Locked" : "Publish"}
               </button>
@@ -133,23 +146,25 @@ export function BuilderToolbar({
         </div>
 
         {progress ? (
-          <div className={cn("w-full border-t border-zinc-100/80", compact ? "mt-3 pt-3" : "mt-4 pt-4")}>
+          <div className={cn("w-full border-t border-zinc-100/80", compact ? "mt-2 pt-2" : "mt-3 pt-3")}>
             {progress}
           </div>
         ) : null}
         {compact ? (
           shareOpen ? (
-            <div className="mt-3 w-full border-t border-zinc-100/80 pt-3">
+            <div className="mt-2 w-full border-t border-zinc-100/80 pt-2">
               <TeamShareBar url={parentShareUrl} hint={shareHint} />
             </div>
           ) : null
         ) : (
-          <div className="mt-4 w-full border-t border-zinc-100/80 pt-4">
+          <div className="mt-3 w-full border-t border-zinc-100/80 pt-3">
             <TeamShareBar url={parentShareUrl} hint={shareHint} />
           </div>
         )}
         {billingStatus ? (
-          <div className="mt-3 w-full border-t border-zinc-100/60 pt-3">{billingStatus}</div>
+          <div className={cn("w-full border-t border-zinc-100/60", compact ? "mt-2 pt-2" : "mt-3 pt-3")}>
+            {billingStatus}
+          </div>
         ) : null}
       </div>
     </header>

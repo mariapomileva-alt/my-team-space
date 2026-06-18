@@ -27,9 +27,8 @@ export const BUILDER_PANEL_SURFACE = cn(
 
 /** Sticky top bar — compact premium SaaS header */
 export const BUILDER_TOOLBAR_SURFACE = cn(
-  "flex w-full flex-wrap items-center justify-between gap-3 border border-zinc-200/40 bg-white/85 backdrop-blur-xl",
+  "flex w-full flex-wrap items-center justify-between gap-2 border border-zinc-200/40 bg-white/85 backdrop-blur-xl",
   BUILDER_RADIUS_SHELL,
-  "px-5 py-3.5 sm:px-6 sm:py-4",
   "shadow-[0_4px_24px_-16px_rgba(15,23,42,0.1)]",
 );
 

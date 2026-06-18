@@ -629,7 +629,7 @@ export function TeamPageBuilder({
           parentShareUrl={parentShareUrl}
           shareHint={shareHint}
           compact={embedded}
-          progress={<SetupProgressStrip team={team} onJump={jumpTo} />}
+          progress={embedded ? undefined : <SetupProgressStrip team={team} onJump={jumpTo} />}
           billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
           editLocked={editLocked}
           canPublish={memberRole === "coach"}
@@ -663,6 +663,7 @@ export function TeamPageBuilder({
                 team={team}
                 activeId={activeStructureNav}
                 onSelect={navigateToStructureItem}
+                onJump={jumpTo}
               />
             </aside>
           ) : null}

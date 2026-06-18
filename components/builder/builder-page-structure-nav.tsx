@@ -6,6 +6,7 @@ import {
   getSetupSnapshot,
 } from "@/lib/builder/page-completion";
 import { getPageStructureNav, type PageStructureNavId } from "@/lib/builder/page-structure";
+import type { BuilderProgressTarget } from "@/lib/builder/page-completion";
 import type { TeamSpace } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
@@ -15,12 +16,14 @@ export function BuilderPageStructureNav({
   team,
   activeId,
   onSelect,
+  onJump,
   className,
 }: {
   teamId: string;
   team: TeamSpace;
   activeId: PageStructureNavId | null;
   onSelect: (id: PageStructureNavId) => void;
+  onJump?: (target: BuilderProgressTarget) => void;
   className?: string;
 }) {
   const items = getPageStructureNav(team);
@@ -38,9 +41,19 @@ export function BuilderPageStructureNav({
           </p>
         </div>
         {snap.next ? (
-          <p className="mt-1 text-[11px] leading-snug text-zinc-600">
-            <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
-          </p>
+          onJump ? (
+            <button
+              type="button"
+              onClick={() => onJump(snap.next!.id)}
+              className="mt-1 w-full text-left text-[11px] leading-snug text-zinc-600 transition hover:text-violet-800"
+            >
+              <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
+            </button>
+          ) : (
+            <p className="mt-1 text-[11px] leading-snug text-zinc-600">
+              <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
+            </p>
+          )
         ) : (
           <p className="mt-1 text-[11px] font-medium text-emerald-700">All sections complete</p>
         )}
