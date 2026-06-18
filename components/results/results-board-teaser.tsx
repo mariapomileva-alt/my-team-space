@@ -114,7 +114,7 @@ export function ResultsBoardTeaser({
         </div>
         <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">{title}</p>
         <p className="mt-auto text-2xl font-bold tabular-nums text-neutral-900">{leader?.totalPoints ?? 0}</p>
-        <p className="line-clamp-1 text-[10px] text-neutral-500">
+        <p className="line-clamp-1 break-words text-[10px] text-neutral-500">
           {leader ? `${leader.athleteName} · ${settings.seasonName}` : settings.seasonName}
         </p>
       </motion.button>
@@ -133,7 +133,9 @@ export function ResultsBoardTeaser({
           <div className="mt-2 flex items-center gap-2.5">
             <TeaserAvatar name={leader.athleteName} photoUrl={leaderPhoto} size="sm" />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-neutral-900">{leader.athleteName}</p>
+              <p className="line-clamp-2 break-words text-[13px] font-bold leading-snug text-neutral-900">
+                {leader.athleteName}
+              </p>
               <p className="text-[11px] font-semibold text-indigo-700">{leader.totalPoints} pts</p>
             </div>
           </div>

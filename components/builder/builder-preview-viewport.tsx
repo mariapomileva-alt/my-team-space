@@ -66,6 +66,8 @@ export function BuilderPreviewViewport({
   className,
   phoneClassName,
   desktopClassName,
+  phoneHeight = BUILDER_PHONE_H,
+  scrollToSelector,
 }: {
   team: TeamSpace;
   mode: BuilderPreviewMode;
@@ -73,12 +75,30 @@ export function BuilderPreviewViewport({
   className?: string;
   phoneClassName?: string;
   desktopClassName?: string;
+  /** Override phone frame height (showcase gallery uses a taller frame). */
+  phoneHeight?: number;
+  /** Scroll viewport to this selector after mount (e.g. `.team-app-dashboard`). */
+  scrollToSelector?: string;
 }) {
   const mobileRef = useRef<HTMLDivElement>(null);
   const desktopRef = useRef<HTMLDivElement>(null);
+  const phoneViewportH = phoneHeight - BUILDER_PHONE_NOTCH_H - BUILDER_PHONE_HOME_H;
 
   usePreviewFocus(mobileRef, focusBlockId, team);
   usePreviewFocus(desktopRef, focusBlockId, team);
+
+  useEffect(() => {
+    if (!scrollToSelector || mode !== "mobile") return;
+    const root = mobileRef.current;
+    if (!root) return;
+    const target = root.querySelector<HTMLElement>(scrollToSelector);
+    if (!target) return;
+    const timer = window.setTimeout(() => {
+      const offset = target.getBoundingClientRect().top - root.getBoundingClientRect().top;
+      root.scrollTo({ top: Math.max(0, root.scrollTop + offset - 8), behavior: "smooth" });
+    }, 450);
+    return () => window.clearTimeout(timer);
+  }, [scrollToSelector, mode, team.id]);
 
   const phoneStyle = {
     "--preview-phone-w": `${BUILDER_PHONE_W}px`,
@@ -105,7 +125,7 @@ export function BuilderPreviewViewport({
               className="builder-phone-frame relative shrink-0 overflow-hidden rounded-[2rem] border-[6px] border-zinc-900/95 bg-zinc-950 shadow-[0_20px_60px_-24px_rgba(15,23,42,0.45),0_0_0_1px_rgba(255,255,255,0.06)_inset]"
               style={{
                 width: BUILDER_PHONE_W,
-                height: BUILDER_PHONE_H,
+                height: phoneHeight,
               }}
             >
               <div
@@ -117,7 +137,7 @@ export function BuilderPreviewViewport({
               <div
                 ref={mobileRef}
                 className="builder-preview-viewport absolute inset-x-0 z-0 overflow-x-hidden overflow-y-auto overscroll-contain"
-                style={{ top: BUILDER_PHONE_NOTCH_H, height: BUILDER_PHONE_VIEWPORT_H }}
+                style={{ top: BUILDER_PHONE_NOTCH_H, height: phoneViewportH }}
               >
                 <PreviewContent team={team} focusBlockId={focusBlockId} />
               </div>

@@ -70,6 +70,7 @@ const DAY_INDEX: Record<string, number> = {
 
 function schedule(
   events: { title: string; day: string; time: string; place?: string; type?: "training" | "competition" | "camp" | "meeting" }[],
+  layout: BlockLayout = "half",
 ) {
   return blk(
     "blk_sched",
@@ -88,11 +89,11 @@ function schedule(
         ends: "never",
       })),
     },
-    "card",
+    layout,
   );
 }
 
-function gallery(urls: string[], captions?: string[]) {
+function gallery(urls: string[], captions?: string[], layout: BlockLayout = "featured") {
   return blk(
     "blk_gal",
     "gallery",
@@ -105,12 +106,12 @@ function gallery(urls: string[], captions?: string[]) {
         caption: captions?.[i] ?? "",
       })),
     },
-    "featured",
+    layout,
   );
 }
 
-function contacts(rows: { name: string; role: string; url?: string }[]) {
-  return blk("blk_contacts", "contacts", 14, {
+function contacts(rows: { name: string; role: string; url?: string }[], layout: BlockLayout = "half") {
+  return blk("blk_contacts", "contacts", 13, {
     items: rows.map((r, i) => ({
       id: `c_${i}`,
       name: r.name,
@@ -118,15 +119,15 @@ function contacts(rows: { name: string; role: string; url?: string }[]) {
       url: r.url ?? "",
       photoUrl: "",
     })),
-  }, "card");
+  }, layout);
 }
 
-function quickLinks(links: Partial<Record<string, string>>) {
-  return blk("blk_links", "quick_links", 16, links, "half");
+function quickLinks(links: Partial<Record<string, string>>, layout: BlockLayout = "half") {
+  return blk("blk_links", "quick_links", 16, links, layout);
 }
 
-function poll(question: string, yes = "I'm in", no = "Can't make it") {
-  return blk("blk_poll", "polls", 18, { question, optionYes: yes, optionNo: no }, "card");
+function poll(question: string, yes = "I'm in", no = "Can't make it", layout: BlockLayout = "half") {
+  return blk("blk_poll", "polls", 11, { question, optionYes: yes, optionNo: no }, layout);
 }
 
 function feed(posts: { title: string; body: string }[]) {
@@ -141,11 +142,12 @@ function feed(posts: { title: string; body: string }[]) {
 
 function achievements(
   cards: { title: string; player: string; icon: string; description?: string }[],
+  layout: BlockLayout = "featured",
 ) {
   return blk(
     "blk_ach",
     "achievements",
-    22,
+    14,
     {
       cards: cards.map((c, i) => ({
         id: `ach_${i}`,
@@ -155,18 +157,19 @@ function achievements(
         description: c.description ?? "",
       })),
     },
-    "featured",
+    layout,
   );
 }
 
 function resultsSimple(
   rows: { athlete: string; comp: string; place: number; date: string }[],
   season = "2026 Season",
+  layout: BlockLayout = "featured",
 ) {
   return blk(
     "blk_results",
     "results",
-    24,
+    11,
     {
       enabled: true,
       mode: "simple",
@@ -183,15 +186,15 @@ function resultsSimple(
       competitions: [],
       categories: [],
     },
-    "featured",
+    layout,
   );
 }
 
-function integrations(links: { url: string; label?: string }[]) {
+function integrations(links: { url: string; label?: string }[], layout: BlockLayout = "half") {
   return blk(
     "blk_int",
     "integrations",
-    26,
+    14,
     {
       sectionTitle: "Training & media",
       links: links.map((l, i) => ({
@@ -201,27 +204,27 @@ function integrations(links: { url: string; label?: string }[]) {
         variant: i === 0 ? "featured" : "tile",
       })),
     },
-    "full",
+    layout,
   );
 }
 
-function payments(title: string, desc: string, url: string) {
+function payments(title: string, desc: string, url: string, layout: BlockLayout = "full") {
   return blk(
     "blk_pay",
     "payments",
-    28,
+    16,
     {
       title,
       description: desc,
       buttonLabel: "Pay online",
       paymentUrl: url,
     },
-    "card",
+    layout,
   );
 }
 
-function countdown(label: string, targetDate: string) {
-  return blk("blk_cd", "countdown", 30, { label, targetDate }, "half");
+function countdown(label: string, targetDate: string, layout: BlockLayout = "full") {
+  return blk("blk_cd", "countdown", 15, { label, targetDate }, layout);
 }
 
 function shop(
@@ -231,7 +234,7 @@ function shop(
   return blk(
     "blk_shop",
     "team_shop",
-    32,
+    15,
     {
       sectionTitle: "Team shop",
       subtitle: "Order kit & merch",
@@ -248,11 +251,11 @@ function shop(
   );
 }
 
-function trip(items: { title: string; body: string }[]) {
+function trip(items: { title: string; body: string }[], layout: BlockLayout = "half") {
   return blk(
     "blk_trip",
     "camp_trip",
-    13,
+    12,
     {
       items: items.map((item, i) => ({
         id: `trip_${i}`,
@@ -260,15 +263,15 @@ function trip(items: { title: string; body: string }[]) {
         body: item.body,
       })),
     },
-    "card",
+    layout,
   );
 }
 
-function attendance(roster: { name: string; role?: string }[]) {
+function attendance(roster: { name: string; role?: string }[], layout: BlockLayout = "half") {
   return blk(
     "blk_att",
     "attendance",
-    11,
+    12,
     {
       enabledFeatures: { streaks: true, history: true },
       roster: roster.map((p, i) => ({
@@ -277,12 +280,12 @@ function attendance(roster: { name: string; role?: string }[]) {
         role: p.role ?? "",
       })),
     },
-    "card",
+    layout,
   );
 }
 
 function weather(temp: string, note: string, location: string, layout: BlockLayout = "half") {
-  return blk("blk_weather", "weather", 34, { temp, note, location }, layout);
+  return blk("blk_weather", "weather", 13, { temp, note, location }, layout);
 }
 
 function sponsors(names: string[]) {
@@ -402,16 +405,11 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
           { title: "Contemporary teens", day: "Thu", time: "17:15", place: "Studio B" },
           { title: "Recital run-through", day: "Fri", time: "18:30", place: "Main hall", type: "competition" },
         ]),
-        gallery(GALLERY_DANCE, ["Rehearsal week", "Group routine", "Solo practice", "Spring showcase"]),
         poll("Who is coming to the recital on June 28?", "We're in!", "Can't make it"),
+        gallery(GALLERY_DANCE, ["Rehearsal week", "Group routine", "Solo practice", "Spring showcase"]),
         contacts([
           { name: "Coach Anna", role: "Artistic director", url: "tel:+37129111111" },
           { name: "Ms. Līga", role: "Studio manager", url: "mailto:liga@rhythmmotion.lv" },
-        ]),
-        quickLinks({ whatsapp: "+37129111111", instagram: "rhythmmotion" }),
-        feed([
-          { title: "Costume fitting done!", body: "Thanks to everyone who stayed late Tuesday — purple outfits look amazing." },
-          { title: "Recital seating", body: "Doors open 18:00 · free entry for families." },
         ]),
         achievements([
           { icon: "🌟", title: "National showcase", player: "Ensemble", description: "Gold · Riga 2025" },
@@ -446,6 +444,11 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
           { title: "Shooting drills", day: "Wed", time: "18:00", place: "Court A" },
           { title: "City Cup playoff", day: "Sat", time: "10:00", place: "Pavelló Nord", type: "competition" },
         ]),
+        resultsSimple([
+          { athlete: "Lucas M.", comp: "Barcelona City Cup", place: 1, date: "2026-03-15" },
+          { athlete: "Marco T.", comp: "Catalunya U14", place: 2, date: "2026-02-08" },
+          { athlete: "Diego R.", comp: "Friendly vs L'Hospitalet", place: 3, date: "2026-01-20" },
+        ]),
         attendance([
           { name: "Lucas M.", role: "#7" },
           { name: "Marco T.", role: "#11" },
@@ -454,15 +457,13 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
           { name: "Noah S.", role: "#9" },
           { name: "Leo H.", role: "#15" },
         ]),
-        resultsSimple([
-          { athlete: "Lucas M.", comp: "Barcelona City Cup", place: 1, date: "2026-03-15" },
-          { athlete: "Marco T.", comp: "Catalunya U14", place: 2, date: "2026-02-08" },
-          { athlete: "Diego R.", comp: "Friendly vs L'Hospitalet", place: 3, date: "2026-01-20" },
-        ]),
-        gallery(GALLERY_HOOPS, ["Playoff warm-up", "Team huddle", "City Cup final"]),
         contacts([
           { name: "Coach Miguel", role: "Head coach", url: "tel:+34600000001" },
           { name: "Parents rep", role: "Laura G.", url: "mailto:parents@thunderhoops.es" },
+        ]),
+        integrations([
+          { url: "https://www.hudl.com/", label: "Game film" },
+          { url: "https://www.youtube.com/", label: "Highlights" },
         ]),
         shop(
           [
@@ -477,13 +478,8 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
               imageUrl: "https://images.unsplash.com/photo-1519861531473-920026218ac7?w=200&h=200&fit=crop",
             },
           ],
-          "card",
         ),
         payments("March membership", "€55 · includes league registration", "https://pay.example.com/hoops"),
-        integrations([
-          { url: "https://www.hudl.com/", label: "Game film" },
-          { url: "https://www.youtube.com/", label: "Highlights" },
-        ]),
       ],
     ),
   },
@@ -511,20 +507,16 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
           { title: "Skills & systems", day: "Wed", time: "16:00", place: "Rink B" },
           { title: "Scrimmage", day: "Fri", time: "17:30", place: "Rink A", type: "competition" },
         ]),
-        trip([
-          { title: "Tallinn tournament", body: "Mar 14–16 · bus leaves 07:00 · hotel included" },
-          { title: "Gear check", body: "Full kit + mouthguard · parents sign waiver by Mar 10" },
-        ]),
-        weather("-4°C", "Light snow · outdoor rink closed", "Tampere", "card"),
         resultsSimple([
           { athlete: "Elias V.", comp: "Regional Cup U14", place: 1, date: "2026-02-20" },
           { athlete: "Oskar L.", comp: "Nordic Youth League", place: 2, date: "2026-01-12" },
         ], "2025–26 Season"),
-        gallery(GALLERY_HOCKEY, ["Away game", "Team bench", "Celebration"]),
-        contacts([
-          { name: "Coach Jari", role: "Head coach", url: "tel:+35840123456" },
-          { name: "Team manager", role: "Sanna K.", url: "mailto:manager@nordicice.fi" },
+        trip([
+          { title: "Tallinn tournament", body: "Mar 14–16 · bus leaves 07:00 · hotel included" },
+          { title: "Gear check", body: "Full kit + mouthguard · parents sign waiver by Mar 10" },
         ]),
+        weather("-4°C", "Light snow · outdoor rink closed", "Tampere"),
+        gallery(GALLERY_HOCKEY, ["Away game", "Team bench", "Celebration"]),
         payments("Season fee", "€420 · instalments available", "https://pay.example.com/hockey"),
       ],
     ),
@@ -553,26 +545,25 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
           { title: "Endurance set", day: "Fri", time: "06:30", place: "50 m pool" },
           { title: "County meet", day: "Sun", time: "08:00", place: "Olympic Centre", type: "competition" },
         ]),
-        poll("Who can help at the county meet?", "I can volunteer", "Not this time"),
-        contacts([
-          { name: "Coach Liis", role: "Head coach", url: "tel:+3725123456" },
-          { name: "Meet coordinator", role: "Andres P.", url: "mailto:meets@aquawave.ee" },
-        ]),
         resultsSimple([
           { athlete: "Krista L.", comp: "100 m freestyle", place: 1, date: "2026-04-02" },
           { athlete: "Markus T.", comp: "200 m IM", place: 2, date: "2026-03-18" },
           { athlete: "Relay A", comp: "4×100 free", place: 1, date: "2026-02-25" },
         ]),
-        gallery(GALLERY_SWIM, ["Morning squad", "Starts practice", "Medal ceremony"]),
+        poll("Who can help at the county meet?", "I can volunteer", "Not this time"),
         achievements([
           { icon: "🥇", title: "County relay gold", player: "Girls 14U", description: "New club record" },
           { icon: "⭐", title: "Swimmer of the month", player: "Krista L.", description: "March 2026" },
           { icon: "🏊", title: "Qualifying times", player: "6 athletes", description: "National juniors" },
         ]),
+        contacts([
+          { name: "Coach Liis", role: "Head coach", url: "tel:+3725123456" },
+          { name: "Meet coordinator", role: "Andres P.", url: "mailto:meets@aquawave.ee" },
+        ]),
         integrations([
           { url: "https://www.strava.com/clubs/", label: "Dryland club" },
           { url: "https://www.youtube.com/", label: "Race footage" },
-        ]),
+        ], "full"),
         payments("April fee", "€60 · pool + coaching", "https://pay.example.com/swim"),
       ],
     ),

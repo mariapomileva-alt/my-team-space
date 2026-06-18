@@ -43,8 +43,8 @@ export const THEMES: ThemeDefinition[] = [
     description: "Night mode with electric lime highlights",
     cssVars: {
       "--mts-page-bg": "linear-gradient(180deg, #0c0f14 0%, #121820 100%)",
-      "--mts-card": "linear-gradient(180deg, #151b24 0%, #10151c 100%)",
-      "--mts-card-border": "rgba(190, 242, 100, 0.12)",
+      "--mts-card": "linear-gradient(180deg, #111318 0%, #0a0c10 100%)",
+      "--mts-card-border": "rgba(255, 255, 255, 0.14)",
       "--mts-text": "#f1f5f9",
       "--mts-muted": "#94a3b8",
       "--mts-primary": "#bef264",

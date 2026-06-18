@@ -4,7 +4,7 @@ import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid } from "@/components/blocks/quick-actions-grid";
 import { TeamShopGrid } from "@/components/blocks/team-shop-grid";
 import { ResultsBoardTeaser } from "@/components/results/results-board-teaser";
-import { DashboardCard, DashboardChevron, DashboardLabel } from "@/components/mts/team-app/dashboard-card";
+import { DashboardCard, DashboardChevron, DashboardLabel, dashboardTileMeta, dashboardTileStatClass, dashboardTileTitle } from "@/components/mts/team-app/dashboard-card";
 import { getDashboardData } from "@/lib/blocks/block-dashboard-data";
 import {
   getBlockSettings,
@@ -57,24 +57,28 @@ export function ScheduleDashboardCard({
 }) {
   const d = getDashboardData(team, block).schedule!;
   const next = d.next ?? d.events[0];
+  const metaLine = [next.day, next.time].filter(Boolean).join(" · ");
   return (
     <DashboardCard onClick={onOpen} index={index} accent="sky" compact={compact} featured={featured}>
       <DashboardLabel action={<DashboardChevron />}>Schedule</DashboardLabel>
-      <p className={mtsTypeTitleSm}>{next.title}</p>
-      <p className="mt-0.5 text-[12px] font-semibold text-sky-600">
-        {next.day} · {next.time}
+      <p className={compact ? dashboardTileTitle : cn(mtsTypeTitleSm, "min-w-0 line-clamp-2 break-words")}>
+        {next.title}
       </p>
+      <p className={cn("mt-0.5 font-semibold text-sky-600", compact ? dashboardTileMeta : "text-[12px]")}>
+        {metaLine}
+      </p>
+      {next.location ? <p className={cn(dashboardTileMeta, "mt-0.5")}>{next.location}</p> : null}
       {!compact && d.events.length > 1 ? (
-        <ul className="mt-2.5 space-y-1 border-t border-neutral-100 pt-2">
+        <ul className="mt-2.5 space-y-1 border-t border-[color:var(--mts-card-border)] pt-2">
           {d.events.slice(1, 3).map((ev) => (
-            <li key={`${ev.title}-${ev.day}`} className="flex justify-between text-[11px] text-neutral-500">
+            <li key={`${ev.title}-${ev.day}`} className="flex justify-between text-[11px] text-[color:var(--mts-muted)]">
               <span className="truncate pr-2">{ev.title}</span>
-              <span className="shrink-0 font-medium text-neutral-400">{ev.day}</span>
+              <span className="shrink-0 font-medium text-[color:var(--mts-muted)]">{ev.day}</span>
             </li>
           ))}
         </ul>
       ) : null}
-      <p className="mt-auto pt-2 text-[10px] font-medium text-neutral-400">{d.events.length} this week</p>
+      <p className="mt-auto pt-2 text-[10px] font-medium text-[color:var(--mts-muted)]">{d.events.length} this week</p>
     </DashboardCard>
   );
 }
@@ -106,8 +110,10 @@ export function AttendanceDashboardCard({
           </span>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-bold text-neutral-900">{d.label}</p>
-          <p className="text-[11px] text-neutral-500">Weekly check-in</p>
+          <p className={compact ? dashboardTileTitle : "text-[13px] font-bold text-[color:var(--mts-text)]"}>
+            {d.label}
+          </p>
+          <p className={dashboardTileMeta}>Weekly check-in</p>
         </div>
       </div>
       <div className="mt-2.5 flex h-9 items-end justify-between gap-1" aria-hidden>
@@ -141,8 +147,8 @@ export function TripsDashboardCard({
   return (
     <DashboardCard onClick={onOpen} index={index} accent="amber" compact>
       <DashboardLabel action={<span className="text-base" aria-hidden>🚌</span>}>Trips</DashboardLabel>
-      <p className="line-clamp-2 text-[13px] font-bold leading-snug text-neutral-900">{first.title}</p>
-      {first.body ? <p className="mt-0.5 line-clamp-2 text-[11px] text-neutral-500">{first.body}</p> : null}
+      <p className={dashboardTileTitle}>{first.title}</p>
+      {first.body ? <p className={cn(dashboardTileMeta, "mt-0.5")}>{first.body}</p> : null}
       <div className="mt-2 flex gap-1">
         {d.items.slice(0, 4).map((_, i) => (
           <span
@@ -170,11 +176,11 @@ export function RulesDashboardCard({
   return (
     <DashboardCard onClick={onOpen} index={index} accent="neutral" compact>
       <DashboardLabel action={<span className="text-base" aria-hidden>📋</span>}>Rules</DashboardLabel>
-      <p className="text-2xl font-bold tabular-nums text-neutral-900">{d.docs.length}</p>
-      <p className="text-[11px] font-medium text-neutral-500">documents</p>
+      <p className="text-2xl font-bold tabular-nums text-[color:var(--mts-text)]">{d.docs.length}</p>
+      <p className="text-[11px] font-medium text-[color:var(--mts-muted)]">documents</p>
       <ul className="mt-2 space-y-1">
         {d.docs.slice(0, 2).map((doc) => (
-          <li key={doc.title} className="truncate text-[11px] text-neutral-600">
+          <li key={doc.title} className="truncate text-[11px] text-[color:var(--mts-muted)]">
             · {doc.title}
           </li>
         ))}
@@ -200,7 +206,9 @@ export function PollDashboardCard({
       <DashboardLabel action={<span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[9px] font-bold text-violet-700">Vote</span>}>
         Poll
       </DashboardLabel>
-      <p className="line-clamp-3 text-[12px] font-semibold leading-snug text-neutral-800">{d.question}</p>
+      <p className="line-clamp-3 break-words text-[12px] font-semibold leading-snug [overflow-wrap:anywhere] text-[color:var(--mts-text)]">
+        {d.question}
+      </p>
       <div className="mt-2 flex flex-wrap gap-1">
         {d.options.slice(0, 2).map((o) => (
           <span key={o} className="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-700 ring-1 ring-violet-100">
@@ -262,7 +270,7 @@ export function AchievementsRail({
       className="col-span-1 sm:col-span-2"
     >
       <div className="mb-2 flex items-center justify-between px-0.5">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Cups & achievements</p>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-[color:var(--mts-muted)]">Cups & achievements</p>
         <button
           type="button"
           onClick={onOpen}
@@ -277,13 +285,11 @@ export function AchievementsRail({
             key={`${c.title}-${i}`}
             type="button"
             onClick={onOpen}
-            className="dashboard-rail-item min-w-[132px] shrink-0 snap-start rounded-2xl border border-amber-100/90 bg-gradient-to-br from-amber-50 to-white p-3 text-left shadow-sm ring-1 ring-amber-100/60 active:scale-[0.98]"
+            className="dashboard-rail-item shrink-0 snap-start rounded-2xl border border-amber-100/90 bg-gradient-to-br from-amber-50 to-white p-3 text-left shadow-sm ring-1 ring-amber-100/60 active:scale-[0.98]"
           >
             <span className="text-2xl">{c.icon}</span>
-            <p className={cn("mt-1.5 line-clamp-2 text-[12px] font-semibold leading-snug tracking-normal text-neutral-900")}>
-              {c.title}
-            </p>
-            {c.player ? <p className="mt-0.5 truncate text-[10px] font-medium text-amber-800/80">{c.player}</p> : null}
+            <p className={cn(dashboardTileTitle, "mt-1.5")}>{c.title}</p>
+            {c.player ? <p className={cn(dashboardTileMeta, "mt-0.5 text-amber-800/80")}>{c.player}</p> : null}
           </button>
         ))}
       </div>
@@ -317,7 +323,7 @@ export function GalleryStackCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className="group col-span-1 flex w-full items-stretch gap-3 rounded-[1.35rem] border border-neutral-200/90 bg-white p-3.5 text-left shadow-[0_4px_20px_-12px_rgba(15,23,42,0.14)] ring-1 ring-neutral-100/80 sm:col-span-2"
+      className="mts-app-surface mts-app-surface--interactive group col-span-1 flex w-full items-stretch gap-3 rounded-[1.35rem] p-3.5 text-left sm:col-span-2"
     >
       <div className="relative h-[88px] w-[100px] shrink-0">
         {[0, 1, 2].map((i) => (
@@ -341,12 +347,12 @@ export function GalleryStackCard({
         ) : null}
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Team gallery</p>
-        <p className="mt-0.5 text-[15px] font-bold text-neutral-900">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--mts-muted)]">Team gallery</p>
+        <p className="mt-0.5 text-[15px] font-bold leading-snug text-[color:var(--mts-text)]">
           {imgs.length ? `${imgs.length}+ photos` : "Photo memories"}
         </p>
-        <p className="mt-0.5 text-[12px] text-neutral-500">Tap to browse trainings & events</p>
-        <span className="mt-2 text-[11px] font-semibold text-indigo-600">Open gallery ›</span>
+        <p className={cn(dashboardTileMeta, "mt-0.5")}>Tap to browse trainings & events</p>
+        <span className="mt-2 text-[11px] font-semibold text-[color:var(--mts-primary)]">Open gallery ›</span>
       </div>
     </motion.button>
   );
@@ -381,12 +387,14 @@ export function PaymentDashboardCard({
   block,
   onOpen,
   index,
+  compact,
   featured,
 }: {
   team: TeamSpace;
   block: BlockInstance;
   onOpen: () => void;
   index: number;
+  compact?: boolean;
   featured?: boolean;
 }) {
   const s = getBlockSettings<PaymentLinkSettings>(block);
@@ -405,24 +413,37 @@ export function PaymentDashboardCard({
   }
 
   return (
-    <DashboardCard onClick={onOpen} index={index} accent="sky" compact featured={featured}>
+    <DashboardCard onClick={onOpen} index={index} accent="sky" compact={compact ?? true} featured={featured}>
       <DashboardLabel action={<DashboardChevron />}>Payments</DashboardLabel>
-      <div className="flex items-start gap-2.5">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-lg">
-          💳
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className={mtsTypeTitleSm}>{d.title}</p>
+      {compact !== false ? (
+        <>
+          <p className={dashboardTileTitle}>{d.title}</p>
           {d.description ? (
-            <p className="mt-0.5 line-clamp-2 text-[12px] text-neutral-500">{d.description}</p>
+            <p className={cn(dashboardTileMeta, "mt-1")}>{d.description}</p>
           ) : (
-            <p className="mt-0.5 text-[12px] text-neutral-500">
+            <p className={cn(dashboardTileMeta, "mt-1")}>
               {d.hasUrl ? d.buttonLabel : "Add payment link"}
             </p>
           )}
+        </>
+      ) : (
+        <div className="flex min-w-0 items-start gap-2.5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-lg">
+            💳
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className={cn(mtsTypeTitleSm, "min-w-0 line-clamp-2 break-words")}>{d.title}</p>
+            {d.description ? (
+              <p className={cn(dashboardTileMeta, "mt-0.5")}>{d.description}</p>
+            ) : (
+              <p className={cn(dashboardTileMeta, "mt-0.5")}>
+                {d.hasUrl ? d.buttonLabel : "Add payment link"}
+              </p>
+            )}
+          </div>
         </div>
-      </div>
-      <p className="mt-auto pt-2 text-[11px] font-semibold text-sky-600">
+      )}
+      <p className="mt-auto truncate pt-2 text-[11px] font-semibold text-sky-600">
         {d.hasUrl ? `${d.buttonLabel} ›` : "Set up in builder ›"}
       </p>
     </DashboardCard>
@@ -451,7 +472,7 @@ export function QuickActionsDashboardCard({
   if (showInlineGrid && (s.actions?.length ?? 0) > 0) {
     return (
       <div className="space-y-2.5">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{d.title}</p>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--mts-muted)]">{d.title}</p>
         <QuickActionsGrid actions={s.actions ?? []} compact={compact && !featured} />
       </div>
     );
@@ -470,14 +491,14 @@ export function QuickActionsDashboardCard({
               <span className="text-base" aria-hidden>
                 {quickActionEmoji(p.icon as QuickActionIconId)}
               </span>
-              <span className="line-clamp-1 text-[11px] font-semibold text-neutral-800">{p.title}</span>
+              <span className="line-clamp-1 text-[11px] font-semibold text-[color:var(--mts-text)]">{p.title}</span>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-[13px] text-neutral-500">Add WhatsApp, registration, and map links</p>
+        <p className="text-[13px] text-[color:var(--mts-muted)]">Add WhatsApp, registration, and map links</p>
       )}
-      <p className="mt-auto pt-2 text-[10px] font-medium text-neutral-400">
+      <p className="mt-auto pt-2 text-[10px] font-medium text-[color:var(--mts-muted)]">
         {d.count > 0 ? `${d.count} action${d.count === 1 ? "" : "s"}` : "Tap to set up"}
       </p>
     </DashboardCard>
@@ -506,7 +527,7 @@ export function TeamShopDashboardCard({
   if (showInline && (s.products?.length ?? 0) > 0) {
     return (
       <div className="space-y-2.5">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{d.title}</p>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--mts-muted)]">{d.title}</p>
         <TeamShopGrid products={s.products ?? []} compact />
       </div>
     );
@@ -531,15 +552,15 @@ export function TeamShopDashboardCard({
             </div>
           ))}
           <div className="min-w-0 flex-1">
-            <p className="line-clamp-1 text-[13px] font-bold text-neutral-900">{d.previews[0]?.name}</p>
+            <p className="line-clamp-1 text-[13px] font-bold text-[color:var(--mts-text)]">{d.previews[0]?.name}</p>
             {d.previews[0]?.price ? (
               <p className="text-[12px] font-semibold text-rose-600">{d.previews[0].price}</p>
             ) : null}
-            <p className="text-[10px] text-neutral-500">{d.count} product{d.count === 1 ? "" : "s"}</p>
+            <p className="text-[10px] text-[color:var(--mts-muted)]">{d.count} product{d.count === 1 ? "" : "s"}</p>
           </div>
         </div>
       ) : (
-        <p className="text-[13px] text-neutral-500">Add uniforms, merch, and equipment</p>
+        <p className="text-[13px] text-[color:var(--mts-muted)]">Add uniforms, merch, and equipment</p>
       )}
     </DashboardCard>
   );
@@ -561,58 +582,51 @@ export function CompactStatCard({
   featured?: boolean;
 }) {
   const data = getDashboardData(team, block);
-  let emoji = "✨";
   let label = "More";
   let stat = "—";
   let sub = "Tap to open";
 
   if (data.calendar) {
-    emoji = "🗓️";
     label = "Calendar";
     stat = data.calendar.externalUrl ? "Live" : "Season";
-    sub = data.calendar.externalUrl ? "Linked" : "Full view";
+    sub = data.calendar.externalUrl ? "Linked calendar" : "Full season view";
   } else if (data.contacts) {
-    emoji = "👋";
     label = "Contacts";
-    stat = String(data.contacts.items.length);
-    sub = data.contacts.items[0]?.name ?? "Coaches";
+    stat = data.contacts.items[0]?.name ?? "Coaches";
+    sub = data.contacts.items[0]?.role ?? `${data.contacts.items.length} contacts`;
+  } else if (data.integrations) {
+    label = data.integrations.title;
+    stat = data.integrations.previews[0]?.label ?? "Links";
+    sub = data.integrations.previews[0]?.host ?? "Training & media";
   } else if (data.quick_links) {
-    emoji = "🔗";
     label = "Social";
     stat = String(data.quick_links.labels.length);
     sub = data.quick_links.labels.join(" · ");
   } else if (data.payments) {
-    emoji = "💳";
     label = "Payments";
     stat = data.payments.hasUrl ? "Ready" : "—";
     sub = data.payments.title;
   } else if (data.quick_actions) {
-    emoji = "⚡";
     label = "Actions";
     stat = String(data.quick_actions.count);
     sub = data.quick_actions.previews[0]?.title ?? "Links & registration";
   } else if (data.team_shop) {
-    emoji = "🛍";
     label = "Team shop";
     stat = String(data.team_shop.count);
     sub = data.team_shop.previews[0]?.name ?? "Merch & uniforms";
   } else if (data.weather) {
-    emoji = "🌤️";
     label = "Venue";
-    stat = data.weather.temp ?? "—";
-    sub = data.weather.note ?? data.weather.location ?? "";
+    stat = data.weather.temp?.replace(/\s+/g, "") ?? "—";
+    sub = [data.weather.note, data.weather.location].filter(Boolean).join(" · ");
   } else if (data.countdown) {
-    emoji = "⏱️";
     label = "Countdown";
     stat = data.countdown.parts ? `${data.countdown.parts.days}d` : "Soon";
     sub = data.countdown.label;
   } else if (data.birthdays) {
-    emoji = "🎂";
     label = "Birthdays";
     stat = String(data.birthdays.items.length);
     sub = data.birthdays.items[0]?.name ?? "";
   } else if (data.sponsors) {
-    emoji = "🤝";
     label = "Partners";
     stat = String(data.sponsors.names.length);
     sub = data.sponsors.names[0] ?? "";
@@ -620,15 +634,9 @@ export function CompactStatCard({
 
   return (
     <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
-      <div className="flex items-start justify-between gap-2">
-        <span className="text-xl" aria-hidden>
-          {emoji}
-        </span>
-        <DashboardChevron />
-      </div>
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">{label}</p>
-      <p className="text-xl font-bold tabular-nums text-neutral-900">{stat}</p>
-      <p className="line-clamp-2 text-[10px] text-neutral-500">{sub}</p>
+      <DashboardLabel action={<DashboardChevron />}>{label}</DashboardLabel>
+      <p className={dashboardTileStatClass(stat)}>{stat}</p>
+      <p className={cn(dashboardTileMeta, "mt-0.5")}>{sub}</p>
     </DashboardCard>
   );
 }

@@ -53,7 +53,7 @@ export function TeamAppDetailSheet({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="fixed inset-x-0 bottom-0 z-[51] flex max-h-[min(92dvh,720px)] flex-col rounded-t-[1.75rem] border border-neutral-200/90 bg-white shadow-[0_-24px_80px_-20px_rgba(15,23,42,0.25)] sm:inset-x-auto sm:left-1/2 sm:top-1/2 sm:bottom-auto sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[1.75rem]"
+            className="mts-app-surface fixed inset-x-0 bottom-0 z-[51] flex max-h-[min(92dvh,720px)] flex-col rounded-t-[1.75rem] shadow-[0_-24px_80px_-20px_rgba(0,0,0,0.35)] sm:inset-x-auto sm:left-1/2 sm:top-1/2 sm:bottom-auto sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[1.75rem]"
             initial={{ y: "100%", opacity: 0.9 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
@@ -68,7 +68,7 @@ export function TeamAppDetailSheet({
               }}
               className="flex shrink-0 cursor-grab flex-col items-center px-4 pt-3 active:cursor-grabbing sm:cursor-default"
             >
-              <span className="mb-3 h-1 w-10 rounded-full bg-neutral-200 sm:hidden" aria-hidden />
+              <span className="mb-3 h-1 w-10 rounded-full bg-[color:var(--mts-card-border)] sm:hidden" aria-hidden />
               <div className="flex w-full items-start gap-3 pb-3">
                 <span
                   className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl ${meta.tileClass}`}
@@ -77,22 +77,22 @@ export function TeamAppDetailSheet({
                   {meta.emoji}
                 </span>
                 <motion.div className="min-w-0 flex-1 pt-0.5">
-                  <h2 id={titleId} className="text-lg font-bold tracking-tight text-neutral-900">
+                  <h2 id={titleId} className="text-lg font-bold tracking-tight text-[color:var(--mts-text)]">
                     {meta.title}
                   </h2>
-                  <p className="text-sm text-neutral-500">{meta.subtitle}</p>
+                  <p className="text-sm text-[color:var(--mts-muted)]">{meta.subtitle}</p>
                 </motion.div>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[color:var(--mts-accent-soft)] text-[color:var(--mts-muted)] transition hover:opacity-80"
                   aria-label="Close"
                 >
                   ✕
                 </button>
               </div>
             </motion.div>
-            <div className="team-app-detail-content min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-neutral-100 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 sm:px-5 sm:pb-6">
+            <div className="team-app-detail-content min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-[color:var(--mts-card-border)] px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 sm:px-5 sm:pb-6">
               {children}
             </div>
           </motion.div>

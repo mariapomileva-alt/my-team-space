@@ -76,6 +76,10 @@ export type DashboardBlockData = {
   countdown: { label: string; targetLabel: string; parts?: { days: number; hrs: number; min: number } };
   birthdays: { items: { name: string; date: string }[] };
   sponsors: { names: string[] };
+  integrations: {
+    title: string;
+    previews: { label: string; host: string }[];
+  };
 };
 
 function hashSeed(str: string): number {
@@ -351,6 +355,34 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
       const s = getBlockSettings<ListBlockSettings>(block);
       const names = (s.items ?? []).filter((r) => r.name?.trim()).map((r) => r.name!);
       return { sponsors: { names: names.length > 0 ? names : ["Local Sport Shop"] } };
+    }
+    case "integrations": {
+      const s = getBlockSettings<{
+        sectionTitle?: string;
+        links: { label?: string; url: string }[];
+      }>(block);
+      const previews = (s.links ?? [])
+        .filter((l) => l.url?.trim())
+        .slice(0, 3)
+        .map((l) => {
+          const label = l.label?.trim() || "Link";
+          let host = label;
+          try {
+            host = new URL(l.url).hostname.replace(/^www\./, "");
+          } catch {
+            /* keep label */
+          }
+          return { label, host };
+        });
+      return {
+        integrations: {
+          title: s.sectionTitle?.trim() || "Integrations",
+          previews:
+            previews.length > 0
+              ? previews
+              : [{ label: "Game film", host: "hudl.com" }],
+        },
+      };
     }
     default:
       return {};

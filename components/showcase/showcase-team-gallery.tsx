@@ -6,7 +6,20 @@ import { HERO_VARIANT_META } from "@/lib/blocks/hero-layout";
 import type { ShowcaseTeamCard } from "@/lib/showcase/demo-teams";
 import { getTheme } from "@/lib/themes";
 import { cn } from "@/lib/utils/cn";
+import type { TeamSpace } from "@/lib/types";
+import { SHOWCASE_PHONE_H } from "@/lib/builder/preview";
 import type { CSSProperties } from "react";
+
+function ShowcasePhonePreview({ team }: { team: TeamSpace }) {
+  return (
+    <BuilderPreviewViewport
+      team={team}
+      mode="mobile"
+      phoneHeight={SHOWCASE_PHONE_H}
+      scrollToSelector=".team-app-dashboard"
+    />
+  );
+}
 
 function themePalette(themeId: ShowcaseTeamCard["team"]["themeId"]) {
   const vars = getTheme(themeId).cssVars as Record<string, string>;
@@ -57,7 +70,12 @@ export function ShowcaseTeamGallery({ teams }: { teams: ShowcaseTeamCard[] }) {
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-relaxed text-zinc-600">
           Живые превью на тех же компонентах, что в builder: логотип, тема из Design, TeamHeroCard (4 layout),
-          блоки dashboard.
+          блоки dashboard. В каждом телефоне — листай вниз: расписание, фото, результаты.
+        </p>
+        <p className="mx-auto mt-2 text-[13px] font-medium text-violet-700">
+          <a href="https://www.myteamspace.cc/showcase/teams" className="underline underline-offset-2">
+            myteamspace.cc/showcase/teams
+          </a>
         </p>
       </header>
 
@@ -109,6 +127,9 @@ export function ShowcaseTeamGallery({ teams }: { teams: ShowcaseTeamCard[] }) {
                 </div>
               </div>
 
+              <p className="mb-2 text-center text-[11px] font-semibold text-zinc-500">
+                Превью прокручивается к блокам с расписанием, фото и результатами
+              </p>
               <div className="flex justify-center">
                 <div
                   className="origin-top scale-[0.92] sm:scale-100"
@@ -117,7 +138,7 @@ export function ShowcaseTeamGallery({ teams }: { teams: ShowcaseTeamCard[] }) {
                     filter: `drop-shadow(0 12px 28px color-mix(in srgb, ${palette.primary} 18%, transparent))`,
                   }}
                 >
-                  <BuilderPreviewViewport team={card.team} mode="mobile" />
+                  <ShowcasePhonePreview team={card.team} />
                 </div>
               </div>
 

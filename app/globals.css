@@ -404,6 +404,13 @@
 
 .team-app-dashboard .dashboard-rail-item {
   scroll-snap-align: start;
+  flex: 0 0 clamp(9rem, 46%, 11.5rem);
+  min-width: 0;
+}
+
+.team-app-dashboard .dashboard-tile-shell > .dashboard-rail-item,
+.team-app-dashboard .dashboard-rail .dashboard-rail-item {
+  flex: 0 0 clamp(9rem, 46%, 11.5rem);
 }
 
 .team-app-dashboard .dashboard-grid-pair {

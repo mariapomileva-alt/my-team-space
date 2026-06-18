@@ -78,6 +78,7 @@ function SoloWidget({
           block={block}
           onOpen={open}
           index={index}
+          compact={cardCompact}
           featured={featured}
         />
       );

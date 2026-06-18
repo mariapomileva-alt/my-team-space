@@ -11,7 +11,7 @@ export function TeamAppHeader({ team }: { team: TeamSpace }) {
     <motion.header
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-[1.35rem] border border-neutral-200/90 bg-white px-4 py-4 shadow-[0_4px_28px_-14px_rgba(15,23,42,0.1)] ring-1 ring-neutral-100/80"
+      className="mts-app-surface rounded-[1.35rem] px-4 py-4"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
@@ -30,11 +30,11 @@ export function TeamAppHeader({ team }: { team: TeamSpace }) {
             </motion.div>
           )}
           <div className="min-w-0">
-            <h1 className="truncate text-lg font-bold tracking-tight text-neutral-900">{team.name}</h1>
+            <h1 className="truncate text-lg font-bold tracking-tight text-[color:var(--mts-text)]">{team.name}</h1>
             {team.tagline ? (
-              <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-neutral-500">{team.tagline}</p>
+              <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-[color:var(--mts-muted)]">{team.tagline}</p>
             ) : (
-              <p className="mt-0.5 text-[13px] text-indigo-600/90">Your team space</p>
+              <p className="mt-0.5 text-[13px] text-[color:var(--mts-primary)]">Your team space</p>
             )}
           </div>
         </div>

@@ -59,13 +59,13 @@ export function QuickActionsGrid({
           transition={{ delay: i * 0.02 }}
           whileTap={{ scale: 0.99 }}
           className={cn(
-            "group flex min-h-[52px] items-center gap-3 rounded-2xl border border-neutral-200/90 bg-white px-4 py-3 shadow-[0_2px_12px_-8px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80 transition hover:border-indigo-200/80 hover:bg-indigo-50/30",
+            "mts-app-surface mts-app-surface--interactive group flex min-h-[52px] items-center gap-3 rounded-2xl px-4 py-3 transition",
             compact && "min-h-[48px] px-3 py-2.5",
           )}
         >
           <span
             className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-xl group-hover:bg-white",
+              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[color:var(--mts-accent-soft)] text-xl",
               compact && "h-9 w-9 text-lg",
             )}
             aria-hidden
@@ -76,7 +76,7 @@ export function QuickActionsGrid({
             {action.title}
           </span>
           <span
-            className="shrink-0 text-lg text-neutral-300 transition group-hover:text-indigo-500"
+            className="shrink-0 text-lg text-[color:var(--mts-muted)] opacity-50 transition group-hover:text-[color:var(--mts-primary)] group-hover:opacity-100"
             aria-hidden
           >
             ›
