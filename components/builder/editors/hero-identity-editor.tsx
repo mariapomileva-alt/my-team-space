@@ -10,7 +10,7 @@ import { getBlockSettings, type SocialKey } from "@/lib/blocks/settings";
 import { SOCIAL_ICON_CLASS, SOCIAL_LABELS } from "@/lib/social/links";
 import { cn } from "@/lib/utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 type Settings = {
   heroLayout?: HeroLayoutVariant;
@@ -53,16 +53,28 @@ export function HeroIdentityEditor({
   team,
   onPatchBlock,
   onPatchTeam,
+  focusAboutKey = 0,
 }: {
   block: BlockInstance;
   team: TeamSpace;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
+  /** Increment to expand about-team fields and scroll into view */
+  focusAboutKey?: number;
 }) {
   const s = getBlockSettings<Settings>(block);
   const [moreOpen, setMoreOpen] = useState(() => hasMoreDetailsFields(team, s));
 
   const optionalFilled = useMemo(() => hasMoreDetailsFields(team, s), [team, s]);
+
+  useEffect(() => {
+    if (focusAboutKey > 0) {
+      setMoreOpen(true);
+      window.setTimeout(() => {
+        document.getElementById("builder-about-team")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+    }
+  }, [focusAboutKey]);
 
   function set(patch: Partial<Settings>) {
     onPatchBlock(block.id, { settings: { ...s, ...patch } });
@@ -109,7 +121,7 @@ export function HeroIdentityEditor({
         onChange={(url) => set({ coverImageUrl: url })}
       />
 
-      <div className="border-t border-zinc-100/90 pt-2">
+      <div id="builder-about-team" className="border-t border-zinc-100/90 pt-2">
         <button
           type="button"
           onClick={() => setMoreOpen((v) => !v)}

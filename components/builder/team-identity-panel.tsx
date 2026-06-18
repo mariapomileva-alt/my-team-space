@@ -13,6 +13,7 @@ export function TeamIdentityPanel({
   onPatchBlock,
   expanded,
   onExpandedChange,
+  focusAboutKey,
 }: {
   team: TeamSpace;
   heroBlock: BlockInstance | undefined;
@@ -20,6 +21,7 @@ export function TeamIdentityPanel({
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
   expanded?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
+  focusAboutKey?: number;
 }) {
   const activeTheme = THEMES.find((t) => t.id === team.themeId) ?? THEMES[0];
 
@@ -49,6 +51,7 @@ export function TeamIdentityPanel({
           team={team}
           onPatchBlock={onPatchBlock}
           onPatchTeam={onPatchTeam}
+          focusAboutKey={focusAboutKey}
         />
       ) : (
         <p className="rounded-xl border border-dashed border-zinc-200 px-4 py-6 text-center text-sm text-zinc-500">

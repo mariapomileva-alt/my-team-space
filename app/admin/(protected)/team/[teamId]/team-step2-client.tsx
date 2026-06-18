@@ -34,7 +34,7 @@ export function TeamStep2Client({
 
   if (embedded) {
     return (
-      <TeamAdminShell teamId={teamId} team={initialTeam} activeNav="build">
+      <TeamAdminShell teamId={teamId} team={initialTeam} activeNav="build" hideSidebar>
         {builder}
       </TeamAdminShell>
     );

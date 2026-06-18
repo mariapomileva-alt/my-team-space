@@ -8,21 +8,29 @@ import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderBillingStatus } from "@/components/builder/builder-billing-status";
 import { BuilderEditAccessBanner } from "@/components/builder/builder-edit-access-banner";
 import { BuilderMobileNav, type BuilderMobileTab } from "@/components/builder/builder-mobile-nav";
+import {
+  BuilderPageStructureNav,
+  BuilderPageStructureNavMobile,
+} from "@/components/builder/builder-page-structure-nav";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
+import { SetupProgressStrip } from "@/components/builder/setup-progress-strip";
 import { loadTeamForBuilder, saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
 import { STALE_TEAM_VERSION } from "@/lib/teams/save-version";
 import {
   BUILDER_EDITOR_COLUMN,
+  BUILDER_EDITOR_IN_NAV_GRID,
   BUILDER_PAGE_SHELL,
   BUILDER_PREVIEW_CHROME,
   BUILDER_PREVIEW_COLUMN,
+  BUILDER_PREVIEW_IN_NAV_GRID,
+  BUILDER_STRUCTURE_NAV_COLUMN,
+  BUILDER_WITH_NAV_GRID,
   BUILDER_WORKSPACE_GRID,
 } from "@/lib/builder/layout";
 import type { BuilderProgressTarget } from "@/components/builder/builder-progress";
-import { BuilderSuggestionsCard } from "@/components/builder/builder-suggestions-card";
-import { SetupProgressCenter } from "@/components/builder/setup-progress-center";
 import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
+import { PAGE_STRUCTURE_BLOCK_MAP, type PageStructureNavId } from "@/lib/builder/page-structure";
 import { applyBlockOrder, builderSortBlocks, partitionBlocksByEnabled } from "@/lib/blocks/meta";
 import {
   readStoredPreviewMode,
@@ -91,6 +99,8 @@ export function TeamPageBuilder({
   const paymentsRef = useRef<HTMLDivElement>(null);
   const previewColumnRef = useRef<HTMLElement>(null);
   const [openSection, setOpenSection] = useState<WorkspaceSection | null>("header");
+  const [activeStructureNav, setActiveStructureNav] = useState<PageStructureNavId | null>("header");
+  const [aboutFocusKey, setAboutFocusKey] = useState(0);
   const [mobileTab, setMobileTab] = useState<BuilderMobileTab>("edit");
   const [fullPreviewOpen, setFullPreviewOpen] = useState(false);
   const [previewMode, setPreviewMode] = useState<BuilderPreviewMode>("mobile");
@@ -433,6 +443,43 @@ export function TeamPageBuilder({
     scrollTo(ref.current);
   }
 
+  function navigateToStructureItem(id: PageStructureNavId) {
+    setActiveStructureNav(id);
+
+    if (id === "header") {
+      focusWorkspaceSection("header");
+      return;
+    }
+
+    if (id === "about") {
+      focusWorkspaceSection("header");
+      setAboutFocusKey((k) => k + 1);
+      return;
+    }
+
+    const types = PAGE_STRUCTURE_BLOCK_MAP[id];
+    const block = teamRef.current.blocks.find((b) => types.includes(b.type));
+    focusWorkspaceSection("sections");
+
+    if (!block) {
+      scrollTo(blocksRef.current);
+      return;
+    }
+
+    if (!block.enabled) {
+      quickAddBlock(block.type);
+    } else {
+      setExpanded((prev) => new Set(prev).add(block.id));
+      setFocusBlockId(block.id);
+    }
+
+    window.setTimeout(() => {
+      scrollTo(
+        document.querySelector(`[data-builder-block-id="${block.id}"]`) as HTMLElement | null,
+      );
+    }, block.enabled ? 0 : 180);
+  }
+
   useEffect(() => {
     const focus = searchParams.get("focus");
     if (!focus) return;
@@ -448,7 +495,11 @@ export function TeamPageBuilder({
     };
     const section = map[focus];
     if (!section) return;
-    const id = window.setTimeout(() => focusWorkspaceSection(section), 150);
+    const id = window.setTimeout(() => {
+      if (section === "header") navigateToStructureItem("header");
+      else if (section === "sections") navigateToStructureItem("gallery");
+      else focusWorkspaceSection(section);
+    }, 150);
     return () => window.clearTimeout(id);
     // Deep-link from dashboard quick actions
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -500,28 +551,28 @@ export function TeamPageBuilder({
 
   function jumpTo(target: BuilderProgressTarget) {
     if (target === "identity" || target === "cover" || target === "social") {
-      focusWorkspaceSection("header");
+      navigateToStructureItem("header");
       return;
     }
 
-    const typeToBlock: Partial<Record<BuilderProgressTarget, BlockType[]>> = {
-      schedule: ["schedule", "calendar"],
-      contacts: ["contacts"],
-      gallery: ["gallery"],
-      results: ["results"],
-    };
-    const types = typeToBlock[target] ?? [];
-    const block = teamRef.current.blocks.find((b) => types.includes(b.type));
-    setOpenSection("sections");
-    if (!block) {
-      scrollTo(blocksRef.current);
+    if (target === "contacts") {
+      navigateToStructureItem("contacts");
       return;
     }
-    setExpanded((prev) => new Set(prev).add(block.id));
-    setFocusBlockId(block.id);
-    scrollTo(
-      document.querySelector(`[data-builder-block-id="${block.id}"]`) as HTMLElement | null,
-    );
+    if (target === "schedule") {
+      navigateToStructureItem("calendar");
+      return;
+    }
+    if (target === "gallery") {
+      navigateToStructureItem("gallery");
+      return;
+    }
+    if (target === "results") {
+      navigateToStructureItem("results");
+      return;
+    }
+
+    navigateToStructureItem("header");
   }
 
   const shellClass = embedded ? "w-full max-w-none px-0" : BUILDER_PAGE_SHELL;
@@ -555,7 +606,8 @@ export function TeamPageBuilder({
           publicUrl={publicUrl}
           parentShareUrl={parentShareUrl}
           shareHint={shareHint}
-          progress={<SetupProgressCenter team={team} onJump={jumpTo} />}
+          compact={embedded}
+          progress={<SetupProgressStrip team={team} onJump={jumpTo} />}
           billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
           editLocked={editLocked}
           canPublish={memberRole === "coach"}
@@ -580,12 +632,33 @@ export function TeamPageBuilder({
         </motion.p>
       ) : null}
 
-      <div className={`${shellClass} ${embedded ? "pb-24 pt-2" : "pb-24 pt-1"} lg:pb-10`}>
-        <div className={BUILDER_WORKSPACE_GRID}>
+      <div className={`${shellClass} ${embedded ? "pb-8 pt-2" : "pb-24 pt-1"} lg:pb-10`}>
+        <div className={embedded ? BUILDER_WITH_NAV_GRID : BUILDER_WORKSPACE_GRID}>
+          {embedded ? (
+            <aside className={BUILDER_STRUCTURE_NAV_COLUMN}>
+              <BuilderPageStructureNav
+                teamId={teamId}
+                team={team}
+                activeId={activeStructureNav}
+                onSelect={navigateToStructureItem}
+              />
+            </aside>
+          ) : null}
+
           <div
-            className={`${BUILDER_EDITOR_COLUMN}${editLocked ? " pointer-events-none select-none opacity-[0.72]" : ""}`}
+            className={`${embedded ? BUILDER_EDITOR_IN_NAV_GRID : BUILDER_EDITOR_COLUMN}${editLocked ? " pointer-events-none select-none opacity-[0.72]" : ""}`}
             aria-disabled={editLocked}
           >
+            {embedded ? (
+              <div className="mb-2 lg:hidden">
+                <BuilderPageStructureNavMobile
+                  team={team}
+                  activeId={activeStructureNav}
+                  onSelect={navigateToStructureItem}
+                />
+              </div>
+            ) : null}
+
             <div ref={identityRef} id="builder-team-identity" className="scroll-mt-6">
               <TeamIdentityPanel
                 team={team}
@@ -594,10 +667,9 @@ export function TeamPageBuilder({
                 onPatchBlock={patchBlock}
                 expanded={openSection === "header"}
                 onExpandedChange={(open) => setWorkspaceExpanded("header", open)}
+                focusAboutKey={aboutFocusKey}
               />
             </div>
-
-            <BuilderSuggestionsCard team={team} onJump={jumpTo} />
 
             <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-6">
               <PageBlocksPanel
@@ -637,7 +709,10 @@ export function TeamPageBuilder({
             </div>
           </div>
 
-          <aside ref={previewColumnRef} className={BUILDER_PREVIEW_COLUMN}>
+          <aside
+            ref={previewColumnRef}
+            className={embedded ? BUILDER_PREVIEW_IN_NAV_GRID : BUILDER_PREVIEW_COLUMN}
+          >
             <div className={BUILDER_PREVIEW_CHROME}>
               <div className="mb-4">
                 <div className="flex items-center justify-between gap-2">

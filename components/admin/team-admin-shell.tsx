@@ -22,29 +22,42 @@ export function TeamAdminShell({
   team,
   children,
   activeNav,
+  hideSidebar = false,
 }: {
   teamId: string;
   team: TeamSpace;
   children: React.ReactNode;
   activeNav: TeamAdminNavId;
+  /** Build page uses in-workspace section nav instead */
+  hideSidebar?: boolean;
 }) {
   const pathname = usePathname();
+  const isBuild = activeNav === "build";
 
   return (
     <div className="min-h-screen bg-[#f7f7f8]">
       <header className="sticky top-0 z-30 border-b border-zinc-200/50 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1680px] items-center justify-between gap-4 px-5 py-3 sm:px-8">
-          <Link href="/admin" className="text-sm font-semibold text-zinc-500 transition hover:text-zinc-800">
-            ← All teams
+          <Link
+            href={isBuild ? `/admin/team/${teamId}` : "/admin"}
+            className="text-sm font-semibold text-zinc-500 transition hover:text-zinc-800"
+          >
+            {isBuild ? "← Dashboard" : "← All teams"}
           </Link>
-          <p className="truncate text-sm font-bold text-zinc-900">{team.name}</p>
+          {!isBuild ? <p className="truncate text-sm font-bold text-zinc-900">{team.name}</p> : <span />}
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-[1680px] gap-8 px-5 py-8 sm:px-8 lg:py-10">
-        <aside className="hidden w-[15.5rem] shrink-0 lg:block">
-          <TeamProgressWidget team={team} className="mb-6" />
-          <nav className="space-y-1" aria-label="Team admin">
+      <div
+        className={cn(
+          "mx-auto flex max-w-[1680px] gap-8 px-5 py-8 sm:px-8 lg:py-10",
+          hideSidebar && "gap-0",
+        )}
+      >
+        {!hideSidebar ? (
+          <aside className="hidden w-[15.5rem] shrink-0 lg:block">
+            <TeamProgressWidget team={team} className="mb-6" />
+            <nav className="space-y-1" aria-label="Team admin">
             {NAV.map((item) => {
               const href = item.href(teamId);
               const isActive = item.id === activeNav || (item.id === "dashboard" && pathname === href);
@@ -68,11 +81,13 @@ export function TeamAdminShell({
             })}
           </nav>
         </aside>
+        ) : null}
 
         <main className="min-w-0 flex-1">{children}</main>
       </div>
 
-      <nav
+      {!hideSidebar ? (
+        <nav
         className="fixed bottom-0 left-0 right-0 z-30 flex border-t border-zinc-200/60 bg-white/95 px-2 py-2 backdrop-blur-xl lg:hidden"
         aria-label="Team admin mobile"
       >
@@ -96,7 +111,8 @@ export function TeamAdminShell({
           );
         })}
       </nav>
-      <div className="h-20 lg:hidden" aria-hidden />
+      ) : null}
+      {!hideSidebar ? <div className="h-20 lg:hidden" aria-hidden /> : null}
     </div>
   );
 }
