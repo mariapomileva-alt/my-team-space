@@ -127,6 +127,10 @@ export function TeamPageBuilder({
         const fresh = await loadTeamForBuilder(teamId);
         purgeStaleTeamPreview(fresh.slug, fresh.updatedAt);
         applyServerTeam(fresh);
+        if (!dirtyRef.current) {
+          setSaveError(null);
+          setSaveState("saved");
+        }
       } catch {
         applyServerTeam(initialTeam);
       }
@@ -151,6 +155,10 @@ export function TeamPageBuilder({
         }
         purgeStaleTeamPreview(fresh.slug, fresh.updatedAt);
         applyServerTeam(fresh);
+        if (!dirtyRef.current) {
+          setSaveError(null);
+          setSaveState("saved");
+        }
       }
     } catch {
       /* background sync — ignore */
@@ -271,8 +279,6 @@ export function TeamPageBuilder({
         setSaveState("error");
         setSaveError(humanizeSaveError(detail));
         setMsg(detail);
-      } else {
-        setSaveError(humanizeSaveError(detail));
       }
       return false;
     }

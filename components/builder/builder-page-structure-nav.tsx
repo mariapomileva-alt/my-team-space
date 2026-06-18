@@ -5,6 +5,7 @@ import {
   formatSetupAction,
   getSetupSnapshot,
 } from "@/lib/builder/page-completion";
+import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { getPageStructureNav, type PageStructureNavId } from "@/lib/builder/page-structure";
 import type { BuilderProgressTarget } from "@/lib/builder/page-completion";
 import type { TeamSpace } from "@/lib/types";
@@ -85,7 +86,7 @@ export function BuilderPageStructureNav({
                   )}
                   aria-hidden
                 >
-                  {item.emoji}
+                  <BuilderSectionIcon structureId={item.id} size="sm" />
                 </span>
                 <span className="min-w-0 flex-1 truncate">{item.label}</span>
                 <span
@@ -122,7 +123,8 @@ export function BuilderPageStructureNav({
           href={`/admin/team/${teamId}/settings`}
           className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-zinc-500 transition hover:bg-white/60 hover:text-zinc-800"
         >
-          ⚙️ Settings
+          <BuilderSectionIcon icon="settings" size="sm" className="opacity-70" />
+          Settings
         </Link>
       </div>
     </nav>
@@ -164,7 +166,7 @@ export function BuilderPageStructureNavMobile({
                 : "bg-white text-zinc-600 ring-1 ring-zinc-200/80",
             )}
           >
-            <span aria-hidden>{item.emoji}</span>
+            <BuilderSectionIcon structureId={item.id} size="xs" />
             {item.label}
             {item.done ? (
               <span className="text-[10px] opacity-90" aria-hidden>

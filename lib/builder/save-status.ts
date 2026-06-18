@@ -4,8 +4,8 @@ export type BuilderSaveState = "idle" | "saving" | "saved" | "error";
 export function humanizeSaveError(message: string): string {
   const raw = message.trim();
   if (!raw) return "Unknown error — try Publish or refresh the page.";
-  if (/Server Components render|omitted in production builds/i.test(raw)) {
-    return "Save failed — run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase SQL Editor, then refresh this page.";
+  if (/Server Components render|omitted in production builds|digest/i.test(raw)) {
+    return "Couldn't save — refresh the page (Cmd+Shift+R) and try a small edit. If it repeats, sign out and back in.";
   }
   if (/coach_subscription|coach_subscriptions|set_primary_team/i.test(raw)) {
     return "Couldn't autosave — billing setup is still pending.";

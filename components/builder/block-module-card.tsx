@@ -1,5 +1,6 @@
 "use client";
 
+import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { BlockSettingsEditor } from "@/components/builder/block-settings-editor";
 import {
   builderCardGridClass,
@@ -163,12 +164,12 @@ export function BlockModuleCard({
             >
               <span
                 className={cn(
-                  "flex shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
+                  "flex shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-zinc-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]",
                   iconGradient,
-                  legoLayout ? "h-12 w-12" : "h-10 w-10 rounded-xl text-lg",
+                  legoLayout ? "h-12 w-12" : "h-10 w-10 rounded-xl",
                 )}
               >
-                {meta.emoji}
+                <BuilderSectionIcon blockType={block.type} size={legoLayout ? "lg" : "md"} />
               </span>
               <span className="min-w-0 flex-1 pt-0.5">
                 <span className="flex flex-wrap items-center gap-2">

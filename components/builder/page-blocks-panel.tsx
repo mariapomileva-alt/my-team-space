@@ -1,5 +1,6 @@
 "use client";
 
+import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { BlockModuleCard } from "@/components/builder/block-module-card";
 import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
 import { BuilderHiddenArchive } from "@/components/builder/builder-hidden-archive";
@@ -104,8 +105,8 @@ export function PageBlocksPanel({
                   onClick={() => onQuickAdd(type)}
                   className="inline-flex items-center gap-2 rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-900 shadow-sm transition hover:border-violet-300 hover:shadow-md active:scale-[0.98]"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-lg" aria-hidden>
-                    {meta.emoji}
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-800" aria-hidden>
+                    <BuilderSectionIcon blockType={type} size="md" />
                   </span>
                   {meta.title}
                 </button>

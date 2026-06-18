@@ -13,7 +13,6 @@ export type PageStructureNavId =
 export type PageStructureNavItem = {
   id: PageStructureNavId;
   label: string;
-  emoji: string;
   done: boolean;
   /** Block is on the public page */
   enabled: boolean;
@@ -101,7 +100,6 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
     {
       id: "header",
       label: "Header",
-      emoji: "◎",
       done: headerDone(team, hs),
       enabled: true,
       blockTypes: ["hero"],
@@ -109,7 +107,6 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
     {
       id: "about",
       label: "About Team",
-      emoji: "✍️",
       done: aboutDone(team, hs),
       enabled: true,
       blockTypes: ["hero"],
@@ -117,7 +114,6 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
     {
       id: "gallery",
       label: "Gallery",
-      emoji: "📸",
       done: galleryDone(team),
       enabled: Boolean(blockOf(team, "gallery")?.enabled),
       blockTypes: ["gallery"],
@@ -125,7 +121,6 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
     {
       id: "calendar",
       label: "Calendar",
-      emoji: "📅",
       done: calendarDone(team),
       enabled: Boolean(
         blockOf(team, "calendar")?.enabled || blockOf(team, "schedule")?.enabled,
@@ -135,7 +130,6 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
     {
       id: "results",
       label: "Results",
-      emoji: "🏆",
       done: resultsDone(team),
       enabled: Boolean(blockOf(team, "results")?.enabled),
       blockTypes: ["results"],
@@ -143,7 +137,6 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
     {
       id: "contacts",
       label: "Contacts",
-      emoji: "📞",
       done: contactsDone(team),
       enabled: Boolean(blockOf(team, "contacts")?.enabled),
       blockTypes: ["contacts"],
@@ -154,7 +147,6 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
     items.push({
       id: "sponsors",
       label: "Sponsors",
-      emoji: "🤝",
       done: sponsorsDone(team),
       enabled: true,
       blockTypes: ["sponsors"],
