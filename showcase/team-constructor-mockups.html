@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MyTeamSpace — 6 команд из конструктора</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: #f2f4f7;
+      color: #1a1c23;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .gallery-header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 2rem;
+      text-align: center;
+    }
+    .gallery-header h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .gallery-header p {
+      margin-top: 0.75rem;
+      color: #5a6270;
+      max-width: 44rem;
+      margin-inline: auto;
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+    .gallery-header .badge {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #6c5ce7, #ff6b9d);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .gallery-header a {
+      color: #6c5ce7;
+      font-weight: 600;
+    }
+
+    .mockup-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .mockup-wrap { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    .mockup-label { text-align: center; max-width: 300px; }
+    .mockup-label .sport {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #7c3aed;
+    }
+    .mockup-label h2 { font-size: 1.05rem; font-weight: 700; margin-top: 0.25rem; }
+    .mockup-label p { font-size: 0.78rem; color: #6b7280; margin-top: 0.2rem; }
+    .mockup-label .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem; margin-top: 0.5rem; }
+    .mockup-label .chip {
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #4b5563;
+    }
+    .mockup-label .chip--hero { background: #eef2ff; border-color: #c7d2fe; color: #3730a3; }
+
+    .phone {
+      width: 300px;
+      height: 620px;
+      border-radius: 2rem;
+      border: 10px solid #1a1c23;
+      overflow: hidden;
+      box-shadow: 0 24px 60px -20px rgba(0,0,0,0.35);
+      position: relative;
+      background: #000;
+    }
+    .phone-notch {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 90px; height: 22px;
+      background: #1a1c23;
+      border-radius: 0 0 14px 14px;
+      z-index: 50;
+    }
+    .phone-scroll {
+      height: 100%;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .phone-scroll::-webkit-scrollbar { display: none; }
+
+    .mts-shell {
+      min-height: 100%;
+      background: var(--mts-page-bg);
+      color: var(--mts-text);
+      font-family: Inter, system-ui, sans-serif;
+      padding: 0.75rem 0.65rem 1.5rem;
+    }
+
+    .ann {
+      margin-bottom: 0.65rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 0.85rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .ann--info { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
+    .ann--urgent { background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; }
+    .ann--confirm { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+
+    /* Hero — lib/blocks/hero-layout.ts + globals.css */
+    .hero-card {
+      container-type: inline-size;
+      --hero-logo-size: 4.75rem;
+      --hero-cover-height: 10.5rem;
+      --hero-identity-gap: 0.8125rem;
+      overflow: hidden;
+      border-radius: 1.35rem;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: #fff;
+      box-shadow: 0 4px 28px -14px rgba(15,23,42,0.12);
+      margin-bottom: 0.75rem;
+    }
+    .hero-card__cover {
+      position: relative;
+      z-index: 2;
+      overflow: visible;
+      height: var(--hero-cover-height);
+    }
+    .hero-card__cover img.cover-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-card__cover::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.45), transparent 55%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hero-card--overlay .hero-card__cover::before {
+      background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.05));
+    }
+    .hero-live {
+      position: absolute; right: 0.6rem; top: 0.6rem; z-index: 20;
+      display: flex; align-items: center; gap: 0.3rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.95);
+      font-size: 0.58rem; font-weight: 700; color: #047857;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .hero-live span { width: 5px; height: 5px; border-radius: 50%; background: #10b981; }
+    .hero-card__logo-anchor {
+      position: absolute; left: 1rem; bottom: 0; z-index: 30;
+      transform: translateY(50%);
+    }
+    .hero-logo {
+      width: var(--hero-logo-size); height: var(--hero-logo-size);
+      border-radius: 9999px;
+      border: 3px solid #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      overflow: hidden;
+      background: #fff;
+    }
+    .hero-logo img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
+    .hero-card__body {
+      position: relative; z-index: 1;
+      background: var(--mts-card, #fff);
+      padding: calc(var(--hero-logo-size) * 0.5) 1rem 1rem;
+    }
+    .hero-card__identity {
+      display: flex; align-items: flex-start; gap: var(--hero-identity-gap);
+      margin-top: calc(var(--hero-logo-size) * -0.5);
+    }
+    .hero-card__logo-spacer {
+      flex: 0 0 var(--hero-logo-size);
+      width: var(--hero-logo-size);
+    }
+    .hero-card__text-zone { flex: 1; min-width: 0; }
+    .hero-card--stack .hero-card__text-zone {
+      padding-top: calc(var(--hero-logo-size) * 0.48);
+    }
+    .hero-card__title {
+      font-size: 1.05rem; font-weight: 700; line-height: 1.22;
+      letter-spacing: -0.02em; color: var(--mts-text);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .hero-card__subtitle {
+      margin-top: 0.15rem;
+      font-size: 0.72rem; color: var(--mts-muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .hero-card__city {
+      margin-top: 0.1rem;
+      font-size: 0.62rem; color: #a3a3af;
+    }
+    .hero-card__motto {
+      margin-top: 0.5rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--mts-primary);
+      font-style: italic;
+    }
+
+    /* inline */
+    .hero-card--inline .hero-card__identity {
+      align-items: center;
+      margin-top: calc(var(--hero-logo-size) * -0.5);
+    }
+    .hero-card--inline .hero-card__text-zone { padding-top: 0; }
+
+    /* center */
+    .hero-card--center .hero-card__logo-anchor {
+      left: 50%; transform: translate(-50%, 50%);
+    }
+    .hero-card--center .hero-card__body { text-align: center; }
+    .hero-card--center .hero-card__text-zone { width: 100%; padding-top: calc(var(--hero-logo-size) * 0.48); }
+
+    /* overlay */
+    .hero-card--overlay .hero-card__logo-anchor {
+      left: 1rem; top: 1rem; bottom: auto; transform: none;
+    }
+    .hero-card__overlay-text {
+      position: absolute; left: 1rem; right: 1rem; bottom: 0.9rem; z-index: 25;
+    }
+    .hero-card--overlay .hero-card__title,
+    .hero-card--overlay .hero-card__subtitle,
+    .hero-card--overlay .hero-card__city {
+      color: #fff;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.45);
+    }
+    .hero-card--overlay .hero-card__city { color: rgba(255,255,255,0.85); }
+    .hero-card--overlay .hero-card__body { padding-top: 1rem; }
+
+    .dash { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .dash-full { grid-column: 1 / -1; }
+    .tile {
+      border-radius: 1.1rem;
+      border: 1px solid rgba(0,0,0,0.07);
+      background: #fff;
+      padding: 0.65rem;
+      box-shadow: 0 4px 16px -10px rgba(15,23,42,0.14);
+      min-height: 72px;
+    }
+    .tile--featured { min-height: 100px; padding: 0.75rem; }
+    .tile-icon {
+      width: 1.75rem; height: 1.75rem;
+      border-radius: 0.55rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      margin-bottom: 0.35rem;
+    }
+    .tile h3 { font-size: 0.68rem; font-weight: 700; color: var(--mts-text); }
+    .tile p { font-size: 0.58rem; color: var(--mts-muted); margin-top: 0.1rem; line-height: 1.3; }
+    .tile-preview {
+      margin-top: 0.4rem;
+      font-size: 0.58rem;
+      font-weight: 600;
+      color: var(--mts-primary-bright, var(--mts-primary));
+    }
+    .rail {
+      display: flex; gap: 0.4rem; overflow-x: auto;
+      margin-top: 0.4rem; scrollbar-width: none;
+    }
+    .rail::-webkit-scrollbar { display: none; }
+    .rail-item {
+      flex: 0 0 3.5rem; height: 3.5rem;
+      border-radius: 0.6rem;
+      object-fit: cover;
+    }
+    .rail-item--cup {
+      flex: 0 0 auto;
+      padding: 0.35rem 0.5rem;
+      background: var(--mts-accent-soft);
+      border-radius: 0.6rem;
+      font-size: 0.55rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .bg-sky { background: #e0f2fe; }
+    .bg-emerald { background: #d1fae5; }
+    .bg-amber { background: #fef3c7; }
+    .bg-rose { background: #ffe4e6; }
+    .bg-violet { background: #ede9fe; }
+    .bg-indigo { background: #e0e7ff; }
+    .bg-teal { background: #ccfbf1; }
+    .bg-yellow { background: #fef9c3; }
+    .bg-fuchsia { background: #fae8ff; }
+    .bg-neutral { background: #f4f4f5; }
+
+    .footer-note {
+      max-width: 1200px;
+      margin: 0 auto 3rem;
+      padding: 0 1.5rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<header class="gallery-header">
+  <span class="badge">MyTeamSpace Constructor</span>
+  <h1>6 команд — танцы, баскет, хоккей, плавание, балет, теннис</h1>
+  <p>
+    Офлайн-превью из <code>lib/showcase/demo-teams.ts</code> — те же 6 команд, что на
+    <a href="/showcase/teams">/showcase/teams</a>. Четыре hero-layout, темы из <code>lib/themes.ts</code>.
+  </p>
+</header>
+
+<main class="mockup-grid" id="mockups"></main>
+
+<p class="footer-note">
+  Откройте в браузере: <strong>showcase/team-constructor-mockups.html</strong><br />
+  Живые превью (React): <strong>/showcase/teams</strong>
+</p>
+
+<script>
+const LOGOS = {
+  dance: "logos/logo-rhythm-motion.png",
+  basketball: "logos/logo-thunder-hoops.png",
+  hockey: "logos/logo-nordic-ice.png",
+  swim: "logos/logo-aqua-wave.png",
+  ballet: "logos/logo-etoile-ballet.png",
+  tennis: "logos/logo-ace-tennis.png",
+};
+
+const TEAMS = [
+  {
+    id: "rhythm-motion",
+    sportRu: "Танцевальная секция",
+    name: "Rhythm & Motion",
+    tagline: "Hip-hop · Contemporary · Kids 7–14",
+    city: "Riga, Latvia",
+    motto: "Move with joy",
+    heroLayout: "center",
+    preset: "Pastel youth",
+    heroLabel: "Center",
+    theme: {
+      "--mts-page-bg": "linear-gradient(160deg, #fdf4ff 0%, #e0f2fe 45%, #fef9c3 100%)",
+      "--mts-card": "linear-gradient(180deg, #ffffff 0%, #faf5ff 100%)",
+      "--mts-text": "#4c1d95",
+      "--mts-muted": "#7c3aed",
+      "--mts-primary": "#8b5cf6",
+      "--mts-primary-bright": "#a78bfa",
+      "--mts-accent": "#f472b6",
+      "--mts-accent-soft": "rgba(139, 92, 246, 0.1)",
+      "--mts-hero-fallback": "linear-gradient(120deg, #8b5cf6 0%, #a78bfa 50%, #f472b6 100%)",
+    },
+    cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&h=260&fit=crop",
+    logo: LOGOS.dance,
+    ann: { tone: "info", text: "💃 Spring recital — Friday 18:30. Purple costumes." },
+    blocks: [
+      { layout: "half", icon: "📅", bg: "bg-sky", title: "Schedule", sub: "Classes", preview: "Tue 16:30 · Studio A" },
+      { layout: "featured", icon: "📸", bg: "bg-rose", title: "Gallery", sub: "Photos", railImgs: [
+        "https://images.unsplash.com/photo-1518834107812-67b0bb7c2d2e?w=120&h=120&fit=crop",
+        "https://images.unsplash.com/photo-1547159414-26d2a83f8a42?w=120&h=120&fit=crop",
+      ]},
+      { layout: "half", icon: "📊", bg: "bg-violet", title: "Poll", sub: "Recital RSVP", preview: "Who is coming?" },
+      { layout: "half", icon: "👋", bg: "bg-teal", title: "Contacts", sub: "Coaches", preview: "Coach Anna" },
+      { layout: "half", icon: "🌟", bg: "bg-amber", title: "Achievements", sub: "Highlights", rail: ["🌟 National gold"] },
+      { layout: "full", icon: "⏱️", bg: "bg-indigo", title: "Countdown", sub: "Recital night", preview: "Jun 28 · 18:30" },
+    ],
+  },
+  {
+    id: "thunder-hoops",
+    sportRu: "Баскетбольный кружок",
+    name: "Thunder Hoops U14",
+    tagline: "Boys U14 · City league",
+    city: "Barcelona, Spain",
+    heroLayout: "inline",
+    preset: "Energetic orange",
+    heroLabel: "Inline",
+    theme: {
+      "--mts-page-bg": "linear-gradient(170deg, #fff7ed 0%, #ffedd5 45%, #fed7aa 100%)",
+      "--mts-card": "linear-gradient(180deg, #ffffff 0%, #fffbeb 100%)",
+      "--mts-text": "#431407",
+      "--mts-muted": "#9a3412",
+      "--mts-primary": "#ea580c",
+      "--mts-primary-bright": "#fb923c",
+      "--mts-accent": "#dc2626",
+      "--mts-accent-soft": "rgba(234, 88, 12, 0.1)",
+      "--mts-hero-fallback": "linear-gradient(120deg, #ea580c 0%, #fb923c 50%, #dc2626 100%)",
+    },
+    cover: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=260&fit=crop",
+    logo: LOGOS.basketball,
+    ann: { tone: "urgent", text: "🏀 Playoff Saturday 10:00 — white kit." },
+    blocks: [
+      { layout: "half", icon: "📅", bg: "bg-sky", title: "Schedule", sub: "Training", preview: "Mon/Wed 18:00" },
+      { layout: "featured", icon: "🏅", bg: "bg-yellow", title: "Results", sub: "City Cup", preview: "🥇 Lucas M. — 1st" },
+      { layout: "half", icon: "✅", bg: "bg-emerald", title: "Attendance", sub: "This week", preview: "Lucas M. · #7" },
+      { layout: "half", icon: "👋", bg: "bg-teal", title: "Contacts", sub: "Coach", preview: "Coach Miguel" },
+      { layout: "half", icon: "🎬", bg: "bg-indigo", title: "Integrations", sub: "Hudl", preview: "Game film" },
+      { layout: "full", icon: "🛍️", bg: "bg-amber", title: "Shop", sub: "Jersey €38", preview: "Thunder kit" },
+    ],
+  },
+  {
+    id: "nordic-ice",
+    sportRu: "Хоккейная команда",
+    name: "Nordic Ice Wolves",
+    tagline: "U12–U16 elite",
+    city: "Tampere, Finland",
+    motto: "Skate hard. Stick together.",
+    heroLayout: "overlay",
+    preset: "Dark athletic",
+    heroLabel: "Overlay",
+    theme: {
+      "--mts-page-bg": "linear-gradient(180deg, #0c0f14 0%, #121820 100%)",
+      "--mts-card": "linear-gradient(180deg, #151b24 0%, #10151c 100%)",
+      "--mts-text": "#f1f5f9",
+      "--mts-muted": "#94a3b8",
+      "--mts-primary": "#bef264",
+      "--mts-primary-bright": "#d9f99d",
+      "--mts-accent": "#f472b6",
+      "--mts-accent-soft": "rgba(244, 114, 182, 0.12)",
+      "--mts-hero-fallback": "linear-gradient(125deg, #0c0f14 0%, #3f6212 45%, #f472b6 100%)",
+    },
+    cover: "https://images.unsplash.com/photo-1515705576963-95ad545555df?w=600&h=260&fit=crop",
+    logo: LOGOS.hockey,
+    ann: { tone: "info", text: "❄️ Rink B closed Monday — session at 16:00." },
+    blocks: [
+      { layout: "half", icon: "📅", bg: "bg-sky", title: "Schedule", sub: "Ice practice", preview: "Wed 16:00" },
+      { layout: "featured", icon: "🏅", bg: "bg-yellow", title: "Results", sub: "Regional Cup", preview: "🥇 Elias V." },
+      { layout: "half", icon: "🚌", bg: "bg-amber", title: "Trips", sub: "Tournament", preview: "Tallinn Mar 14–16" },
+      { layout: "half", icon: "🌤️", bg: "bg-neutral", title: "Weather", sub: "Outdoor", preview: "-4°C · snow" },
+      { layout: "half", icon: "📸", bg: "bg-rose", title: "Gallery", sub: "Team photos", railImgs: [
+        "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=120&h=120&fit=crop",
+      ]},
+      { layout: "full", icon: "💳", bg: "bg-sky", title: "Payments", sub: "Season fee", preview: "€420" },
+    ],
+  },
+  {
+    id: "aqua-wave",
+    sportRu: "Плавательная команда",
+    name: "Aqua Wave Swim Club",
+    tagline: "Competitive swimming · 8–16",
+    city: "Tallinn, Estonia",
+    heroLayout: "stack",
+    preset: "Ocean aqua",
+    heroLabel: "Stack",
+    theme: {
+      "--mts-page-bg": "linear-gradient(165deg, #e8f4fc 0%, #cfe8f5 35%, #b8dce8 100%)",
+      "--mts-card": "linear-gradient(180deg, #ffffff 0%, #fafcfe 100%)",
+      "--mts-text": "#0a1628",
+      "--mts-muted": "#5a6b78",
+      "--mts-primary": "#0c4a6e",
+      "--mts-primary-bright": "#0ea5e9",
+      "--mts-accent": "#ff6b2d",
+      "--mts-accent-soft": "rgba(255, 107, 45, 0.12)",
+      "--mts-hero-fallback": "linear-gradient(120deg, #0c4a6e 0%, #0ea5e9 52%, #ff6b2d 100%)",
+    },
+    cover: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=600&h=260&fit=crop",
+    logo: LOGOS.swim,
+    ann: { tone: "confirm", text: "🏊 County meet Sunday — warm-up 08:00." },
+    blocks: [
+      { layout: "half", icon: "📅", bg: "bg-sky", title: "Schedule", sub: "Morning squad", preview: "Mon/Wed/Fri 06:30" },
+      { layout: "featured", icon: "🏅", bg: "bg-yellow", title: "Results", sub: "100 m free", preview: "🥇 Krista L." },
+      { layout: "half", icon: "📊", bg: "bg-violet", title: "Poll", sub: "Meet helpers", preview: "Who can help?" },
+      { layout: "half", icon: "🌟", bg: "bg-amber", title: "Achievements", sub: "Relay gold", preview: "County champs" },
+      { layout: "half", icon: "👋", bg: "bg-teal", title: "Contacts", sub: "Coach Liis", preview: "Head coach" },
+      { layout: "full", icon: "🚴", bg: "bg-emerald", title: "Integrations", sub: "Strava dryland", preview: "Club activity" },
+    ],
+  },
+  {
+    id: "etoile-ballet",
+    sportRu: "Балетная студия",
+    name: "Étoile Ballet Studio",
+    tagline: "Classical · Pre-professional",
+    city: "Paris, France",
+    motto: "Grace in every line",
+    heroLayout: "overlay",
+    preset: "Minimal mono",
+    heroLabel: "Overlay",
+    theme: {
+      "--mts-page-bg": "linear-gradient(180deg, #fafafa 0%, #f4f4f5 100%)",
+      "--mts-card": "#ffffff",
+      "--mts-text": "#18181b",
+      "--mts-muted": "#71717a",
+      "--mts-primary": "#18181b",
+      "--mts-primary-bright": "#3f3f46",
+      "--mts-accent": "#52525b",
+      "--mts-accent-soft": "rgba(24, 24, 27, 0.06)",
+      "--mts-hero-fallback": "linear-gradient(120deg, #27272a 0%, #52525b 50%, #a1a1aa 100%)",
+    },
+    cover: "https://images.unsplash.com/photo-1518834107812-67b0bb7c2d2e?w=600&h=260&fit=crop",
+    logo: LOGOS.ballet,
+    ann: { tone: "info", text: "🩰 Nutcracker audition — sign up by Wednesday." },
+    blocks: [
+      { layout: "featured", icon: "📸", bg: "bg-rose", title: "Gallery", sub: "Studio", railImgs: [
+        "https://images.unsplash.com/photo-1508807526345-15e9b5f4b89b?w=120&h=120&fit=crop",
+      ]},
+      { layout: "half", icon: "📅", bg: "bg-neutral", title: "Schedule", sub: "Technique III", preview: "Mon/Wed 17:00" },
+      { layout: "half", icon: "⏱️", bg: "bg-indigo", title: "Countdown", sub: "Summer gala", preview: "Jul 12" },
+      { layout: "half", icon: "🩰", bg: "bg-amber", title: "Achievements", sub: "Paris prize", preview: "Silver solo 2025" },
+      { layout: "half", icon: "👋", bg: "bg-teal", title: "Contacts", sub: "Madame Claire", preview: "Director" },
+      { layout: "full", icon: "🤝", bg: "bg-violet", title: "Sponsors", sub: "Partners", preview: "Opéra Friends" },
+    ],
+  },
+  {
+    id: "ace-tennis",
+    sportRu: "Теннисная академия",
+    name: "Ace Tennis Academy",
+    tagline: "Red clay · UTR juniors",
+    city: "Lisbon, Portugal",
+    heroLayout: "inline",
+    preset: "Premium forest",
+    heroLabel: "Inline",
+    theme: {
+      "--mts-page-bg": "linear-gradient(165deg, #ecfdf5 0%, #d1fae5 40%, #a7f3d0 100%)",
+      "--mts-card": "linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%)",
+      "--mts-text": "#064e3b",
+      "--mts-muted": "#047857",
+      "--mts-primary": "#047857",
+      "--mts-primary-bright": "#10b981",
+      "--mts-accent": "#f59e0b",
+      "--mts-accent-soft": "rgba(4, 120, 87, 0.1)",
+      "--mts-hero-fallback": "linear-gradient(120deg, #064e3b 0%, #10b981 55%, #f59e0b 100%)",
+    },
+    cover: "https://images.unsplash.com/photo-1622163649001-09445f787b59?w=600&h=260&fit=crop",
+    logo: LOGOS.tennis,
+    ann: { tone: "confirm", text: "🎾 Club tournament Sunday — register by Friday." },
+    blocks: [
+      { layout: "half", icon: "📅", bg: "bg-sky", title: "Schedule", sub: "Red squad", preview: "Tue/Thu 16:00" },
+      { layout: "featured", icon: "🏅", bg: "bg-yellow", title: "Results", sub: "Lisbon Open", preview: "🥇 Inês R. U14" },
+      { layout: "half", icon: "🎾", bg: "bg-emerald", title: "Integrations", sub: "UTR ratings", preview: "utrsports.net" },
+      { layout: "half", icon: "📊", bg: "bg-violet", title: "Poll", sub: "Court help", preview: "Maintenance day" },
+      { layout: "half", icon: "🛍️", bg: "bg-amber", title: "Shop", sub: "Academy polo", preview: "€42" },
+      { layout: "full", icon: "🤝", bg: "bg-neutral", title: "Sponsors", sub: "Lisbon Sports Club", preview: "Partner courts" },
+    ],
+  },
+];
+
+function renderBlock(b) {
+  const cls = b.layout === "featured" ? "tile tile--featured" : "tile";
+  const col = b.layout === "full" ? "dash-full" : "";
+  let extra = "";
+  if (b.rail) {
+    extra = '<div class="rail">' + b.rail.map(function(t) { return '<span class="rail-item--cup">' + t + '</span>'; }).join("") + '</div>';
+  }
+  if (b.railImgs) {
+    extra = '<div class="rail">' + b.railImgs.map(function(u) { return '<img class="rail-item" src="' + u + '" alt="" />'; }).join("") + '</div>';
+  }
+  return '<div class="' + col + '"><div class="' + cls + '">' +
+    '<div class="tile-icon ' + b.bg + '">' + b.icon + '</div>' +
+    '<h3>' + b.title + '</h3><p>' + b.sub + '</p>' +
+    (b.preview ? '<div class="tile-preview">' + b.preview + '</div>' : '') +
+    extra + '</div></div>';
+}
+
+function renderHero(t) {
+  const layout = t.heroLayout || "stack";
+  const isOverlay = layout === "overlay";
+  const isInline = layout === "inline";
+  const titleHtml = '<h1 class="hero-card__title">' + t.name + '</h1>' +
+    '<p class="hero-card__subtitle">' + t.tagline + '</p>' +
+    '<p class="hero-card__city">📍 ' + t.city + '</p>';
+
+  const overlayTitle = isOverlay ? '<div class="hero-card__overlay-text">' + titleHtml + '</div>' : '';
+  const bodyInner = isOverlay
+    ? (t.motto ? '<div class="hero-card__body"><p class="hero-card__motto">“' + t.motto + '”</p></div>' : '')
+    : '<div class="hero-card__body"><div class="hero-card__identity">' +
+      (isInline ? '<div class="hero-card__logo-spacer"></div>' : '') +
+      '<div class="hero-card__text-zone">' + titleHtml +
+      (t.motto && !isOverlay ? '<p class="hero-card__motto">“' + t.motto + '”</p>' : '') +
+      '</div></div></div>';
+
+  return '<div class="hero-card hero-card--' + layout + '">' +
+    '<div class="hero-card__cover">' +
+    '<img class="cover-img" src="' + t.cover + '" alt="" />' +
+    '<div class="hero-live"><span></span> Live</div>' +
+    '<div class="hero-card__logo-anchor"><div class="hero-logo"><img src="' + t.logo + '" alt="" /></div></div>' +
+    overlayTitle + '</div>' + bodyInner + '</div>';
+}
+
+function renderTeam(t) {
+  const style = Object.entries(t.theme).map(function(e) { return e[0] + ':' + e[1]; }).join(';');
+  const annClass = 'ann ann--' + t.ann.tone;
+  return '<article class="mockup-wrap">' +
+    '<div class="mockup-label">' +
+    '<p class="sport">' + t.sportRu + '</p>' +
+    '<h2>' + t.name + '</h2>' +
+    '<p>' + t.tagline + '</p>' +
+    '<div class="chips">' +
+    '<span class="chip">' + t.preset + '</span>' +
+    '<span class="chip chip--hero">Hero: ' + t.heroLabel + '</span>' +
+    '</div></div>' +
+    '<div class="phone"><div class="phone-notch"></div><div class="phone-scroll">' +
+    '<div class="mts-shell" style="' + style + '">' +
+    '<div class="' + annClass + '">' + t.ann.text + '</div>' +
+    renderHero(t) +
+    '<div class="dash">' + t.blocks.map(renderBlock).join('') + '</div>' +
+    '</div></div></div></article>';
+}
+
+document.getElementById("mockups").innerHTML = TEAMS.map(renderTeam).join("");
+</script>
+</body>
+</html>

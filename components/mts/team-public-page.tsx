@@ -114,7 +114,7 @@ export function TeamPublicPage({
   }, [initialTeam, allowLocalDraft]);
 
   return (
-    <TeamShell themeId={team.themeId}>
+    <TeamShell themeId={team.themeId} team={team}>
       <TeamPublicWithAccess team={team} saasExtras={saasExtras} />
     </TeamShell>
   );

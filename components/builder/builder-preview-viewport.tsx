@@ -53,7 +53,7 @@ function PreviewContent({
   focusBlockId?: string | null;
 }) {
   return (
-    <TeamShell themeId={team.themeId} preview>
+    <TeamShell themeId={team.themeId} team={team} preview>
       <TeamPageBlocks team={team} hasAccess previewBlockId={focusBlockId} />
     </TeamShell>
   );

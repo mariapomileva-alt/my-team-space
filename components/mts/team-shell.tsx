@@ -1,4 +1,4 @@
-import type { ThemeId } from "@/lib/types";
+import type { TeamSpace, ThemeId } from "@/lib/types";
 import { getTheme } from "@/lib/themes";
 import type { CSSProperties, ReactNode } from "react";
 
@@ -8,11 +8,17 @@ type Props = {
   className?: string;
   /** Builder live preview — no full-viewport min height */
   preview?: boolean;
+  /** Applies stored constructor palette on top of the theme preset. */
+  team?: Pick<TeamSpace, "primaryColor" | "secondaryColor">;
 };
 
-export function TeamShell({ themeId, children, className, preview }: Props) {
+export function TeamShell({ themeId, children, className, preview, team }: Props) {
   const theme = getTheme(themeId);
-  const style = theme.cssVars as CSSProperties;
+  const style = {
+    ...theme.cssVars,
+    ...(team?.primaryColor?.trim() ? { "--mts-primary": team.primaryColor.trim() } : {}),
+    ...(team?.secondaryColor?.trim() ? { "--mts-accent": team.secondaryColor.trim() } : {}),
+  } as CSSProperties;
 
   return (
     <div
