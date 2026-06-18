@@ -227,8 +227,10 @@ export function TeamPageBuilder({
       }
       return false;
     }
-    setSaveState("saving");
-    if (!silent) setMsg(null);
+    if (!silent) {
+      setSaveState("saving");
+      setMsg(null);
+    }
     try {
       let payload = teamRef.current;
       if (!payload.updatedAt?.trim()) {
@@ -264,12 +266,12 @@ export function TeamPageBuilder({
         return false;
       }
       dirtyRef.current = true;
-      setSaveState("error");
-      setSaveError(humanizeSaveError(detail));
-      if (silent) {
-        setMsg(null);
-      } else {
+      if (!silent) {
+        setSaveState("error");
+        setSaveError(humanizeSaveError(detail));
         setMsg(detail);
+      } else {
+        setSaveError(humanizeSaveError(detail));
       }
       return false;
     }

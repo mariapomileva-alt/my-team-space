@@ -46,7 +46,8 @@ export async function resolveCoachCanEditTeam(
       error.code === "42P01";
 
     if (rpcMissing) {
-      return ent.teamsUsed <= 1 ? { allowed: true, rpcMissing: true } : { allowed: false, reason: "rpc_error", rpcMissing: true };
+      // Billing schema not migrated yet — don't block saves.
+      return { allowed: true, rpcMissing: true };
     }
 
     console.error("[resolveCoachCanEditTeam]", msg);

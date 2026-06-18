@@ -8,7 +8,6 @@ import type { ReactNode } from "react";
 import { BUILDER_TOOLBAR_SURFACE } from "@/lib/builder/layout";
 import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { useState } from "react";
 
 export function BuilderToolbar({
@@ -50,15 +49,20 @@ export function BuilderToolbar({
   const publishLabel = team.publishStatus === "published" ? "Published" : "Draft";
   const autosaveLabel =
     saveState === "saving" ? "Saving…" : saveState === "error" ? "Save issue" : "Autosaved";
+  const statusLine = saveError
+    ? saveError.length > 72
+      ? `${saveError.slice(0, 69)}…`
+      : saveError
+    : `${publishLabel} · ${autosaveLabel}`;
 
   return (
-    <motion.header
-      initial={{ opacity: 0, y: -6 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="sticky top-2 z-40 mb-3 w-full lg:top-3"
-    >
+    <header className="sticky top-2 z-40 mb-3 w-full lg:top-3">
       <div
-        className={`${BUILDER_TOOLBAR_SURFACE} flex-col !items-stretch !gap-0 ${compact ? "!py-3" : "!py-4"} sm:!px-6`}
+        className={cn(
+          BUILDER_TOOLBAR_SURFACE,
+          "flex-col !items-stretch !gap-0 sm:!px-6",
+          compact ? "!py-3" : "!py-4",
+        )}
       >
         <div className="flex w-full flex-wrap items-center justify-between gap-4">
           <div className="flex min-w-0 flex-1 items-center gap-3.5">
@@ -67,11 +71,17 @@ export function BuilderToolbar({
               <h1 className="truncate text-base font-bold tracking-tight text-zinc-900 sm:text-lg">
                 {team.name || "Your team"}
               </h1>
-              <p className="mt-0.5 text-[13px] font-semibold text-violet-700">{percent}% Ready</p>
-              <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-zinc-500">
-                <span className="font-medium capitalize text-zinc-600">{publishLabel}</span>
-                <span aria-hidden>·</span>
-                <span>{autosaveLabel}</span>
+              {!compact ? (
+                <p className="mt-0.5 text-[13px] font-semibold text-violet-700">{percent}% Ready</p>
+              ) : null}
+              <p
+                className={cn(
+                  "mt-0.5 min-h-[1rem] text-[11px] leading-snug",
+                  saveError ? "text-red-600" : "text-zinc-500",
+                )}
+                title={saveError ?? undefined}
+              >
+                {statusLine}
               </p>
             </div>
           </div>
@@ -122,13 +132,11 @@ export function BuilderToolbar({
           </div>
         </div>
 
-        {saveState === "error" && saveError ? (
-          <p className="mt-2 max-w-md text-[11px] leading-snug text-red-600" title={saveError}>
-            {saveError}
-          </p>
+        {progress ? (
+          <div className={cn("w-full border-t border-zinc-100/80", compact ? "mt-3 pt-3" : "mt-4 pt-4")}>
+            {progress}
+          </div>
         ) : null}
-
-        {progress ? <div className={cn("w-full", compact ? "mt-3" : "mt-4")}>{progress}</div> : null}
         {compact ? (
           shareOpen ? (
             <div className="mt-3 w-full border-t border-zinc-100/80 pt-3">
@@ -144,6 +152,6 @@ export function BuilderToolbar({
           <div className="mt-3 w-full border-t border-zinc-100/60 pt-3">{billingStatus}</div>
         ) : null}
       </div>
-    </motion.header>
+    </header>
   );
 }

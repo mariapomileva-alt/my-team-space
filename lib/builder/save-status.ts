@@ -8,7 +8,7 @@ export function humanizeSaveError(message: string): string {
     return "Save failed — run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase SQL Editor, then refresh this page.";
   }
   if (/coach_subscription|coach_subscriptions|set_primary_team/i.test(raw)) {
-    return "Billing tables are not set up yet. Run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase, then refresh.";
+    return "Couldn't autosave — billing setup is still pending.";
   }
   if (raw === "Forbidden") return "You don't have access to this team.";
   if (/Only the team owner can publish/i.test(raw)) {

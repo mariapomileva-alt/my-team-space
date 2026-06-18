@@ -26,13 +26,12 @@ export function SetupProgressStrip({
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-bold text-zinc-900">{snap.percent}% Ready</p>
           {snap.next && !isReady ? (
-            <p className="mt-0.5 text-[12px] text-zinc-600">
+            <p className="text-[12px] text-zinc-600">
               <span className="font-semibold text-zinc-500">Next step:</span> {formatSetupAction(snap.next)}
             </p>
           ) : (
-            <p className="mt-0.5 text-[12px] font-medium text-emerald-700">Ready to share with families.</p>
+            <p className="text-[12px] font-medium text-emerald-700">Ready to share with families.</p>
           )}
         </div>
 
