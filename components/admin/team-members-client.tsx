@@ -30,7 +30,7 @@ export function TeamMembersClient({
           <p className="mt-1 text-sm text-zinc-500">people with access</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href={`/admin/team/${teamId}/build?focus=settings`}
+              href={`/admin/team/${teamId}/settings`}
               className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white"
             >
               Invite assistant
@@ -43,7 +43,7 @@ export function TeamMembersClient({
           title="Grow your coaching team"
           description="Invite an assistant to help edit the page while you focus on the athletes."
           action={
-            <Link href={`/admin/team/${teamId}/build?focus=settings`} className="text-sm font-semibold text-violet-700 underline">
+            <Link href={`/admin/team/${teamId}/settings`} className="text-sm font-semibold text-violet-700 underline">
               Open page admins in settings
             </Link>
           }

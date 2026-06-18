@@ -33,7 +33,7 @@ export function TeamAdminShell({
   return (
     <div className="min-h-screen bg-[#f7f7f8]">
       <header className="sticky top-0 z-30 border-b border-zinc-200/50 bg-white/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-5 py-3 sm:px-8">
+        <div className="mx-auto flex max-w-[1680px] items-center justify-between gap-4 px-5 py-3 sm:px-8">
           <Link href="/admin" className="text-sm font-semibold text-zinc-500 transition hover:text-zinc-800">
             ← All teams
           </Link>
@@ -41,7 +41,7 @@ export function TeamAdminShell({
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-[1400px] gap-8 px-5 py-8 sm:px-8 lg:py-10">
+      <div className="mx-auto flex max-w-[1680px] gap-8 px-5 py-8 sm:px-8 lg:py-10">
         <aside className="hidden w-[15.5rem] shrink-0 lg:block">
           <TeamProgressWidget team={team} className="mb-6" />
           <nav className="space-y-1" aria-label="Team admin">

@@ -1,14 +1,17 @@
 "use client";
 
-import { AdvancedSettingsPanel } from "@/components/builder/advanced-settings-panel";
 import { TeamIdentityPanel } from "@/components/builder/team-identity-panel";
+import { TeamDesignPanel } from "@/components/builder/team-design-panel";
 import { PageBlocksPanel } from "@/components/builder/page-blocks-panel";
 import { BuilderFullPreviewModal } from "@/components/builder/builder-full-preview-modal";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderBillingStatus } from "@/components/builder/builder-billing-status";
 import { BuilderEditAccessBanner } from "@/components/builder/builder-edit-access-banner";
 import { BuilderMobileNav, type BuilderMobileTab } from "@/components/builder/builder-mobile-nav";
-import { BuilderSidebar, type BuilderNavSection } from "@/components/builder/builder-sidebar";
+import {
+  BuilderWorkspaceTabs,
+  type BuilderWorkspaceSection,
+} from "@/components/builder/builder-workspace-tabs";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
 import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
 import { loadTeamForBuilder, saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
@@ -19,7 +22,6 @@ import {
   BUILDER_PREVIEW_CHROME,
   BUILDER_PREVIEW_COLUMN,
   BUILDER_WORKSPACE_GRID,
-  BUILDER_WORKSPACE_ROW,
 } from "@/lib/builder/layout";
 import type { BuilderProgressTarget } from "@/components/builder/builder-progress";
 import { BuilderSuggestionsCard } from "@/components/builder/builder-suggestions-card";
@@ -87,10 +89,10 @@ export function TeamPageBuilder({
   const topRef = useRef<HTMLDivElement>(null);
   const identityRef = useRef<HTMLDivElement>(null);
   const blocksRef = useRef<HTMLDivElement>(null);
+  const designRef = useRef<HTMLDivElement>(null);
   const paymentsRef = useRef<HTMLDivElement>(null);
-  const settingsRef = useRef<HTMLDivElement>(null);
   const previewColumnRef = useRef<HTMLElement>(null);
-  const [activeSection, setActiveSection] = useState<BuilderNavSection>("header");
+  const [activeSection, setActiveSection] = useState<BuilderWorkspaceSection>("header");
   const [mobileTab, setMobileTab] = useState<BuilderMobileTab>("edit");
   const [fullPreviewOpen, setFullPreviewOpen] = useState(false);
   const [previewMode, setPreviewMode] = useState<BuilderPreviewMode>("mobile");
@@ -415,56 +417,34 @@ export function TeamPageBuilder({
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function navigateSection(section: BuilderNavSection) {
+  function navigateWorkspace(section: BuilderWorkspaceSection) {
     setActiveSection(section);
-    if (section === "overview") {
-      scrollTo(topRef.current);
-      return;
-    }
-    if (section === "header") {
-      scrollTo(identityRef.current);
-      return;
-    }
-    if (section === "sections") {
-      scrollTo(blocksRef.current);
-      return;
-    }
-    if (section === "design") {
-      const designEl = document.getElementById("builder-design");
-      if (designEl instanceof HTMLDetailsElement) designEl.open = true;
-      scrollTo(designEl);
-      return;
-    }
-    if (section === "payments") {
-      scrollTo(paymentsRef.current);
-      return;
-    }
-    if (section === "settings") {
-      scrollTo(settingsRef.current);
-      return;
-    }
-    if (section === "preview") {
-      scrollTo(previewColumnRef.current);
-    }
+    if (section === "header") scrollTo(identityRef.current);
+    if (section === "sections") scrollTo(blocksRef.current);
+    if (section === "design") scrollTo(designRef.current);
+    if (section === "payments") scrollTo(paymentsRef.current);
   }
 
   useEffect(() => {
     const focus = searchParams.get("focus");
     if (!focus) return;
-    const map: Record<string, BuilderNavSection> = {
+    if (focus === "settings") {
+      router.replace(`/admin/team/${teamId}/settings`);
+      return;
+    }
+    const map: Record<string, BuilderWorkspaceSection> = {
       header: "header",
       sections: "sections",
-      settings: "settings",
       design: "design",
       payments: "payments",
     };
     const section = map[focus];
     if (!section) return;
-    const id = window.setTimeout(() => navigateSection(section), 150);
+    const id = window.setTimeout(() => navigateWorkspace(section), 150);
     return () => window.clearTimeout(id);
     // Deep-link from dashboard quick actions
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [searchParams, teamId, router]);
 
   function changePreviewMode(next: BuilderPreviewMode) {
     setPreviewMode(next);
@@ -487,11 +467,11 @@ export function TeamPageBuilder({
     setMobileTab(tab);
 
     if (tab === "edit") {
-      navigateSection("header");
+      navigateWorkspace("header");
       return;
     }
     if (tab === "sections") {
-      navigateSection("sections");
+      navigateWorkspace("sections");
       return;
     }
     if (tab === "publish") {
@@ -535,6 +515,8 @@ export function TeamPageBuilder({
     );
   }
 
+  const shellClass = embedded ? "w-full max-w-none px-0" : BUILDER_PAGE_SHELL;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -545,7 +527,7 @@ export function TeamPageBuilder({
         <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_90%_60%_at_50%_-30%,rgba(139,92,246,0.06),transparent)]" />
       ) : null}
 
-      <div ref={topRef} className={`${BUILDER_PAGE_SHELL} scroll-mt-4 pt-4`}>
+      <div ref={topRef} className={`${shellClass} scroll-mt-4 ${embedded ? "pt-0" : "pt-4"}`}>
         {memberRole === "assistant" ? (
           <p className="mb-3 rounded-xl border border-violet-200/60 bg-violet-50/40 px-3 py-2 text-[11px] text-violet-950">
             You&apos;re editing as a <strong>page admin</strong>. Changes save automatically. Only the team owner can
@@ -583,95 +565,88 @@ export function TeamPageBuilder({
         <motion.p
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`${BUILDER_PAGE_SHELL} mb-2 text-center text-xs font-medium text-emerald-700`}
+          className={`${shellClass} mb-2 text-center text-xs font-medium text-emerald-700`}
         >
           {msg}
         </motion.p>
       ) : null}
 
-      <div className={`${BUILDER_PAGE_SHELL} ${embedded ? "pb-8 pt-2" : "pb-24 pt-1"} xl:pb-10`}>
-        <div className={BUILDER_WORKSPACE_ROW}>
-          <BuilderSidebar active={activeSection} onNavigate={navigateSection} team={team} />
+      <div className={`${shellClass} ${embedded ? "pb-24 pt-2" : "pb-24 pt-1"} lg:pb-10`}>
+        <div className={BUILDER_WORKSPACE_GRID}>
+          <div
+            className={`${BUILDER_EDITOR_COLUMN}${editLocked ? " pointer-events-none select-none opacity-[0.72]" : ""}`}
+            aria-disabled={editLocked}
+          >
+            <BuilderWorkspaceTabs
+              active={activeSection}
+              onSelect={navigateWorkspace}
+              className="hidden lg:block"
+            />
 
-          <main className="min-w-0 flex-1">
-            <div className={BUILDER_WORKSPACE_GRID}>
-              <div
-                className={`${BUILDER_EDITOR_COLUMN}${editLocked ? " pointer-events-none select-none opacity-[0.72]" : ""}`}
-                aria-disabled={editLocked}
-              >
-                <div ref={identityRef} id="builder-team-identity" className="scroll-mt-28">
-                  <TeamIdentityPanel
-                    team={team}
-                    heroBlock={heroBlock}
-                    onPatchTeam={patchTeam}
-                    onPatchBlock={patchBlock}
-                    onSelectTheme={setTheme}
-                  />
-                </div>
-
-                <BuilderSuggestionsCard team={team} onJump={jumpTo} />
-
-                <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-28">
-                  <PageBlocksPanel
-                    blocks={pageBlocks}
-                    team={team}
-                    expanded={expanded}
-                    onToggleExpand={toggleExpand}
-                    onToggleEnabled={toggleBlock}
-                    onPatchBlock={patchBlock}
-                    onPatchTeam={patchTeam}
-                    onPreviewBlock={setFocusBlockId}
-                    onMoveUp={(id) => moveBlock(id, -1)}
-                    onMoveDown={(id) => moveBlock(id, 1)}
-                    onDragEnd={onDragEnd}
-                    onQuickAdd={quickAddBlock}
-                  />
-                </div>
-
-                <div ref={settingsRef} id="builder-settings" className="scroll-mt-28">
-                  <AdvancedSettingsPanel
-                    team={team}
-                    teamId={teamId}
-                    siteUrl={siteUrl}
-                    memberRole={memberRole}
-                    onPatchTeam={patchTeam}
-                  />
-                </div>
-
-                <div ref={paymentsRef} id="builder-payments" className="scroll-mt-28">
-                  <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
-                </div>
-              </div>
-
-              <aside ref={previewColumnRef} className={BUILDER_PREVIEW_COLUMN}>
-                <div className={BUILDER_PREVIEW_CHROME}>
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-600/80">
-                        Live preview
-                      </p>
-                      <span className="rounded-full bg-emerald-50/80 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-100/80">
-                        Visible to visitors
-                      </span>
-                    </div>
-                    <p className="mt-1.5 text-[12px] leading-snug text-zinc-500">
-                      This is exactly what parents and athletes will see.
-                    </p>
-                  </div>
-                  <BuilderLivePreview
-                    team={team}
-                    focusBlockId={focusBlockId}
-                    onOpenInTab={previewAsParent}
-                    fullPreviewOpen={fullPreviewOpen}
-                    onFullPreviewOpenChange={setFullPreviewOpen}
-                    hideFullPreviewModal
-                    previewMode={previewMode}
-                    onPreviewModeChange={changePreviewMode}
-                  />
-                </div>
-              </aside>
+            <div ref={identityRef} id="builder-team-identity" className="scroll-mt-24">
+              <TeamIdentityPanel
+                team={team}
+                heroBlock={heroBlock}
+                onPatchTeam={patchTeam}
+                onPatchBlock={patchBlock}
+              />
             </div>
-          </main>
+
+            <BuilderSuggestionsCard team={team} onJump={jumpTo} />
+
+            <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-24">
+              <PageBlocksPanel
+                blocks={pageBlocks}
+                team={team}
+                expanded={expanded}
+                onToggleExpand={toggleExpand}
+                onToggleEnabled={toggleBlock}
+                onPatchBlock={patchBlock}
+                onPatchTeam={patchTeam}
+                onPreviewBlock={setFocusBlockId}
+                onMoveUp={(id) => moveBlock(id, -1)}
+                onMoveDown={(id) => moveBlock(id, 1)}
+                onDragEnd={onDragEnd}
+                onQuickAdd={quickAddBlock}
+              />
+            </div>
+
+            <div ref={designRef} id="builder-design" className="scroll-mt-24">
+              <TeamDesignPanel team={team} onSelectTheme={setTheme} />
+            </div>
+
+            <div ref={paymentsRef} id="builder-payments" className="scroll-mt-24">
+              <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
+            </div>
+          </div>
+
+          <aside ref={previewColumnRef} className={BUILDER_PREVIEW_COLUMN}>
+            <div className={BUILDER_PREVIEW_CHROME}>
+              <div className="mb-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-600/80">
+                    Live preview
+                  </p>
+                  <span className="rounded-full bg-emerald-50/80 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-100/80">
+                    Visible to visitors
+                  </span>
+                </div>
+                <p className="mt-1.5 text-[12px] leading-snug text-zinc-500">
+                  This is exactly what parents and athletes will see.
+                </p>
+              </div>
+              <BuilderLivePreview
+                team={team}
+                focusBlockId={focusBlockId}
+                onOpenInTab={previewAsParent}
+                fullPreviewOpen={fullPreviewOpen}
+                onFullPreviewOpenChange={setFullPreviewOpen}
+                hideFullPreviewModal
+                previewMode={previewMode}
+                onPreviewModeChange={changePreviewMode}
+              />
+            </div>
+          </aside>
         </div>
       </div>
 

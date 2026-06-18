@@ -9,6 +9,11 @@ export default async function TeamSettingsPage({ params }: Props) {
   const { teamId } = await params;
   const ctx = await loadTeamAdminContext(teamId);
   return (
-    <TeamSettingsClient teamId={ctx.teamId} team={ctx.team} publicUrl={ctx.publicUrl} />
+    <TeamSettingsClient
+      teamId={ctx.teamId}
+      initialTeam={ctx.team}
+      publicUrl={ctx.publicUrl}
+      memberRole={ctx.memberRole}
+    />
   );
 }

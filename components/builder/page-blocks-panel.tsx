@@ -75,8 +75,8 @@ export function PageBlocksPanel({
   return (
     <BuilderCollapsiblePanel
       className={BUILDER_PANEL_SURFACE}
-      title="Page sections"
-      description="Turn on the blocks families will use — drag to reorder, tap to edit."
+      title="Sections"
+      description="Manage blocks on your page."
       summary={
         <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800">
           {summaryLabel}

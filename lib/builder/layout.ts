@@ -72,21 +72,17 @@ export function builderChoiceClass(selected: boolean, extra?: string) {
   return cn(BUILDER_CHOICE_BASE, selected ? BUILDER_CHOICE_SELECTED : BUILDER_CHOICE_IDLE, extra);
 }
 
-/** Desktop workspace — sidebar + editor + preview */
-export const BUILDER_PREVIEW_WIDTH_PX = 480;
-
-export const BUILDER_WORKSPACE_ROW = "flex w-full items-start gap-6 xl:gap-7";
-
+/** Editor + preview — two columns only (main nav lives in TeamAdminShell). */
 export const BUILDER_WORKSPACE_GRID =
-  "grid w-full min-w-0 flex-1 grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(380px,42%)] lg:gap-7 xl:gap-8";
+  "grid w-full min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,34%)] lg:gap-8 xl:grid-cols-[minmax(0,1.25fr)_minmax(380px,32%)]";
 
 export const BUILDER_EDITOR_COLUMN = "min-w-0 w-full space-y-5 overflow-x-clip lg:space-y-6";
 
 export const BUILDER_PREVIEW_COLUMN = cn(
   "mx-auto hidden w-full shrink-0",
-  "lg:sticky lg:top-[4.25rem] lg:z-10 lg:col-start-2 lg:row-start-1",
+  "lg:sticky lg:top-4 lg:z-10 lg:col-start-2 lg:row-start-1",
   "lg:mx-0 lg:block lg:w-full lg:max-w-none lg:justify-self-stretch",
-  "lg:max-h-[calc(100dvh-5rem)] lg:overflow-y-auto lg:overscroll-contain",
+  "lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto lg:overscroll-contain",
 );
 
 /** Premium preview chrome wrapper */
