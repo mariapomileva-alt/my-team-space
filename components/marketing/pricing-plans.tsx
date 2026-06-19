@@ -1,11 +1,12 @@
+import { PricingCheckoutButton } from "@/components/marketing/pricing-checkout-button";
 import { MARKETING_PLANS } from "@/lib/marketing/pricing";
-import Link from "next/link";
 
 type PricingPlansProps = {
   className?: string;
+  isAuthenticated?: boolean;
 };
 
-export function PricingPlans({ className = "" }: PricingPlansProps) {
+export function PricingPlans({ className = "", isAuthenticated = false }: PricingPlansProps) {
   return (
     <div className={`grid gap-6 lg:grid-cols-2 ${className}`}>
       {MARKETING_PLANS.map((plan) => (
@@ -38,16 +39,12 @@ export function PricingPlans({ className = "" }: PricingPlansProps) {
               </li>
             ))}
           </ul>
-          <Link
-            href={plan.href}
-            className={`mt-6 flex min-h-12 items-center justify-center rounded-2xl text-sm font-semibold transition ${
-              plan.featured
-                ? "bg-[#6C5CE7] text-white hover:bg-[#5b4bd6]"
-                : "border border-neutral-200 bg-[#F2F4F7] text-[#1A1C23] hover:border-[#6C5CE7]/30"
-            }`}
-          >
-            {plan.cta}
-          </Link>
+          <PricingCheckoutButton
+            plan={plan.id}
+            label={plan.cta}
+            featured={plan.featured}
+            isAuthenticated={isAuthenticated}
+          />
         </div>
       ))}
     </div>

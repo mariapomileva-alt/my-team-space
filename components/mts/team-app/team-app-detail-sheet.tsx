@@ -43,7 +43,7 @@ export function TeamAppDetailSheet({
           <motion.button
             type="button"
             aria-label="Close"
-            className="fixed inset-0 z-50 bg-neutral-900/40 backdrop-blur-[2px]"
+            className="fixed inset-0 z-50 bg-[color-mix(in_srgb,var(--mts-text)_35%,transparent)] backdrop-blur-[3px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -53,7 +53,7 @@ export function TeamAppDetailSheet({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="mts-app-surface fixed inset-x-0 bottom-0 z-[51] flex max-h-[min(92dvh,720px)] flex-col rounded-t-[1.75rem] shadow-[0_-24px_80px_-20px_rgba(0,0,0,0.35)] sm:inset-x-auto sm:left-1/2 sm:top-1/2 sm:bottom-auto sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[1.75rem]"
+            className="mts-app-surface fixed inset-x-0 bottom-0 z-[51] flex max-h-[min(92dvh,720px)] flex-col rounded-t-[1.85rem] shadow-[0_-28px_90px_-24px_rgba(0,0,0,0.32)] sm:inset-x-auto sm:left-1/2 sm:top-1/2 sm:bottom-auto sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[1.85rem]"
             initial={{ y: "100%", opacity: 0.9 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
@@ -71,16 +71,16 @@ export function TeamAppDetailSheet({
               <span className="mb-3 h-1 w-10 rounded-full bg-[color:var(--mts-card-border)] sm:hidden" aria-hidden />
               <div className="flex w-full items-start gap-3 pb-3">
                 <span
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl ${meta.tileClass}`}
+                  className="mts-app-badge flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl"
                   aria-hidden
                 >
                   {meta.emoji}
                 </span>
                 <motion.div className="min-w-0 flex-1 pt-0.5">
-                  <h2 id={titleId} className="text-lg font-bold tracking-tight text-[color:var(--mts-text)]">
+                  <h2 id={titleId} className="text-[17px] font-semibold tracking-[-0.02em] text-[color:var(--mts-text)] sm:text-lg">
                     {meta.title}
                   </h2>
-                  <p className="text-sm text-[color:var(--mts-muted)]">{meta.subtitle}</p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{meta.subtitle}</p>
                 </motion.div>
                 <button
                   type="button"
@@ -92,7 +92,7 @@ export function TeamAppDetailSheet({
                 </button>
               </div>
             </motion.div>
-            <div className="team-app-detail-content min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-[color:var(--mts-card-border)] px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 sm:px-5 sm:pb-6">
+            <div className="team-app-detail-content min-h-0 flex-1 overflow-y-auto overscroll-contain border-t border-[color:var(--mts-card-border)] px-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-6 sm:px-7 sm:pb-8">
               {children}
             </div>
           </motion.div>

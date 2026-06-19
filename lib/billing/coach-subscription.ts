@@ -18,6 +18,7 @@ type CoachSubRow = {
   team_limit: number | null;
   current_team_count: number;
   primary_team_id: string | null;
+  current_period_end: string | null;
 };
 
 export function mapCoachSubscriptionRow(row: CoachSubRow): CoachSubscription {
@@ -31,6 +32,7 @@ export function mapCoachSubscriptionRow(row: CoachSubRow): CoachSubscription {
     teamLimit: row.team_limit,
     currentTeamCount: row.current_team_count ?? 0,
     primaryTeamId: row.primary_team_id,
+    currentPeriodEnd: row.current_period_end,
   };
 }
 
@@ -41,7 +43,7 @@ export async function loadCoachSubscription(
   const { data, error } = await supabase
     .from("coach_subscriptions")
     .select(
-      "user_id, lemon_customer_id, lemon_subscription_id, lemon_variant_id, plan_type, subscription_status, team_limit, current_team_count, primary_team_id",
+      "user_id, lemon_customer_id, lemon_subscription_id, lemon_variant_id, plan_type, subscription_status, team_limit, current_team_count, primary_team_id, current_period_end",
     )
     .eq("user_id", userId)
     .maybeSingle();

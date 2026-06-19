@@ -32,7 +32,7 @@ export const PAGE_STRUCTURE_ICON: Record<PageStructureNavId, BuilderIconId> = {
   header: "layout-panel",
   about: "users",
   gallery: "image",
-  calendar: "calendar",
+  schedule: "calendar",
   results: "trophy",
   contacts: "phone",
   sponsors: "handshake",

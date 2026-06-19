@@ -5,7 +5,7 @@ export type PageStructureNavId =
   | "header"
   | "about"
   | "gallery"
-  | "calendar"
+  | "schedule"
   | "results"
   | "contacts"
   | "sponsors";
@@ -55,8 +55,8 @@ function galleryDone(team: TeamSpace) {
   );
 }
 
-function calendarDone(team: TeamSpace) {
-  const block = blockOf(team, "calendar") ?? blockOf(team, "schedule");
+function scheduleDone(team: TeamSpace) {
+  const block = blockOf(team, "schedule") ?? blockOf(team, "calendar");
   if (!block?.enabled) return false;
   const s = getBlockSettings<{ externalUrl?: string; events?: unknown[] }>(block);
   return Boolean(
@@ -119,13 +119,13 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
       blockTypes: ["gallery"],
     },
     {
-      id: "calendar",
-      label: "Calendar",
-      done: calendarDone(team),
+      id: "schedule",
+      label: "Schedule",
+      done: scheduleDone(team),
       enabled: Boolean(
-        blockOf(team, "calendar")?.enabled || blockOf(team, "schedule")?.enabled,
+        blockOf(team, "schedule")?.enabled || blockOf(team, "calendar")?.enabled,
       ),
-      blockTypes: ["calendar", "schedule"],
+      blockTypes: ["schedule", "calendar"],
     },
     {
       id: "results",
@@ -161,7 +161,7 @@ export const PAGE_STRUCTURE_BLOCK_MAP: Record<
   BlockType[]
 > = {
   gallery: ["gallery"],
-  calendar: ["calendar", "schedule"],
+  schedule: ["schedule", "calendar"],
   results: ["results"],
   contacts: ["contacts"],
   sponsors: ["sponsors"],
@@ -180,7 +180,7 @@ export function resolvePreviewBlockId(team: TeamSpace, id: PageStructureNavId): 
 
 export function structureNavIdForBlockType(type: BlockType): PageStructureNavId | null {
   if (type === "gallery") return "gallery";
-  if (type === "calendar" || type === "schedule") return "calendar";
+  if (type === "calendar" || type === "schedule") return "schedule";
   if (type === "results") return "results";
   if (type === "contacts") return "contacts";
   if (type === "sponsors") return "sponsors";

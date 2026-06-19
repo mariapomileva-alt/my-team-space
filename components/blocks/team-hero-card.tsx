@@ -72,12 +72,7 @@ export function TeamHeroCard({
         <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description.trim()}</p>
       ) : null}
       {motto?.trim() ? (
-        <p
-          className={cn(
-            "text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]",
-            description?.trim() ? "mt-2" : "mt-0",
-          )}
-        >
+        <p className={cn("team-identity-motto", description?.trim() ? "mt-2" : "mt-0")}>
           “{motto.trim()}”
         </p>
       ) : null}
@@ -91,7 +86,7 @@ export function TeamHeroCard({
         className={cn(
           HERO_LAYOUT.root,
           heroVariantClass(variant),
-          "overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80",
+          "team-identity-card overflow-hidden",
         )}
       >
         <div className={HERO_LAYOUT.cover}>

@@ -29,13 +29,27 @@ const ORDERED_BLOCKS: BlockType[] = [
   "countdown",
 ];
 
-export function createDefaultBlocks(): BlockInstance[] {
-  return ORDERED_BLOCKS.map((type, i) => ({
-    id: `blk_${type}_${i}`,
-    type,
-    enabled: ["announcement_bar", "hero", "quick_links"].includes(type),
-    order: i,
-    layout: BLOCK_META[type].defaultLayout,
-    settings: defaultSettingsForType(type),
-  }));
+const DEFAULT_ENABLED: BlockType[] = [
+  "announcement_bar",
+  "hero",
+  "schedule",
+  "gallery",
+  "contacts",
+];
+
+export function createDefaultBlocks(options?: { city?: string }): BlockInstance[] {
+  return ORDERED_BLOCKS.map((type, i) => {
+    const settings = defaultSettingsForType(type);
+    if (type === "hero" && options?.city?.trim()) {
+      (settings as { city?: string }).city = options.city.trim();
+    }
+    return {
+      id: `blk_${type}_${i}`,
+      type,
+      enabled: DEFAULT_ENABLED.includes(type),
+      order: i,
+      layout: BLOCK_META[type].defaultLayout,
+      settings,
+    };
+  });
 }

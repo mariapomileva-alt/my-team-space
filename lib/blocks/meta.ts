@@ -20,7 +20,7 @@ export type BlockMeta = {
 export const BUILDER_SECTION_LABELS: Record<BuilderSection, { title: string; hint: string }> = {
   essential: {
     title: "Essential",
-    hint: "Identity, calendar, contacts — what every family needs first.",
+    hint: "Identity, schedule, contacts — what every family needs first.",
   },
   engagement: {
     title: "Engagement",
@@ -59,9 +59,9 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
   },
   calendar: {
     type: "calendar",
-    title: "Calendar",
+    title: "Calendar embed",
     emoji: "📅",
-    description: "Google Calendar embed or iCal link.",
+    description: "Advanced — embed an external Google Calendar.",
     section: "essential",
     previewShape: "card",
     priority: 2,
@@ -70,9 +70,9 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
   },
   schedule: {
     type: "schedule",
-    title: "Weekly schedule",
+    title: "Schedule",
     emoji: "🗓️",
-    description: "Recurring trainings & meets.",
+    description: "Practice times — add manually or connect Google / iCal.",
     section: "essential",
     previewShape: "list",
     priority: 3,

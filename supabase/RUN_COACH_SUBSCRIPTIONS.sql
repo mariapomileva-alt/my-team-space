@@ -39,6 +39,7 @@ create table if not exists public.coach_subscriptions (
   team_limit integer,
   current_team_count integer not null default 0,
   primary_team_id uuid references public.teams (id) on delete set null,
+  current_period_end timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -336,6 +337,9 @@ begin
 end;
 $$;
 
+alter table public.coach_subscriptions
+  add column if not exists current_period_end timestamptz;
+
 create or replace function public.upsert_coach_subscription_from_lemon(
   p_user_id uuid,
   p_customer_id text,
@@ -343,7 +347,8 @@ create or replace function public.upsert_coach_subscription_from_lemon(
   p_variant_id text,
   p_plan_type text,
   p_subscription_status text,
-  p_team_limit integer
+  p_team_limit integer,
+  p_current_period_end timestamptz default null
 )
 returns void
 language plpgsql
@@ -358,7 +363,8 @@ begin
     lemon_variant_id,
     plan_type,
     subscription_status,
-    team_limit
+    team_limit,
+    current_period_end
   )
   values (
     p_user_id,
@@ -367,7 +373,8 @@ begin
     p_variant_id,
     p_plan_type,
     p_subscription_status,
-    p_team_limit
+    p_team_limit,
+    p_current_period_end
   )
   on conflict (user_id) do update set
     lemon_customer_id = coalesce(excluded.lemon_customer_id, coach_subscriptions.lemon_customer_id),
@@ -376,6 +383,7 @@ begin
     plan_type = coalesce(excluded.plan_type, coach_subscriptions.plan_type),
     subscription_status = excluded.subscription_status,
     team_limit = coalesce(excluded.team_limit, coach_subscriptions.team_limit),
+    current_period_end = coalesce(excluded.current_period_end, coach_subscriptions.current_period_end),
     updated_at = now();
 
   perform public.refresh_coach_team_count(p_user_id);
@@ -439,8 +447,8 @@ $$;
 
 grant execute on function public.set_primary_team(uuid) to authenticated;
 grant execute on function public.coach_subscription_allows_edit(uuid, uuid) to authenticated;
-revoke all on function public.upsert_coach_subscription_from_lemon(uuid, text, text, text, text, text, integer) from public;
-grant execute on function public.upsert_coach_subscription_from_lemon(uuid, text, text, text, text, text, integer) to service_role;
+revoke all on function public.upsert_coach_subscription_from_lemon(uuid, text, text, text, text, text, integer, timestamptz) from public;
+grant execute on function public.upsert_coach_subscription_from_lemon(uuid, text, text, text, text, text, integer, timestamptz) to service_role;
 
 -- ---------------------------------------------------------------------------
 -- Bootstrap all existing coaches (unlock single-team pages)

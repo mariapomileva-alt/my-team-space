@@ -45,14 +45,14 @@ const BLOCK_HINTS: Partial<Record<string, { label: string; description: string; 
     href: "results",
   },
   schedule: {
-    label: "Add your first event",
-    description: "Publish upcoming races, matches and training.",
-    href: "calendar",
+    label: "Add your schedule",
+    description: "Publish practice times so parents know when to show up.",
+    href: "build",
   },
   calendar: {
-    label: "Create your calendar",
-    description: "Share what's coming up for the team.",
-    href: "calendar",
+    label: "Connect a calendar",
+    description: "Optional — link Google Calendar or iCal.",
+    href: "build",
   },
 };
 
@@ -69,7 +69,7 @@ export function getTeamAssistantSuggestions(team: TeamSpace, teamId: string): As
 
   for (const item of items.filter((i) => !i.done)) {
     let segment = "build";
-    if (item.id === "schedule") segment = "calendar";
+    if (item.id === "schedule") segment = "build?focus=sections";
     if (item.id === "results") segment = "results";
     if (item.id === "contacts") segment = "members";
     if (item.id === "identity" || item.id === "cover" || item.id === "social") segment = "build?focus=header";

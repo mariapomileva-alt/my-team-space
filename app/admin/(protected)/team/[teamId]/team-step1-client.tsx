@@ -1,12 +1,49 @@
 "use client";
 
-import type { TeamSpace, ThemeId } from "@/lib/types";
-import { THEMES } from "@/lib/themes";
+import { BuilderHiddenArchive } from "@/components/builder/builder-hidden-archive";
+import { partitionBlocksByEnabled } from "@/lib/blocks/meta";
 import { ADMIN_BLOCK_LABELS } from "@/lib/mts/admin-block-labels";
+import type { BlockInstance, TeamSpace, ThemeId } from "@/lib/types";
+import { THEMES } from "@/lib/themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { saveTeamContent } from "./server-actions";
+
+function Step1BlockRow({
+  block,
+  onToggle,
+}: {
+  block: BlockInstance;
+  onToggle: () => void;
+}) {
+  const canToggle = block.type !== "hero";
+
+  return (
+    <li
+      className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 ${
+        block.enabled
+          ? "border-zinc-200 bg-white shadow-sm"
+          : "border-zinc-200/70 bg-zinc-50/80 opacity-90"
+      }`}
+    >
+      <input
+        type="checkbox"
+        id={`blk-${block.id}`}
+        checked={block.enabled}
+        disabled={!canToggle}
+        onChange={onToggle}
+        className="h-5 w-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-40"
+      />
+      <label htmlFor={`blk-${block.id}`} className="flex-1 cursor-pointer text-sm font-medium text-zinc-900">
+        {ADMIN_BLOCK_LABELS[block.type]}
+        {block.type === "hero" ? (
+          <span className="ml-2 text-[10px] font-semibold text-zinc-400">Always on</span>
+        ) : null}
+      </label>
+    </li>
+  );
+}
 
 export function TeamStep1Client({
   teamId,
@@ -19,12 +56,27 @@ export function TeamStep1Client({
   const [team, setTeam] = useState<TeamSpace>(initialTeam);
   const [msg, setMsg] = useState<string | null>(null);
   const [pending, setPending] = useTransition();
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const prevHiddenCount = useRef(0);
 
   useEffect(() => {
     setTeam(initialTeam);
   }, [initialTeam]);
 
-  const blocksSorted = useMemo(() => [...team.blocks].sort((a, b) => a.order - b.order), [team.blocks]);
+  const blocksSorted = useMemo(() => {
+    const sorted = [...team.blocks].sort((a, b) => a.order - b.order);
+    return partitionBlocksByEnabled(sorted);
+  }, [team.blocks]);
+
+  const heroBlock = blocksSorted.find((b) => b.type === "hero");
+  const pageBlocks = blocksSorted.filter((b) => b.type !== "hero");
+  const enabledBlocks = pageBlocks.filter((b) => b.enabled);
+  const hiddenBlocks = pageBlocks.filter((b) => !b.enabled);
+
+  useEffect(() => {
+    if (hiddenBlocks.length > prevHiddenCount.current) setArchiveOpen(true);
+    prevHiddenCount.current = hiddenBlocks.length;
+  }, [hiddenBlocks.length]);
 
   function setTheme(themeId: ThemeId) {
     const th = THEMES.find((t) => t.id === themeId);
@@ -38,17 +90,33 @@ export function TeamStep1Client({
   }
 
   function toggleBlock(id: string) {
-    setTeam((prev) => ({
-      ...prev,
-      blocks: prev.blocks.map((b) => (b.id === id ? { ...b, enabled: !b.enabled } : b)),
-    }));
+    setTeam((prev) => {
+      const block = prev.blocks.find((b) => b.id === id);
+      if (!block || block.type === "hero") return prev;
+
+      const next = !block.enabled;
+      const withToggle = prev.blocks.map((b) => (b.id === id ? { ...b, enabled: next } : b));
+      const sorted = [...withToggle].sort((a, b) => a.order - b.order);
+      const hero = sorted.filter((b) => b.type === "hero");
+      const reorderedPage = partitionBlocksByEnabled(sorted.filter((b) => b.type !== "hero"));
+      const merged = [...hero, ...reorderedPage];
+      const orderMap = new Map(merged.map((b, i) => [b.id, i]));
+      return {
+        ...prev,
+        blocks: withToggle.map((b) => ({
+          ...b,
+          order: orderMap.get(b.id) ?? b.order,
+        })),
+      };
+    });
   }
 
   function continueToLayout() {
     setMsg(null);
     setPending(async () => {
       try {
-        await saveTeamContent(teamId, team);
+        const { updatedAt } = await saveTeamContent(teamId, team);
+        setTeam((prev) => ({ ...prev, updatedAt }));
         router.push(`/admin/team/${teamId}/step-2`);
         router.refresh();
       } catch (e) {
@@ -136,23 +204,29 @@ export function TeamStep1Client({
 
         <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold">What appears on the public page</h2>
-          <p className="mt-1 text-sm text-zinc-600">Turn blocks on or off. On step 2 you will drag the order.</p>
+          <p className="mt-1 text-sm text-zinc-600">
+            Turn blocks on or off. Unused sections move to the archive below — on step 2 you drag the order.
+          </p>
+
           <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-            {blocksSorted.map((block) => (
-              <li key={block.id} className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50/80 px-3 py-2.5">
-                <input
-                  type="checkbox"
-                  id={`blk-${block.id}`}
-                  checked={block.enabled}
-                  onChange={() => toggleBlock(block.id)}
-                  className="h-5 w-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
-                />
-                <label htmlFor={`blk-${block.id}`} className="flex-1 cursor-pointer text-sm font-medium text-zinc-900">
-                  {ADMIN_BLOCK_LABELS[block.type]}
-                </label>
-              </li>
+            {heroBlock ? <Step1BlockRow key={heroBlock.id} block={heroBlock} onToggle={() => toggleBlock(heroBlock.id)} /> : null}
+            {enabledBlocks.map((block) => (
+              <Step1BlockRow key={block.id} block={block} onToggle={() => toggleBlock(block.id)} />
             ))}
           </ul>
+
+          <BuilderHiddenArchive
+            count={hiddenBlocks.length}
+            open={archiveOpen}
+            onToggle={() => setArchiveOpen((v) => !v)}
+            hint="Turn a section back on to show it on your page."
+          >
+            <ul className="grid gap-2 sm:grid-cols-2">
+              {hiddenBlocks.map((block) => (
+                <Step1BlockRow key={block.id} block={block} onToggle={() => toggleBlock(block.id)} />
+              ))}
+            </ul>
+          </BuilderHiddenArchive>
         </section>
       </main>
     </div>

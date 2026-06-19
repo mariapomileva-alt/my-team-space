@@ -19,6 +19,7 @@ export type CoachSubscription = {
   teamLimit: number | null;
   currentTeamCount: number;
   primaryTeamId: string | null;
+  currentPeriodEnd: string | null;
 };
 
 export type CoachEntitlements = {

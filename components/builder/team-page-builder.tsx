@@ -13,7 +13,12 @@ import {
   BuilderPageStructureNavMobile,
 } from "@/components/builder/builder-page-structure-nav";
 import { BuilderToolbar } from "@/components/builder/builder-toolbar";
-import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
+import { BuilderMobileActionBar } from "@/components/builder/builder-mobile-action-bar";
+import {
+  FocusedSectionPanel,
+  isFocusedSectionNav,
+} from "@/components/builder/focused-section-panel";
+import { PublishShareModal } from "@/components/builder/publish-share-modal";
 import { SetupProgressStrip } from "@/components/builder/setup-progress-strip";
 import { loadTeamForBuilder, saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
 import { STALE_TEAM_VERSION } from "@/lib/teams/save-version";
@@ -30,7 +35,7 @@ import {
 } from "@/lib/builder/layout";
 import type { BuilderProgressTarget } from "@/components/builder/builder-progress";
 import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
-import { PAGE_STRUCTURE_BLOCK_MAP, resolvePreviewBlockId, structureNavIdForBlockType, type PageStructureNavId } from "@/lib/builder/page-structure";
+import { resolvePreviewBlockId, structureNavIdForBlockType, type PageStructureNavId } from "@/lib/builder/page-structure";
 import { applyBlockOrder, builderSortBlocks, partitionBlocksByEnabled } from "@/lib/blocks/meta";
 import {
   readStoredPreviewMode,
@@ -55,7 +60,7 @@ import { motion } from "framer-motion";
 const AUTOSAVE_MS = 2500;
 const PAGE_BLOCK_TYPES = new Set<BlockType>(["hero"]);
 
-type WorkspaceSection = "header" | "sections" | "design" | "payments";
+type WorkspaceSection = "header" | "sections" | "design";
 
 export function TeamPageBuilder({
   teamId,
@@ -96,7 +101,7 @@ export function TeamPageBuilder({
   const identityRef = useRef<HTMLDivElement>(null);
   const blocksRef = useRef<HTMLDivElement>(null);
   const designRef = useRef<HTMLDivElement>(null);
-  const paymentsRef = useRef<HTMLDivElement>(null);
+  const focusedSectionRef = useRef<HTMLDivElement>(null);
   const previewColumnRef = useRef<HTMLElement>(null);
   const [openSection, setOpenSection] = useState<WorkspaceSection | null>("header");
   const [activeStructureNav, setActiveStructureNav] = useState<PageStructureNavId | null>("header");
@@ -104,6 +109,7 @@ export function TeamPageBuilder({
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [mobileTab, setMobileTab] = useState<BuilderMobileTab>("edit");
   const [fullPreviewOpen, setFullPreviewOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const [previewMode, setPreviewMode] = useState<BuilderPreviewMode>("mobile");
 
   useEffect(() => {
@@ -405,18 +411,26 @@ export function TeamPageBuilder({
 
   function publish() {
     startTransition(async () => {
+      const wasLive = teamRef.current.publishStatus === "published";
       const guidance = getCompletionGuidance(teamRef.current);
       const ok = await persist(false, { publish: true });
       if (ok) {
+        if (!wasLive) {
+          setShareModalOpen(true);
+        }
         if (guidance.isFullyReady) {
-          setMsg("Published! Your team page is fully ready — families can see it now.");
+          setMsg("Your team page is live — families can see it now.");
         } else if (!guidance.canPublish) {
           setMsg("Published — add your team name and logo when you can so parents recognize you.");
         } else {
-          setMsg("Published! Families see your latest changes.");
+          setMsg("Your team page is live!");
         }
       }
     });
+  }
+
+  function openShareModal() {
+    setShareModalOpen(true);
   }
 
   function previewAsParent() {
@@ -464,9 +478,7 @@ export function TeamPageBuilder({
         ? identityRef
         : section === "sections"
           ? blocksRef
-          : section === "design"
-            ? designRef
-            : paymentsRef;
+          : designRef;
     scrollTo(ref.current);
   }
 
@@ -486,26 +498,8 @@ export function TeamPageBuilder({
       return;
     }
 
-    const types = PAGE_STRUCTURE_BLOCK_MAP[id];
-    const block = teamRef.current.blocks.find((b) => types.includes(b.type));
-    focusWorkspaceSection("sections");
-
-    if (!block) {
-      scrollTo(blocksRef.current);
-      return;
-    }
-
-    if (!block.enabled) {
-      quickAddBlock(block.type);
-    } else {
-      setExpanded((prev) => new Set(prev).add(block.id));
-    }
-
-    window.setTimeout(() => {
-      scrollTo(
-        document.querySelector(`[data-builder-block-id="${block.id}"]`) as HTMLElement | null,
-      );
-    }, block.enabled ? 0 : 180);
+    setOpenSection(null);
+    window.setTimeout(() => scrollTo(focusedSectionRef.current), 80);
   }
 
   useEffect(() => {
@@ -519,7 +513,6 @@ export function TeamPageBuilder({
       header: "header",
       sections: "sections",
       design: "design",
-      payments: "payments",
     };
     const section = map[focus];
     if (!section) return;
@@ -588,7 +581,7 @@ export function TeamPageBuilder({
       return;
     }
     if (target === "schedule") {
-      navigateToStructureItem("calendar");
+      navigateToStructureItem("schedule");
       return;
     }
     if (target === "gallery") {
@@ -635,11 +628,21 @@ export function TeamPageBuilder({
           parentShareUrl={parentShareUrl}
           shareHint={shareHint}
           compact={embedded}
-          progress={embedded ? undefined : <SetupProgressStrip team={team} onJump={jumpTo} />}
+          progress={
+            embedded ? undefined : (
+              <SetupProgressStrip
+                team={team}
+                onJump={jumpTo}
+                onPublish={publish}
+                onShare={openShareModal}
+              />
+            )
+          }
           billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
           editLocked={editLocked}
           canPublish={memberRole === "coach"}
           onPublish={publish}
+          onShare={openShareModal}
           onPreview={() => {
             if (typeof window !== "undefined" && window.innerWidth < 1280) {
               setFullPreviewOpen(true);
@@ -660,7 +663,7 @@ export function TeamPageBuilder({
         </motion.p>
       ) : null}
 
-      <div className={`${shellClass} ${embedded ? "pb-8 pt-2" : "pb-24 pt-1"} lg:pb-10`}>
+      <div className={`${shellClass} ${embedded ? "pb-28 pt-2" : "pb-24 pt-1"} lg:pb-10`}>
         <div className={embedded ? BUILDER_WITH_NAV_GRID : BUILDER_WORKSPACE_GRID}>
           {embedded ? (
             <aside className={BUILDER_STRUCTURE_NAV_COLUMN}>
@@ -694,11 +697,24 @@ export function TeamPageBuilder({
                 heroBlock={heroBlock}
                 onPatchTeam={patchTeam}
                 onPatchBlock={patchBlock}
-                expanded={openSection === "header"}
+                expanded={openSection === "header" || activeStructureNav === "header" || activeStructureNav === "about"}
                 onExpandedChange={(open) => setWorkspaceExpanded("header", open)}
                 focusAboutKey={aboutFocusKey}
               />
             </div>
+
+            {isFocusedSectionNav(activeStructureNav) ? (
+              <div ref={focusedSectionRef} className="scroll-mt-6">
+                <FocusedSectionPanel
+                  navId={activeStructureNav}
+                  team={team}
+                  onPatchBlock={patchBlock}
+                  onPatchTeam={patchTeam}
+                  onPreviewBlock={handlePreviewBlock}
+                  onEnableBlock={quickAddBlock}
+                />
+              </div>
+            ) : null}
 
             <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-6">
               <PageBlocksPanel
@@ -725,15 +741,6 @@ export function TeamPageBuilder({
                 onSelectTheme={setTheme}
                 expanded={openSection === "design"}
                 onExpandedChange={(open) => setWorkspaceExpanded("design", open)}
-              />
-            </div>
-
-            <div ref={paymentsRef} id="builder-payments" className="scroll-mt-6">
-              <PaymentsTrackerPanel
-                team={team}
-                onPatchTeam={patchTeam}
-                expanded={openSection === "payments"}
-                onExpandedChange={(open) => setWorkspaceExpanded("payments", open)}
               />
             </div>
           </div>
@@ -802,6 +809,28 @@ export function TeamPageBuilder({
         focusBlockId={focusBlockId}
         onOpenInTab={previewAsParent}
       />
+
+      <PublishShareModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        shareUrl={parentShareUrl}
+        publicUrl={publicUrl}
+      />
+
+      {embedded ? (
+        <BuilderMobileActionBar
+          team={team}
+          pending={pending}
+          editLocked={editLocked}
+          canPublish={memberRole === "coach"}
+          onPreview={() => {
+            setFullPreviewOpen(true);
+          }}
+          onPublish={publish}
+          onShare={openShareModal}
+          onViewLive={previewAsParent}
+        />
+      ) : null}
 
       {!embedded ? (
         <BuilderMobileNav

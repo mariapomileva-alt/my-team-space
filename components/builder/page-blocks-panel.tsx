@@ -21,7 +21,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
-const QUICK_ADD_TYPES: BlockType[] = ["gallery", "calendar", "results", "contacts"];
+const QUICK_ADD_TYPES: BlockType[] = ["gallery", "schedule", "results", "contacts"];
 
 type Props = {
   blocks: BlockInstance[];

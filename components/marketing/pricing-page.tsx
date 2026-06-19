@@ -3,7 +3,7 @@ import { PricingPlans } from "@/components/marketing/pricing-plans";
 import { PRICING_FAQ } from "@/lib/marketing/pricing";
 import { isPromoBannerEnabled } from "@/lib/marketing/promo-banner";
 
-export function PricingPage() {
+export function PricingPage({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   const showPromoNote = isPromoBannerEnabled();
 
   return (
@@ -18,7 +18,10 @@ export function PricingPage() {
             Standard prices below. Apply the active promo code at checkout when a campaign is running.
           </p>
         ) : null}
-        <PricingPlans />
+        <p className="mb-6 text-center text-sm text-neutral-500">
+          Secure checkout powered by Lemon Squeezy. No card details are stored on MyTeamSpace.
+        </p>
+        <PricingPlans isAuthenticated={isAuthenticated} />
       </section>
       <section className="border-t border-black/[0.04] bg-white/50 px-6 py-16 sm:px-8">
         <div className="mx-auto max-w-3xl">

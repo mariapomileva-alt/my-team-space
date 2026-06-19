@@ -101,8 +101,8 @@ export function PaymentsTrackerPanel({
       className={`${BUILDER_PANEL_SURFACE} border-amber-200/50 bg-gradient-to-br from-amber-50/30 via-white to-orange-50/20`}
       expanded={expanded}
       onExpandedChange={onExpandedChange}
-      title="Payments"
-      description="Fee tracker."
+      title="Payments and fees"
+      description="Optional — track fees privately. Not required to publish."
       summary={
         <span className="max-w-[200px] truncate rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-900">
           {summaryPill}

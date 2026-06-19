@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  builderCompletionPercent,
-  formatSetupAction,
-  getSetupSnapshot,
-} from "@/lib/builder/page-completion";
+import { getLaunchChecklist, nextLaunchStep } from "@/lib/builder/launch-checklist";
 import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { getPageStructureNav, type PageStructureNavId } from "@/lib/builder/page-structure";
 import type { BuilderProgressTarget } from "@/lib/builder/page-completion";
@@ -28,35 +24,48 @@ export function BuilderPageStructureNav({
   className?: string;
 }) {
   const items = getPageStructureNav(team);
-  const percent = builderCompletionPercent(team);
-  const snap = getSetupSnapshot(team);
-  const doneCount = items.filter((i) => i.done).length;
+  const checklist = getLaunchChecklist(team);
+  const next = nextLaunchStep(team);
+  const doneCount = checklist.filter((i) => i.done).length;
+  const sectionDoneCount = items.filter((i) => i.done).length;
 
   return (
     <nav className={cn("flex flex-col", className)} aria-label="Page sections">
       <div className="mb-3 rounded-xl border border-zinc-200/50 bg-white/80 px-3 py-2 shadow-sm">
         <div className="flex items-baseline justify-between gap-2">
-          <p className="text-[15px] font-bold text-zinc-900">{percent}% Ready</p>
+          <p className="text-[15px] font-bold text-zinc-900">
+            {doneCount}/{checklist.length} steps
+          </p>
           <p className="text-[10px] font-medium text-zinc-500">
-            {doneCount}/{items.length}
+            {sectionDoneCount}/{items.length} sections
           </p>
         </div>
-        {snap.next ? (
+        {next ? (
           onJump ? (
             <button
               type="button"
-              onClick={() => onJump(snap.next!.id)}
+              onClick={() => {
+                if (next.id === "publish" || next.id === "share") return;
+                const map: Record<string, BuilderProgressTarget> = {
+                  team_name: "identity",
+                  logo: "identity",
+                  schedule: "schedule",
+                  contacts: "contacts",
+                };
+                const target = map[next.id];
+                if (target) onJump(target);
+              }}
               className="mt-1 w-full text-left text-[11px] leading-snug text-zinc-600 transition hover:text-violet-800"
             >
-              <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
+              <span className="font-semibold text-violet-700">Next:</span> {next.nextAction}
             </button>
           ) : (
             <p className="mt-1 text-[11px] leading-snug text-zinc-600">
-              <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
+              <span className="font-semibold text-violet-700">Next:</span> {next.nextAction}
             </p>
           )
         ) : (
-          <p className="mt-1 text-[11px] font-medium text-emerald-700">All sections complete</p>
+          <p className="mt-1 text-[11px] font-medium text-emerald-700">Ready to share!</p>
         )}
       </div>
 

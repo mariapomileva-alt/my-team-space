@@ -5,6 +5,7 @@ import {
   AnnouncementDashboardCard,
   AttendanceDashboardCard,
   CompactStatCard,
+  ContactsDashboardCard,
   PaymentDashboardCard,
   QuickActionsDashboardCard,
   TeamShopDashboardCard,
@@ -96,6 +97,17 @@ function SoloWidget({
     case "team_shop":
       return (
         <TeamShopDashboardCard
+          team={team}
+          block={block}
+          onOpen={open}
+          index={index}
+          compact={cardCompact}
+          featured={featured}
+        />
+      );
+    case "contacts":
+      return (
+        <ContactsDashboardCard
           team={team}
           block={block}
           onOpen={open}
@@ -316,7 +328,7 @@ export function TeamAppDashboard({
   const rows = buildDashboardRows(blocks);
 
   return (
-    <div className="team-app-dashboard mt-4 flex flex-col gap-3 sm:gap-3.5">
+    <div className="team-app-dashboard mt-5 flex flex-col gap-3.5 sm:mt-6 sm:gap-4">
       {rows.map((row, i) => {
         const rowKey =
           row.kind === "results"

@@ -1,0 +1,43 @@
+# Team data sync (always)
+
+Published team pages must never show stale logos, covers, themes, or copy from browser cache or an old device session.
+
+## Single source of truth
+
+- **Production (Supabase configured):** `teams` row in Supabase is the only source of truth.
+- **Never** merge `localStorage` preview drafts over server data when `usesCloudTeamStorage()` is true.
+- Builder opens with `loadTeamForBuilder()` and clears `mts_team_preview_*` via `purgeStaleTeamPreview()`.
+
+## Save contract
+
+- Every save sends `team.updatedAt` (maps to `teams.updated_at`).
+- `saveTeamContent` updates with `.eq("updated_at", lock)` — stale saves throw `STALE_TEAM_VERSION`.
+- On stale save or newer server snapshot: reload from cloud (`loadTeamForBuilder`), do not keep local draft.
+- When setting `logo_url`, also set `logo_path: null` so legacy storage paths cannot override.
+
+## Logo resolution (`map-row.ts`)
+
+Priority: `logo_url` → `page_settings.logoUrl` → hero settings → `logo_path` (only if no `logo_url`).
+
+Never pass `publicLogoUrlFromPath(logo_path)` as fallback when `logo_url` is set.
+
+## Public page cache
+
+- `loadPublicTeamBySlug` uses `unstable_cache` with tag `public-team:{slug}`.
+- After any coach save/publish: `revalidatePublicTeamPaths(slug)` (canonical `/{slug}` + legacy `/team/{slug}` redirect) and admin step-2.
+
+## Sync policy (`lib/teams/sync-policy.ts`)
+
+- Server wins when `isTeamVersionNewer(server.updatedAt, local.updatedAt)`.
+- If not dirty, always accept fresh server snapshot on focus/mount.
+
+## Do not
+
+- Re-enable `mergeStoredPreview` or `saveTeamPreviewLocal` for cloud builds.
+- Save full `TeamSpace` without `updatedAt` locking.
+- Use `logo_path` when `logo_url` exists.
+- Gate share bar or other critical UI behind nav state only (always show parent link + QR in toolbar).
+
+## Tests
+
+Run `npm test` — covers timestamp comparison, sync policy, logo fallback, and cloud preview storage.
