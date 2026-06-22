@@ -1,6 +1,7 @@
 "use client";
 
-import { FeatureWidgetsGrid } from "@/components/landing/feature-widgets-grid";
+import { MarketingBentoPreview } from "@/components/landing/marketing-bento-preview";
+import { MarketingTeamPagePreview } from "@/components/landing/marketing-team-preview";
 import { PricingPlans } from "@/components/marketing/pricing-plans";
 import { ACADEMY_PLAN_PRICE, TEAM_PLAN_PRICE } from "@/lib/marketing/pricing";
 import Link from "next/link";
@@ -645,8 +646,12 @@ export function HomeLanding() {
               calm, and alive.
             </p>
           </div>
-          <div className="mt-12 sm:mt-14">
-            <FeatureWidgetsGrid />
+          <div className="mt-12 space-y-14 sm:mt-14">
+            <MarketingBentoPreview />
+            <MarketingTeamPagePreview />
+            <p className="mx-auto max-w-xl text-center text-[13px] leading-relaxed text-neutral-400">
+              Every block is optional — coaches turn on what their team needs. Parents get one calm link, not another app.
+            </p>
           </div>
         </section>
 
