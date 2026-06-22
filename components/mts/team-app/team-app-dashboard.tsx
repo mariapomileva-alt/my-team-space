@@ -188,9 +188,11 @@ function DashboardRowView({
   rowIndex: number;
 }) {
   const base = rowIndex * 2;
+  const rowWrap = (content: React.ReactNode) => (
+    <div className={cn("team-page-row", rowIndex > 0 && "team-page-row--divided")}>{content}</div>
+  );
 
   if (row.kind === "results") {
-    const isHalf = row.layout === "half" || row.layout === "card";
     const content = (
       <ResultsRail
         team={team}
@@ -200,14 +202,11 @@ function DashboardRowView({
         layout={row.layout}
       />
     );
-    if (isHalf) {
-      return <PreviewAnchor blockId={row.block.id}>{content}</PreviewAnchor>;
-    }
-    return <PreviewAnchor blockId={row.block.id}>{content}</PreviewAnchor>;
+    return rowWrap(<PreviewAnchor blockId={row.block.id}>{content}</PreviewAnchor>);
   }
 
   if (row.kind === "pair") {
-    return (
+    return rowWrap(
       <div className={PAIR_GRID}>
         <PreviewAnchor blockId={row.left.id}>
           <PairCell
@@ -231,41 +230,41 @@ function DashboardRowView({
             compact={row.compact}
           />
         </PreviewAnchor>
-      </div>
+      </div>,
     );
   }
 
   if (row.kind === "wide") {
-    const minH = row.featured ? "min-h-[200px]" : undefined;
+    const minH = row.featured ? "min-h-0" : undefined;
     if (row.variant === "achievements") {
-      return (
+      return rowWrap(
         <PreviewAnchor blockId={row.block.id}>
           <div className={minH}>
             <AchievementsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
           </div>
-        </PreviewAnchor>
+        </PreviewAnchor>,
       );
     }
     if (row.variant === "gallery") {
-      return (
+      return rowWrap(
         <PreviewAnchor blockId={row.block.id}>
           <div className={minH}>
             <GalleryStackCard team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
           </div>
-        </PreviewAnchor>
+        </PreviewAnchor>,
       );
     }
-    return (
+    return rowWrap(
       <PreviewAnchor blockId={row.block.id}>
         <div className={minH}>
           <ResultsRail team={team} block={row.block} onOpen={() => onOpen(row.block.id)} index={base} />
         </div>
-      </PreviewAnchor>
+      </PreviewAnchor>,
     );
   }
 
   if (row.kind === "pair-compact") {
-    return (
+    return rowWrap(
       <div className={PAIR_GRID}>
         <PreviewAnchor blockId={row.left.id}>
           <SoloWidget
@@ -285,11 +284,11 @@ function DashboardRowView({
             compact={row.compact}
           />
         </PreviewAnchor>
-      </div>
+      </div>,
     );
   }
 
-  return (
+  return rowWrap(
     <PreviewAnchor blockId={row.block.id}>
       <SoloWidget
         team={team}
@@ -299,7 +298,7 @@ function DashboardRowView({
         compact={row.compact}
         featured={row.featured}
       />
-    </PreviewAnchor>
+    </PreviewAnchor>,
   );
 }
 
@@ -316,7 +315,7 @@ export function TeamAppDashboard({
   const rows = buildDashboardRows(blocks);
 
   return (
-    <div className="team-app-dashboard mt-4 flex flex-col gap-3 sm:gap-3.5">
+    <div className="team-page-sections team-app-dashboard mt-6 flex flex-col gap-0 sm:mt-8">
       {rows.map((row, i) => {
         const rowKey =
           row.kind === "results"

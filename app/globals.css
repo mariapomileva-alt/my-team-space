@@ -482,6 +482,82 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ── Club website sections (below hero) ───────────────────────────────────── */
+.team-page-sections {
+  --mts-section-divider: color-mix(in srgb, var(--mts-card-border) 50%, transparent);
+}
+
+.team-page-sections .team-page-row--divided {
+  border-top: 1px solid var(--mts-section-divider);
+  padding-top: 1.375rem;
+  margin-top: 0.125rem;
+}
+
+.team-page-sections .dashboard-grid-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.team-page-sections .dashboard-grid-pair .dashboard-tile-shell + .dashboard-tile-shell {
+  border-top: 1px solid var(--mts-section-divider);
+  padding-top: 1.125rem;
+  margin-top: 0.125rem;
+}
+
+.team-page-section {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.team-page-section:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--mts-primary) 45%, transparent);
+  outline-offset: 4px;
+  border-radius: 0.5rem;
+}
+
+.team-page-sections .mts-app-surface {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.team-page-sections .mts-app-surface--interactive:hover {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.team-page-sections .team-page-section__rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+}
+
+.team-page-sections .team-page-section__rail-head button {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--mts-muted);
+  transition: color 0.2s ease;
+}
+
+.team-page-sections .team-page-section__rail-head button:hover {
+  color: var(--mts-primary);
+}
+
+.team-page-sections .dashboard-rail-item {
+  flex: 0 0 clamp(8.5rem, 42%, 10.5rem);
+  border: 1px solid var(--mts-section-divider);
+  border-radius: 0.875rem;
+  background: color-mix(in srgb, var(--mts-card) 92%, var(--mts-page-bg));
+  box-shadow: none;
+}
+
 .team-app-detail-content {
   font-size: 0.9375rem;
   line-height: 1.5;
@@ -531,6 +607,12 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.625rem;
   align-items: start;
+}
+
+.team-page-sections.team-app-dashboard .dashboard-grid-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .team-app-dashboard .dashboard-tile-shell {
