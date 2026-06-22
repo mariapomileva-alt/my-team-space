@@ -4,7 +4,7 @@ import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid } from "@/components/blocks/quick-actions-grid";
 import { TeamShopGrid } from "@/components/blocks/team-shop-grid";
 import { ResultsBoardTeaser } from "@/components/results/results-board-teaser";
-import { DashboardCard, DashboardChevron, DashboardLabel, SectionListRow, dashboardTileMeta, dashboardTileTitle } from "@/components/mts/team-app/dashboard-card";
+import { DashboardCard, DashboardLabel, SectionAction, SectionBody, SectionFeaturedItem, SectionListRow, dashboardTileTitle } from "@/components/mts/team-app/dashboard-card";
 import { getDashboardData } from "@/lib/blocks/block-dashboard-data";
 import {
   getBlockSettings,
@@ -13,7 +13,7 @@ import {
   type TeamShopSettings,
 } from "@/lib/blocks/settings";
 import { quickActionEmoji, type QuickActionIconId } from "@/lib/quick-actions/icons";
-import { mtsTypeSectionLead, mtsTypeSectionMeta, mtsTypeSectionTitle } from "@/lib/typography";
+import { mtsTypeSectionMeta, mtsTypeSectionTitle } from "@/lib/typography";
 import type { BlockInstance, BlockLayout, TeamSpace } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 import { motion } from "framer-motion";
@@ -39,21 +39,26 @@ export function ScheduleDashboardCard({
   const metaLine = [next.day, next.time].filter(Boolean).join(" · ");
   return (
     <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
-      <DashboardLabel action={<DashboardChevron />}>Schedule</DashboardLabel>
-      <p className={cn(mtsTypeSectionLead, "min-w-0 line-clamp-2 break-words")}>{next.title}</p>
-      <p className={cn(mtsTypeSectionMeta, "mt-1")}>{metaLine}</p>
-      {next.location ? <p className={cn(mtsTypeSectionMeta, "mt-0.5")}>{next.location}</p> : null}
-      {!compact && d.events.length > 1 ? (
-        <div className="mt-3 border-t border-[color:var(--mts-section-divider,var(--mts-card-border))] pt-2">
-          {d.events.slice(1, 3).map((ev) => (
-            <SectionListRow
-              key={`${ev.title}-${ev.day}`}
-              title={ev.title}
-              meta={[ev.day, ev.time].filter(Boolean).join(" · ")}
-            />
-          ))}
-        </div>
-      ) : null}
+      <DashboardLabel action={<SectionAction />}>Schedule</DashboardLabel>
+      <SectionBody>
+        <SectionFeaturedItem
+          title={next.title}
+          meta={metaLine}
+          note={next.location || undefined}
+        />
+        {!compact && d.events.length > 1 ? (
+          <div className="mt-2 border-t border-[color:var(--mts-section-divider,var(--mts-card-border))] pt-1">
+            {d.events.slice(1, 3).map((ev) => (
+              <SectionListRow
+                key={`${ev.title}-${ev.day}`}
+                title={ev.title}
+                meta={[ev.day, ev.time].filter(Boolean).join(" · ")}
+                note={ev.location || undefined}
+              />
+            ))}
+          </div>
+        ) : null}
+      </SectionBody>
     </DashboardCard>
   );
 }
@@ -76,9 +81,10 @@ export function AttendanceDashboardCard({
   const d = getDashboardData(team, block).attendance!;
   return (
     <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
-      <DashboardLabel action={<DashboardChevron />}>Team roster</DashboardLabel>
-      <p className={cn(mtsTypeSectionLead, "text-[17px] sm:text-lg")}>{d.label}</p>
-      <p className={cn(mtsTypeSectionMeta, "mt-1")}>Athletes on the team</p>
+      <DashboardLabel action={<SectionAction />}>Team roster</DashboardLabel>
+      <SectionBody>
+        <SectionFeaturedItem title={d.label} note="Athletes on the team" />
+      </SectionBody>
     </DashboardCard>
   );
 }
@@ -98,9 +104,10 @@ export function TripsDashboardCard({
   const first = d.items[0];
   return (
     <DashboardCard onClick={onOpen} index={index} compact>
-      <DashboardLabel action={<DashboardChevron />}>Trips</DashboardLabel>
-      <p className={dashboardTileTitle}>{first.title}</p>
-      {first.body ? <p className={cn(mtsTypeSectionMeta, "mt-1")}>{first.body}</p> : null}
+      <DashboardLabel action={<SectionAction />}>Trips</DashboardLabel>
+      <SectionBody>
+        <SectionFeaturedItem title={first.title} note={first.body || undefined} />
+      </SectionBody>
     </DashboardCard>
   );
 }
@@ -119,12 +126,12 @@ export function RulesDashboardCard({
   const d = getDashboardData(team, block).documents!;
   return (
     <DashboardCard onClick={onOpen} index={index} compact>
-      <DashboardLabel action={<DashboardChevron />}>Documents</DashboardLabel>
-      <div className="mt-1 space-y-0">
+      <DashboardLabel action={<SectionAction />}>Documents</DashboardLabel>
+      <SectionBody className="space-y-0">
         {d.docs.slice(0, 3).map((doc) => (
           <SectionListRow key={doc.title} title={doc.title} />
         ))}
-      </div>
+      </SectionBody>
     </DashboardCard>
   );
 }
@@ -143,11 +150,10 @@ export function PollDashboardCard({
   const d = getDashboardData(team, block).polls!;
   return (
     <DashboardCard onClick={onOpen} index={index} compact>
-      <DashboardLabel action={<DashboardChevron />}>Poll</DashboardLabel>
-      <p className={cn(mtsTypeSectionLead, "line-clamp-3 break-words [overflow-wrap:anywhere]")}>{d.question}</p>
-      {d.options.length > 0 ? (
-        <p className={cn(mtsTypeSectionMeta, "mt-2")}>{d.options.join(" · ")}</p>
-      ) : null}
+      <DashboardLabel action={<SectionAction />}>Poll</DashboardLabel>
+      <SectionBody>
+        <SectionFeaturedItem title={d.question} meta={d.options.length > 0 ? d.options.join(" · ") : undefined} />
+      </SectionBody>
     </DashboardCard>
   );
 }
@@ -167,9 +173,10 @@ export function AnnouncementDashboardCard({
   const post = d.posts[0];
   return (
     <DashboardCard onClick={onOpen} index={index} compact>
-      <DashboardLabel action={<DashboardChevron />}>News</DashboardLabel>
-      <p className={cn(mtsTypeSectionLead, "line-clamp-2")}>{post.title}</p>
-      {post.body ? <p className={cn(mtsTypeSectionMeta, "mt-1 line-clamp-2")}>{post.body}</p> : null}
+      <DashboardLabel action={<SectionAction />}>News</DashboardLabel>
+      <SectionBody>
+        <SectionFeaturedItem title={post.title} note={post.body || undefined} />
+      </SectionBody>
     </DashboardCard>
   );
 }
@@ -193,10 +200,12 @@ export function AchievementsRail({
       transition={{ delay: index * 0.03 }}
       className="col-span-1 sm:col-span-2"
     >
-      <div className="team-page-section__rail-head">
+      <div className="team-page-section team-page-section__rail-head px-0.5">
         <h2 className={mtsTypeSectionTitle}>Achievements</h2>
-        <button type="button" onClick={onOpen}>
-          View all →
+        <button type="button" onClick={onOpen} className="team-page-section__action-slot">
+          <span className="team-page-section__action">
+            <span className="team-page-section__action-arrow">→</span>
+          </span>
         </button>
       </div>
       <div className="dashboard-rail -mx-0.5 flex gap-3 overflow-x-auto px-0.5 pb-0.5">
@@ -242,9 +251,11 @@ export function GalleryStackCard({
       transition={{ delay: index * 0.025 }}
       className="team-page-section group w-full text-left"
     >
-      <div className="team-page-section__head mb-3 flex min-w-0 items-baseline justify-between gap-3">
+      <div className="team-page-section__head flex min-w-0 items-center justify-between gap-3">
         <h2 className={mtsTypeSectionTitle}>Gallery</h2>
-        <span className={cn(mtsTypeSectionMeta, "transition group-hover:text-[color:var(--mts-primary)]")}>→</span>
+        <span className="team-page-section__action-slot">
+          <SectionAction />
+        </span>
       </div>
       {imgs.length > 0 ? (
         <div className="dashboard-rail -mx-0.5 flex gap-2.5 overflow-x-auto px-0.5 pb-0.5">
@@ -325,12 +336,13 @@ export function PaymentDashboardCard({
 
   return (
     <DashboardCard onClick={onOpen} index={index} compact={compact ?? true} featured={featured}>
-      <DashboardLabel action={<DashboardChevron />}>{d.title}</DashboardLabel>
-      {d.description ? (
-        <p className={cn(mtsTypeSectionMeta, "line-clamp-2")}>{d.description}</p>
-      ) : (
-        <p className={cn(mtsTypeSectionMeta)}>{d.hasUrl ? d.buttonLabel : "Payment link"}</p>
-      )}
+      <DashboardLabel action={<SectionAction />}>{d.title}</DashboardLabel>
+      <SectionBody>
+        <SectionFeaturedItem
+          title={d.hasUrl ? d.buttonLabel : d.title}
+          note={d.description || undefined}
+        />
+      </SectionBody>
     </DashboardCard>
   );
 }
@@ -365,9 +377,9 @@ export function QuickActionsDashboardCard({
 
   return (
     <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
-      <DashboardLabel action={<DashboardChevron />}>{d.title}</DashboardLabel>
+      <DashboardLabel action={<SectionAction />}>{d.title}</DashboardLabel>
       {d.previews.length > 0 ? (
-        <div className="mt-1 space-y-0">
+        <SectionBody className="space-y-0">
           {d.previews.map((p) => (
             <SectionListRow
               key={`${p.title}-${p.icon}`}
@@ -375,7 +387,7 @@ export function QuickActionsDashboardCard({
               meta={quickActionEmoji(p.icon as QuickActionIconId)}
             />
           ))}
-        </div>
+        </SectionBody>
       ) : null}
     </DashboardCard>
   );
@@ -411,13 +423,13 @@ export function TeamShopDashboardCard({
 
   return (
     <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
-      <DashboardLabel action={<DashboardChevron />}>{d.title}</DashboardLabel>
+      <DashboardLabel action={<SectionAction />}>{d.title}</DashboardLabel>
       {d.previews.length > 0 ? (
-        <div className="mt-1 space-y-0">
+        <SectionBody className="space-y-0">
           {d.previews.map((p) => (
             <SectionListRow key={p.name} title={p.name} meta={p.price} />
           ))}
-        </div>
+        </SectionBody>
       ) : null}
     </DashboardCard>
   );
@@ -491,9 +503,10 @@ export function CompactStatCard({
 
   return (
     <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
-      <DashboardLabel action={<DashboardChevron />}>{label}</DashboardLabel>
-      <p className={cn(mtsTypeSectionLead, "text-[17px] sm:text-lg")}>{headline}</p>
-      {sub ? <p className={cn(mtsTypeSectionMeta, "mt-1")}>{sub}</p> : null}
+      <DashboardLabel action={<SectionAction />}>{label}</DashboardLabel>
+      <SectionBody>
+        <SectionFeaturedItem title={headline} note={sub || undefined} />
+      </SectionBody>
     </DashboardCard>
   );
 }

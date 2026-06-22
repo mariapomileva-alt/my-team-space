@@ -8,7 +8,8 @@ import {
   resultsBoardHasContent,
 } from "@/lib/blocks/results-board";
 import type { BlockInstance, BlockLayout, TeamSpace } from "@/lib/types";
-import { mtsTypeSectionLead, mtsTypeSectionMeta, mtsTypeSectionTitle } from "@/lib/typography";
+import { SectionAction, SectionListRow } from "@/components/mts/team-app/dashboard-card";
+import { mtsTypeItemTitle, mtsTypeSectionMeta, mtsTypeSectionNote, mtsTypeSectionTitle } from "@/lib/typography";
 import { cn } from "@/lib/utils/cn";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
@@ -97,11 +98,13 @@ export function ResultsBoardTeaser({
         key={`${block.id}-card`}
         className="team-page-section group w-full text-left"
       >
-        <div className="team-page-section__head flex items-baseline justify-between gap-3">
+        <div className="team-page-section__head flex items-center justify-between gap-3">
           <h2 className={mtsTypeSectionTitle}>{title}</h2>
-          <span className={mtsTypeSectionMeta}>→</span>
+          <span className="team-page-section__action-slot">
+            <SectionAction />
+          </span>
         </div>
-        <p className={cn(mtsTypeSectionLead, "mt-1")}>{leader?.athleteName ?? settings.seasonName}</p>
+        <p className={cn(mtsTypeItemTitle, "mt-1")}>{leader?.athleteName ?? settings.seasonName}</p>
         {leader ? (
           <p className={cn(mtsTypeSectionMeta, "mt-1")}>{leader.totalPoints} pts · {settings.seasonName}</p>
         ) : null}
@@ -116,18 +119,23 @@ export function ResultsBoardTeaser({
         key={`${block.id}-half`}
         className="team-page-section group w-full text-left"
       >
-        <h2 className={mtsTypeSectionTitle}>{title}</h2>
+        <div className="team-page-section__head flex items-center justify-between gap-3">
+          <h2 className={mtsTypeSectionTitle}>{title}</h2>
+          <span className="team-page-section__action-slot">
+            <SectionAction />
+          </span>
+        </div>
         {leader ? (
-          <div className="mt-3 flex items-center gap-3">
+          <div className="team-page-section__body mt-1 flex items-center gap-3">
             <TeaserAvatar name={leader.athleteName} photoUrl={leaderPhoto} size="sm" />
             <div className="min-w-0 flex-1">
-              <p className={cn(mtsTypeSectionLead, "line-clamp-2")}>{leader.athleteName}</p>
-              <p className={cn(mtsTypeSectionMeta, "mt-0.5")}>{leader.totalPoints} pts</p>
+              <p className={cn(mtsTypeItemTitle, "line-clamp-2")}>{leader.athleteName}</p>
+              <p className={cn(mtsTypeSectionMeta, "mt-1")}>{leader.totalPoints} pts</p>
             </div>
           </div>
         ) : null}
         {latest ? (
-          <p className={cn(mtsTypeSectionMeta, "mt-2 line-clamp-2")}>
+          <p className={cn(mtsTypeSectionNote, "mt-2 line-clamp-2")}>
             Latest: {latest.name}
             {topHighlight ? ` · ${topHighlight.name}` : ""}
           </p>
@@ -143,16 +151,18 @@ export function ResultsBoardTeaser({
         key={`${block.id}-full`}
         className="team-page-section group w-full text-left"
       >
-        <div className="team-page-section__head flex items-baseline justify-between gap-3">
+        <div className="team-page-section__head flex items-center justify-between gap-3">
           <h2 className={mtsTypeSectionTitle}>{title}</h2>
-          <span className={mtsTypeSectionMeta}>→</span>
+          <span className="team-page-section__action-slot">
+            <SectionAction />
+          </span>
         </div>
-        <p className={cn(mtsTypeSectionMeta, "mt-0.5")}>{settings.seasonName}</p>
+        <p className={cn(mtsTypeSectionNote, "mt-0.5")}>{settings.seasonName}</p>
         {leader ? (
-          <div className="mt-3 flex items-center gap-3">
+          <div className="team-page-section__featured mt-2 flex items-center gap-3">
             <TeaserAvatar name={leader.athleteName} photoUrl={leaderPhoto} />
             <div className="min-w-0 flex-1">
-              <p className={mtsTypeSectionLead}>{leader.athleteName}</p>
+              <p className={mtsTypeItemTitle}>{leader.athleteName}</p>
               <p className={cn(mtsTypeSectionMeta, "mt-0.5")}>
                 {leader.totalPoints} pts
                 {leader.gold + leader.silver + leader.bronze > 0
@@ -163,16 +173,15 @@ export function ResultsBoardTeaser({
           </div>
         ) : null}
         {miniBoard.length > 0 ? (
-          <ul className="mt-3 space-y-0 border-t border-[color:var(--mts-section-divider,var(--mts-card-border))] pt-2">
+          <div className="mt-3 border-t border-[color:var(--mts-section-divider,var(--mts-card-border))] pt-1">
             {miniBoard.map((row) => (
-              <li key={row.athleteKey} className="flex justify-between py-1.5 text-[13px]">
-                <span className="font-medium text-[color:var(--mts-text)]">
-                  #{row.rank} {row.athleteName}
-                </span>
-                <span className="tabular-nums text-[color:var(--mts-muted)]">{row.totalPoints}</span>
-              </li>
+              <SectionListRow
+                key={row.athleteKey}
+                title={`#${row.rank} ${row.athleteName}`}
+                meta={String(row.totalPoints)}
+              />
             ))}
-          </ul>
+          </div>
         ) : null}
       </motion.button>
     );
@@ -185,17 +194,19 @@ export function ResultsBoardTeaser({
       key={`${block.id}-featured`}
       className="team-page-section group w-full text-left"
     >
-      <div className="team-page-section__head flex items-baseline justify-between gap-3">
+      <div className="team-page-section__head flex items-center justify-between gap-3">
         <h2 className={mtsTypeSectionTitle}>{title}</h2>
-        <span className={mtsTypeSectionMeta}>→</span>
+        <span className="team-page-section__action-slot">
+          <SectionAction />
+        </span>
       </div>
-      <p className={cn(mtsTypeSectionMeta, "mt-0.5")}>{settings.seasonName}</p>
+      <p className={cn(mtsTypeSectionNote, "mt-0.5")}>{settings.seasonName}</p>
 
       {leader ? (
-        <div className="mt-3 flex items-center gap-3">
+        <div className="team-page-section__featured mt-2 flex items-center gap-3">
           <TeaserAvatar name={leader.athleteName} photoUrl={leaderPhoto} />
           <div className="min-w-0 flex-1">
-            <p className={mtsTypeSectionLead}>{leader.athleteName}</p>
+            <p className={mtsTypeItemTitle}>{leader.athleteName}</p>
             <p className={cn(mtsTypeSectionMeta, "mt-0.5")}>
               {leader.totalPoints} pts
               {leader.gold + leader.silver + leader.bronze > 0
@@ -208,8 +219,8 @@ export function ResultsBoardTeaser({
 
       {latest ? (
         <div className="mt-3">
-          <p className={cn(mtsTypeSectionMeta, "text-[11px]")}>Latest competition</p>
-          <p className={cn(mtsTypeSectionLead, "mt-0.5")}>{latest.name}</p>
+          <p className={mtsTypeSectionNote}>Latest competition</p>
+          <p className={cn(mtsTypeItemTitle, "mt-1")}>{latest.name}</p>
           {topHighlight ? (
             <p className={cn(mtsTypeSectionMeta, "mt-0.5")}>
               {topHighlight.medal} {topHighlight.name}
@@ -219,20 +230,15 @@ export function ResultsBoardTeaser({
       ) : null}
 
       {miniBoard.length > 0 ? (
-        <ul className="mt-3 space-y-0 border-t border-[color:var(--mts-section-divider,var(--mts-card-border))] pt-2">
+        <div className="mt-3 border-t border-[color:var(--mts-section-divider,var(--mts-card-border))] pt-1">
           {miniBoard.map((row) => (
-            <li
+            <SectionListRow
               key={row.athleteKey}
-              className="flex items-center justify-between py-1.5 text-[13px]"
-            >
-              <span className="font-medium text-[color:var(--mts-text)]">
-                <span className="mr-1.5 tabular-nums text-[color:var(--mts-muted)]">#{row.rank}</span>
-                {row.athleteName}
-              </span>
-              <span className="tabular-nums text-[color:var(--mts-muted)]">{row.totalPoints}</span>
-            </li>
+              title={`#${row.rank} ${row.athleteName}`}
+              meta={String(row.totalPoints)}
+            />
           ))}
-        </ul>
+        </div>
       ) : null}
     </motion.button>
   );
