@@ -15,17 +15,38 @@ export type TeamHeroCardProps = {
   tagline?: string | null;
   city?: string | null;
   coverSrc?: string | null;
-  description?: string | null;
-  motto?: string | null;
   socialLinks?: SocialLinkItem[];
-  /** Logo + name composition chosen in the builder. Defaults to `stack`. */
   variant?: HeroLayoutVariant;
 };
 
+function HeroTitle({ teamName }: { teamName: string }) {
+  return <h1 className={HERO_LAYOUT.title}>{teamName}</h1>;
+}
+
+function HeroMeta({
+  tagline,
+  city,
+  socialLinks,
+}: {
+  tagline?: string | null;
+  city?: string | null;
+  socialLinks: SocialLinkItem[];
+}) {
+  const hasSocial = socialLinks.length > 0;
+  return (
+    <>
+      {tagline?.trim() ? <p className={HERO_LAYOUT.subtitle}>{tagline.trim()}</p> : null}
+      {city?.trim() ? <p className={HERO_LAYOUT.city}>📍 {city.trim()}</p> : null}
+      {hasSocial ? (
+        <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
+      ) : null}
+    </>
+  );
+}
+
 /**
- * Team header card. One card, four logo + name compositions (variant).
- * Content is identical across variants — only placement changes.
- * Layout tokens: lib/blocks/hero-layout.ts · styles: app/globals.css (.hero-card*)
+ * Branded team header — Header Variants reference (6 approved layouts).
+ * Cover · logo · name · optional subtitle · location · social links only.
  */
 export function TeamHeroCard({
   teamName,
@@ -33,14 +54,14 @@ export function TeamHeroCard({
   tagline,
   city,
   coverSrc,
-  description,
-  motto,
   socialLinks = [],
   variant = DEFAULT_HERO_VARIANT,
 }: TeamHeroCardProps) {
   const hasCover = Boolean(coverSrc?.trim());
-  const hasDetails = Boolean(description?.trim() || motto?.trim() || socialLinks.length > 0);
-  const isOverlay = variant === "overlay";
+  const isCoverIdentity = variant === "inside_header" || variant === "circle_on_header";
+  const isMinimal = variant === "minimal";
+  const isInline = variant === "inline" || variant === "square";
+  const showLogo = !isMinimal;
 
   const liveBadge = (
     <span
@@ -56,42 +77,38 @@ export function TeamHeroCard({
     </span>
   );
 
-  const titleGroup = (
-    <>
-      <h1 className={HERO_LAYOUT.title}>{teamName}</h1>
-      {tagline?.trim() ? <p className={HERO_LAYOUT.subtitle}>{tagline.trim()}</p> : null}
-      {city?.trim() ? <p className={HERO_LAYOUT.city}>📍 {city.trim()}</p> : null}
-    </>
-  );
-
-  const logo = <MtsTeamLogo src={logoSrc} teamName={teamName} className={HERO_LAYOUT.logoFrame} />;
-
-  const details = hasDetails ? (
-    <div className={HERO_LAYOUT.details}>
-      {description?.trim() ? (
-        <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description.trim()}</p>
-      ) : null}
-      {motto?.trim() ? (
-        <p
-          className={cn(
-            "text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]",
-            description?.trim() ? "mt-2" : "mt-0",
-          )}
-        >
-          “{motto.trim()}”
-        </p>
-      ) : null}
-      {socialLinks.length > 0 ? <SocialLinkButtons links={socialLinks} className="mt-3" /> : null}
-    </div>
+  const logo = showLogo ? (
+    <MtsTeamLogo src={logoSrc} teamName={teamName} className={HERO_LAYOUT.logoFrame} />
   ) : null;
 
+  const bodyContent = isCoverIdentity ? (
+    <HeroMeta tagline={tagline} city={city} socialLinks={socialLinks} />
+  ) : isMinimal ? (
+    socialLinks.length > 0 ? (
+      <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
+    ) : null
+  ) : (
+  <>
+    <HeroTitle teamName={teamName} />
+    <HeroMeta tagline={tagline} city={city} socialLinks={socialLinks} />
+  </>
+  );
+
+  const showBody = Boolean(
+    isCoverIdentity
+      ? tagline?.trim() || city?.trim() || socialLinks.length > 0
+      : isMinimal
+        ? socialLinks.length > 0
+        : true,
+  );
+
   return (
-    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
+    <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="relative">
       <div
         className={cn(
           HERO_LAYOUT.root,
           heroVariantClass(variant),
-          "overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80",
+          "team-hero-brand mts-app-surface overflow-hidden rounded-[1.35rem]",
         )}
       >
         <div className={HERO_LAYOUT.cover}>
@@ -101,9 +118,9 @@ export function TeamHeroCard({
               <div
                 className={cn(
                   "pointer-events-none absolute inset-0",
-                  isOverlay
-                    ? "bg-gradient-to-t from-black/70 via-black/25 to-black/5"
-                    : "bg-gradient-to-t from-black/45 via-black/10 to-transparent",
+                  isCoverIdentity || isMinimal
+                    ? "bg-gradient-to-t from-black/72 via-black/28 to-black/8"
+                    : "bg-gradient-to-t from-black/48 via-black/12 to-transparent",
                 )}
                 aria-hidden
               />
@@ -114,22 +131,39 @@ export function TeamHeroCard({
 
           <div className="absolute right-3 top-3 z-20">{liveBadge}</div>
 
-          <div className="hero-card__logo-anchor">{logo}</div>
+          {isCoverIdentity ? (
+            <div className={HERO_LAYOUT.coverIdentity}>
+              <div className="hero-card__logo-anchor">{logo}</div>
+              <div className={HERO_LAYOUT.coverTitle}>
+                <HeroTitle teamName={teamName} />
+              </div>
+            </div>
+          ) : null}
 
-          {isOverlay ? <div className={HERO_LAYOUT.overlayText}>{titleGroup}</div> : null}
+          {isMinimal ? (
+            <div className={HERO_LAYOUT.overlayText}>
+              <HeroTitle teamName={teamName} />
+              <HeroMeta tagline={tagline} city={city} socialLinks={[]} />
+            </div>
+          ) : null}
+
+          {!isCoverIdentity && !isMinimal ? (
+            <div className="hero-card__logo-anchor">{logo}</div>
+          ) : null}
         </div>
 
-        {isOverlay ? (
-          details ? <div className={HERO_LAYOUT.body}>{details}</div> : null
-        ) : (
+        {showBody ? (
           <div className={HERO_LAYOUT.body}>
-            <div className={HERO_LAYOUT.identity}>
-              {variant === "inline" ? <div className="hero-card__logo-spacer" aria-hidden /> : null}
-              <div className={HERO_LAYOUT.textZone}>{titleGroup}</div>
-            </div>
-            {details}
+            {isInline ? (
+              <div className={HERO_LAYOUT.identity}>
+                <div className="hero-card__logo-spacer" aria-hidden />
+                <div className={HERO_LAYOUT.textZone}>{bodyContent}</div>
+              </div>
+            ) : (
+              <div className={HERO_LAYOUT.textZone}>{bodyContent}</div>
+            )}
           </div>
-        )}
+        ) : null}
       </div>
     </motion.section>
   );

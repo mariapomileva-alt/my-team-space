@@ -1,4 +1,4 @@
-import { DEFAULT_HERO_VARIANT, type HeroLayoutVariant } from "@/lib/blocks/hero-layout";
+import type { HeroLayoutVariant } from "@/lib/blocks/hero-layout";
 import type { QuickActionIconId } from "@/lib/quick-actions/icons";
 import type { BlockInstance, BlockType } from "@/lib/types";
 
@@ -120,7 +120,6 @@ export function defaultSettingsForType(type: BlockType): Record<string, unknown>
       return { message: "", tone: "info" as "info" | "urgent" | "confirm", accent: "theme", pinned: true };
     case "hero":
       return {
-        heroLayout: DEFAULT_HERO_VARIANT as HeroLayoutVariant,
         quote: "",
         description: "",
         city: "",

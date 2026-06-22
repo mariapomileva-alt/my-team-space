@@ -1,4 +1,4 @@
-import type { HeroLayoutVariant } from "@/lib/blocks/hero-layout";
+import { HERO_VARIANT_META, type HeroLayoutVariant } from "@/lib/blocks/hero-layout";
 import { getTheme } from "@/lib/themes";
 import { SHOWCASE_COVERS, SHOWCASE_LOGOS } from "@/lib/showcase/logo-svg";
 import type { BlockInstance, BlockLayout, TeamSpace, ThemeId } from "@/lib/types";
@@ -379,10 +379,10 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
   {
     sportRu: "Танцевальная секция",
     presetLabel: "Pastel youth",
-    heroLayout: "center",
-    heroLayoutLabel: "Center — logo on cover edge",
+    heroLayout: "circle_on_header",
+    heroLayoutLabel: HERO_VARIANT_META.circle_on_header.label,
     builderSteps: [
-      "Header → Logo + Center layout",
+      "Header → Circular logo on header",
       "Design → Pastel youth",
       "Gallery + Polls + Countdown",
     ],
@@ -395,9 +395,7 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
       SHOWCASE_LOGOS.dance,
       [
         ann("💃 Spring recital — Friday 18:30. Purple costumes.", "info"),
-        hero("center", "Riga, Latvia", SHOWCASE_COVERS.dance, {
-          quote: "Move with joy",
-          description: "Every child finds their rhythm here.",
+        hero("circle_on_header", "Riga, Latvia", SHOWCASE_COVERS.dance, {
           social: { instagram: "rhythmmotion", whatsapp: "+37129111111" },
         }),
         schedule([
@@ -425,8 +423,8 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
     sportRu: "Баскетбольный кружок",
     presetLabel: "Energetic orange",
     heroLayout: "inline",
-    heroLayoutLabel: "Inline — name beside logo",
-    builderSteps: ["Header → Logo + Inline", "Design → Energetic orange", "Results + Shop"],
+    heroLayoutLabel: HERO_VARIANT_META.inline.label,
+    builderSteps: ["Header → Logo left, text right", "Design → Energetic orange", "Results + Shop"],
     team: makeTeam(
       "demo_hoops",
       "thunder-hoops",
@@ -486,9 +484,9 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
   {
     sportRu: "Хоккейная команда",
     presetLabel: "Dark athletic",
-    heroLayout: "overlay",
-    heroLayoutLabel: "Overlay — text on photo",
-    builderSteps: ["Header → Logo + Overlay", "Design → Dark athletic", "Trips + Gallery"],
+    heroLayout: "inside_header",
+    heroLayoutLabel: HERO_VARIANT_META.inside_header.label,
+    builderSteps: ["Header → Logo inside header", "Design → Dark athletic", "Trips + Gallery"],
     team: makeTeam(
       "demo_hockey",
       "nordic-ice",
@@ -498,8 +496,7 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
       SHOWCASE_LOGOS.hockey,
       [
         ann("❄️ Rink B closed Monday — session at 16:00.", "info"),
-        hero("overlay", "Tampere, Finland", SHOWCASE_COVERS.hockey, {
-          quote: "Skate hard. Stick together.",
+        hero("inside_header", "Tampere, Finland", SHOWCASE_COVERS.hockey, {
           social: { instagram: "nordicicewolves" },
         }),
         schedule([
@@ -524,9 +521,9 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
   {
     sportRu: "Плавательная команда",
     presetLabel: "Ocean aqua",
-    heroLayout: "stack",
-    heroLayoutLabel: "Stack — classic Facebook-style",
-    builderSteps: ["Header → Logo + Stack", "Design → Ocean aqua", "Results + Poll"],
+    heroLayout: "overlap_large",
+    heroLayoutLabel: HERO_VARIANT_META.overlap_large.label,
+    builderSteps: ["Header → Logo overlapping header", "Design → Ocean aqua", "Results + Poll"],
     team: makeTeam(
       "demo_swim",
       "aqua-wave",
@@ -536,7 +533,7 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
       SHOWCASE_LOGOS.swim,
       [
         ann("🏊 County meet Sunday — warm-up 08:00.", "confirm"),
-        hero("stack", "Tallinn, Estonia", SHOWCASE_COVERS.swim, {
+        hero("overlap_large", "Tallinn, Estonia", SHOWCASE_COVERS.swim, {
           social: { instagram: "aquawaveswim", whatsapp: "+3725123456" },
         }),
         schedule([
@@ -571,9 +568,9 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
   {
     sportRu: "Балетная студия",
     presetLabel: "Minimal mono",
-    heroLayout: "overlay",
-    heroLayoutLabel: "Overlay — white text on photo",
-    builderSteps: ["Header → Logo + Overlay + motto", "Design → Minimal mono", "Countdown + Resources"],
+    heroLayout: "minimal",
+    heroLayoutLabel: HERO_VARIANT_META.minimal.label,
+    builderSteps: ["Header → Minimal text-focused", "Design → Minimal mono", "Countdown + Resources"],
     team: makeTeam(
       "demo_ballet",
       "etoile-ballet",
@@ -583,8 +580,7 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
       SHOWCASE_LOGOS.ballet,
       [
         ann("🩰 Nutcracker audition — sign up by Wednesday.", "info"),
-        hero("overlay", "Paris, France", SHOWCASE_COVERS.ballet, {
-          quote: "Grace in every line",
+        hero("minimal", "Paris, France", SHOWCASE_COVERS.ballet, {
           social: { instagram: "etoileballet", website: "etoileballet.fr" },
         }),
         gallery(GALLERY_BALLET, ["Studio barre", "Rehearsal", "On stage"]),
@@ -610,9 +606,9 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
   {
     sportRu: "Теннисная академия",
     presetLabel: "Premium forest",
-    heroLayout: "inline",
-    heroLayoutLabel: "Inline — sports club card",
-    builderSteps: ["Header → Logo + Inline", "Design → Premium forest", "UTR integration + Shop"],
+    heroLayout: "square",
+    heroLayoutLabel: HERO_VARIANT_META.square.label,
+    builderSteps: ["Header → Square logo layout", "Design → Premium forest", "UTR integration + Shop"],
     team: makeTeam(
       "demo_tennis",
       "ace-tennis",
@@ -622,7 +618,7 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
       SHOWCASE_LOGOS.tennis,
       [
         ann("🎾 Club tournament Sunday — register by Friday.", "confirm"),
-        hero("inline", "Lisbon, Portugal", SHOWCASE_COVERS.tennis, {
+        hero("square", "Lisbon, Portugal", SHOWCASE_COVERS.tennis, {
           social: { instagram: "acetennisacademy", whatsapp: "+351912345678" },
         }),
         schedule([

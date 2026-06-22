@@ -1,83 +1,101 @@
 /**
- * Team hero — layout system (single source of truth).
- * One card, four logo + name compositions. Content never changes — only placement.
+ * Team hero — approved Header Variants reference (6 layouts).
+ * Content is identical across variants — only logo + name placement changes.
  * Container queries on `.hero-card` — not viewport @media.
  */
 
-/** Logo + team-name composition chosen in the builder (Hero settings). */
-export type HeroLayoutVariant = "stack" | "inline" | "center" | "overlay";
+/** Approved hero layouts — see Header Variants reference. */
+export type HeroLayoutVariant =
+  | "inside_header"
+  | "overlap_large"
+  | "circle_on_header"
+  | "inline"
+  | "square"
+  | "minimal";
 
 export const HERO_LAYOUT_VARIANTS: readonly HeroLayoutVariant[] = [
-  "stack",
+  "inside_header",
+  "overlap_large",
+  "circle_on_header",
   "inline",
-  "center",
-  "overlay",
+  "square",
+  "minimal",
 ] as const;
 
-/** Default for new teams and legacy heroes without an explicit choice. */
-export const DEFAULT_HERO_VARIANT: HeroLayoutVariant = "stack";
+export const DEFAULT_HERO_VARIANT: HeroLayoutVariant = "overlap_large";
+
+const LEGACY_VARIANT_MAP: Record<string, HeroLayoutVariant> = {
+  stack: "overlap_large",
+  center: "overlap_large",
+  overlay: "inside_header",
+};
 
 export function resolveHeroVariant(value: unknown): HeroLayoutVariant {
-  return HERO_LAYOUT_VARIANTS.includes(value as HeroLayoutVariant)
-    ? (value as HeroLayoutVariant)
-    : DEFAULT_HERO_VARIANT;
+  if (HERO_LAYOUT_VARIANTS.includes(value as HeroLayoutVariant)) {
+    return value as HeroLayoutVariant;
+  }
+  if (typeof value === "string" && value in LEGACY_VARIANT_MAP) {
+    return LEGACY_VARIANT_MAP[value]!;
+  }
+  return DEFAULT_HERO_VARIANT;
 }
 
 export const HERO_VARIANT_META: Record<
   HeroLayoutVariant,
-  { label: string; hint: string; bestFor: string }
+  { label: string; hint: string; number: number }
 > = {
-  stack: {
-    label: "Logo left, name below",
-    hint: "Facebook-style — logo overlaps the cover, name sits underneath.",
-    bestFor: "Communities, clubs, academies",
+  inside_header: {
+    number: 1,
+    label: "Logo inside header",
+    hint: "Logo and team name live on the cover photo.",
+  },
+  overlap_large: {
+    number: 2,
+    label: "Logo overlapping header",
+    hint: "Large logo centered on the cover edge, name below.",
+  },
+  circle_on_header: {
+    number: 3,
+    label: "Circular logo on header",
+    hint: "Logo in a soft circle on the photo, name beside it.",
   },
   inline: {
-    label: "Logo left, name beside",
-    hint: "Logo overlaps the cover, name and details sit to the right.",
-    bestFor: "Pro teams & sports clubs",
+    number: 4,
+    label: "Logo left, text right",
+    hint: "Compact club card — logo overlaps, name sits to the right.",
   },
-  center: {
-    label: "Logo centered",
-    hint: "Logo centered on the cover edge, name centered below.",
-    bestFor: "Academies, schools, studios",
+  square: {
+    number: 5,
+    label: "Square logo layout",
+    hint: "Square logo frame for complex marks, text to the right.",
   },
-  overlay: {
-    label: "Minimal overlay",
-    hint: "Logo inside the photo, name over the gradient — no white band.",
-    bestFor: "Modern brands & creative teams",
+  minimal: {
+    number: 6,
+    label: "Minimal text-focused",
+    hint: "Name on the photo — maximum air, no logo block.",
   },
 };
 
-/** Root modifier class for a variant: `hero-card--stack`, etc. */
 export function heroVariantClass(variant: HeroLayoutVariant): string {
   return `hero-card--${variant}`;
 }
 
 export const HERO_LAYOUT = {
-  /** Logo center sits on cover bottom edge — 50% on photo, 50% on white. */
   logoOverlapRatio: 0.5,
-
   identityGapMobile: "0.8125rem",
   identityGapDesktop: "0.9375rem",
-
-  /* Spec sizing: 64–80px mobile, 80–100px tablet. Logo is circular. */
   logoSizeMobile: "4.75rem",
   logoSizeDesktop: "6rem",
   logoSizeDesktopLg: "6.25rem",
   logoRadius: "9999px",
-
   coverHeightMobile: "10.5rem",
   coverHeightDesktop: "15.5rem",
   coverHeightDesktopLg: "17rem",
-
   logoZonePercent: "25%",
   containerBreakpointDesktop: "540px",
   containerBreakpointWide: "720px",
-
   titleMaxLines: 2,
   subtitleMaxLines: 1,
-
   root: "hero-card",
   cover: "hero-card__cover",
   body: "hero-card__body",
@@ -87,8 +105,8 @@ export const HERO_LAYOUT = {
   title: "hero-card__title",
   subtitle: "hero-card__subtitle",
   city: "hero-card__city",
-  details: "hero-card__details",
-  /** Title group painted over the cover (overlay variant only). */
+  coverIdentity: "hero-card__cover-identity",
+  coverTitle: "hero-card__cover-title",
   overlayText: "hero-card__overlay-text",
   logoFrame: "mts-media-frame--logo-hero-card",
 } as const;

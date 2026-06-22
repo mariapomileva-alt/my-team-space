@@ -73,7 +73,21 @@
   position: relative;
   z-index: 1;
   background: var(--mts-card, #fff);
-  padding: calc(var(--hero-logo-size) * 0.5) 1rem 1.25rem;
+  padding: calc(var(--hero-logo-size) * 0.46) 1rem 1rem;
+}
+
+.hero-card__body--overlay-social {
+  padding-top: 0.75rem;
+  padding-bottom: 0.875rem;
+}
+
+.hero-card__social {
+  margin-top: 0.625rem;
+}
+
+.team-hero-brand.mts-app-surface {
+  border-color: color-mix(in srgb, var(--mts-card-border) 85%, transparent);
+  box-shadow: var(--mts-shadow);
 }
 
 .hero-card__logo-anchor {
@@ -83,6 +97,22 @@
   z-index: 30;
   width: var(--hero-logo-size);
   transform: translateY(50%);
+}
+
+.hero-card__cover-identity {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.875rem;
+  z-index: 25;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.hero-card__cover-title {
+  min-width: 0;
+  flex: 1 1 0;
 }
 
 .hero-card__identity {
@@ -98,14 +128,55 @@
   min-width: 0;
 }
 
-/* === Variant 1 — logo left, name below (default, Facebook-style) ===
-   Logo overlaps the cover; body padding already clears its lower half,
-   so the name flows directly underneath, full width, left-aligned. */
-.hero-card--stack .hero-card__text-zone {
-  flex: 1 1 auto;
+/* === 1 — Logo inside header (name on cover beside logo) === */
+.hero-card--inside_header .hero-card__logo-anchor,
+.hero-card--circle_on_header .hero-card__logo-anchor {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  flex-shrink: 0;
 }
 
-/* === Variant 2 — logo left, name beside (business card) === */
+.hero-card--inside_header .hero-card__cover-title .hero-card__title,
+.hero-card--circle_on_header .hero-card__cover-title .hero-card__title {
+  color: #fff;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.45);
+}
+
+.hero-card--inside_header .hero-card__body,
+.hero-card--circle_on_header .hero-card__body {
+  padding-top: 0.875rem;
+}
+
+/* === 3 — Circular logo on header (frosted ring on photo) === */
+.hero-card--circle_on_header .hero-card__logo-anchor .mts-media-frame--logo-hero-card {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 22px rgba(0, 0, 0, 0.28);
+}
+
+/* === 2 — Logo overlapping header (large, centered) === */
+.hero-card--overlap_large .hero-card__logo-anchor {
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, 50%);
+}
+
+.hero-card--overlap_large .hero-card__body {
+  text-align: center;
+}
+
+.hero-card--overlap_large .hero-card__text-zone {
+  width: 100%;
+}
+
+.hero-card--overlap_large .hero-card__social {
+  display: flex;
+  justify-content: center;
+}
+
+/* === 4 — Logo left, text right === */
 .hero-card--inline .hero-card__identity {
   display: flex;
   align-items: center;
@@ -123,29 +194,29 @@
   padding-top: 0;
 }
 
-/* === Variant 3 — logo centered on the cover edge, name centered below === */
-.hero-card--center .hero-card__logo-anchor {
-  left: 50%;
-  right: auto;
-  transform: translate(-50%, 50%);
+/* === 5 — Square logo layout === */
+.hero-card--square .hero-card__identity {
+  display: flex;
+  align-items: center;
+  gap: var(--hero-identity-gap);
+  margin-top: calc(var(--hero-logo-size) * -0.5);
 }
 
-.hero-card--center .hero-card__body {
-  text-align: center;
+.hero-card--square .hero-card__logo-spacer {
+  flex: 0 0 var(--hero-logo-size);
+  width: var(--hero-logo-size);
 }
 
-.hero-card--center .hero-card__text-zone {
-  width: 100%;
+.hero-card--square .hero-card__text-zone {
+  flex: 1 1 0;
+  padding-top: 0;
 }
 
-/* === Variant 4 — minimal overlay: logo inside the photo, name on the gradient === */
-.hero-card--overlay .hero-card__logo-anchor {
-  left: 1rem;
-  top: 1rem;
-  bottom: auto;
-  transform: none;
+.hero-card--square .mts-media-frame--logo-hero-card {
+  border-radius: 1.125rem;
 }
 
+/* === 6 — Minimal text-focused (no logo) === */
 .hero-card__overlay-text {
   position: absolute;
   left: 1rem;
@@ -154,23 +225,23 @@
   z-index: 25;
 }
 
-.hero-card--overlay .hero-card__title {
+.hero-card--minimal .hero-card__title {
   color: #fff;
   text-shadow: 0 1px 14px rgba(0, 0, 0, 0.45);
 }
 
-.hero-card--overlay .hero-card__subtitle {
+.hero-card--minimal .hero-card__subtitle {
   color: rgba(255, 255, 255, 0.92);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
 }
 
-.hero-card--overlay .hero-card__city {
+.hero-card--minimal .hero-card__city {
   color: rgba(255, 255, 255, 0.85);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
 }
 
-.hero-card--overlay .hero-card__body {
-  padding-top: 1.1rem;
+.hero-card--minimal .hero-card__body {
+  padding-top: 0.75rem;
 }
 
 /* Scoped under .hero-card to outrank the generic `.mts-media-frame--logo`
@@ -219,7 +290,8 @@
     --hero-identity-gap: 0.9375rem;
   }
 
-  .hero-card--inline .hero-card__logo-spacer {
+  .hero-card--inline .hero-card__logo-spacer,
+  .hero-card--square .hero-card__logo-spacer {
     flex: 0 0 25%;
     width: auto;
     min-width: var(--hero-logo-size);
@@ -254,11 +326,11 @@
 }
 
 .hero-card__subtitle {
-  margin: 0.1875rem 0 0;
+  margin: 0.125rem 0 0;
   font-size: 0.8125rem;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1.35;
-  color: var(--mts-muted, #6b7280);
+  color: var(--mts-primary-bright, var(--mts-primary));
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;

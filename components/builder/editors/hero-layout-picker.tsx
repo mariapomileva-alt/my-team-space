@@ -7,13 +7,6 @@ import {
 } from "@/lib/blocks/hero-layout";
 import { cn } from "@/lib/utils/cn";
 
-const VARIANT_NUMBER: Record<HeroLayoutVariant, number> = {
-  stack: 1,
-  inline: 2,
-  center: 3,
-  overlay: 4,
-};
-
 function Bars({ align = "left", onDark = false }: { align?: "left" | "center"; onDark?: boolean }) {
   const tone = onDark ? "bg-white" : "bg-current";
   return (
@@ -25,12 +18,23 @@ function Bars({ align = "left", onDark = false }: { align?: "left" | "center"; o
   );
 }
 
-function Logo({ active, className }: { active: boolean; className?: string }) {
+function Logo({
+  active,
+  className,
+  square = false,
+  frosted = false,
+}: {
+  active: boolean;
+  className?: string;
+  square?: boolean;
+  frosted?: boolean;
+}) {
   return (
     <div
       className={cn(
-        "h-5 w-5 rounded-full border-2 border-white shadow-sm",
-        active ? "bg-gradient-to-br from-indigo-400 to-violet-500" : "bg-gradient-to-br from-zinc-400 to-zinc-500",
+        "h-5 w-5 border-2 border-white shadow-sm",
+        square ? "rounded-md" : "rounded-full",
+        frosted ? "bg-white/25 backdrop-blur-sm" : active ? "bg-gradient-to-br from-indigo-400 to-violet-500" : "bg-gradient-to-br from-zinc-400 to-zinc-500",
         className,
       )}
       aria-hidden
@@ -44,7 +48,7 @@ function LiveDot() {
   );
 }
 
-/** Schematic mini-preview of one hero composition. */
+/** Schematic mini-preview — Header Variants reference. */
 function HeroVariantThumb({ variant, active }: { variant: HeroLayoutVariant; active: boolean }) {
   const frame = cn(
     "relative h-[74px] w-full overflow-hidden rounded-lg border",
@@ -55,7 +59,38 @@ function HeroVariantThumb({ variant, active }: { variant: HeroLayoutVariant; act
     : "bg-gradient-to-br from-zinc-200 to-zinc-300";
   const text = active ? "text-indigo-500" : "text-zinc-400";
 
-  if (variant === "overlay") {
+  if (variant === "inside_header") {
+    return (
+      <div className={cn(frame, "bg-white")}>
+        <div className={cn("absolute inset-x-0 top-0 h-[55%]", cover)} aria-hidden />
+        <div className="absolute inset-x-0 top-[30%] h-[30%] bg-gradient-to-t from-black/50 to-transparent" aria-hidden />
+        <LiveDot />
+        <Logo active={active} className="absolute bottom-[38%] left-2" />
+        <div className="absolute bottom-[40%] left-[34px]">
+          <Bars onDark />
+        </div>
+        <div className={cn("absolute bottom-2 left-2", text)}>
+          <div className="h-[3px] w-6 rounded-full bg-current opacity-40" />
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === "circle_on_header") {
+    return (
+      <div className={cn(frame, "bg-white")}>
+        <div className={cn("absolute inset-x-0 top-0 h-[55%]", cover)} aria-hidden />
+        <div className="absolute inset-x-0 top-[30%] h-[30%] bg-gradient-to-t from-black/50 to-transparent" aria-hidden />
+        <LiveDot />
+        <Logo active={active} frosted className="absolute bottom-[38%] left-2" />
+        <div className="absolute bottom-[40%] left-[34px]">
+          <Bars onDark />
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === "minimal") {
     return (
       <div className={cn(frame, "bg-white")}>
         <div
@@ -67,7 +102,6 @@ function HeroVariantThumb({ variant, active }: { variant: HeroLayoutVariant; act
         />
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/55 to-transparent" aria-hidden />
         <LiveDot />
-        <Logo active={active} className="absolute left-1.5 top-1.5" />
         <div className="absolute bottom-2 left-2">
           <Bars onDark />
         </div>
@@ -79,11 +113,11 @@ function HeroVariantThumb({ variant, active }: { variant: HeroLayoutVariant; act
     <div className={cn(frame, "bg-white")}>
       <div className={cn("h-[42%] w-full", cover)} aria-hidden />
       <LiveDot />
-      {variant === "stack" ? (
+      {variant === "overlap_large" ? (
         <>
-          <Logo active={active} className="absolute left-2 top-[42%] -translate-y-1/2" />
-          <div className={cn("absolute left-2 top-[58%] mt-1", text)}>
-            <Bars />
+          <Logo active={active} className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2" />
+          <div className={cn("absolute left-1/2 top-[58%] mt-1 -translate-x-1/2", text)}>
+            <Bars align="center" />
           </div>
         </>
       ) : null}
@@ -95,11 +129,11 @@ function HeroVariantThumb({ variant, active }: { variant: HeroLayoutVariant; act
           </div>
         </>
       ) : null}
-      {variant === "center" ? (
+      {variant === "square" ? (
         <>
-          <Logo active={active} className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2" />
-          <div className={cn("absolute left-1/2 top-[58%] mt-1 -translate-x-1/2", text)}>
-            <Bars align="center" />
+          <Logo active={active} square className="absolute left-2 top-[42%] -translate-y-1/2" />
+          <div className={cn("absolute left-[34px] top-[46%]", text)}>
+            <Bars />
           </div>
         </>
       ) : null}
@@ -116,11 +150,11 @@ export function HeroLayoutPicker({
 }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-zinc-500">Layout variant</label>
+      <label className="block text-xs font-semibold text-zinc-500">Header layout</label>
       <p className="mt-0.5 text-[11px] leading-relaxed text-zinc-400">
         Same content — pick how the logo and name sit together. The preview updates instantly.
       </p>
-      <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+      <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
         {HERO_LAYOUT_VARIANTS.map((variant) => {
           const active = value === variant;
           const meta = HERO_VARIANT_META[variant];
@@ -130,7 +164,7 @@ export function HeroLayoutPicker({
               type="button"
               onClick={() => onChange(variant)}
               aria-pressed={active}
-              title={`${meta.label} — ${meta.bestFor}`}
+              title={`${meta.label} — ${meta.hint}`}
               className={cn(
                 "rounded-xl border p-2 text-left transition",
                 active
@@ -147,7 +181,7 @@ export function HeroLayoutPicker({
                   )}
                   aria-hidden
                 >
-                  {VARIANT_NUMBER[variant]}
+                  {meta.number}
                 </span>
                 <span className="truncate text-[11px] font-semibold text-zinc-800">{meta.label}</span>
               </div>

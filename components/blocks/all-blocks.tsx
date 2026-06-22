@@ -55,8 +55,6 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   if (embedded) return null;
   const s = getBlockSettings<HeroSettings>(block);
   const logoSrc = team.logoUrl?.trim() || s.teamPhotoUrl?.trim();
-  const motto = s.quote?.trim();
-  const description = s.description?.trim();
   const socialLinks = heroSocialLinks(s.social ?? {});
 
   return (
@@ -66,8 +64,6 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
       tagline={team.tagline}
       city={s.city}
       coverSrc={s.coverImageUrl}
-      description={description}
-      motto={motto}
       socialLinks={socialLinks}
       variant={resolveHeroVariant(s.heroLayout)}
     />
