@@ -1,6 +1,7 @@
 import { loadBuilderBillingContext } from "@/lib/billing/load-builder-billing";
 import type { BuilderBillingContext } from "@/lib/billing/builder-context-types";
 import { requireAuth } from "@/lib/auth/require-auth";
+import { getUpcomingScheduleEventsFromTeam } from "@/lib/schedule/block-schedule-events";
 import { mapTeamRowToTeamSpace, type TeamDbRow } from "@/lib/teams/map-row";
 import { publicTeamUrl } from "@/lib/teams/public-url";
 import type { TeamSpace } from "@/lib/types";
@@ -55,30 +56,18 @@ export async function loadTeamAdminContext(teamId: string): Promise<TeamAdminCon
     billing = await loadBuilderBillingContext(supabase, user.id, teamId, teamRow as TeamDbRow);
   }
 
-  const [{ count: memberCount }, { data: upcomingEvents }, { data: recentUpdates }, { count: achievementCount }] =
-    await Promise.all([
-      supabase
-        .from("team_members")
-        .select("id", { count: "exact", head: true })
-        .eq("team_id", teamId),
-      supabase
-        .from("schedule_events")
-        .select("id, title, starts_at, location")
-        .eq("team_id", teamId)
-        .gte("starts_at", new Date().toISOString())
-        .order("starts_at", { ascending: true })
-        .limit(4),
-      supabase
-        .from("team_updates")
-        .select("id, title, published_at")
-        .eq("team_id", teamId)
-        .order("published_at", { ascending: false })
-        .limit(4),
-      supabase
-        .from("achievements")
-        .select("id", { count: "exact", head: true })
-        .eq("team_id", teamId),
-    ]);
+  const upcomingEvents = getUpcomingScheduleEventsFromTeam(team, { limit: 4 });
+
+  const [{ count: memberCount }, { data: recentUpdates }, { count: achievementCount }] = await Promise.all([
+    supabase.from("team_members").select("user_id", { count: "exact", head: true }).eq("team_id", teamId),
+    supabase
+      .from("team_updates")
+      .select("id, title, published_at")
+      .eq("team_id", teamId)
+      .order("published_at", { ascending: false })
+      .limit(4),
+    supabase.from("achievements").select("id", { count: "exact", head: true }).eq("team_id", teamId),
+  ]);
 
   return {
     teamId,

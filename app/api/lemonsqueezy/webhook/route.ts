@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 
 /** Lemon Squeezy webhook — configure URL: https://myteamspace.cc/api/lemonsqueezy/webhook */
+export const CANONICAL_LEMON_WEBHOOK_PATH = "/api/lemonsqueezy/webhook";
 export async function GET() {
   return new NextResponse("LemonSqueezy webhook endpoint ready", {
     status: 200,

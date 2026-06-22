@@ -37,7 +37,7 @@ export function TeamCalendarClient({
         <header>
           <h1 className={ADMIN_TITLE}>Schedule</h1>
           <p className={ADMIN_SUBTITLE}>
-            Publish upcoming races, matches and training sessions — families check here first.
+            Same schedule as your team page — edit events in the page builder calendar block.
           </p>
         </header>
 

@@ -132,24 +132,6 @@ export async function saveTeamContent(
   return { updatedAt: String(row.updated_at) };
 }
 
-export async function addScheduleEvent(teamId: string, formData: FormData) {
-  const { supabase, user } = await getCoachContext();
-  await assertMember(supabase, user.id, teamId);
-  const title = String(formData.get("title") ?? "").trim();
-  const starts = String(formData.get("starts_at") ?? "");
-  const location = String(formData.get("location") ?? "").trim() || null;
-  if (!title || !starts) throw new Error("Missing schedule fields");
-  const { error } = await supabase.from("schedule_events").insert({
-    team_id: teamId,
-    title: title.slice(0, 200),
-    starts_at: new Date(starts).toISOString(),
-    location: location?.slice(0, 200) ?? null,
-  });
-  if (error) throw new Error(error.message);
-  const { data: row } = await supabase.from("teams").select("slug").eq("id", teamId).single();
-  if (row?.slug) revalidateTeamSurfaces(teamId, row.slug);
-}
-
 export async function addTeamUpdate(teamId: string, formData: FormData) {
   const { supabase, user } = await getCoachContext();
   await assertMember(supabase, user.id, teamId);
