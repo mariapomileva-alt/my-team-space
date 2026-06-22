@@ -22,8 +22,8 @@ function TeamPublicBody({
 }) {
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-neutral-200/80 bg-white/85 px-4 py-2.5 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-lg items-center justify-between gap-3 md:max-w-3xl">
+      <header className="sticky top-0 z-30 border-b border-neutral-200/80 bg-white/85 py-2.5 backdrop-blur-xl">
+        <div className="team-page-rail flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2">
             <img src="/brand/logo-mark.svg" alt="" width={22} height={22} className="h-[22px] w-[22px]" />
             <span className="font-[family-name:var(--font-brand)] text-[13px] font-bold text-neutral-800">
@@ -39,7 +39,7 @@ function TeamPublicBody({
         </div>
       </header>
       {team.pageVisibility === "mixed" && !hasAccess ? (
-        <p className="mx-auto max-w-lg px-4 py-2 text-center text-[12px] font-medium text-indigo-800 md:max-w-3xl">
+        <p className="team-page-rail py-2 text-center text-[12px] font-medium text-indigo-800">
           Some sections are members-only — enter your team code below to unlock everything.
         </p>
       ) : null}

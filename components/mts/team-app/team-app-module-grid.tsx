@@ -33,7 +33,7 @@ export function TeamAppModuleGrid({
   return (
     <div
       className={cn(
-        "team-module-grid mt-7 md:mt-9",
+        "team-module-grid mt-7 w-full min-w-0 md:mt-9",
         density === "double" && "team-module-grid--double",
       )}
     >

@@ -56,10 +56,7 @@ export function TeamAppPage({
       : undefined;
 
   return (
-    <motion.div
-      className="team-app-page mx-auto w-full max-w-lg px-4 pb-28 pt-3 sm:max-w-2xl md:max-w-5xl md:px-6 md:pt-5"
-      initial={false}
-    >
+    <motion.div className="team-app-page" initial={false}>
       {!hasHero ? (
         <div className="mb-4">
           <TeamAppHeader team={team} />

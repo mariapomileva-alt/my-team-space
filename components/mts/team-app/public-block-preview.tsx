@@ -272,7 +272,7 @@ function GalleryPreview({ team, block }: { team: TeamSpace; block: BlockInstance
       <p className="mb-2 text-[10px] text-[color:var(--mts-muted)]">
         {d!.images.length} photo{d!.images.length === 1 ? "" : "s"}
       </p>
-      <div className="flex gap-2">
+      <div className="flex min-w-0 gap-2">
         {imgs.map((src, i) => (
           <div
             key={`${src}-${i}`}
@@ -366,14 +366,16 @@ export function PublicBlockPreview({
     case "payments": {
       const s = getBlockSettings<PaymentLinkSettings>(block);
       return (
-        <PaymentLinkCard
-          title={s.title}
-          description={s.description}
-          buttonLabel={s.buttonLabel}
-          paymentUrl={s.paymentUrl}
-          variant="compact"
-          className="border-0 bg-transparent p-0 shadow-none ring-0"
-        />
+        <div className="min-w-0 overflow-hidden">
+          <PaymentLinkCard
+            title={s.title}
+            description={s.description}
+            buttonLabel={s.buttonLabel}
+            paymentUrl={s.paymentUrl}
+            variant="compact"
+            className="border-0 bg-transparent p-0 shadow-none ring-0"
+          />
+        </div>
       );
     }
 

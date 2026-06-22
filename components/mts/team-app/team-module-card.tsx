@@ -48,7 +48,7 @@ export function TeamModuleCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.03, 0.18), duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className={cn("team-module-card", moduleLevelClass(level))}
+      className={cn("team-module-card w-full min-w-0", moduleLevelClass(level))}
       data-preview-block-id={block.id}
     >
       <header className="team-module-card__head">

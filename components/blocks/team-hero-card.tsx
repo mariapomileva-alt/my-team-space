@@ -111,7 +111,7 @@ export function TeamHeroCard({
   );
 
   return (
-    <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="relative">
+    <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="relative w-full min-w-0">
       <div
         className={cn(
           HERO_LAYOUT.root,
