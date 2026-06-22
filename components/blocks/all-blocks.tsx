@@ -28,6 +28,7 @@ import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid, validQuickActions } from "@/components/blocks/quick-actions-grid";
 import { TeamShopGrid, validTeamShopProducts } from "@/components/blocks/team-shop-grid";
 import { TeamHeroCard } from "@/components/blocks/team-hero-card";
+import { deriveHeroFacts } from "@/lib/blocks/hero-facts";
 import { resolveHeroVariant, type HeroLayoutVariant } from "@/lib/blocks/hero-layout";
 import { MtsGalleryPhoto } from "@/components/mts/media/mts-media";
 import {
@@ -58,6 +59,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
   const motto = s.quote?.trim();
   const description = s.description?.trim();
   const socialLinks = heroSocialLinks(s.social ?? {});
+  const facts = deriveHeroFacts(team, s.city);
 
   return (
     <TeamHeroCard
@@ -69,6 +71,7 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
       description={description}
       motto={motto}
       socialLinks={socialLinks}
+      facts={facts}
       variant={resolveHeroVariant(s.heroLayout)}
     />
   );

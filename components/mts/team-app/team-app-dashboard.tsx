@@ -328,7 +328,7 @@ export function TeamAppDashboard({
   const rows = buildDashboardRows(blocks);
 
   return (
-    <div className="team-app-dashboard mt-5 flex flex-col gap-3.5 sm:mt-6 sm:gap-4">
+    <div className="team-app-dashboard mt-3.5 flex flex-col gap-3 sm:mt-4 sm:gap-3.5">
       {rows.map((row, i) => {
         const rowKey =
           row.kind === "results"

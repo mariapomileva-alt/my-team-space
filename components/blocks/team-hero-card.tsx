@@ -1,5 +1,6 @@
 import { MtsCoverBanner, MtsTeamLogo } from "@/components/mts/media/mts-media";
 import { SocialLinkButtons, type SocialLinkItem } from "@/components/social/social-link-buttons";
+import type { HeroFact } from "@/lib/blocks/hero-facts";
 import {
   DEFAULT_HERO_VARIANT,
   HERO_LAYOUT,
@@ -18,9 +19,26 @@ export type TeamHeroCardProps = {
   description?: string | null;
   motto?: string | null;
   socialLinks?: SocialLinkItem[];
+  facts?: HeroFact[];
   /** Logo + name composition chosen in the builder. Defaults to `stack`. */
   variant?: HeroLayoutVariant;
 };
+
+function HeroFactsRow({ facts, onDark = false }: { facts: HeroFact[]; onDark?: boolean }) {
+  if (facts.length === 0) return null;
+
+  return (
+    <div className={cn("hero-card__facts", onDark && "hero-card__facts--on-dark")} aria-label="Team details">
+      {facts.map((fact, index) => (
+        <span key={`${fact.icon}-${fact.text}`} className="hero-card__fact">
+          {index > 0 ? <span className="hero-card__fact-sep" aria-hidden>·</span> : null}
+          <span aria-hidden>{fact.icon}</span>
+          <span>{fact.text}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
 
 /**
  * Team header card. One card, four logo + name compositions (variant).
@@ -30,17 +48,20 @@ export type TeamHeroCardProps = {
 export function TeamHeroCard({
   teamName,
   logoSrc,
-  tagline,
-  city,
+  tagline: _tagline,
+  city: _city,
   coverSrc,
   description,
   motto,
   socialLinks = [],
+  facts = [],
   variant = DEFAULT_HERO_VARIANT,
 }: TeamHeroCardProps) {
   const hasCover = Boolean(coverSrc?.trim());
-  const hasDetails = Boolean(description?.trim() || motto?.trim() || socialLinks.length > 0);
   const isOverlay = variant === "overlay";
+  const hasNarrative = Boolean(description?.trim() || motto?.trim());
+  const hasSocial = socialLinks.length > 0;
+  const hasFacts = facts.length > 0;
 
   const liveBadge = (
     <span
@@ -56,29 +77,40 @@ export function TeamHeroCard({
     </span>
   );
 
-  const titleGroup = (
+  const title = <h1 className={HERO_LAYOUT.title}>{teamName}</h1>;
+
+  const identityMeta = (
     <>
-      <h1 className={HERO_LAYOUT.title}>{teamName}</h1>
-      {tagline?.trim() ? <p className={HERO_LAYOUT.subtitle}>{tagline.trim()}</p> : null}
-      {city?.trim() ? <p className={HERO_LAYOUT.city}>📍 {city.trim()}</p> : null}
+      {hasFacts ? <HeroFactsRow facts={facts} onDark={isOverlay} /> : null}
+      {hasSocial ? (
+        <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
+      ) : null}
     </>
   );
 
-  const logo = <MtsTeamLogo src={logoSrc} teamName={teamName} className={HERO_LAYOUT.logoFrame} />;
+  const overlayTitleGroup = (
+    <>
+      {title}
+      {hasFacts ? <HeroFactsRow facts={facts} onDark /> : null}
+    </>
+  );
 
-  const details = hasDetails ? (
+  const narrative = hasNarrative ? (
     <div className={HERO_LAYOUT.details}>
       {description?.trim() ? (
-        <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description.trim()}</p>
+        <p className="hero-card__description text-[13px] leading-relaxed text-[color:var(--mts-muted)]">
+          {description.trim()}
+        </p>
       ) : null}
       {motto?.trim() ? (
-        <p className={cn("team-identity-motto", description?.trim() ? "mt-2" : "mt-0")}>
+        <p className={cn("team-identity-motto", description?.trim() ? "mt-1.5" : "mt-0")}>
           “{motto.trim()}”
         </p>
       ) : null}
-      {socialLinks.length > 0 ? <SocialLinkButtons links={socialLinks} className="mt-3" /> : null}
     </div>
   ) : null;
+
+  const logo = <MtsTeamLogo src={logoSrc} teamName={teamName} className={HERO_LAYOUT.logoFrame} />;
 
   return (
     <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
@@ -111,18 +143,28 @@ export function TeamHeroCard({
 
           <div className="hero-card__logo-anchor">{logo}</div>
 
-          {isOverlay ? <div className={HERO_LAYOUT.overlayText}>{titleGroup}</div> : null}
+          {isOverlay ? <div className={HERO_LAYOUT.overlayText}>{overlayTitleGroup}</div> : null}
         </div>
 
         {isOverlay ? (
-          details ? <div className={HERO_LAYOUT.body}>{details}</div> : null
+          hasSocial || hasNarrative ? (
+            <div className={HERO_LAYOUT.body}>
+              {hasSocial ? (
+                <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
+              ) : null}
+              {narrative}
+            </div>
+          ) : null
         ) : (
           <div className={HERO_LAYOUT.body}>
             <div className={HERO_LAYOUT.identity}>
               {variant === "inline" ? <div className="hero-card__logo-spacer" aria-hidden /> : null}
-              <div className={HERO_LAYOUT.textZone}>{titleGroup}</div>
+              <div className={HERO_LAYOUT.textZone}>
+                {title}
+                {identityMeta}
+              </div>
             </div>
-            {details}
+            {narrative}
           </div>
         )}
       </div>
