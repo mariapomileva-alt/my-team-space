@@ -34,7 +34,7 @@ const COMPACT_ELIGIBLE_TYPES = new Set<BlockType>([
   "resources",
 ]);
 
-/** Coach setting: optional 2-per-row on tablet only (<768px is always 1-per-row). */
+/** Coach setting: optional 2-per-row below desktop (<1024px). */
 export function resolveCompactDensity(settings?: TeamPageSettings): PublicCompactDensity {
   return settings?.mobileCardColumns === "double" ? "double" : "single";
 }
@@ -54,7 +54,7 @@ export function publicCardGridItemClass(
   ) {
     return "team-module-grid__item--half";
   }
-  return "";
+  return "team-module-grid__item--standard";
 }
 
 const DETAIL_FOOTER: Partial<Record<BlockType, string>> = {

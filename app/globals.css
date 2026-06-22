@@ -823,12 +823,19 @@
 }
 
 /* ── Module cards (public team hub) ─────────────────────────────────────── */
-/* Mobile <768px: always 1 column. Tablet 768+: optional 2-col. Desktop 1200+: 3-col. */
+/* <1024px: max 2 columns (2 only with --double). ≥1024px: 3 columns. */
 
 .team-module-grid {
+  container-type: inline-size;
+  container-name: team-module-grid;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.875rem;
+  justify-items: stretch;
+}
+
+.team-module-grid--double {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .team-module-grid__item {
@@ -847,36 +854,81 @@
   box-sizing: border-box;
 }
 
-/* Full-row span only when the grid has multiple columns */
-.team-module-grid__item--full {
-  grid-column: auto;
+.team-module-grid__item--full,
+.team-module-grid__item--standard {
+  grid-column: 1 / -1;
+}
+
+.team-module-grid--double .team-module-grid__item--full {
+  grid-column: 1 / -1;
+}
+
+/* Below desktop: never allow a 3-column module grid */
+@media (max-width: 1023.98px) {
+  .team-module-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .team-module-grid--double {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .team-module-grid--double .team-module-grid__item--full {
+    grid-column: 1 / -1 !important;
+  }
+
+  .team-module-grid__item--standard {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+/* Collapse compact pairs when the grid is too narrow for readable halves */
+@container team-module-grid (max-width: 22rem) {
+  .team-module-grid--double {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .team-module-grid--double .team-module-grid__item--half {
+    grid-column: 1 / -1 !important;
+  }
 }
 
 @media (min-width: 768px) {
   .team-module-grid {
     gap: 1rem;
   }
-
-  .team-module-grid--double {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .team-module-grid--double .team-module-grid__item--full {
-    grid-column: 1 / -1;
-  }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
   .team-module-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 
   .team-module-grid--double {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 
   .team-module-grid__item--full {
     grid-column: 1 / -1;
+  }
+
+  .team-module-grid__item--standard,
+  .team-module-grid__item--half {
+    grid-column: auto;
+  }
+}
+
+/* Prevent 3-column inner grids inside public module cards on narrow widths */
+@media (max-width: 1023.98px) {
+  .team-module-card .grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container team-module-grid (max-width: 22rem) {
+  .team-module-card .min-\[420px\]\:grid-cols-2,
+  .team-module-card .min-\[420px\]\:grid-cols-3 {
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 }
 
@@ -922,6 +974,11 @@
   line-height: 1.25;
   color: var(--mts-text);
   min-width: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.team-module-card :where(p, h2, h3, h4, span, a, li, button) {
   overflow-wrap: break-word;
   word-break: normal;
 }

@@ -114,10 +114,10 @@ export function TeamDesignPanel({
 
       {onPatchTeam ? (
         <div className="mt-6 border-t border-zinc-100 pt-5">
-          <p className="text-xs font-bold text-zinc-800">Tablet card layout</p>
+          <p className="text-xs font-bold text-zinc-800">Compact card layout</p>
           <p className="mt-1 text-[11px] leading-snug text-zinc-500">
-            Phones always show one full-width card per row. From tablet size, you can optionally show two
-            compact cards per row for small blocks like contacts.
+            Below desktop width, show one full-width card per row by default. Enable two per row for
+            compact blocks like contacts on phones and tablets.
           </p>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <button

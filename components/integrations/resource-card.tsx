@@ -193,7 +193,7 @@ export function ResourcesHub({
       </header>
       <ResourceCard item={featured} variant="tile" />
       {rest.length > 0 && (
-        <div className="integrations-scroll-rail -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
+        <div className="integrations-scroll-rail -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 xl:grid-cols-3">
           {rest.map((item) => (
             <ResourceCard key={item.id} item={item} />
           ))}

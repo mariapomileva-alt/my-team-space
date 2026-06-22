@@ -16,18 +16,18 @@ import type { ReactNode } from "react";
 /** Content headline inside a section — wraps cleanly, max 2 lines. */
 export const dashboardTileTitle = cn(
   mtsTypeItemTitle,
-  "min-w-0 break-words [overflow-wrap:anywhere] line-clamp-2",
+  "min-w-0 break-words line-clamp-2",
 );
 
 /** Secondary line under title or stat. */
-export const dashboardTileMeta = cn(mtsTypeSectionMeta, "min-w-0 break-words [overflow-wrap:anywhere] line-clamp-2");
+export const dashboardTileMeta = cn(mtsTypeSectionMeta, "min-w-0 break-words line-clamp-2");
 
 export function dashboardTileStatClass(value: string) {
   const trimmed = value.trim();
   const long = trimmed.length > 12 || (/\s/.test(trimmed) && trimmed.length > 7);
   return cn(
     mtsTypeItemTitle,
-    "min-w-0 break-words [overflow-wrap:anywhere]",
+    "min-w-0 break-words",
     long ? "line-clamp-2 text-[15px]" : "text-[17px] sm:text-lg",
   );
 }

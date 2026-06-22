@@ -50,7 +50,7 @@ function ProviderIcon({ provider, size = "md" }: { provider: IntegrationProvider
 
 function PreviewStats({ stats }: { stats: NonNullable<IntegrationPreview["stats"]> }) {
   return (
-    <div className="mt-4 grid grid-cols-3 gap-2">
+    <div className="mt-4 grid grid-cols-1 gap-2 min-[420px]:grid-cols-3">
       {stats.map((s) => (
         <motion.div
           key={s.label}
@@ -69,7 +69,7 @@ function PreviewStats({ stats }: { stats: NonNullable<IntegrationPreview["stats"
 function PostGrid({ swatches }: { swatches: string[] }) {
   return (
     <motion.div
-      className="mt-3 grid grid-cols-3 gap-1.5"
+      className="mt-3 grid grid-cols-2 gap-1.5 min-[420px]:grid-cols-3"
       initial="hidden"
       animate="visible"
       variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04 } } }}
