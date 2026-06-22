@@ -751,39 +751,50 @@
 }
 
 /* ── Module cards (public team hub) ─────────────────────────────────────── */
+/* Mobile <768px: always 1 column. Tablet 768+: optional 2-col. Desktop 1200+: 3-col. */
+
 .team-module-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.875rem;
 }
 
-.team-module-grid--double {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.team-module-grid__item {
+  min-width: 0;
+  width: 100%;
 }
 
 .team-module-grid__item--full {
   grid-column: 1 / -1;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .team-module-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
   }
 
+  /* Compact setting: 2 cards per row on tablet (never below 768px) */
+  .team-module-grid--double {
+    grid-template-columns: repeat(2, minmax(min(100%, 17.5rem), 1fr));
+  }
+
   .team-module-grid--double .team-module-grid__item--full {
-    grid-column: span 2;
+    grid-column: 1 / -1;
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .team-module-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(min(100%, 17.5rem), 1fr));
   }
 
-  .team-module-grid__item--full,
-  .team-module-grid--double .team-module-grid__item--full {
-    grid-column: auto;
+  .team-module-grid--double {
+    grid-template-columns: repeat(3, minmax(min(100%, 17.5rem), 1fr));
+  }
+
+  /* Content-heavy cards span the full row on desktop */
+  .team-module-grid__item--full {
+    grid-column: 1 / -1;
   }
 }
 
@@ -791,6 +802,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  width: 100%;
+  min-width: 0;
   border-radius: 1.25rem;
   border: 1px solid color-mix(in srgb, var(--mts-card-border) 55%, transparent);
   background: var(--mts-card-bg, #fff);
@@ -825,6 +838,9 @@
   font-weight: 700;
   line-height: 1.25;
   color: var(--mts-text);
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .team-module-card__subtitle {
@@ -836,6 +852,9 @@
 
 .team-module-card__body {
   padding: 0.75rem 1rem 1rem;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .team-module-card__foot {

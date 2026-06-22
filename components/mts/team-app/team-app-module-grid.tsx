@@ -6,7 +6,7 @@ import {
 import { TeamModuleCard } from "@/components/mts/team-app/team-module-card";
 import {
   publicCardGridItemClass,
-  resolveMobileDensity,
+  resolveCompactDensity,
 } from "@/lib/blocks/public-card-layout";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
@@ -28,12 +28,12 @@ export function TeamAppModuleGrid({
 
   if (visibleBlocks.length === 0) return null;
 
-  const density = resolveMobileDensity(team.pageSettings);
+  const density = resolveCompactDensity(team.pageSettings);
 
   return (
     <div
       className={cn(
-        "team-module-grid mt-7 sm:mt-9",
+        "team-module-grid mt-7 md:mt-9",
         density === "double" && "team-module-grid--double",
       )}
     >

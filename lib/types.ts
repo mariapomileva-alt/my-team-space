@@ -22,7 +22,7 @@ export type TeamPageSettings = {
   payments?: PaymentTrackerRow[];
   /** External logo URL (builder); falls back to Storage logo_path when unset */
   logoUrl?: string;
-  /** Public mobile grid: one card per row (default) or two where supported */
+  /** Public tablet grid: one card per row (default) or two compact cards per row from 768px */
   mobileCardColumns?: "single" | "double";
 };
 

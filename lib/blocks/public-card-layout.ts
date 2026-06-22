@@ -1,9 +1,12 @@
 import type { BlockInstance, BlockType, TeamPageSettings } from "@/lib/types";
 
-export type PublicMobileDensity = "single" | "double";
+export type PublicCompactDensity = "single" | "double";
 
-/** Blocks that stay full-width on mobile even in compact (2-col) mode. */
-const MOBILE_FULL_WIDTH_TYPES = new Set<BlockType>([
+/**
+ * Content-heavy blocks always span the full row so text never squeezes
+ * into a narrow column (mobile, tablet, or desktop).
+ */
+const ALWAYS_FULL_ROW_TYPES = new Set<BlockType>([
   "schedule",
   "payments",
   "results",
@@ -14,8 +17,8 @@ const MOBILE_FULL_WIDTH_TYPES = new Set<BlockType>([
   "team_feed",
 ]);
 
-/** Blocks that may sit two-per-row on mobile when compact layout is enabled. */
-const MOBILE_HALF_ELIGIBLE_TYPES = new Set<BlockType>([
+/** Compact blocks that may share a row on tablet (768px+) when enabled. */
+const COMPACT_ELIGIBLE_TYPES = new Set<BlockType>([
   "contacts",
   "integrations",
   "quick_links",
@@ -31,23 +34,27 @@ const MOBILE_HALF_ELIGIBLE_TYPES = new Set<BlockType>([
   "resources",
 ]);
 
-export function resolveMobileDensity(settings?: TeamPageSettings): PublicMobileDensity {
+/** Coach setting: optional 2-per-row on tablet only (<768px is always 1-per-row). */
+export function resolveCompactDensity(settings?: TeamPageSettings): PublicCompactDensity {
   return settings?.mobileCardColumns === "double" ? "double" : "single";
 }
 
 /** Grid item span class for a block on the public page. */
 export function publicCardGridItemClass(
   block: BlockInstance,
-  density: PublicMobileDensity,
+  density: PublicCompactDensity,
 ): string {
-  if (density === "single") return "team-module-grid__item--full";
-  if (MOBILE_FULL_WIDTH_TYPES.has(block.type)) return "team-module-grid__item--full";
-  if (MOBILE_HALF_ELIGIBLE_TYPES.has(block.type)) {
-    if (block.layout === "half" || block.layout === "card") {
-      return "team-module-grid__item--half";
-    }
+  if (ALWAYS_FULL_ROW_TYPES.has(block.type)) {
+    return "team-module-grid__item--full";
   }
-  return "team-module-grid__item--full";
+  if (
+    density === "double" &&
+    COMPACT_ELIGIBLE_TYPES.has(block.type) &&
+    (block.layout === "half" || block.layout === "card")
+  ) {
+    return "team-module-grid__item--half";
+  }
+  return "";
 }
 
 const DETAIL_FOOTER: Partial<Record<BlockType, string>> = {
