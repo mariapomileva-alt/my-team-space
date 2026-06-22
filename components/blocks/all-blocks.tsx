@@ -81,13 +81,13 @@ export function BlockAnnouncementBar({ team: _team, block, embedded }: BlockProp
   if (embedded) return null;
   const shell =
     tone === "urgent"
-      ? "team-announcement team-announcement--urgent"
+      ? "border-rose-200/90 bg-gradient-to-r from-rose-50 to-orange-50 text-rose-950"
       : tone === "confirm"
-        ? "team-announcement team-announcement--confirm"
-        : "team-announcement team-announcement--info";
+        ? "border-emerald-200/90 bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-950"
+        : "border-indigo-200/80 bg-gradient-to-r from-indigo-600 to-violet-600 text-white";
   return (
-    <div className={shell}>
-      <p className={`text-center text-[13px] leading-snug ${tone === "urgent" ? "font-semibold" : "font-medium"}`}>
+    <div className={`rounded-[1.25rem] border px-4 py-3.5 shadow-sm ${shell}`}>
+      <p className={`text-center text-[13px] leading-snug ${tone === "urgent" ? "font-bold" : "font-semibold"}`}>
         <span className="mr-1.5" aria-hidden>
           {tone === "urgent" ? "⚠️" : "📣"}
         </span>
@@ -137,23 +137,11 @@ export function BlockSchedule({ team, block, embedded }: BlockProps) {
       ) : events.length === 0 ? (
         <BlockEmpty message="Weekly schedule will be posted here soon." />
       ) : (
-        <ul className="mts-block-schedule space-y-3 text-sm">
+        <ul className="space-y-2 text-sm">
           {events.map((ev) => (
-            <li
-              key={`${ev.title}-${ev.dayOfWeek}-${ev.time}`}
-              className="mts-block-schedule-row flex flex-col gap-2.5 rounded-2xl bg-[color-mix(in_srgb,var(--mts-accent-soft)_50%,transparent)] px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="min-w-0">
-                <p className="text-[15px] font-semibold leading-snug tracking-[-0.01em] text-[color:var(--mts-text)]">{ev.title}</p>
-                <p className="mt-1 text-[13px] font-medium text-[color:var(--mts-primary-bright)]">
-                  {DAY[ev.dayOfWeek] ?? "?"}{ev.time ? ` · ${ev.time}` : ""}
-                </p>
-              </div>
-              {ev.location ? (
-                <p className="shrink-0 text-[13px] text-[color:var(--mts-muted)] sm:max-w-[45%] sm:text-right">
-                  {ev.location}
-                </p>
-              ) : null}
+            <li key={`${ev.title}-${ev.dayOfWeek}-${ev.time}`} className="flex min-h-12 items-center justify-between rounded-xl bg-[var(--mts-accent-soft)] px-3 py-2">
+              <span>{DAY[ev.dayOfWeek] ?? "?"} · {ev.title}</span>
+              <span className="text-[color:var(--mts-muted)]">{ev.time}{ev.location ? ` · ${ev.location}` : ""}</span>
             </li>
           ))}
         </ul>
@@ -176,17 +164,17 @@ export function BlockAchievements({ team, block, embedded }: BlockProps) {
   const cards = s.cards ?? [];
   return (
     <BlockSurface embedded={embedded}>
-      <BlockHeading embedded={embedded}>Highlights</BlockHeading>
+      <BlockHeading embedded={embedded}>Trophies & highlights</BlockHeading>
       {cards.length === 0 ? (
         <BlockEmpty message="Team achievements will be celebrated here." />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {cards.map((c) => (
-            <div key={c.id} className="rounded-2xl border border-[color:var(--mts-card-border)] bg-[color-mix(in_srgb,var(--mts-card)_90%,var(--mts-accent-soft))] p-5 shadow-[var(--mts-shadow)]">
+            <div key={c.id} className="rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-4 shadow-sm">
               <span className="text-2xl">{c.icon}</span>
-              <p className="mt-3 text-[15px] font-semibold tracking-[-0.01em] text-[color:var(--mts-text)]">{c.title}</p>
-              {c.player ? <p className="mt-1 text-[13px] font-medium text-[color:var(--mts-primary)]">{c.player}</p> : null}
-              {c.description ? <p className="mt-2 text-[14px] leading-relaxed text-[color:var(--mts-muted)]">{c.description}</p> : null}
+              <p className="mt-2 font-bold text-[color:var(--mts-text)]">{c.title}</p>
+              {c.player ? <p className="text-sm font-semibold text-indigo-700">{c.player}</p> : null}
+              {c.description ? <p className="mt-1 text-sm text-[color:var(--mts-muted)]">{c.description}</p> : null}
             </div>
           ))}
         </div>
@@ -206,12 +194,9 @@ export function BlockTeamFeed({ block, embedded }: BlockProps) {
       ) : (
         <div className="space-y-3">
           {posts.map((post) => (
-            <div
-              key={post.id}
-              className="rounded-2xl border border-[color:var(--mts-card-border)] bg-[color-mix(in_srgb,var(--mts-accent-soft)_45%,transparent)] p-4"
-            >
-              <p className="text-sm font-semibold leading-snug text-[color:var(--mts-text)]">{post.title}</p>
-              {post.body ? <p className="mt-1.5 text-xs leading-relaxed text-[color:var(--mts-muted)]">{post.body}</p> : null}
+            <div key={post.id} className="rounded-2xl bg-[var(--mts-accent-soft)] p-4">
+              <p className="text-sm font-medium">{post.title}</p>
+              {post.body ? <p className="mt-1 text-xs text-[color:var(--mts-muted)]">{post.body}</p> : null}
             </div>
           ))}
         </div>
@@ -272,31 +257,25 @@ export function BlockContacts({ block, embedded }: BlockProps) {
       {items.length === 0 ? (
         <BlockEmpty message="Coach contacts will be listed here." />
       ) : (
-        <ul className="mts-block-contacts space-y-2.5 text-sm">
+        <ul className="space-y-3 text-sm">
           {items.map((c) => (
-            <li
-              key={c.id}
-              className="mts-block-contact-row flex items-center justify-between gap-4 rounded-2xl border border-[color:var(--mts-card-border)] bg-[color-mix(in_srgb,var(--mts-card)_92%,transparent)] px-4 py-4 shadow-[var(--mts-shadow)]"
-            >
+            <li key={c.id} className="flex items-center justify-between gap-3">
               <span className="flex min-w-0 items-center gap-3">
                 {c.photoUrl?.trim() ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={c.photoUrl} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-[color:var(--mts-card-border)] shadow-sm" />
+                  <img src={c.photoUrl} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm" />
                 ) : (
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--mts-accent-soft)] text-xl">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--mts-accent-soft)] text-lg">
                     👤
                   </span>
                 )}
                 <span className="min-w-0">
-                  <span className="block text-[15px] font-semibold text-[color:var(--mts-text)]">{c.name}</span>
-                  {c.role ? <span className="mt-0.5 block text-[13px] text-[color:var(--mts-muted)]">{c.role}</span> : null}
+                  {c.name}
+                  {c.role ? <span className="block text-xs text-[color:var(--mts-muted)]">{c.role}</span> : null}
                 </span>
               </span>
               {c.url?.trim() ? (
-                <a
-                  className="shrink-0 rounded-full bg-[var(--mts-accent-soft)] px-3.5 py-2 text-xs font-semibold text-[color:var(--mts-primary-bright)] transition hover:opacity-90"
-                  href={c.url}
-                >
+                <a className="shrink-0 font-semibold text-[color:var(--mts-primary-bright)]" href={c.url}>
                   Contact
                 </a>
               ) : null}
@@ -385,9 +364,9 @@ export function BlockGallery({ block, embedded }: BlockProps) {
       ) : images.length === 0 ? (
         <BlockEmpty message="Photos from trainings and events will appear here." />
       ) : (
-        <div className="mts-block-gallery grid grid-cols-2 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {images.map((img, i) => (
-            <MtsGalleryPhoto key={i} src={img.url} alt="" className="mts-block-gallery-photo" />
+            <MtsGalleryPhoto key={i} src={img.url} alt="" />
           ))}
         </div>
       )}

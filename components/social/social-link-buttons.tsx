@@ -17,30 +17,21 @@ export type SocialLinkItem = {
 export function SocialLinkButtons({
   links,
   size = "md",
-  tone = "default",
   className,
 }: {
   links: SocialLinkItem[];
   size?: "sm" | "md";
-  tone?: "default" | "hero";
   className?: string;
 }) {
   if (links.length === 0) return null;
 
   const btn =
-    tone === "hero"
-      ? "h-9 w-9 rounded-xl"
-      : size === "sm"
-        ? "h-10 w-10 rounded-xl"
-        : "h-11 w-11 rounded-2xl";
-
-  const shell =
-    tone === "hero"
-      ? "border border-[color:var(--mts-card-border)] bg-[color-mix(in_srgb,var(--mts-accent-soft)_45%,var(--mts-card))] shadow-none ring-0 hover:border-[color-mix(in_srgb,var(--mts-ring)_35%,var(--mts-card-border))] hover:bg-[color-mix(in_srgb,var(--mts-accent-soft)_65%,var(--mts-card))]"
-      : "border border-neutral-200/90 bg-white shadow-[0_2px_12px_-6px_rgba(15,23,42,0.18)] ring-1 ring-neutral-100/80 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-10px_rgba(15,23,42,0.22)]";
+    size === "sm"
+      ? "h-10 w-10 rounded-xl"
+      : "h-11 w-11 rounded-2xl";
 
   return (
-    <div className={cn("flex flex-wrap gap-1.5", className)}>
+    <div className={cn("flex flex-wrap gap-2", className)}>
       {links.map((link) => {
         const iconClass =
           link.network === "link" || link.network === "website" || link.network === "phone"
@@ -56,12 +47,11 @@ export function SocialLinkButtons({
             aria-label={link.label}
             title={link.label}
             className={cn(
-              "inline-flex items-center justify-center transition active:scale-[0.96]",
-              shell,
+              "inline-flex items-center justify-center border border-neutral-200/90 bg-white shadow-[0_2px_12px_-6px_rgba(15,23,42,0.18)] ring-1 ring-neutral-100/80 transition hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-10px_rgba(15,23,42,0.22)] active:scale-[0.96]",
               btn,
             )}
           >
-            <SocialIcon network={link.network} className={cn("h-4 w-4", iconClass)} />
+            <SocialIcon network={link.network} className={cn("h-5 w-5", iconClass)} />
           </a>
         );
       })}

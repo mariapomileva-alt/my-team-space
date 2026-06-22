@@ -20,7 +20,7 @@ export function BlockSurface({
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className={cn("team-detail-content space-y-0", className)}
+        className={cn("space-y-4", className)}
       >
         {children}
       </motion.div>
@@ -39,9 +39,5 @@ export function BlockHeading({
   className?: string;
 }) {
   if (embedded) return null;
-  return (
-    <h2 className={cn("mb-4 text-lg font-bold tracking-tight text-[color:var(--mts-text)]", className)}>
-      {children}
-    </h2>
-  );
+  return <h2 className={cn("mb-4 text-lg font-bold text-[color:var(--mts-text)]", className)}>{children}</h2>;
 }

@@ -8,7 +8,6 @@ import {
   BUILDER_PHONE_H,
   BUILDER_PHONE_HOME_H,
   BUILDER_PHONE_NOTCH_H,
-  BUILDER_PHONE_VIEWPORT_H,
   BUILDER_PHONE_W,
   BUILDER_PREVIEW_COLUMN_W,
   type BuilderPreviewMode,
@@ -102,10 +101,10 @@ export function BuilderPreviewViewport({
 
   const phoneStyle = {
     "--preview-phone-w": `${BUILDER_PHONE_W}px`,
-    "--preview-phone-h": `${BUILDER_PHONE_H}px`,
+    "--preview-phone-h": `${phoneHeight}px`,
     "--preview-phone-notch": `${BUILDER_PHONE_NOTCH_H}px`,
     "--preview-phone-home": `${BUILDER_PHONE_HOME_H}px`,
-    "--preview-phone-viewport": `${BUILDER_PHONE_VIEWPORT_H}px`,
+    "--preview-phone-viewport": `${phoneViewportH}px`,
   } as CSSProperties;
 
   return (

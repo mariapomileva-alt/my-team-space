@@ -10,8 +10,8 @@ export const BUILDER_PHONE_HOME_H = 18;
 export const BUILDER_PHONE_VIEWPORT_H =
   BUILDER_PHONE_H - BUILDER_PHONE_NOTCH_H - BUILDER_PHONE_HOME_H;
 
-/** Taller frame for marketing showcase — fits hero + dashboard tiles. */
-export const SHOWCASE_PHONE_H = 700;
+/** Taller frame for marketing showcase — hero + first dashboard row visible. */
+export const SHOWCASE_PHONE_H = 580;
 export const SHOWCASE_PHONE_VIEWPORT_H =
   SHOWCASE_PHONE_H - BUILDER_PHONE_NOTCH_H - BUILDER_PHONE_HOME_H;
 

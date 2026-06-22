@@ -4,7 +4,7 @@ import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid } from "@/components/blocks/quick-actions-grid";
 import { TeamShopGrid } from "@/components/blocks/team-shop-grid";
 import { ResultsBoardTeaser } from "@/components/results/results-board-teaser";
-import { DashboardCard, DashboardLabel, dashboardTileMeta, dashboardTileStatClass, dashboardTileTitle } from "@/components/mts/team-app/dashboard-card";
+import { DashboardCard, DashboardChevron, DashboardLabel, dashboardTileMeta, dashboardTileStatClass, dashboardTileTitle } from "@/components/mts/team-app/dashboard-card";
 import { getDashboardData } from "@/lib/blocks/block-dashboard-data";
 import {
   getBlockSettings,
@@ -13,7 +13,7 @@ import {
   type TeamShopSettings,
 } from "@/lib/blocks/settings";
 import { quickActionEmoji, type QuickActionIconId } from "@/lib/quick-actions/icons";
-import { mtsTypeLabel, mtsTypeTitleSm } from "@/lib/typography";
+import { mtsTypeTitleSm } from "@/lib/typography";
 import type { BlockInstance, BlockLayout, TeamSpace } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 import { motion } from "framer-motion";
@@ -24,13 +24,13 @@ function RingProgress({ value, size = 52 }: { value: number; size?: number }) {
   const offset = c - (value / 100) * c;
   return (
     <svg width={size} height={size} className="-rotate-90" aria-hidden>
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="color-mix(in srgb, var(--mts-muted) 22%, transparent)" strokeWidth="5" />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e5e7eb" strokeWidth="5" />
       <circle
         cx={size / 2}
         cy={size / 2}
         r={r}
         fill="none"
-        stroke="var(--mts-success, #10b981)"
+        stroke="#10b981"
         strokeWidth="5"
         strokeLinecap="round"
         strokeDasharray={c}
@@ -59,25 +59,26 @@ export function ScheduleDashboardCard({
   const next = d.next ?? d.events[0];
   const metaLine = [next.day, next.time].filter(Boolean).join(" · ");
   return (
-    <DashboardCard onClick={onOpen} index={index} accent="sky" compact={compact} featured={featured} prominent>
-      <DashboardLabel>Schedule</DashboardLabel>
+    <DashboardCard onClick={onOpen} index={index} accent="sky" compact={compact} featured={featured}>
+      <DashboardLabel action={<DashboardChevron />}>Schedule</DashboardLabel>
       <p className={compact ? dashboardTileTitle : cn(mtsTypeTitleSm, "min-w-0 line-clamp-2 break-words")}>
         {next.title}
       </p>
-      <p className={cn("mt-1 font-medium text-[color:var(--mts-primary-bright)]", compact ? dashboardTileMeta : "text-[13px]")}>
+      <p className={cn("mt-0.5 font-semibold text-sky-600", compact ? dashboardTileMeta : "text-[12px]")}>
         {metaLine}
       </p>
-      {next.location ? <p className={cn(dashboardTileMeta, "mt-1")}>{next.location}</p> : null}
-      {!compact && !featured && d.events.length > 1 ? (
-        <ul className="mt-3 space-y-1.5 border-t border-[color:var(--mts-card-border)] pt-3">
+      {next.location ? <p className={cn(dashboardTileMeta, "mt-0.5")}>{next.location}</p> : null}
+      {!compact && d.events.length > 1 ? (
+        <ul className="mt-2.5 space-y-1 border-t border-[color:var(--mts-card-border)] pt-2">
           {d.events.slice(1, 3).map((ev) => (
-            <li key={`${ev.title}-${ev.day}`} className="flex justify-between gap-2 text-[12px] text-[color:var(--mts-muted)]">
-              <span className="truncate">{ev.title}</span>
-              <span className="shrink-0">{ev.day}</span>
+            <li key={`${ev.title}-${ev.day}`} className="flex justify-between text-[11px] text-[color:var(--mts-muted)]">
+              <span className="truncate pr-2">{ev.title}</span>
+              <span className="shrink-0 font-medium text-[color:var(--mts-muted)]">{ev.day}</span>
             </li>
           ))}
         </ul>
       ) : null}
+      <p className="mt-auto pt-2 text-[10px] font-medium text-[color:var(--mts-muted)]">{d.events.length} this week</p>
     </DashboardCard>
   );
 }
@@ -100,11 +101,11 @@ export function AttendanceDashboardCard({
   const d = getDashboardData(team, block).attendance!;
   return (
     <DashboardCard onClick={onOpen} index={index} accent="emerald" compact={compact} featured={featured}>
-      <DashboardLabel>Attendance</DashboardLabel>
+      <DashboardLabel action={<DashboardChevron />}>Attendance</DashboardLabel>
       <div className="flex items-center gap-3">
         <div className="relative shrink-0">
           <RingProgress value={d.weeklyRate} size={compact ? 46 : 52} />
-          <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-[color:var(--mts-success)]">
+          <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-emerald-700">
             {d.weeklyRate}%
           </span>
         </div>
@@ -119,7 +120,7 @@ export function AttendanceDashboardCard({
         {d.weekBars.map((h, i) => (
           <motion.div
             key={i}
-            className="flex-1 rounded-md bg-[color-mix(in_srgb,var(--mts-success)_55%,transparent)]"
+            className="flex-1 rounded-md bg-emerald-400/85"
             initial={{ height: 4 }}
             animate={{ height: `${Math.max(28, Math.round(h * 0.34))}%` }}
             transition={{ delay: 0.04 * i, duration: 0.35 }}
@@ -238,65 +239,13 @@ export function AnnouncementDashboardCard({
       index={index}
       accent="indigo"
       compact
-      className="bg-[color-mix(in_srgb,var(--mts-accent-soft)_55%,var(--mts-card))]"
+      className="bg-gradient-to-br from-indigo-600 to-violet-600 !border-indigo-500/20 !ring-indigo-400/20"
     >
-      <DashboardLabel
-        action={
-          <span className="rounded-full bg-[color-mix(in_srgb,var(--mts-primary-bright)_20%,transparent)] px-1.5 py-0.5 text-[9px] font-bold text-[color:var(--mts-primary)]">
-            NEW
-          </span>
-        }
-      >
-        News
+      <DashboardLabel action={<span className="text-[9px] font-bold text-white/80">NEW</span>}>
+        <span className="text-white/70">News</span>
       </DashboardLabel>
-      <p className="line-clamp-2 text-[12px] font-bold leading-snug text-[color:var(--mts-text)]">{post.title}</p>
-      {post.body ? (
-        <p className="mt-0.5 line-clamp-2 text-[11px] text-[color:var(--mts-muted)]">{post.body}</p>
-      ) : null}
-    </DashboardCard>
-  );
-}
-
-export function ContactsDashboardCard({
-  team,
-  block,
-  onOpen,
-  index,
-  compact,
-  featured,
-}: {
-  team: TeamSpace;
-  block: BlockInstance;
-  onOpen: () => void;
-  index: number;
-  compact?: boolean;
-  featured?: boolean;
-}) {
-  const d = getDashboardData(team, block).contacts!;
-  const primary = d.items[0];
-  const more = d.items.length > 1 ? d.items.length - 1 : 0;
-
-  return (
-    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured} prominent>
-      <DashboardLabel>Contacts</DashboardLabel>
-      <div className="flex min-w-0 items-center gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--mts-accent-soft)] text-xl ring-2 ring-[color:var(--mts-card-border)]">
-          👤
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className={compact ? dashboardTileTitle : cn(mtsTypeTitleSm, "min-w-0 line-clamp-2 break-words")}>
-            {primary?.name ?? "Coaches"}
-          </p>
-          <p className={cn(dashboardTileMeta, "mt-0.5")}>
-            {primary?.role ?? `${d.items.length} contact${d.items.length === 1 ? "" : "s"}`}
-          </p>
-        </div>
-      </div>
-      {more > 0 ? (
-        <p className={cn(dashboardTileMeta, "mt-2 font-medium text-[color:var(--mts-primary-bright)]")}>
-          +{more} more contact{more === 1 ? "" : "s"}
-        </p>
-      ) : null}
+      <p className="line-clamp-2 text-[12px] font-bold leading-snug text-white">{post.title}</p>
+      {post.body ? <p className="mt-0.5 line-clamp-2 text-[11px] text-white/75">{post.body}</p> : null}
     </DashboardCard>
   );
 }
@@ -318,29 +267,29 @@ export function AchievementsRail({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className="mts-app-surface mts-app-surface--prominent team-highlights-section col-span-1 sm:col-span-2"
+      className="col-span-1 sm:col-span-2"
     >
-      <div className="mb-3.5 flex items-center justify-between">
-        <p className={mtsTypeLabel}>Highlights</p>
+      <div className="mb-2 flex items-center justify-between px-0.5">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-[color:var(--mts-muted)]">Cups & achievements</p>
         <button
           type="button"
           onClick={onOpen}
-          className="rounded-full bg-[var(--mts-accent-soft)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--mts-primary-bright)] active:opacity-70"
+          className="text-[11px] font-semibold text-indigo-600 active:opacity-70"
         >
-          See all
+          See all ›
         </button>
       </div>
-      <div className="dashboard-rail flex gap-2.5 overflow-x-auto pb-0.5">
+      <div className="dashboard-rail -mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1">
         {d.cards.map((c, i) => (
           <button
             key={`${c.title}-${i}`}
             type="button"
             onClick={onOpen}
-            className="dashboard-rail-item mts-app-surface mts-app-surface--interactive shrink-0 snap-start p-3.5 text-left"
+            className="dashboard-rail-item shrink-0 snap-start rounded-2xl border border-amber-100/90 bg-gradient-to-br from-amber-50 to-white p-3 text-left shadow-sm ring-1 ring-amber-100/60 active:scale-[0.98]"
           >
             <span className="text-2xl">{c.icon}</span>
             <p className={cn(dashboardTileTitle, "mt-1.5")}>{c.title}</p>
-            {c.player ? <p className={cn(dashboardTileMeta, "mt-0.5 text-[color:var(--mts-primary)]")}>{c.player}</p> : null}
+            {c.player ? <p className={cn(dashboardTileMeta, "mt-0.5 text-amber-800/80")}>{c.player}</p> : null}
           </button>
         ))}
       </div>
@@ -374,13 +323,13 @@ export function GalleryStackCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className="mts-app-surface mts-app-surface--interactive mts-app-surface--prominent team-gallery-card group col-span-1 flex w-full items-stretch gap-4 rounded-[1.45rem] p-4 text-left sm:col-span-2 sm:p-5"
+      className="mts-app-surface mts-app-surface--interactive group col-span-1 flex w-full items-stretch gap-3 rounded-[1.35rem] p-3.5 text-left sm:col-span-2"
     >
-      <div className="relative h-[118px] w-[122px] shrink-0">
+      <div className="relative h-[88px] w-[100px] shrink-0">
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className={`absolute inset-0 overflow-hidden rounded-xl border-2 border-[color:var(--mts-card)] bg-gradient-to-br shadow-[0_8px_24px_-8px_rgba(15,23,42,0.22)] ${placeholders[i]}`}
+            className={`absolute inset-0 overflow-hidden rounded-xl border-2 border-white shadow-md bg-gradient-to-br ${placeholders[i]}`}
             style={{
               transform: `rotate(${i === 0 ? -6 : i === 1 ? 4 : 0}deg) translate(${i * 6}px, ${i * 3}px)`,
               zIndex: 3 - i,
@@ -398,11 +347,12 @@ export function GalleryStackCard({
         ) : null}
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center">
-        <p className={mtsTypeLabel}>Gallery</p>
-        <p className="mt-1.5 text-[17px] font-semibold leading-snug tracking-[-0.02em] text-[color:var(--mts-text)]">
-          {imgs.length ? `${imgs.length} photo${imgs.length === 1 ? "" : "s"}` : "Team photos"}
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--mts-muted)]">Team gallery</p>
+        <p className="mt-0.5 text-[15px] font-bold leading-snug text-[color:var(--mts-text)]">
+          {imgs.length ? `${imgs.length}+ photos` : "Photo memories"}
         </p>
-        <p className={cn(dashboardTileMeta, "mt-1")}>Tap to view album</p>
+        <p className={cn(dashboardTileMeta, "mt-0.5")}>Tap to browse trainings & events</p>
+        <span className="mt-2 text-[11px] font-semibold text-[color:var(--mts-primary)]">Open gallery ›</span>
       </div>
     </motion.button>
   );
@@ -464,7 +414,7 @@ export function PaymentDashboardCard({
 
   return (
     <DashboardCard onClick={onOpen} index={index} accent="sky" compact={compact ?? true} featured={featured}>
-      <DashboardLabel>Payments</DashboardLabel>
+      <DashboardLabel action={<DashboardChevron />}>Payments</DashboardLabel>
       {compact !== false ? (
         <>
           <p className={dashboardTileTitle}>{d.title}</p>
@@ -493,6 +443,9 @@ export function PaymentDashboardCard({
           </div>
         </div>
       )}
+      <p className="mt-auto truncate pt-2 text-[11px] font-semibold text-sky-600">
+        {d.hasUrl ? `${d.buttonLabel} ›` : "Set up in builder ›"}
+      </p>
     </DashboardCard>
   );
 }
@@ -527,7 +480,7 @@ export function QuickActionsDashboardCard({
 
   return (
     <DashboardCard onClick={onOpen} index={index} accent="amber" compact={compact} featured={featured}>
-      <DashboardLabel>{d.title}</DashboardLabel>
+      <DashboardLabel action={<DashboardChevron />}>{d.title}</DashboardLabel>
       {d.previews.length > 0 ? (
         <div className="mt-1 grid grid-cols-2 gap-2">
           {d.previews.map((p) => (
@@ -543,8 +496,11 @@ export function QuickActionsDashboardCard({
           ))}
         </div>
       ) : (
-        <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">Links for parents & athletes</p>
+        <p className="text-[13px] text-[color:var(--mts-muted)]">Add WhatsApp, registration, and map links</p>
       )}
+      <p className="mt-auto pt-2 text-[10px] font-medium text-[color:var(--mts-muted)]">
+        {d.count > 0 ? `${d.count} action${d.count === 1 ? "" : "s"}` : "Tap to set up"}
+      </p>
     </DashboardCard>
   );
 }
@@ -579,7 +535,7 @@ export function TeamShopDashboardCard({
 
   return (
     <DashboardCard onClick={onOpen} index={index} accent="rose" compact={compact} featured={featured}>
-      <DashboardLabel>{d.title}</DashboardLabel>
+      <DashboardLabel action={<DashboardChevron />}>{d.title}</DashboardLabel>
       {d.previews.length > 0 ? (
         <div className="mt-2 flex gap-2 overflow-hidden">
           {d.previews.map((p) => (
@@ -678,7 +634,7 @@ export function CompactStatCard({
 
   return (
     <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
-      <DashboardLabel>{label}</DashboardLabel>
+      <DashboardLabel action={<DashboardChevron />}>{label}</DashboardLabel>
       <p className={dashboardTileStatClass(stat)}>{stat}</p>
       <p className={cn(dashboardTileMeta, "mt-0.5")}>{sub}</p>
     </DashboardCard>

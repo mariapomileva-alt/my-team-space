@@ -13,7 +13,7 @@ export const dashboardTileTitle = cn(
 
 /** Secondary line under title or stat. */
 export const dashboardTileMeta =
-  "min-w-0 break-words text-[12px] font-normal leading-[1.45] [overflow-wrap:anywhere] line-clamp-2 text-[color:var(--mts-muted)]";
+  "min-w-0 break-words text-[11px] font-medium leading-snug [overflow-wrap:anywhere] line-clamp-2 text-[color:var(--mts-muted)]";
 
 export function dashboardTileStatClass(value: string) {
   const trimmed = value.trim();
@@ -32,7 +32,6 @@ export function DashboardCard({
   index = 0,
   compact,
   featured,
-  prominent,
 }: {
   onClick: () => void;
   children: ReactNode;
@@ -41,8 +40,6 @@ export function DashboardCard({
   index?: number;
   compact?: boolean;
   featured?: boolean;
-  /** Stronger card for key parent-facing sections (schedule, gallery, contacts). */
-  prominent?: boolean;
 }) {
   return (
     <motion.button
@@ -53,9 +50,8 @@ export function DashboardCard({
       transition={{ delay: Math.min(index * 0.03, 0.2), duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
       whileTap={{ scale: 0.985 }}
       className={cn(
-        "mts-app-surface mts-app-surface--interactive group flex h-full min-w-0 w-full flex-col overflow-hidden text-left",
-        prominent && "mts-app-surface--prominent",
-        featured ? "min-h-[172px] rounded-[1.45rem] p-5" : compact ? "rounded-[1.35rem] p-4" : "rounded-[1.4rem] p-[1.125rem]",
+        "mts-app-surface mts-app-surface--interactive group flex h-full min-w-0 w-full flex-col overflow-hidden rounded-[1.25rem] text-left",
+        featured ? "min-h-[156px] p-4" : compact ? "p-3" : "p-3.5",
         className,
       )}
     >
@@ -64,10 +60,22 @@ export function DashboardCard({
   );
 }
 
-export function DashboardLabel({ children }: { children: ReactNode; action?: ReactNode }) {
+export function DashboardLabel({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="mb-3">
+    <div className="mb-2 flex min-w-0 items-center justify-between gap-1.5">
       <p className={cn(mtsTypeLabel, "min-w-0 truncate")}>{children}</p>
+      {action ? <span className="shrink-0">{action}</span> : null}
     </div>
+  );
+}
+
+export function DashboardChevron() {
+  return (
+    <span
+      className="whitespace-nowrap text-[10px] font-semibold text-[color:var(--mts-muted)] opacity-50 transition group-hover:text-[color:var(--mts-primary)] group-hover:opacity-100"
+      aria-hidden
+    >
+      Open ›
+    </span>
   );
 }

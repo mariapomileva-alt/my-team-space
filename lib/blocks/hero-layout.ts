@@ -61,15 +61,15 @@ export const HERO_LAYOUT = {
   identityGapMobile: "0.8125rem",
   identityGapDesktop: "0.9375rem",
 
-  /* Compact hero — ~17% shorter than prior spec; logo stays ≥64px mobile. */
-  logoSizeMobile: "4rem",
-  logoSizeDesktop: "5rem",
-  logoSizeDesktopLg: "5.25rem",
+  /* Spec sizing: 64–80px mobile, 80–100px tablet. Logo is circular. */
+  logoSizeMobile: "4.75rem",
+  logoSizeDesktop: "6rem",
+  logoSizeDesktopLg: "6.25rem",
   logoRadius: "9999px",
 
-  coverHeightMobile: "8.75rem",
-  coverHeightDesktop: "12.5rem",
-  coverHeightDesktopLg: "13.5rem",
+  coverHeightMobile: "10.5rem",
+  coverHeightDesktop: "15.5rem",
+  coverHeightDesktopLg: "17rem",
 
   logoZonePercent: "25%",
   containerBreakpointDesktop: "540px",

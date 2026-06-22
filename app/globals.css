@@ -11,23 +11,8 @@
 
 /* Theme tokens applied via `.mts-shell` inline vars from lib/themes.ts */
 .mts-shell:not(.mts-shell--preview) {
-  position: relative;
   min-height: 100vh;
   min-height: 100dvh;
-}
-
-.mts-shell:not(.mts-shell--preview)::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: var(--mts-atmosphere, transparent);
-}
-
-.mts-shell:not(.mts-shell--preview) > * {
-  position: relative;
-  z-index: 1;
 }
 
 .mts-shell {
@@ -66,9 +51,9 @@
 .hero-card {
   container-type: inline-size;
   container-name: team-hero;
-  --hero-logo-size: 4rem;
-  --hero-cover-height: 8.75rem;
-  --hero-identity-gap: 0.75rem;
+  --hero-logo-size: 4.75rem;
+  --hero-cover-height: 10.5rem;
+  --hero-identity-gap: 0.8125rem;
 }
 
 .hero-card__cover {
@@ -88,7 +73,7 @@
   position: relative;
   z-index: 1;
   background: var(--mts-card, #fff);
-  padding: calc(var(--hero-logo-size) * 0.44) 1rem 0.875rem;
+  padding: calc(var(--hero-logo-size) * 0.5) 1rem 1.25rem;
 }
 
 .hero-card__logo-anchor {
@@ -165,7 +150,7 @@
   position: absolute;
   left: 1rem;
   right: 1rem;
-  bottom: 0.75rem;
+  bottom: 0.9rem;
   z-index: 25;
 }
 
@@ -185,7 +170,7 @@
 }
 
 .hero-card--overlay .hero-card__body {
-  padding-top: 0.75rem;
+  padding-top: 1.1rem;
 }
 
 /* Scoped under .hero-card to outrank the generic `.mts-media-frame--logo`
@@ -206,18 +191,9 @@
 }
 
 .hero-card .mts-media-frame--logo-hero-card .mts-media-frame__img--contain {
-  padding: 0.38rem;
+  padding: 0.45rem;
   transform: none;
   transform-origin: center;
-}
-
-.hero-card__social {
-  margin-top: 0.5rem;
-}
-
-.hero-card--center .hero-card__social {
-  justify-content: center;
-  display: flex;
 }
 
 .hero-card__title {
@@ -237,9 +213,10 @@
 
 @container team-hero (min-width: 540px) {
   .hero-card {
-    --hero-logo-size: 5rem;
-    --hero-cover-height: 12.5rem;
-    --hero-identity-gap: 0.8125rem;
+    /* Spec: tablet logo 80–100px. */
+    --hero-logo-size: 6rem;
+    --hero-cover-height: 15.5rem;
+    --hero-identity-gap: 0.9375rem;
   }
 
   .hero-card--inline .hero-card__logo-spacer {
@@ -267,8 +244,8 @@
 
 @container team-hero (min-width: 720px) {
   .hero-card {
-    --hero-logo-size: 5.25rem;
-    --hero-cover-height: 13.5rem;
+    --hero-logo-size: 6.25rem;
+    --hero-cover-height: 17rem;
   }
 
   .hero-card__title {
@@ -277,7 +254,7 @@
 }
 
 .hero-card__subtitle {
-  margin: 0.125rem 0 0;
+  margin: 0.1875rem 0 0;
   font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.35;
@@ -289,7 +266,7 @@
 }
 
 .hero-card__city {
-  margin: 0.125rem 0 0;
+  margin: 0.1875rem 0 0;
   /* Spec: location 12–14px. */
   font-size: 0.75rem;
   font-weight: 400;
@@ -302,106 +279,7 @@
 }
 
 .hero-card__details {
-  margin-top: 0.625rem;
-  padding-top: 0.625rem;
-  border-top: 1px solid color-mix(in srgb, var(--mts-card-border) 55%, transparent);
-}
-
-.team-identity-motto {
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--mts-primary);
-  border-left: 3px solid color-mix(in srgb, var(--mts-primary-bright) 65%, var(--mts-primary));
-  padding-left: 0.625rem;
-  margin-top: 0.5rem;
-}
-
-.team-identity-card {
-  background: var(--mts-card);
-  border-radius: calc(var(--mts-radius) + 0.3rem);
-  border: 1px solid color-mix(in srgb, var(--mts-card-border) 75%, transparent);
-  box-shadow: var(--mts-hero-elevation, var(--mts-shadow));
-}
-
-.team-identity-stage {
-  position: relative;
-}
-
-.team-identity-stage .team-app-chrome + .team-app-chrome {
-  margin-top: 0.625rem;
-}
-
-.team-announcement {
-  border-radius: calc(var(--mts-radius) + 0.1rem);
-  padding: 0.875rem 1rem;
-  text-align: center;
-}
-
-.team-announcement--info {
-  background: color-mix(in srgb, var(--mts-primary-bright) 12%, var(--mts-card));
-  color: var(--mts-text);
-  border: 1px solid color-mix(in srgb, var(--mts-primary-bright) 22%, transparent);
-}
-
-.team-announcement--urgent {
-  background: color-mix(in srgb, #f43f5e 10%, var(--mts-card));
-  color: color-mix(in srgb, #9f1239 85%, var(--mts-text));
-  border: 1px solid color-mix(in srgb, #f43f5e 22%, transparent);
-}
-
-.team-announcement--confirm {
-  background: color-mix(in srgb, var(--mts-success) 12%, var(--mts-card));
-  color: color-mix(in srgb, var(--mts-success) 75%, var(--mts-text));
-  border: 1px solid color-mix(in srgb, var(--mts-success) 25%, transparent);
-}
-
-.team-highlights-section {
-  padding: 1rem 1.125rem 1.125rem;
-  border-radius: calc(var(--mts-radius) + 0.25rem);
-}
-
-.team-gallery-card {
-  min-height: 8.5rem;
-}
-
-.team-detail-content {
-  letter-spacing: -0.01em;
-}
-
-.team-detail-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--mts-card-border) 50%, transparent);
-}
-
-.team-detail-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.team-detail-row:first-child {
-  padding-top: 0;
-}
-
-.team-detail-row--highlight .team-detail-row__icon {
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.team-detail-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.hero-card__details p,
-.hero-card__details .hero-card__description {
-  font-size: 0.875rem;
-  line-height: 1.55;
-  color: var(--mts-muted, #6b7280);
+  margin-top: 0.875rem;
 }
 
 /* Shared media frames — consistent crop, padding, and alignment */
@@ -471,30 +349,8 @@
 
 .mts-media-frame--gallery {
   width: 100%;
-  aspect-ratio: 4 / 5;
-  border-radius: 1.125rem;
-  box-shadow:
-    0 2px 8px -2px rgba(15, 23, 42, 0.1),
-    0 12px 28px -8px rgba(15, 23, 42, 0.14),
-    0 0 0 1px color-mix(in srgb, var(--mts-card-border) 80%, transparent);
-}
-
-.mts-block-gallery {
-  gap: 0.75rem;
-}
-
-@media (min-width: 640px) {
-  .mts-block-gallery {
-    gap: 0.875rem;
-  }
-}
-
-.mts-block-gallery-photo {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.mts-block-gallery-photo:active {
-  transform: scale(0.98);
+  aspect-ratio: 1 / 1;
+  border-radius: 0.75rem;
 }
 
 .mts-media-frame--shop {
@@ -515,8 +371,7 @@
 
 .team-app-detail-content {
   font-size: 0.9375rem;
-  line-height: 1.55;
-  letter-spacing: -0.01em;
+  line-height: 1.5;
 }
 
 .team-app-detail-content .mts-card {
@@ -561,18 +416,14 @@
 .team-app-dashboard .dashboard-grid-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.875rem;
-  align-items: stretch;
-}
-
-.team-app-dashboard .dashboard-rail .dashboard-rail-item {
-  border-radius: calc(var(--mts-radius) + 0.05rem);
+  gap: 0.625rem;
+  align-items: start;
 }
 
 .team-app-dashboard .dashboard-tile-shell {
   display: flex;
-  min-height: 9.5rem;
-  height: 100%;
+  min-height: 0;
+  height: auto;
 }
 
 .team-app-dashboard .dashboard-tile-shell > * {
@@ -599,6 +450,36 @@
 
 .integration-card {
   transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Builder + showcase preview viewports */
+.builder-preview-viewport {
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.builder-preview-viewport .mts-shell--preview {
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.builder-preview-viewport .team-app-page {
+  min-height: 0 !important;
+  padding-bottom: 1.25rem !important;
+}
+
+.builder-preview-viewport::-webkit-scrollbar {
+  width: 4px;
+}
+
+.builder-preview-viewport::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .builder-live-preview {
@@ -628,7 +509,7 @@
 
 .builder-live-preview .mts-shell,
 .builder-live-preview .mts-shell--preview {
-  min-height: 100% !important;
+  min-height: 0 !important;
   height: auto !important;
   max-height: none !important;
 }
@@ -677,31 +558,17 @@
 .mts-app-surface {
   background: var(--mts-card);
   border: 1px solid var(--mts-card-border);
-  border-radius: var(--mts-radius, 1.125rem);
   box-shadow: var(--mts-shadow);
   color: var(--mts-text);
   transition:
     border-color 0.25s ease,
-    box-shadow 0.28s ease,
-    background 0.35s ease,
-    transform 0.2s ease;
+    box-shadow 0.25s ease,
+    background 0.35s ease;
 }
 
 .mts-app-surface--interactive:hover {
-  border-color: color-mix(in srgb, var(--mts-ring) 28%, var(--mts-card-border));
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    var(--mts-glow),
-    var(--mts-shadow);
-}
-
-.mts-app-surface--interactive:active {
-  transform: scale(0.993);
-}
-
-.mts-app-surface--prominent {
-  border-color: color-mix(in srgb, var(--mts-primary-bright) 20%, var(--mts-card-border));
-  box-shadow: var(--mts-hub-shadow, var(--mts-shadow));
+  border-color: color-mix(in srgb, var(--mts-ring) 40%, var(--mts-card-border));
+  box-shadow: var(--mts-glow), var(--mts-shadow);
 }
 
 .mts-app-badge {

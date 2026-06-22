@@ -49,7 +49,7 @@ export function TeamAppPage({
 
   return (
     <motion.div
-      className="team-app-page mx-auto w-full max-w-lg px-[1.125rem] pb-[max(3rem,env(safe-area-inset-bottom))] pt-3 sm:max-w-2xl md:max-w-3xl md:px-7 md:pt-4"
+      className="team-app-page mx-auto w-full max-w-lg px-4 pb-28 pt-3 sm:max-w-2xl md:max-w-3xl md:px-6 md:pt-5"
       initial={false}
     >
       {!hasHero ? (
@@ -58,7 +58,7 @@ export function TeamAppPage({
         </div>
       ) : null}
 
-      <motion.div className="team-identity-stage space-y-2.5">
+      <motion.div className="space-y-3">
         {chrome.map((block) => (
           <div
             key={block.id}

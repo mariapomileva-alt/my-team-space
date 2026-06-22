@@ -39,9 +39,8 @@ export function TeamHeroCard({
   variant = DEFAULT_HERO_VARIANT,
 }: TeamHeroCardProps) {
   const hasCover = Boolean(coverSrc?.trim());
+  const hasDetails = Boolean(description?.trim() || motto?.trim() || socialLinks.length > 0);
   const isOverlay = variant === "overlay";
-  const hasSocial = socialLinks.length > 0;
-  const hasNarrative = Boolean(description?.trim() || motto?.trim());
 
   const liveBadge = (
     <span
@@ -65,26 +64,26 @@ export function TeamHeroCard({
     </>
   );
 
-  const social = hasSocial ? (
-    <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
-  ) : null;
+  const logo = <MtsTeamLogo src={logoSrc} teamName={teamName} className={HERO_LAYOUT.logoFrame} />;
 
-  const narrative = hasNarrative ? (
+  const details = hasDetails ? (
     <div className={HERO_LAYOUT.details}>
       {description?.trim() ? (
-        <p className="hero-card__description text-[13px] leading-relaxed text-[color:var(--mts-muted)]">
-          {description.trim()}
-        </p>
+        <p className="text-[13px] leading-relaxed text-[color:var(--mts-muted)]">{description.trim()}</p>
       ) : null}
       {motto?.trim() ? (
-        <p className={cn("team-identity-motto", description?.trim() ? "mt-1.5" : "mt-0")}>
+        <p
+          className={cn(
+            "text-[14px] font-semibold leading-snug text-[color:var(--mts-primary)]",
+            description?.trim() ? "mt-2" : "mt-0",
+          )}
+        >
           “{motto.trim()}”
         </p>
       ) : null}
+      {socialLinks.length > 0 ? <SocialLinkButtons links={socialLinks} className="mt-3" /> : null}
     </div>
   ) : null;
-
-  const logo = <MtsTeamLogo src={logoSrc} teamName={teamName} className={HERO_LAYOUT.logoFrame} />;
 
   return (
     <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative">
@@ -92,7 +91,7 @@ export function TeamHeroCard({
         className={cn(
           HERO_LAYOUT.root,
           heroVariantClass(variant),
-          "team-identity-card overflow-hidden",
+          "overflow-hidden rounded-[1.35rem] border border-neutral-200/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.12)] ring-1 ring-neutral-100/80",
         )}
       >
         <div className={HERO_LAYOUT.cover}>
@@ -121,22 +120,14 @@ export function TeamHeroCard({
         </div>
 
         {isOverlay ? (
-          hasSocial || hasNarrative ? (
-            <div className={HERO_LAYOUT.body}>
-              {social}
-              {narrative}
-            </div>
-          ) : null
+          details ? <div className={HERO_LAYOUT.body}>{details}</div> : null
         ) : (
           <div className={HERO_LAYOUT.body}>
             <div className={HERO_LAYOUT.identity}>
               {variant === "inline" ? <div className="hero-card__logo-spacer" aria-hidden /> : null}
-              <div className={HERO_LAYOUT.textZone}>
-                {titleGroup}
-                {social}
-              </div>
+              <div className={HERO_LAYOUT.textZone}>{titleGroup}</div>
             </div>
-            {narrative}
+            {details}
           </div>
         )}
       </div>

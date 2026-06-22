@@ -23,14 +23,14 @@ export const BLOCK_APP_META: Record<BlockType, BlockAppMeta> = {
   },
   gallery: {
     emoji: "📸",
-    title: "Gallery",
-    subtitle: "Photos from the team",
+    title: "Team gallery",
+    subtitle: "Photos & albums",
     tileClass: "bg-rose-100 text-rose-700",
   },
   schedule: {
     emoji: "📅",
     title: "Schedule",
-    subtitle: "When we meet",
+    subtitle: "Training & events",
     tileClass: "bg-sky-100 text-sky-700",
   },
   calendar: {
@@ -59,14 +59,14 @@ export const BLOCK_APP_META: Record<BlockType, BlockAppMeta> = {
   },
   results: {
     emoji: "🏅",
-    title: "Results",
-    subtitle: "Season updates",
+    title: "Results board",
+    subtitle: "Leaderboard, medals & season story",
     tileClass: "bg-yellow-100 text-yellow-800",
   },
   achievements: {
-    emoji: "✨",
-    title: "Highlights",
-    subtitle: "Moments & milestones",
+    emoji: "🏆",
+    title: "Cups & achievements",
+    subtitle: "Trophies & stars",
     tileClass: "bg-amber-100 text-amber-800",
   },
   team_feed: {
@@ -78,7 +78,7 @@ export const BLOCK_APP_META: Record<BlockType, BlockAppMeta> = {
   contacts: {
     emoji: "👋",
     title: "Contacts",
-    subtitle: "Reach the team",
+    subtitle: "Coaches & staff",
     tileClass: "bg-teal-100 text-teal-800",
   },
   quick_links: {

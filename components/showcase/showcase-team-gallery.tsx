@@ -16,7 +16,6 @@ function ShowcasePhonePreview({ team }: { team: TeamSpace }) {
       team={team}
       mode="mobile"
       phoneHeight={SHOWCASE_PHONE_H}
-      scrollToSelector=".team-app-dashboard"
     />
   );
 }
@@ -128,7 +127,7 @@ export function ShowcaseTeamGallery({ teams }: { teams: ShowcaseTeamCard[] }) {
               </div>
 
               <p className="mb-2 text-center text-[11px] font-semibold text-zinc-500">
-                Превью прокручивается к блокам с расписанием, фото и результатами
+                Превью страницы — листай внутри телефона
               </p>
               <div className="flex justify-center">
                 <div
