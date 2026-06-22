@@ -68,8 +68,8 @@ export function ShowcaseTeamGallery({ teams }: { teams: ShowcaseTeamCard[] }) {
           6 команд — как в конструкторе
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-relaxed text-zinc-600">
-          Живые превью на тех же компонентах, что в builder: логотип, тема из Design, TeamHeroCard (4 layout),
-          блоки dashboard. В каждом телефоне — листай вниз: расписание, фото, результаты.
+          Живые превью на тех же компонентах, что у родителей: 6 hero-layout, editorial-секции ниже шапки
+          (расписание, галерея, контакты). В каждом телефоне — листай вниз.
         </p>
         <p className="mx-auto mt-2 text-[13px] font-medium text-violet-700">
           <a href="https://www.myteamspace.cc/showcase/teams" className="underline underline-offset-2">
