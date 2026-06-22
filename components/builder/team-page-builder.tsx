@@ -751,6 +751,7 @@ export function TeamPageBuilder({
               <TeamDesignPanel
                 team={team}
                 onSelectTheme={setTheme}
+                onPatchTeam={patchTeam}
                 expanded={openSection === "design"}
                 onExpandedChange={(open) => setWorkspaceExpanded("design", open)}
               />

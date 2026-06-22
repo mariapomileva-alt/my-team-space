@@ -10,17 +10,20 @@ import { useState } from "react";
 export function TeamDesignPanel({
   team,
   onSelectTheme,
+  onPatchTeam,
   expanded,
   onExpandedChange,
 }: {
   team: TeamSpace;
   onSelectTheme: (id: ThemeId) => void;
+  onPatchTeam?: (patch: Partial<TeamSpace>) => void;
   expanded?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
 }) {
   const activePreset = stylePresetForTheme(team.themeId);
   const [showCustomPalettes, setShowCustomPalettes] = useState(activePreset === "custom");
   const activeTheme = THEMES.find((t) => t.id === team.themeId) ?? THEMES[0];
+  const mobileColumns = team.pageSettings?.mobileCardColumns ?? "single";
 
   function pickPreset(id: StylePresetId) {
     const preset = STYLE_PRESETS.find((p) => p.id === id);
@@ -31,6 +34,15 @@ export function TeamDesignPanel({
     }
     setShowCustomPalettes(false);
     if (preset.themeId) onSelectTheme(preset.themeId);
+  }
+
+  function setMobileColumns(value: "single" | "double") {
+    onPatchTeam?.({
+      pageSettings: {
+        ...team.pageSettings,
+        mobileCardColumns: value,
+      },
+    });
   }
 
   return (
@@ -97,6 +109,34 @@ export function TeamDesignPanel({
               <span className="mt-2 block font-bold text-zinc-800">{t.label}</span>
             </button>
           ))}
+        </div>
+      ) : null}
+
+      {onPatchTeam ? (
+        <div className="mt-6 border-t border-zinc-100 pt-5">
+          <p className="text-xs font-bold text-zinc-800">Mobile card layout</p>
+          <p className="mt-1 text-[11px] leading-snug text-zinc-500">
+            On phones, show one card per row (recommended) or two compact cards per row for small blocks like
+            contacts.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setMobileColumns("single")}
+              className={builderChoiceClass(mobileColumns === "single", "px-3 py-2.5 text-left text-xs")}
+            >
+              <span className="font-bold text-zinc-900">One per row</span>
+              <span className="mt-0.5 block text-[10px] text-zinc-500">Full-width cards</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileColumns("double")}
+              className={builderChoiceClass(mobileColumns === "double", "px-3 py-2.5 text-left text-xs")}
+            >
+              <span className="font-bold text-zinc-900">Two per row</span>
+              <span className="mt-0.5 block text-[10px] text-zinc-500">Compact blocks</span>
+            </button>
+          </div>
         </div>
       ) : null}
     </BuilderCollapsiblePanel>

@@ -19,19 +19,14 @@ function ModuleCard({
 }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-neutral-100/90 bg-white shadow-[0_2px_16px_-10px_rgba(15,23,42,0.1)]">
-      <header className="flex items-start justify-between gap-2 px-4 pb-2 pt-3.5">
-        <div className="flex min-w-0 items-start gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-lg ring-1 ring-neutral-100/80">
-            {icon}
-          </span>
-          <div className="min-w-0 pt-0.5">
-            <h3 className="text-[13px] font-bold leading-tight text-neutral-900">{title}</h3>
-            {subtitle ? <p className="mt-0.5 text-[11px] text-neutral-400">{subtitle}</p> : null}
-          </div>
-        </div>
-        <span className="mt-1 text-sm text-neutral-300" aria-hidden>
-          →
+      <header className="flex items-start gap-2.5 px-4 pb-2 pt-3.5">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-lg ring-1 ring-neutral-100/80">
+          {icon}
         </span>
+        <div className="min-w-0 pt-0.5">
+          <h3 className="text-[13px] font-bold leading-tight text-neutral-900">{title}</h3>
+          {subtitle ? <p className="mt-0.5 text-[11px] text-neutral-400">{subtitle}</p> : null}
+        </div>
       </header>
       <div className="flex-1 px-4 pb-2">{children}</div>
       <footer className="border-t border-neutral-50 px-4 py-2.5">

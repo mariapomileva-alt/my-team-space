@@ -1,12 +1,12 @@
 "use client";
 
 import { renderBlock } from "@/components/blocks/registry";
-import { getResultsBoardSettings } from "@/lib/blocks/results-board";
 import { TeamAppDetailSheet } from "@/components/mts/team-app/team-app-detail-sheet";
 import { TeamAppHeader } from "@/components/mts/team-app/team-app-header";
-import { TeamAppDashboard } from "@/components/mts/team-app/team-app-dashboard";
+import { TeamAppModuleGrid } from "@/components/mts/team-app/team-app-module-grid";
 import { APP_CHROME_BLOCK_TYPES } from "@/lib/blocks/block-app-meta";
 import { filterBlocksForPublicDisplay } from "@/lib/blocks/public-block-visibility";
+import { resolveResultsBoardSettings } from "@/lib/blocks/results-board";
 import { filterBlocksForViewer } from "@/lib/team-access";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -20,15 +20,16 @@ export function TeamAppPage({
   team,
   hasAccess = true,
   saasExtras,
-  previewBlockId,
+  previewBlockId: _previewBlockId,
 }: {
   team: TeamSpace;
   hasAccess?: boolean;
   saasExtras?: ReactNode;
+  /** Builder: highlight this block in live preview */
   previewBlockId?: string | null;
 }) {
-  const [openBlockId, setOpenBlockId] = useState<string | null>(null);
   const hideNames = Boolean(team.pageSettings?.hideChildNames) && !hasAccess;
+  const [openBlockId, setOpenBlockId] = useState<string | null>(null);
 
   const enabled = useMemo(
     () =>
@@ -45,18 +46,18 @@ export function TeamAppPage({
   const gridBlocks = enabled.filter((b) => !APP_CHROME_BLOCK_TYPES.has(b.type));
   const hasHero = chrome.some((b) => b.type === "hero");
   const openBlock = gridBlocks.find((b) => b.id === openBlockId) ?? null;
-  const openResultsSettings =
-    openBlock?.type === "results" ? getResultsBoardSettings(openBlock) : null;
-  const detailMeta = openResultsSettings
-    ? {
-        title: openResultsSettings.blockTitle?.trim() || "Results",
-        subtitle: openResultsSettings.seasonName || "Season rankings & memories",
-      }
-    : undefined;
+
+  const detailMeta =
+    openBlock?.type === "results"
+      ? {
+          title:
+            resolveResultsBoardSettings(openBlock).blockTitle?.trim() || "Results board",
+        }
+      : undefined;
 
   return (
     <motion.div
-      className="team-app-page mx-auto w-full max-w-lg px-4 pb-28 pt-3 sm:max-w-2xl md:max-w-3xl md:px-6 md:pt-5"
+      className="team-app-page mx-auto w-full max-w-lg px-4 pb-28 pt-3 sm:max-w-2xl md:max-w-5xl md:px-6 md:pt-5"
       initial={false}
     >
       {!hasHero ? (
@@ -78,11 +79,10 @@ export function TeamAppPage({
       </motion.div>
 
       {gridBlocks.length > 0 ? (
-        <TeamAppDashboard
+        <TeamAppModuleGrid
           team={team}
           blocks={gridBlocks}
-          onOpenBlock={setOpenBlockId}
-          previewBlockId={previewBlockId}
+          onOpenDetail={setOpenBlockId}
         />
       ) : null}
 
@@ -94,7 +94,9 @@ export function TeamAppPage({
         onClose={() => setOpenBlockId(null)}
         metaOverride={detailMeta}
       >
-        {openBlock ? renderBlock(team, openBlock, { hideChildNames: hideNames, embedded: true }) : null}
+        {openBlock
+          ? renderBlock(team, openBlock, { hideChildNames: hideNames, embedded: true })
+          : null}
       </TeamAppDetailSheet>
     </motion.div>
   );
