@@ -63,7 +63,7 @@ export function TeamAppPage({
         </div>
       ) : null}
 
-      <motion.div className="team-app-chrome-stack space-y-3">
+      <motion.div className="team-app-chrome-stack w-full min-w-0 space-y-3">
         {chrome.map((block) => (
           <div
             key={block.id}

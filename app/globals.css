@@ -13,10 +13,12 @@
 .mts-shell:not(.mts-shell--preview) {
   min-height: 100vh;
   min-height: 100dvh;
-  overflow-x: clip;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 .mts-shell {
+  --team-page-gutter: 1rem;
   background: var(--mts-page-bg);
   color: var(--mts-text);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
@@ -25,6 +27,12 @@
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   transition: background 0.45s ease, color 0.25s ease;
+}
+
+@media (min-width: 768px) {
+  .mts-shell {
+    --team-page-gutter: 1.5rem;
+  }
 }
 
 .builder-live-preview {
@@ -488,9 +496,7 @@
   min-width: 0;
   padding-top: 0.75rem;
   padding-bottom: 7rem;
-  padding-left: max(1rem, env(safe-area-inset-left, 0px));
-  padding-right: max(1rem, env(safe-area-inset-right, 0px));
-  overflow-x: clip;
+  padding-inline: var(--team-page-gutter);
 }
 
 @media (min-width: 640px) {
@@ -502,8 +508,6 @@
 @media (min-width: 768px) {
   .team-app-page {
     padding-top: 1.25rem;
-    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
-    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
   }
 }
 
@@ -520,20 +524,12 @@
   max-width: 32rem;
   margin-inline: auto;
   min-width: 0;
-  padding-left: max(1rem, env(safe-area-inset-left, 0px));
-  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+  padding-inline: var(--team-page-gutter);
 }
 
 @media (min-width: 640px) {
   .team-page-rail {
     max-width: 42rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .team-page-rail {
-    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
-    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
   }
 }
 
@@ -550,6 +546,12 @@
   min-width: 0;
   max-width: 100%;
   margin-inline: 0;
+}
+
+.team-app-chrome-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 /* ── Club website sections (below hero) ───────────────────────────────────── */
@@ -881,12 +883,13 @@
 .team-module-card {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
   min-width: 0;
   border-radius: 1.25rem;
   border: 1px solid color-mix(in srgb, var(--mts-card-border) 55%, transparent);
-  background: var(--mts-card-bg, #fff);
+  background: var(--mts-card, #fff);
   box-shadow: 0 2px 16px -10px rgba(15, 23, 42, 0.1);
 }
 
@@ -934,9 +937,15 @@
   padding: 0.75rem 1rem 1rem;
   min-width: 0;
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: hidden;
   overflow-wrap: break-word;
   word-break: normal;
+}
+
+.team-module-card__head,
+.team-module-card__foot {
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .team-module-card__foot {
@@ -1019,8 +1028,13 @@
   overflow-x: hidden !important;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  scrollbar-width: none;
+}
+
+.builder-preview-viewport::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .builder-preview-viewport .mts-shell--preview {
@@ -1035,23 +1049,14 @@
   width: 100% !important;
   padding-top: 0.75rem !important;
   padding-bottom: 1.25rem !important;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
+  padding-inline: var(--team-page-gutter) !important;
   box-sizing: border-box !important;
 }
 
 .builder-preview-viewport .mts-shell {
-  overflow-x: clip;
   width: 100%;
-}
-
-.builder-preview-viewport::-webkit-scrollbar {
-  width: 4px;
-}
-
-.builder-preview-viewport::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.18);
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .builder-live-preview {

@@ -37,7 +37,7 @@ export function TeamAppModuleGrid({
         density === "double" && "team-module-grid--double",
       )}
     >
-      {visibleBlocks.map((block, i) => (
+      {visibleBlocks.map((block) => (
         <div
           key={block.id}
           className={cn("team-module-grid__item", publicCardGridItemClass(block, density))}
@@ -45,7 +45,6 @@ export function TeamAppModuleGrid({
           <TeamModuleCard
             team={team}
             block={block}
-            index={i}
             onOpenDetail={onOpenDetail}
           />
         </div>

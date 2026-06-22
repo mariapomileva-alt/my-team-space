@@ -27,12 +27,10 @@ function cardTitle(block: BlockInstance): string {
 export function TeamModuleCard({
   team,
   block,
-  index = 0,
   onOpenDetail,
 }: {
   team: TeamSpace;
   block: BlockInstance;
-  index?: number;
   onOpenDetail?: (blockId: string) => void;
 }) {
   const meta = BLOCK_APP_META[block.type];
@@ -45,9 +43,7 @@ export function TeamModuleCard({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.03, 0.18), duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      initial={false}
       className={cn("team-module-card w-full min-w-0", moduleLevelClass(level))}
       data-preview-block-id={block.id}
     >
