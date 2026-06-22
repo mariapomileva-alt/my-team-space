@@ -2,8 +2,9 @@
 
 import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid } from "@/components/blocks/quick-actions-grid";
-import { TeamShopGrid } from "@/components/blocks/team-shop-grid";
+import { TeamShopSectionList } from "@/components/blocks/team-shop-grid";
 import { ResultsBoardTeaser } from "@/components/results/results-board-teaser";
+import { contentLevelForInstance, sectionLevelClass } from "@/lib/blocks/content-hierarchy";
 import { DashboardCard, DashboardLabel, SectionAction, SectionBody, SectionFeaturedItem, SectionListRow, dashboardTileTitle } from "@/components/mts/team-app/dashboard-card";
 import { getDashboardData } from "@/lib/blocks/block-dashboard-data";
 import {
@@ -36,9 +37,10 @@ export function ScheduleDashboardCard({
   const d = getDashboardData(team, block).schedule!;
   const next = d.next ?? d.events[0];
   if (!next) return null;
+  const level = contentLevelForInstance(block);
   const metaLine = [next.day, next.time].filter(Boolean).join(" · ");
   return (
-    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
+    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured} level={level}>
       <DashboardLabel action={<SectionAction />}>Schedule</DashboardLabel>
       <SectionBody>
         <SectionFeaturedItem
@@ -79,8 +81,9 @@ export function AttendanceDashboardCard({
   featured?: boolean;
 }) {
   const d = getDashboardData(team, block).attendance!;
+  const level = contentLevelForInstance(block);
   return (
-    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
+    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured} level={level}>
       <DashboardLabel action={<SectionAction />}>Team roster</DashboardLabel>
       <SectionBody>
         <SectionFeaturedItem title={d.label} note="Athletes on the team" />
@@ -102,8 +105,9 @@ export function TripsDashboardCard({
 }) {
   const d = getDashboardData(team, block).camp_trip!;
   const first = d.items[0];
+  const level = contentLevelForInstance(block);
   return (
-    <DashboardCard onClick={onOpen} index={index} compact>
+    <DashboardCard onClick={onOpen} index={index} compact level={level}>
       <DashboardLabel action={<SectionAction />}>Trips</DashboardLabel>
       <SectionBody>
         <SectionFeaturedItem title={first.title} note={first.body || undefined} />
@@ -124,8 +128,9 @@ export function RulesDashboardCard({
   index: number;
 }) {
   const d = getDashboardData(team, block).documents!;
+  const level = contentLevelForInstance(block);
   return (
-    <DashboardCard onClick={onOpen} index={index} compact>
+    <DashboardCard onClick={onOpen} index={index} compact level={level}>
       <DashboardLabel action={<SectionAction />}>Documents</DashboardLabel>
       <SectionBody className="space-y-0">
         {d.docs.slice(0, 3).map((doc) => (
@@ -148,8 +153,9 @@ export function PollDashboardCard({
   index: number;
 }) {
   const d = getDashboardData(team, block).polls!;
+  const level = contentLevelForInstance(block);
   return (
-    <DashboardCard onClick={onOpen} index={index} compact>
+    <DashboardCard onClick={onOpen} index={index} compact level={level}>
       <DashboardLabel action={<SectionAction />}>Poll</DashboardLabel>
       <SectionBody>
         <SectionFeaturedItem title={d.question} meta={d.options.length > 0 ? d.options.join(" · ") : undefined} />
@@ -171,8 +177,9 @@ export function AnnouncementDashboardCard({
 }) {
   const d = getDashboardData(team, block).team_feed!;
   const post = d.posts[0];
+  const level = contentLevelForInstance(block);
   return (
-    <DashboardCard onClick={onOpen} index={index} compact>
+    <DashboardCard onClick={onOpen} index={index} compact level={level}>
       <DashboardLabel action={<SectionAction />}>News</DashboardLabel>
       <SectionBody>
         <SectionFeaturedItem title={post.title} note={post.body || undefined} />
@@ -193,6 +200,7 @@ export function AchievementsRail({
   index: number;
 }) {
   const d = getDashboardData(team, block).achievements!;
+  const level = contentLevelForInstance(block);
   return (
     <motion.section
       initial={{ opacity: 0, y: 8 }}
@@ -200,7 +208,7 @@ export function AchievementsRail({
       transition={{ delay: index * 0.03 }}
       className="col-span-1 sm:col-span-2"
     >
-      <div className="team-page-section team-page-section__rail-head px-0.5">
+      <div className={cn("team-page-section team-page-section__rail-head px-0.5", sectionLevelClass(level))}>
         <h2 className={mtsTypeSectionTitle}>Achievements</h2>
         <button type="button" onClick={onOpen} className="team-page-section__action-slot">
           <span className="team-page-section__action">
@@ -241,6 +249,7 @@ export function GalleryStackCard({
 }) {
   const d = getDashboardData(team, block).gallery!;
   const imgs = d.images.slice(0, 6);
+  const level = contentLevelForInstance(block);
 
   return (
     <motion.button
@@ -249,7 +258,7 @@ export function GalleryStackCard({
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.025 }}
-      className="team-page-section group w-full text-left"
+      className={cn("team-page-section group w-full text-left", sectionLevelClass(level))}
     >
       <div className="team-page-section__head flex min-w-0 items-center justify-between gap-3">
         <h2 className={mtsTypeSectionTitle}>Gallery</h2>
@@ -321,6 +330,7 @@ export function PaymentDashboardCard({
 }) {
   const s = getBlockSettings<PaymentLinkSettings>(block);
   const d = getDashboardData(team, block).payments!;
+  const level = contentLevelForInstance(block);
 
   if (featured) {
     return (
@@ -335,7 +345,7 @@ export function PaymentDashboardCard({
   }
 
   return (
-    <DashboardCard onClick={onOpen} index={index} compact={compact ?? true} featured={featured}>
+    <DashboardCard onClick={onOpen} index={index} compact={compact ?? true} featured={featured} level={level}>
       <DashboardLabel action={<SectionAction />}>{d.title}</DashboardLabel>
       <SectionBody>
         <SectionFeaturedItem
@@ -364,11 +374,12 @@ export function QuickActionsDashboardCard({
 }) {
   const s = getBlockSettings<QuickActionsSettings>(block);
   const d = getDashboardData(team, block).quick_actions!;
+  const level = contentLevelForInstance(block);
   const showInlineGrid = featured || !compact;
 
   if (showInlineGrid && (s.actions?.length ?? 0) > 0) {
     return (
-      <div className="team-page-section space-y-3 py-1">
+      <div className={cn("team-page-section space-y-3 py-1", sectionLevelClass(level))}>
         <h2 className={mtsTypeSectionTitle}>{d.title}</h2>
         <QuickActionsGrid actions={s.actions ?? []} compact={compact && !featured} />
       </div>
@@ -376,7 +387,7 @@ export function QuickActionsDashboardCard({
   }
 
   return (
-    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
+    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured} level={level}>
       <DashboardLabel action={<SectionAction />}>{d.title}</DashboardLabel>
       {d.previews.length > 0 ? (
         <SectionBody className="space-y-0">
@@ -410,23 +421,20 @@ export function TeamShopDashboardCard({
 }) {
   const s = getBlockSettings<TeamShopSettings>(block);
   const d = getDashboardData(team, block).team_shop!;
-  const showInline = featured || !compact;
-
-  if (showInline && (s.products?.length ?? 0) > 0) {
-    return (
-      <div className="team-page-section space-y-3 py-1">
-        <h2 className={mtsTypeSectionTitle}>{d.title}</h2>
-        <TeamShopGrid products={s.products ?? []} compact />
-      </div>
-    );
-  }
+  const level = contentLevelForInstance(block);
+  const products = s.products ?? [];
+  const previews = d.previews.length > 0 ? d.previews : products.map((p) => ({ name: p.name ?? "", price: p.price }));
 
   return (
-    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
+    <DashboardCard onClick={onOpen} index={index} compact={compact ?? true} featured={featured} level={level}>
       <DashboardLabel action={<SectionAction />}>{d.title}</DashboardLabel>
-      {d.previews.length > 0 ? (
+      {products.length > 0 ? (
+        <SectionBody>
+          <TeamShopSectionList products={products} max={featured ? 4 : 3} />
+        </SectionBody>
+      ) : previews.length > 0 ? (
         <SectionBody className="space-y-0">
-          {d.previews.map((p) => (
+          {previews.slice(0, 3).map((p) => (
             <SectionListRow key={p.name} title={p.name} meta={p.price} />
           ))}
         </SectionBody>
@@ -501,8 +509,10 @@ export function CompactStatCard({
     sub = data.sponsors.names.length > 1 ? `${data.sponsors.names.length} partners` : "";
   }
 
+  const level = contentLevelForInstance(block);
+
   return (
-    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured}>
+    <DashboardCard onClick={onOpen} index={index} compact={compact} featured={featured} level={level}>
       <DashboardLabel action={<SectionAction />}>{label}</DashboardLabel>
       <SectionBody>
         <SectionFeaturedItem title={headline} note={sub || undefined} />

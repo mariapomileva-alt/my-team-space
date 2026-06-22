@@ -16,6 +16,11 @@ import {
   TripsDashboardCard,
 } from "@/components/mts/team-app/dashboard-widgets";
 import { buildDashboardRows, type DashboardRow } from "@/lib/blocks/dashboard-layout";
+import {
+  contentLevelForInstance,
+  dominantContentLevel,
+  rowLevelClass,
+} from "@/lib/blocks/content-hierarchy";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
@@ -176,6 +181,25 @@ function PreviewAnchor({ blockId, children }: { blockId: string; children: React
   );
 }
 
+function rowContentLevel(row: DashboardRow) {
+  switch (row.kind) {
+    case "pair":
+      return dominantContentLevel(
+        contentLevelForInstance(row.left),
+        contentLevelForInstance(row.right),
+      );
+    case "pair-compact":
+      return dominantContentLevel(
+        contentLevelForInstance(row.left),
+        contentLevelForInstance(row.right),
+      );
+    case "wide":
+    case "results":
+    case "solo":
+      return contentLevelForInstance(row.block);
+  }
+}
+
 function DashboardRowView({
   row,
   team,
@@ -188,8 +212,17 @@ function DashboardRowView({
   rowIndex: number;
 }) {
   const base = rowIndex * 2;
+  const level = rowContentLevel(row);
   const rowWrap = (content: React.ReactNode) => (
-    <div className={cn("team-page-row", rowIndex > 0 && "team-page-row--divided")}>{content}</div>
+    <div
+      className={cn(
+        "team-page-row",
+        rowLevelClass(level),
+        rowIndex > 0 && "team-page-row--divided",
+      )}
+    >
+      {content}
+    </div>
   );
 
   if (row.kind === "results") {

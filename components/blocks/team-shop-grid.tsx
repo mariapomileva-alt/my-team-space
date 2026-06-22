@@ -2,12 +2,21 @@
 
 import { toExternalHref } from "@/lib/external-url";
 import type { TeamShopProduct } from "@/lib/blocks/settings";
-import { mtsTypeBodySm, mtsTypeTitleMd } from "@/lib/typography";
+import { mtsTypeBodySm, mtsTypeItemTitle, mtsTypeSectionMeta, mtsTypeSectionNote, mtsTypeTitleMd } from "@/lib/typography";
 import { MtsShopPhoto } from "@/components/mts/media/mts-media";
 import { cn } from "@/lib/utils/cn";
 import { motion } from "framer-motion";
 
-function validProducts(products: TeamShopProduct[]) {
+export type TeamShopProductValid = TeamShopProduct & {
+  href: string;
+  name: string;
+  price?: string;
+  description?: string;
+  buttonLabel: string;
+  imageUrl?: string;
+};
+
+function validProducts(products: TeamShopProduct[]): TeamShopProductValid[] {
   return products
     .map((p) => {
       const href = toExternalHref(p.productUrl);
@@ -23,14 +32,39 @@ function validProducts(products: TeamShopProduct[]) {
         imageUrl: p.imageUrl?.trim(),
       };
     })
-    .filter(Boolean) as (TeamShopProduct & {
-      href: string;
-      name: string;
-      price?: string;
-      description?: string;
-      buttonLabel: string;
-      imageUrl?: string;
-    })[];
+    .filter(Boolean) as TeamShopProductValid[];
+}
+
+/** Editorial product list for public page sections — integrated, not ecommerce cards. */
+export function TeamShopSectionList({
+  products,
+  max = 3,
+  className,
+}: {
+  products: TeamShopProduct[];
+  max?: number;
+  className?: string;
+}) {
+  const valid = validProducts(products).slice(0, max);
+  if (valid.length === 0) return null;
+
+  return (
+    <div className={cn("team-shop-section-list", className)}>
+      {valid.map((product) => (
+        <div key={product.id} className="team-shop-section-list__row">
+          <div className="min-w-0 flex-1">
+            <p className={cn(mtsTypeItemTitle, "text-[14px] sm:text-[15px]")}>{product.name}</p>
+            {product.description ? (
+              <p className={cn(mtsTypeSectionNote, "mt-0.5 line-clamp-1")}>{product.description}</p>
+            ) : null}
+          </div>
+          {product.price ? (
+            <p className={cn(mtsTypeSectionMeta, "shrink-0 tabular-nums")}>{product.price}</p>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export function TeamShopGrid({

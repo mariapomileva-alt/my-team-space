@@ -1,13 +1,13 @@
 "use client";
 
+import type { ContentLevel } from "@/lib/blocks/content-hierarchy";
+import { sectionLevelClass } from "@/lib/blocks/content-hierarchy";
 import {
   mtsTypeItemTitle,
   mtsTypeSectionAction,
-  mtsTypeSectionLead,
   mtsTypeSectionMeta,
   mtsTypeSectionNote,
   mtsTypeSectionTitle,
-  mtsTypeTitle,
 } from "@/lib/typography";
 import { cn } from "@/lib/utils/cn";
 import { motion } from "framer-motion";
@@ -39,6 +39,7 @@ export function DashboardCard({
   index = 0,
   compact,
   featured,
+  level = "supporting",
 }: {
   onClick: () => void;
   children: ReactNode;
@@ -47,6 +48,7 @@ export function DashboardCard({
   index?: number;
   compact?: boolean;
   featured?: boolean;
+  level?: ContentLevel;
 }) {
   return (
     <motion.button
@@ -57,6 +59,7 @@ export function DashboardCard({
       transition={{ delay: Math.min(index * 0.025, 0.15), duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
         "team-page-section group flex w-full min-w-0 flex-col text-left",
+        sectionLevelClass(level),
         featured ? "gap-3.5" : compact ? "gap-2.5" : "gap-3",
         className,
       )}
