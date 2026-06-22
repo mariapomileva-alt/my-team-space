@@ -69,25 +69,27 @@ export function nextOccurrenceForManualEvent(ev: ManualScheduleEvent, from: Date
   return candidate;
 }
 
-function findScheduleBlock(team: TeamSpace) {
-  return (
-    team.blocks.find((b) => b.enabled !== false && b.type === "schedule") ??
-    team.blocks.find((b) => b.enabled !== false && b.type === "calendar")
-  );
+function getManualScheduleSettings(team: TeamSpace): ScheduleBlockSettings | null {
+  const blocks = team.blocks.filter((b) => b.enabled !== false && (b.type === "schedule" || b.type === "calendar"));
+  const candidates = blocks.map((b) => getBlockSettings<ScheduleBlockSettings>(b));
+
+  for (const settings of candidates) {
+    if (settings.mode !== "external" && (settings.events ?? []).some((ev) => ev.title?.trim())) {
+      return settings;
+    }
+  }
+  return null;
 }
 
-/** Upcoming events for admin calendar — reads schedule block settings from teams.blocks only. */
+/** Upcoming events for admin calendar — reads schedule/calendar block settings from teams.blocks only. */
 export function getUpcomingScheduleEventsFromTeam(
   team: TeamSpace,
   options?: { limit?: number; now?: Date },
 ): BlockScheduleAdminEvent[] {
   const limit = options?.limit ?? 8;
   const now = options?.now ?? new Date();
-  const block = findScheduleBlock(team);
-  if (!block || block.type !== "schedule") return [];
-
-  const settings = getBlockSettings<ScheduleBlockSettings>(block);
-  if (settings.mode === "external") return [];
+  const settings = getManualScheduleSettings(team);
+  if (!settings) return [];
 
   return (settings.events ?? [])
     .filter((ev) => ev.title?.trim())

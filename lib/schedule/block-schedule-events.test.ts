@@ -82,9 +82,21 @@ describe("getUpcomingScheduleEventsFromTeam", () => {
     expect(getUpcomingScheduleEventsFromTeam(team)).toEqual([]);
   });
 
-  it("ignores disabled schedule blocks", () => {
-    const team = teamWithSchedule([manualEvent({ id: "x", title: "Hidden" })]);
-    team.blocks[0]!.enabled = false;
-    expect(getUpcomingScheduleEventsFromTeam(team)).toEqual([]);
+  it("reads manual events from calendar block when schedule is external-only", () => {
+    const team = teamWithSchedule([], "external");
+    team.blocks.push({
+      id: "cal-1",
+      type: "calendar",
+      enabled: true,
+      order: 1,
+      settings: {
+        mode: "manual",
+        events: [manualEvent({ id: "c1", title: "Friday class", dayOfWeek: 5, time: "18:00" })],
+        externalUrl: "",
+      },
+    });
+    const rows = getUpcomingScheduleEventsFromTeam(team, { now: new Date("2026-06-10T12:00:00.000Z") });
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.title).toBe("Friday class");
   });
 });
