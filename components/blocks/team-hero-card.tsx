@@ -1,6 +1,5 @@
 import { MtsCoverBanner, MtsTeamLogo } from "@/components/mts/media/mts-media";
 import { SocialLinkButtons, type SocialLinkItem } from "@/components/social/social-link-buttons";
-import type { HeroFact } from "@/lib/blocks/hero-facts";
 import {
   DEFAULT_HERO_VARIANT,
   HERO_LAYOUT,
@@ -19,26 +18,9 @@ export type TeamHeroCardProps = {
   description?: string | null;
   motto?: string | null;
   socialLinks?: SocialLinkItem[];
-  facts?: HeroFact[];
   /** Logo + name composition chosen in the builder. Defaults to `stack`. */
   variant?: HeroLayoutVariant;
 };
-
-function HeroFactsRow({ facts, onDark = false }: { facts: HeroFact[]; onDark?: boolean }) {
-  if (facts.length === 0) return null;
-
-  return (
-    <div className={cn("hero-card__facts", onDark && "hero-card__facts--on-dark")} aria-label="Team details">
-      {facts.map((fact, index) => (
-        <span key={`${fact.icon}-${fact.text}`} className="hero-card__fact">
-          {index > 0 ? <span className="hero-card__fact-sep" aria-hidden>·</span> : null}
-          <span aria-hidden>{fact.icon}</span>
-          <span>{fact.text}</span>
-        </span>
-      ))}
-    </div>
-  );
-}
 
 /**
  * Team header card. One card, four logo + name compositions (variant).
@@ -48,20 +30,18 @@ function HeroFactsRow({ facts, onDark = false }: { facts: HeroFact[]; onDark?: b
 export function TeamHeroCard({
   teamName,
   logoSrc,
-  tagline: _tagline,
-  city: _city,
+  tagline,
+  city,
   coverSrc,
   description,
   motto,
   socialLinks = [],
-  facts = [],
   variant = DEFAULT_HERO_VARIANT,
 }: TeamHeroCardProps) {
   const hasCover = Boolean(coverSrc?.trim());
   const isOverlay = variant === "overlay";
-  const hasNarrative = Boolean(description?.trim() || motto?.trim());
   const hasSocial = socialLinks.length > 0;
-  const hasFacts = facts.length > 0;
+  const hasNarrative = Boolean(description?.trim() || motto?.trim());
 
   const liveBadge = (
     <span
@@ -77,23 +57,17 @@ export function TeamHeroCard({
     </span>
   );
 
-  const title = <h1 className={HERO_LAYOUT.title}>{teamName}</h1>;
-
-  const identityMeta = (
+  const titleGroup = (
     <>
-      {hasFacts ? <HeroFactsRow facts={facts} onDark={isOverlay} /> : null}
-      {hasSocial ? (
-        <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
-      ) : null}
+      <h1 className={HERO_LAYOUT.title}>{teamName}</h1>
+      {tagline?.trim() ? <p className={HERO_LAYOUT.subtitle}>{tagline.trim()}</p> : null}
+      {city?.trim() ? <p className={HERO_LAYOUT.city}>📍 {city.trim()}</p> : null}
     </>
   );
 
-  const overlayTitleGroup = (
-    <>
-      {title}
-      {hasFacts ? <HeroFactsRow facts={facts} onDark /> : null}
-    </>
-  );
+  const social = hasSocial ? (
+    <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
+  ) : null;
 
   const narrative = hasNarrative ? (
     <div className={HERO_LAYOUT.details}>
@@ -143,15 +117,13 @@ export function TeamHeroCard({
 
           <div className="hero-card__logo-anchor">{logo}</div>
 
-          {isOverlay ? <div className={HERO_LAYOUT.overlayText}>{overlayTitleGroup}</div> : null}
+          {isOverlay ? <div className={HERO_LAYOUT.overlayText}>{titleGroup}</div> : null}
         </div>
 
         {isOverlay ? (
           hasSocial || hasNarrative ? (
             <div className={HERO_LAYOUT.body}>
-              {hasSocial ? (
-                <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
-              ) : null}
+              {social}
               {narrative}
             </div>
           ) : null
@@ -160,8 +132,8 @@ export function TeamHeroCard({
             <div className={HERO_LAYOUT.identity}>
               {variant === "inline" ? <div className="hero-card__logo-spacer" aria-hidden /> : null}
               <div className={HERO_LAYOUT.textZone}>
-                {title}
-                {identityMeta}
+                {titleGroup}
+                {social}
               </div>
             </div>
             {narrative}
