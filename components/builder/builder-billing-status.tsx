@@ -6,6 +6,7 @@ import {
   builderUsageLabel,
   type BuilderBillingContext,
 } from "@/lib/billing/builder-context-types";
+import { isBillingConfigured } from "@/lib/billing/config";
 import Link from "next/link";
 
 function Dot() {
@@ -16,12 +17,14 @@ function Dot() {
   );
 }
 
-/** Muted single-line plan status — lives below Share, not in the coach workflow. */
+/** Muted plan line — below the coach workflow, never blocking build. */
 export function BuilderBillingStatus({ billing }: { billing: BuilderBillingContext }) {
   const usage = builderUsageLabel(billing.teamsUsed, billing.teamLimit, billing.planLabel);
-  const publishLabel = billing.publishStatus === "published" ? "Published" : "Draft";
+  const liveLabel = billing.publishStatus === "published" ? "Live" : "Not live";
+  const billingConfigured = isBillingConfigured();
   const showUpgrade = billing.showUpgradeCta;
-  const showChoosePlan = !billing.billingActive && !billing.hasLemonSubscription;
+  const showChoosePlan =
+    billingConfigured && !billing.billingActive && !billing.hasLemonSubscription;
 
   return (
     <div
@@ -32,7 +35,7 @@ export function BuilderBillingStatus({ billing }: { billing: BuilderBillingConte
       <Dot />
       <span>{usage}</span>
       <Dot />
-      <span>{publishLabel}</span>
+      <span>{liveLabel}</span>
       {showUpgrade ? (
         <>
           <Dot />
@@ -54,7 +57,7 @@ export function BuilderBillingStatus({ billing }: { billing: BuilderBillingConte
             href="/pricing?startPlan=single_team"
             className="font-semibold text-indigo-600/90 transition hover:text-indigo-700 hover:underline"
           >
-            Choose a plan
+            Subscribe to publish
           </Link>
         </>
       ) : null}

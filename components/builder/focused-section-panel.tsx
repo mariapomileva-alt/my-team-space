@@ -20,8 +20,7 @@ const FOCUSED_NAV_IDS = new Set<PageStructureNavId>([
 ]);
 
 const SECTION_LABELS: Record<PageStructureNavId, string> = {
-  header: "Header",
-  about: "About Team",
+  header: "Team profile",
   gallery: "Gallery",
   schedule: "Schedule",
   results: "Results",
@@ -34,7 +33,7 @@ export function isFocusedSectionNav(id: PageStructureNavId | null): id is PageSt
 }
 
 function resolveBlock(team: TeamSpace, id: PageStructureNavId): BlockInstance | undefined {
-  if (id === "header" || id === "about") return undefined;
+  if (id === "header") return undefined;
   const types = PAGE_STRUCTURE_BLOCK_MAP[id];
   return (
     team.blocks.find((b) => b.type === "schedule" && types.includes(b.type)) ??

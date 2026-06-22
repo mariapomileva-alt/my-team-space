@@ -6,6 +6,7 @@ import { TeamAppDetailSheet } from "@/components/mts/team-app/team-app-detail-sh
 import { TeamAppHeader } from "@/components/mts/team-app/team-app-header";
 import { TeamAppDashboard } from "@/components/mts/team-app/team-app-dashboard";
 import { APP_CHROME_BLOCK_TYPES } from "@/lib/blocks/block-app-meta";
+import { filterBlocksForPublicDisplay } from "@/lib/blocks/public-block-visibility";
 import { filterBlocksForViewer } from "@/lib/team-access";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -30,7 +31,13 @@ export function TeamAppPage({
   const hideNames = Boolean(team.pageSettings?.hideChildNames) && !hasAccess;
 
   const enabled = useMemo(
-    () => sortBlocks(filterBlocksForViewer(team, team.blocks, hasAccess).filter((b) => b.enabled)),
+    () =>
+      sortBlocks(
+        filterBlocksForPublicDisplay(
+          team,
+          filterBlocksForViewer(team, team.blocks, hasAccess).filter((b) => b.enabled),
+        ),
+      ),
     [team, hasAccess],
   );
 

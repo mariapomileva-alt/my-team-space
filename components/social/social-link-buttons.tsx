@@ -29,14 +29,14 @@ export function SocialLinkButtons({
 
   const btn =
     tone === "hero"
-      ? "h-9 w-9 rounded-xl"
+      ? "h-9 w-9 rounded-[10px]"
       : size === "sm"
         ? "h-10 w-10 rounded-xl"
         : "h-11 w-11 rounded-2xl";
 
   const shell =
     tone === "hero"
-      ? "border border-[color:var(--mts-card-border)] bg-[color-mix(in_srgb,var(--mts-card)_88%,var(--mts-accent-soft))] shadow-none hover:border-[color-mix(in_srgb,var(--mts-ring)_35%,var(--mts-card-border))] hover:bg-[color-mix(in_srgb,var(--mts-accent-soft)_55%,var(--mts-card))]"
+      ? "border border-[color-mix(in_srgb,var(--mts-card-border)_70%,transparent)] bg-[var(--mts-card,#fff)] shadow-[0_1px_3px_rgba(15,23,42,0.06)] hover:border-[color-mix(in_srgb,var(--mts-ring)_30%,var(--mts-card-border))]"
       : "border border-neutral-200/90 bg-white shadow-[0_2px_12px_-6px_rgba(15,23,42,0.18)] ring-1 ring-neutral-100/80 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-10px_rgba(15,23,42,0.22)]";
 
   return (

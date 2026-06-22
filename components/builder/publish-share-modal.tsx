@@ -4,6 +4,7 @@ import { TeamShareBar } from "@/components/builder/team-share-bar";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import QRCode from "react-qr-code";
 
 export function PublishShareModal({
   open,
@@ -34,7 +35,7 @@ export function PublishShareModal({
             aria-modal="true"
             aria-labelledby="publish-share-title"
             className={cn(
-              "fixed inset-x-4 top-[12%] z-[210] mx-auto max-w-md rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-2xl",
+              "fixed inset-x-4 top-[8%] z-[210] mx-auto max-w-md rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-2xl",
               "sm:inset-x-auto sm:left-1/2 sm:w-full sm:-translate-x-1/2",
             )}
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -47,8 +48,13 @@ export function PublishShareModal({
             <p className="mt-2 text-sm leading-relaxed text-zinc-600">
               Parents can now view your page. No login required for parents.
             </p>
+            <div className="mt-5 flex justify-center">
+              <div className="rounded-2xl bg-white p-3 ring-1 ring-zinc-200/80">
+                <QRCode value={shareUrl} size={168} level="M" />
+              </div>
+            </div>
             <div className="mt-5">
-              <TeamShareBar url={shareUrl} hint="This is your public team link." />
+              <TeamShareBar url={shareUrl} hint="This is the link you will send to parents." />
             </div>
             <div className="mt-5 flex flex-col gap-2 sm:flex-row">
               <Link

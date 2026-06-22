@@ -35,7 +35,7 @@ export function TeamCalendarClient({
     <TeamAdminShell teamId={teamId} team={team} activeNav="calendar">
       <div className={ADMIN_SECTION_GAP}>
         <header>
-          <h1 className={ADMIN_TITLE}>Calendar</h1>
+          <h1 className={ADMIN_TITLE}>Schedule</h1>
           <p className={ADMIN_SUBTITLE}>
             Publish upcoming races, matches and training sessions — families check here first.
           </p>

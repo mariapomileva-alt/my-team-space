@@ -85,9 +85,15 @@
   margin-top: 0.625rem;
 }
 
-.team-hero-brand.mts-app-surface {
-  border-color: color-mix(in srgb, var(--mts-card-border) 85%, transparent);
-  box-shadow: var(--mts-shadow);
+/* Club header — integrated with the page, not a floating profile card */
+.team-hero-brand {
+  background: var(--mts-card, #fff);
+  color: var(--mts-text, #1a1c23);
+}
+
+.team-app-chrome .team-hero-brand {
+  border: none;
+  box-shadow: none;
 }
 
 .hero-card__logo-anchor {
@@ -271,6 +277,21 @@
   padding-top: 0.75rem;
 }
 
+/* Logo + cover + name only — tight balance per Header Variants spec */
+.hero-card--essential-only .hero-card__body {
+  padding-top: calc(var(--hero-logo-size) * 0.38);
+  padding-bottom: 0.75rem;
+}
+
+.hero-card--overlap_large.hero-card--essential-only .hero-card__body {
+  padding-top: calc(var(--hero-logo-size) * 0.4);
+  padding-bottom: 0.625rem;
+}
+
+.hero-card--essential-only .hero-card__social {
+  margin-top: 0.5rem;
+}
+
 /* Scoped under .hero-card to outrank the generic `.mts-media-frame--logo`
    rule (same specificity, defined later) that would otherwise force 56px / square. */
 .hero-card .mts-media-frame--logo-hero-card {
@@ -296,10 +317,11 @@
 
 .hero-card__title {
   margin: 0;
+  font-family: var(--font-brand, inherit);
   /* Spec: bold title 20–24px on mobile. */
   font-size: 1.375rem;
   font-weight: 700;
-  line-height: 1.22;
+  line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--mts-text, #1a1c23);
   display: -webkit-box;
@@ -311,16 +333,16 @@
 
 @container team-hero (min-width: 540px) {
   .hero-card {
-    /* Spec: tablet logo 80–100px. */
-    --hero-logo-size: 6rem;
-    --hero-cover-height: 15.5rem;
+    /* Spec: tablet logo 88px, cover capped at 180px */
+    --hero-logo-size: 5.5rem;
+    --hero-cover-height: 11.25rem;
     --hero-identity-gap: 0.9375rem;
   }
 
   .hero-card__title {
     /* Spec cap: keep title ≤24px. */
     font-size: 1.5rem;
-    line-height: 1.2;
+    line-height: 1.18;
     letter-spacing: -0.022em;
   }
 
@@ -336,7 +358,7 @@
 @container team-hero (min-width: 720px) {
   .hero-card {
     --hero-logo-size: 6.25rem;
-    --hero-cover-height: 17rem;
+    --hero-cover-height: 11.25rem;
   }
 
   .hero-card__title {

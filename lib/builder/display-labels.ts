@@ -5,8 +5,8 @@ import type { BlockType } from "@/lib/types";
 export const BUILDER_BLOCK_DISPLAY_LABELS: Partial<Record<BlockType, string>> = {
   hero: "Header",
   announcement_bar: "Announcements",
-  calendar: "Calendar",
-  schedule: "Calendar",
+  calendar: "External calendar",
+  schedule: "Schedule",
   results: "Results",
   achievements: "Results",
   gallery: "Gallery",

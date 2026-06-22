@@ -29,13 +29,7 @@ const ORDERED_BLOCKS: BlockType[] = [
   "countdown",
 ];
 
-const DEFAULT_ENABLED: BlockType[] = [
-  "announcement_bar",
-  "hero",
-  "schedule",
-  "gallery",
-  "contacts",
-];
+const DEFAULT_ENABLED: BlockType[] = ["hero", "schedule", "gallery", "contacts"];
 
 export function createDefaultBlocks(options?: { city?: string }): BlockInstance[] {
   return ORDERED_BLOCKS.map((type, i) => {

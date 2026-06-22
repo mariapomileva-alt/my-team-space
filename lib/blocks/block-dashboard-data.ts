@@ -82,22 +82,6 @@ export type DashboardBlockData = {
   };
 };
 
-function hashSeed(str: string): number {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
-  return Math.abs(h);
-}
-
-/** Stable pseudo weekly bars for glanceable trend (until real stats exist) */
-export function weeklyTrendBars(teamId: string, rosterCount: number): number[] {
-  const seed = hashSeed(teamId + "-week");
-  const base = Math.min(92, 48 + rosterCount * 4);
-  return Array.from({ length: 7 }, (_, i) => {
-    const wobble = ((seed >> (i * 3)) & 15) - 7;
-    return Math.max(28, Math.min(100, base + wobble - (6 - i)));
-  });
-}
-
 export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial<DashboardBlockData> {
   switch (block.type) {
     case "schedule": {
@@ -112,18 +96,11 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
         time: ev.time,
         location: ev.location || undefined,
       }));
-      const preview =
-        events.length === 0
-          ? [
-              { title: "Team training", day: "Tue", time: "18:00", location: "Main hall" },
-              { title: "Friendly match", day: "Sat", time: "10:30" },
-            ]
-          : events;
       return {
         schedule: {
-          events: preview,
+          events,
           externalUrl: s.externalUrl?.trim() || undefined,
-          next: preview[0],
+          next: events[0],
         },
       };
     }
@@ -131,14 +108,11 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
       const att = team.blocks.find((b) => b.type === "attendance") ?? block;
       const roster = getBlockSettings<{ roster: { name: string }[] }>(att).roster ?? [];
       const rosterCount = roster.filter((p) => p.name?.trim()).length;
-      const count = rosterCount || 12;
-      const weekBars = weeklyTrendBars(team.id, count);
-      const weeklyRate = Math.round(weekBars.reduce((a, b) => a + b, 0) / weekBars.length);
       return {
         attendance: {
-          rosterCount: count,
-          weeklyRate,
-          weekBars,
+          rosterCount,
+          weeklyRate: 0,
+          weekBars: [],
           label: rosterCount ? `${rosterCount} athletes` : "Team roster",
         },
       };
@@ -148,74 +122,36 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
       const items = (s.items ?? [])
         .filter((r) => r.title?.trim())
         .map((r) => ({ title: r.title!, body: r.body }));
-      return {
-        camp_trip: {
-          items:
-            items.length > 0
-              ? items
-              : [
-                  { title: "Away day", body: "Bus 17:15 · kit list inside" },
-                  { title: "Hotel check-in", body: "Parents notified" },
-                ],
-        },
-      };
+      return { camp_trip: { items } };
     }
     case "documents": {
       const s = getBlockSettings<ListBlockSettings>(block);
       const docs = (s.items ?? []).filter((r) => r.title?.trim()).map((r) => ({ title: r.title! }));
-      return {
-        documents: {
-          docs:
-            docs.length > 0
-              ? docs
-              : [{ title: "Team code of conduct" }, { title: "Training expectations" }],
-        },
-      };
+      return { documents: { docs } };
     }
     case "polls": {
       const s = getBlockSettings<PollSettings>(block);
-      const q = s.question?.trim();
+      const q = s.question?.trim() ?? "";
       const options = [s.optionYes, s.optionNo].filter((o) => o?.trim()) as string[];
-      return {
-        polls: {
-          question: q || "Pizza after practice on Friday?",
-          options: options.length ? options : ["Yes", "No"],
-        },
-      };
+      return { polls: { question: q, options } };
     }
     case "team_feed": {
       const s = getBlockSettings<ListBlockSettings>(block);
       const posts = (s.items ?? [])
         .filter((r) => r.title?.trim())
         .map((r) => ({ title: r.title!, body: r.body }));
-      return {
-        team_feed: {
-          posts:
-            posts.length > 0
-              ? posts
-              : [{ title: "Regional finals Sunday", body: "Meet at 9:30 · full kit" }],
-        },
-      };
+      return { team_feed: { posts } };
     }
     case "achievements": {
       const s = getBlockSettings<{ cards: { icon: string; title: string; player: string }[] }>(block);
-      const cards = (s.cards ?? []).map((c) => ({
-        icon: c.icon || "🏆",
-        title: c.title,
-        player: c.player,
-      }));
-      return {
-        achievements: {
-          cards:
-            cards.length > 0
-              ? cards
-              : [
-                  { icon: "🏆", title: "Cup winners", player: "Team" },
-                  { icon: "⭐", title: "Player of the week", player: "Maya" },
-                  { icon: "🥇", title: "Fair play award", player: "Alex" },
-                ],
-        },
-      };
+      const cards = (s.cards ?? [])
+        .filter((c) => c.title?.trim())
+        .map((c) => ({
+          icon: c.icon || "🏆",
+          title: c.title,
+          player: c.player,
+        }));
+      return { achievements: { cards } };
     }
     case "gallery": {
       const s = getBlockSettings<{ mode: string; images: { url: string }[]; externalUrl: string }>(block);
@@ -244,11 +180,7 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
       const items = (s.items ?? [])
         .filter((r) => r.name?.trim())
         .map((r) => ({ name: r.name!, role: r.role }));
-      return {
-        contacts: {
-          items: items.length > 0 ? items : [{ name: "Coach Maria", role: "Head coach" }],
-        },
-      };
+      return { contacts: { items } };
     }
     case "calendar": {
       const s = getBlockSettings<{ externalUrl: string }>(block);
@@ -260,7 +192,7 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
         const keys = ["whatsapp", "telegram", "instagram", "website"];
         return s[keys[i]]?.trim();
       });
-      return { quick_links: { labels: labels.length ? labels : ["Chat", "Follow"] } };
+      return { quick_links: { labels } };
     }
     case "payments": {
       const s = getBlockSettings<PaymentLinkSettings>(block);
@@ -306,8 +238,8 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
       const s = getBlockSettings<{ temp?: string; note?: string; location?: string }>(block);
       return {
         weather: {
-          temp: s.temp?.trim() || "18°",
-          note: s.note?.trim() || "Outdoor pitch",
+          temp: s.temp?.trim(),
+          note: s.note?.trim(),
           location: s.location?.trim(),
         },
       };
@@ -323,15 +255,13 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
           hrs: Math.floor((diff % 86400000) / 3600000),
           min: Math.floor((diff % 3600000) / 60000),
         };
-      } else {
-        parts = { days: 12, hrs: 4, min: 30 };
       }
       return {
         countdown: {
           label: s.label?.trim() || "Next competition",
           targetLabel: target
             ? new Date(target).toLocaleDateString(undefined, { month: "short", day: "numeric" })
-            : "Soon",
+            : "",
           parts,
         },
       };
@@ -345,16 +275,12 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
       const items = roster
         .filter((p) => p.name?.trim() && p.birthday?.trim())
         .map((p) => ({ name: p.name!, date: p.birthday! }));
-      return {
-        birthdays: {
-          items: items.length > 0 ? items : [{ name: "Sam", date: "Jun 12" }],
-        },
-      };
+      return { birthdays: { items } };
     }
     case "sponsors": {
       const s = getBlockSettings<ListBlockSettings>(block);
       const names = (s.items ?? []).filter((r) => r.name?.trim()).map((r) => r.name!);
-      return { sponsors: { names: names.length > 0 ? names : ["Local Sport Shop"] } };
+      return { sponsors: { names } };
     }
     case "integrations": {
       const s = getBlockSettings<{
@@ -377,10 +303,7 @@ export function getDashboardData(team: TeamSpace, block: BlockInstance): Partial
       return {
         integrations: {
           title: s.sectionTitle?.trim() || "Integrations",
-          previews:
-            previews.length > 0
-              ? previews
-              : [{ label: "Game film", host: "hudl.com" }],
+          previews,
         },
       };
     }

@@ -80,6 +80,46 @@ export function heroVariantClass(variant: HeroLayoutVariant): string {
   return `hero-card--${variant}`;
 }
 
+export type HeroAutoInput = {
+  teamName: string;
+  logoSrc?: string;
+  tagline?: string;
+  city?: string;
+};
+
+/** Pick a header layout from logo + name — no manual design decision during setup. */
+export function pickHeroVariant(input: HeroAutoInput): HeroLayoutVariant {
+  const name = input.teamName.trim();
+  const nameLen = name.length;
+  const hasLogo = Boolean(input.logoSrc?.trim());
+  const hasSecondary = Boolean(input.tagline?.trim() || input.city?.trim());
+
+  if (!hasLogo) return "minimal";
+  if (nameLen > 26) return "inline";
+  if (nameLen > 16 && hasSecondary) return "inline";
+  if (nameLen > 16) return "circle_on_header";
+  if (!hasSecondary && nameLen <= 12) return "overlap_large";
+  return hasSecondary ? "circle_on_header" : "overlap_large";
+}
+
+export function resolveHeroVariantForTeam(
+  stored: unknown,
+  team: { name: string; tagline?: string; logoUrl?: string },
+  hero: { heroLayout?: unknown; teamPhotoUrl?: string; city?: string },
+): HeroLayoutVariant {
+  if (stored != null && stored !== "") {
+    const resolved = resolveHeroVariant(stored);
+    if (HERO_LAYOUT_VARIANTS.includes(resolved)) return resolved;
+  }
+  const logoSrc = team.logoUrl?.trim() || hero.teamPhotoUrl?.trim();
+  return pickHeroVariant({
+    teamName: team.name,
+    logoSrc,
+    tagline: team.tagline,
+    city: hero.city,
+  });
+}
+
 export const HERO_LAYOUT = {
   logoOverlapRatio: 0.5,
   identityGapMobile: "0.8125rem",
@@ -89,8 +129,7 @@ export const HERO_LAYOUT = {
   logoSizeDesktopLg: "6.25rem",
   logoRadius: "9999px",
   coverHeightMobile: "10.5rem",
-  coverHeightDesktop: "15.5rem",
-  coverHeightDesktopLg: "17rem",
+  coverHeightMax: "11.25rem",
   logoZonePercent: "25%",
   containerBreakpointDesktop: "540px",
   containerBreakpointWide: "720px",

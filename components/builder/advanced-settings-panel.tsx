@@ -1,6 +1,7 @@
 "use client";
 
 import { PrivacyAccessContent } from "@/components/builder/privacy-access-panel";
+import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
 import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
 import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
 import type { TeamMemberRole } from "@/lib/team-admin";
@@ -46,6 +47,14 @@ export function AdvancedSettingsPanel({
         memberRole={memberRole}
         onPatchTeam={onPatchTeam}
       />
+      <BuilderCollapsiblePanel
+        className="mt-4 border-zinc-200/60 bg-white"
+        title="Payments and fees"
+        description="Optional — add a payment link when you are ready to collect fees."
+        defaultExpanded={false}
+      >
+        <PaymentsTrackerPanel team={team} onPatchTeam={onPatchTeam} />
+      </BuilderCollapsiblePanel>
     </BuilderCollapsiblePanel>
   );
 }

@@ -12,7 +12,7 @@ const NAV: { id: TeamAdminNavId; href: (teamId: string) => string; label: string
   { id: "dashboard", href: (id) => `/admin/team/${id}`, label: "Dashboard", icon: "🏠" },
   { id: "build", href: (id) => `/admin/team/${id}/build`, label: "Build Page", icon: "🎨" },
   { id: "members", href: (id) => `/admin/team/${id}/members`, label: "Members", icon: "👥" },
-  { id: "calendar", href: (id) => `/admin/team/${id}/calendar`, label: "Calendar", icon: "📅" },
+  { id: "calendar", href: (id) => `/admin/team/${id}/calendar`, label: "Schedule", icon: "📅" },
   { id: "results", href: (id) => `/admin/team/${id}/results`, label: "Results", icon: "🏆" },
   { id: "settings", href: (id) => `/admin/team/${id}/settings`, label: "Settings", icon: "⚙️" },
 ];

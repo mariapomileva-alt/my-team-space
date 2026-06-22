@@ -27,6 +27,8 @@ export function BuilderToolbar({
   billingStatus,
   editLocked = false,
   canPublish = true,
+  publishBlockedByBilling = false,
+  readinessCanPublish = true,
   compact = false,
   onPublish,
   onPreview,
@@ -44,6 +46,8 @@ export function BuilderToolbar({
   billingStatus?: ReactNode;
   editLocked?: boolean;
   canPublish?: boolean;
+  publishBlockedByBilling?: boolean;
+  readinessCanPublish?: boolean;
   compact?: boolean;
   onPublish: () => void;
   onPreview: () => void;
@@ -148,15 +152,21 @@ export function BuilderToolbar({
                 {canPublish ? (
                   <button
                     type="button"
-                    disabled={pending || editLocked}
-                    title={editLocked ? "Update billing or choose your active team to publish" : undefined}
+                    disabled={pending || !readinessCanPublish || publishBlockedByBilling}
+                    title={
+                      publishBlockedByBilling
+                        ? "Subscribe to publish for parents"
+                        : !readinessCanPublish
+                          ? "Add team name and logo first"
+                          : undefined
+                    }
                     onClick={onPublish}
                     className={cn(
                       "rounded-full bg-violet-600 font-semibold text-white shadow-[0_4px_16px_-6px_rgba(124,58,237,0.45)] transition hover:bg-violet-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50",
                       compact ? "px-3.5 py-1.5 text-[11px]" : "px-4 py-2 text-xs",
                     )}
                   >
-                    {pending ? "Publishing…" : editLocked ? "Locked" : "Publish page"}
+                    {pending ? "Publishing…" : "Publish page"}
                   </button>
                 ) : null}
               </>

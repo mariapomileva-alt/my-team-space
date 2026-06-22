@@ -30,7 +30,6 @@ export type BuilderIconId =
 
 export const PAGE_STRUCTURE_ICON: Record<PageStructureNavId, BuilderIconId> = {
   header: "layout-panel",
-  about: "users",
   gallery: "image",
   schedule: "calendar",
   results: "trophy",

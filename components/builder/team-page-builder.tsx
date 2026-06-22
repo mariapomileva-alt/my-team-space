@@ -35,6 +35,7 @@ import {
 } from "@/lib/builder/layout";
 import type { BuilderProgressTarget } from "@/components/builder/builder-progress";
 import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
+import { PUBLISH_CHECKOUT_MESSAGE, publishRequiresCheckout } from "@/lib/billing/publish-access";
 import { resolvePreviewBlockId, structureNavIdForBlockType, type PageStructureNavId } from "@/lib/builder/page-structure";
 import { applyBlockOrder, builderSortBlocks, partitionBlocksByEnabled } from "@/lib/blocks/meta";
 import {
@@ -77,14 +78,16 @@ export function TeamPageBuilder({
   billing?: BuilderBillingContext | null;
   embedded?: boolean;
 }) {
-  /** One team on Single Team plan is always editable in the builder. */
   const canEdit =
     billing == null ? true : billing.canEdit || billing.teamsUsed <= 1;
   const editLocked = billing != null && !canEdit;
+  const publishBlockedByBilling = publishRequiresCheckout(billing);
   const siteUrl = siteOriginFromPublicTeamUrl(publicUrl);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [team, setTeam] = useState<TeamSpace>(initialTeam);
+  const completionGuidance = useMemo(() => getCompletionGuidance(team), [team]);
+  const readinessCanPublish = completionGuidance.canPublish;
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -105,7 +108,6 @@ export function TeamPageBuilder({
   const previewColumnRef = useRef<HTMLElement>(null);
   const [openSection, setOpenSection] = useState<WorkspaceSection | null>("header");
   const [activeStructureNav, setActiveStructureNav] = useState<PageStructureNavId | null>("header");
-  const [aboutFocusKey, setAboutFocusKey] = useState(0);
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
   const [mobileTab, setMobileTab] = useState<BuilderMobileTab>("edit");
   const [fullPreviewOpen, setFullPreviewOpen] = useState(false);
@@ -255,7 +257,11 @@ export function TeamPageBuilder({
       const { updatedAt } = await saveTeamContent(teamId, payload, options);
       dirtyRef.current = false;
       clearTeamPreviewLocal(teamRef.current.slug);
-      setTeam((prev) => ({ ...prev, updatedAt }));
+      setTeam((prev) => ({
+        ...prev,
+        updatedAt,
+        ...(options?.publish ? { publishStatus: "published" as const } : {}),
+      }));
       setLastSaved(new Date());
       setSaveState("saved");
       setSaveError(null);
@@ -410,6 +416,15 @@ export function TeamPageBuilder({
   }
 
   function publish() {
+    if (publishBlockedByBilling) {
+      setMsg(PUBLISH_CHECKOUT_MESSAGE);
+      return;
+    }
+    if (!readinessCanPublish) {
+      setMsg("Add your team name and logo before publishing.");
+      navigateToStructureItem("header");
+      return;
+    }
     startTransition(async () => {
       const wasLive = teamRef.current.publishStatus === "published";
       const guidance = getCompletionGuidance(teamRef.current);
@@ -489,12 +504,6 @@ export function TeamPageBuilder({
 
     if (id === "header") {
       focusWorkspaceSection("header");
-      return;
-    }
-
-    if (id === "about") {
-      focusWorkspaceSection("header");
-      setAboutFocusKey((k) => k + 1);
       return;
     }
 
@@ -629,18 +638,18 @@ export function TeamPageBuilder({
           shareHint={shareHint}
           compact={embedded}
           progress={
-            embedded ? undefined : (
-              <SetupProgressStrip
-                team={team}
-                onJump={jumpTo}
-                onPublish={publish}
-                onShare={openShareModal}
-              />
-            )
+            <SetupProgressStrip
+              team={team}
+              onJump={jumpTo}
+              onPublish={publish}
+              onShare={openShareModal}
+            />
           }
           billingStatus={billing ? <BuilderBillingStatus billing={billing} /> : null}
           editLocked={editLocked}
           canPublish={memberRole === "coach"}
+          publishBlockedByBilling={publishBlockedByBilling}
+          readinessCanPublish={readinessCanPublish}
           onPublish={publish}
           onShare={openShareModal}
           onPreview={() => {
@@ -673,6 +682,8 @@ export function TeamPageBuilder({
                 activeId={activeStructureNav}
                 onSelect={navigateToStructureItem}
                 onJump={jumpTo}
+                onPublish={publish}
+                onShare={openShareModal}
               />
             </aside>
           ) : null}
@@ -697,9 +708,8 @@ export function TeamPageBuilder({
                 heroBlock={heroBlock}
                 onPatchTeam={patchTeam}
                 onPatchBlock={patchBlock}
-                expanded={openSection === "header" || activeStructureNav === "header" || activeStructureNav === "about"}
+                expanded={openSection === "header" || activeStructureNav === "header"}
                 onExpandedChange={(open) => setWorkspaceExpanded("header", open)}
-                focusAboutKey={aboutFocusKey}
               />
             </div>
 
@@ -717,22 +727,24 @@ export function TeamPageBuilder({
             ) : null}
 
             <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-6">
-              <PageBlocksPanel
-                blocks={pageBlocks}
-                team={team}
-                expanded={expanded}
-                onToggleExpand={toggleExpand}
-                onToggleEnabled={toggleBlock}
-                onPatchBlock={patchBlock}
-                onPatchTeam={patchTeam}
-                onPreviewBlock={handlePreviewBlock}
-                onMoveUp={(id) => moveBlock(id, -1)}
-                onMoveDown={(id) => moveBlock(id, 1)}
-                onDragEnd={onDragEnd}
-                onQuickAdd={quickAddBlock}
-                workspaceExpanded={openSection === "sections"}
-                onWorkspaceExpandedChange={(open) => setWorkspaceExpanded("sections", open)}
-              />
+              {!embedded ? (
+                <PageBlocksPanel
+                  blocks={pageBlocks}
+                  team={team}
+                  expanded={expanded}
+                  onToggleExpand={toggleExpand}
+                  onToggleEnabled={toggleBlock}
+                  onPatchBlock={patchBlock}
+                  onPatchTeam={patchTeam}
+                  onPreviewBlock={handlePreviewBlock}
+                  onMoveUp={(id) => moveBlock(id, -1)}
+                  onMoveDown={(id) => moveBlock(id, 1)}
+                  onDragEnd={onDragEnd}
+                  onQuickAdd={quickAddBlock}
+                  workspaceExpanded={openSection === "sections"}
+                  onWorkspaceExpandedChange={(open) => setWorkspaceExpanded("sections", open)}
+                />
+              ) : null}
             </div>
 
             <div ref={designRef} id="builder-design" className="scroll-mt-6">
@@ -821,7 +833,8 @@ export function TeamPageBuilder({
         <BuilderMobileActionBar
           team={team}
           pending={pending}
-          editLocked={editLocked}
+          publishBlockedByBilling={publishBlockedByBilling}
+          readinessCanPublish={readinessCanPublish}
           canPublish={memberRole === "coach"}
           onPreview={() => {
             setFullPreviewOpen(true);

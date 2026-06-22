@@ -103,10 +103,10 @@ export const BLOCK_META: Record<BlockType, BlockMeta> = {
   },
   payments: {
     type: "payments",
-    title: "Payments",
+    title: "Payments and fees",
     emoji: "💳",
-    description: "One main payment link — membership, camp, or competition fees.",
-    section: "essential",
+    description: "Optional — one payment link for membership, camp, or competition fees.",
+    section: "advanced",
     previewShape: "card",
     priority: 5.2,
     canDisable: true,

@@ -63,6 +63,9 @@ export function TeamHeroCard({
   const isInline = variant === "inline" || variant === "square";
   const showLogo = !isMinimal;
 
+  const hasOptionalMeta = Boolean(tagline?.trim() || city?.trim() || socialLinks.length > 0);
+  const essentialOnly = !hasOptionalMeta;
+
   const liveBadge = (
     <span
       className={cn(
@@ -101,19 +104,20 @@ export function TeamHeroCard({
 
   const showBody = Boolean(
     isCoverIdentity
-      ? tagline?.trim() || city?.trim() || socialLinks.length > 0
+      ? hasOptionalMeta
       : isMinimal
         ? socialLinks.length > 0
         : true,
   );
 
   return (
-    <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="relative">
+    <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="relative">
       <div
         className={cn(
           HERO_LAYOUT.root,
           heroVariantClass(variant),
-          "team-hero-brand mts-app-surface overflow-hidden rounded-[1.35rem]",
+          "team-hero-brand overflow-hidden rounded-[1.25rem]",
+          essentialOnly && "hero-card--essential-only",
         )}
       >
         <div className={HERO_LAYOUT.cover}>

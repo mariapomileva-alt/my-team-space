@@ -14,6 +14,8 @@ export function BuilderPageStructureNav({
   activeId,
   onSelect,
   onJump,
+  onPublish,
+  onShare,
   className,
 }: {
   teamId: string;
@@ -21,6 +23,8 @@ export function BuilderPageStructureNav({
   activeId: PageStructureNavId | null;
   onSelect: (id: PageStructureNavId) => void;
   onJump?: (target: BuilderProgressTarget) => void;
+  onPublish?: () => void;
+  onShare?: () => void;
   className?: string;
 }) {
   const items = getPageStructureNav(team);
@@ -41,11 +45,18 @@ export function BuilderPageStructureNav({
           </p>
         </div>
         {next ? (
-          onJump ? (
+          onJump || onPublish || onShare ? (
             <button
               type="button"
               onClick={() => {
-                if (next.id === "publish" || next.id === "share") return;
+                if (next.id === "publish") {
+                  onPublish?.();
+                  return;
+                }
+                if (next.id === "share") {
+                  onShare?.();
+                  return;
+                }
                 const map: Record<string, BuilderProgressTarget> = {
                   team_name: "identity",
                   logo: "identity",
@@ -53,7 +64,7 @@ export function BuilderPageStructureNav({
                   contacts: "contacts",
                 };
                 const target = map[next.id];
-                if (target) onJump(target);
+                if (target) onJump?.(target);
               }}
               className="mt-1 w-full text-left text-[11px] leading-snug text-zinc-600 transition hover:text-violet-800"
             >

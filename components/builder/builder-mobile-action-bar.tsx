@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils/cn";
 export function BuilderMobileActionBar({
   team,
   pending,
-  editLocked,
+  publishBlockedByBilling,
+  readinessCanPublish,
   canPublish,
   onPreview,
   onPublish,
@@ -16,7 +17,8 @@ export function BuilderMobileActionBar({
 }: {
   team: TeamSpace;
   pending: boolean;
-  editLocked: boolean;
+  publishBlockedByBilling: boolean;
+  readinessCanPublish: boolean;
   canPublish: boolean;
   onPreview: () => void;
   onPublish: () => void;
@@ -45,7 +47,7 @@ export function BuilderMobileActionBar({
               onClick={onShare}
               className="flex-1 rounded-full bg-violet-600 py-3 text-sm font-semibold text-white shadow-sm"
             >
-              Share
+              Share with parents
             </button>
           </>
         ) : (
@@ -60,7 +62,7 @@ export function BuilderMobileActionBar({
             {canPublish ? (
               <button
                 type="button"
-                disabled={pending || editLocked}
+                disabled={pending || !readinessCanPublish || publishBlockedByBilling}
                 onClick={onPublish}
                 className={cn(
                   "flex-1 rounded-full bg-violet-600 py-3 text-sm font-semibold text-white shadow-sm",

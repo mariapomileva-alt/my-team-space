@@ -3,7 +3,6 @@ import type { BlockType, TeamSpace } from "@/lib/types";
 
 export type PageStructureNavId =
   | "header"
-  | "about"
   | "gallery"
   | "schedule"
   | "results"
@@ -24,6 +23,8 @@ type HeroSettings = {
   description?: string;
   coverImageUrl: string;
   teamPhotoUrl?: string;
+  city?: string;
+  social?: { whatsapp?: string };
 };
 
 function heroSettings(team: TeamSpace) {
@@ -40,10 +41,6 @@ function headerDone(team: TeamSpace, hs: HeroSettings | undefined) {
   const hasLogo = Boolean((team.logoUrl ?? hs?.teamPhotoUrl ?? "").trim());
   const hasCover = Boolean(hs?.coverImageUrl?.trim());
   return hasName && hasLogo && hasCover;
-}
-
-function aboutDone(team: TeamSpace, hs: ReturnType<typeof heroSettings>) {
-  return Boolean(team.tagline?.trim() || hs?.description?.trim() || hs?.quote?.trim());
 }
 
 function galleryDone(team: TeamSpace) {
@@ -99,15 +96,8 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
   const items: PageStructureNavItem[] = [
     {
       id: "header",
-      label: "Header",
+      label: "Team profile",
       done: headerDone(team, hs),
-      enabled: true,
-      blockTypes: ["hero"],
-    },
-    {
-      id: "about",
-      label: "About Team",
-      done: aboutDone(team, hs),
       enabled: true,
       blockTypes: ["hero"],
     },
@@ -156,10 +146,8 @@ export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
   return items;
 }
 
-export const PAGE_STRUCTURE_BLOCK_MAP: Record<
-  Exclude<PageStructureNavId, "header" | "about">,
-  BlockType[]
-> = {
+export const PAGE_STRUCTURE_BLOCK_MAP: Record<PageStructureNavId, BlockType[]> = {
+  header: ["hero"],
   gallery: ["gallery"],
   schedule: ["schedule", "calendar"],
   results: ["results"],
@@ -169,7 +157,7 @@ export const PAGE_STRUCTURE_BLOCK_MAP: Record<
 
 /** Block id to highlight in live preview when a sidebar section is selected. */
 export function resolvePreviewBlockId(team: TeamSpace, id: PageStructureNavId): string | null {
-  if (id === "header" || id === "about") {
+  if (id === "header") {
     return team.blocks.find((b) => b.type === "hero")?.id ?? null;
   }
   const types = PAGE_STRUCTURE_BLOCK_MAP[id];

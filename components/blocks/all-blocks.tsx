@@ -28,7 +28,7 @@ import { PaymentLinkCard } from "@/components/blocks/payment-link-card";
 import { QuickActionsGrid, validQuickActions } from "@/components/blocks/quick-actions-grid";
 import { TeamShopGrid, validTeamShopProducts } from "@/components/blocks/team-shop-grid";
 import { TeamHeroCard } from "@/components/blocks/team-hero-card";
-import { resolveHeroVariant, type HeroLayoutVariant } from "@/lib/blocks/hero-layout";
+import { resolveHeroVariantForTeam, type HeroLayoutVariant } from "@/lib/blocks/hero-layout";
 import { MtsGalleryPhoto } from "@/components/mts/media/mts-media";
 import {
   SocialLinkButtons,
@@ -65,16 +65,16 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
       city={s.city}
       coverSrc={s.coverImageUrl}
       socialLinks={socialLinks}
-      variant={resolveHeroVariant(s.heroLayout)}
+      variant={resolveHeroVariantForTeam(s.heroLayout, team, s)}
     />
   );
 }
 
 export function BlockAnnouncementBar({ team: _team, block, embedded }: BlockProps) {
   const s = getBlockSettings<{ message: string; urgent?: boolean; tone?: "info" | "urgent" | "confirm" }>(block);
+  const text = s.message?.trim();
+  if (!text || embedded) return null;
   const tone = s.tone ?? (s.urgent ? "urgent" : "info");
-  const text = s.message?.trim() || "Welcome to our team page!";
-  if (embedded) return null;
   const shell =
     tone === "urgent"
       ? "border-rose-200/90 bg-gradient-to-r from-rose-50 to-orange-50 text-rose-950"
@@ -106,7 +106,7 @@ export function BlockCalendar({ block, embedded }: BlockProps) {
     <BlockSurface embedded={embedded}>
       <div className="mb-4 flex items-center justify-between">
         <BlockHeading embedded={embedded} className="mb-0">
-          Calendar
+          Schedule
         </BlockHeading>
         {url ? <MtsBadge>Linked</MtsBadge> : null}
       </div>
@@ -115,7 +115,7 @@ export function BlockCalendar({ block, embedded }: BlockProps) {
           Open team calendar
         </a>
       ) : (
-        <BlockEmpty message="Calendar link coming soon." />
+        <BlockEmpty message="Schedule link coming soon." />
       )}
     </BlockSurface>
   );

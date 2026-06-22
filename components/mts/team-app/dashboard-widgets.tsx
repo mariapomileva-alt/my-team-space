@@ -57,6 +57,7 @@ export function ScheduleDashboardCard({
 }) {
   const d = getDashboardData(team, block).schedule!;
   const next = d.next ?? d.events[0];
+  if (!next) return null;
   const metaLine = [next.day, next.time].filter(Boolean).join(" · ");
   return (
     <DashboardCard onClick={onOpen} index={index} accent="sky" compact={compact} featured={featured}>
@@ -103,30 +104,40 @@ export function AttendanceDashboardCard({
     <DashboardCard onClick={onOpen} index={index} accent="emerald" compact={compact} featured={featured}>
       <DashboardLabel action={<DashboardChevron />}>Attendance</DashboardLabel>
       <div className="flex items-center gap-3">
-        <div className="relative shrink-0">
-          <RingProgress value={d.weeklyRate} size={compact ? 46 : 52} />
-          <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-emerald-700">
-            {d.weeklyRate}%
+        {d.weeklyRate > 0 ? (
+          <div className="relative shrink-0">
+            <RingProgress value={d.weeklyRate} size={compact ? 46 : 52} />
+            <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-emerald-700">
+              {d.weeklyRate}%
+            </span>
+          </div>
+        ) : (
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-lg" aria-hidden>
+            ✅
           </span>
-        </div>
+        )}
         <div className="min-w-0 flex-1">
           <p className={compact ? dashboardTileTitle : "text-[13px] font-bold text-[color:var(--mts-text)]"}>
             {d.label}
           </p>
-          <p className={dashboardTileMeta}>Weekly check-in</p>
+          <p className={dashboardTileMeta}>
+            {d.weeklyRate > 0 ? "Weekly check-in" : "Team roster"}
+          </p>
         </div>
       </div>
-      <div className="mt-2.5 flex h-9 items-end justify-between gap-1" aria-hidden>
-        {d.weekBars.map((h, i) => (
-          <motion.div
-            key={i}
-            className="flex-1 rounded-md bg-emerald-400/85"
-            initial={{ height: 4 }}
-            animate={{ height: `${Math.max(28, Math.round(h * 0.34))}%` }}
-            transition={{ delay: 0.04 * i, duration: 0.35 }}
-          />
-        ))}
-      </div>
+      {d.weekBars.length > 0 ? (
+        <div className="mt-2.5 flex h-9 items-end justify-between gap-1" aria-hidden>
+          {d.weekBars.map((h, i) => (
+            <motion.div
+              key={i}
+              className="flex-1 rounded-md bg-emerald-400/85"
+              initial={{ height: 4 }}
+              animate={{ height: `${Math.max(28, Math.round(h * 0.34))}%` }}
+              transition={{ delay: 0.04 * i, duration: 0.35 }}
+            />
+          ))}
+        </div>
+      ) : null}
     </DashboardCard>
   );
 }

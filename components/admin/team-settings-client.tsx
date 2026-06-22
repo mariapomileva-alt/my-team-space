@@ -1,7 +1,6 @@
 "use client";
 
 import { AdvancedSettingsPanel } from "@/components/builder/advanced-settings-panel";
-import { PaymentsTrackerPanel } from "@/components/builder/payments-tracker-panel";
 import { TeamAdminShell } from "@/components/admin/team-admin-shell";
 import { saveTeamContent } from "@/app/admin/(protected)/team/[teamId]/server-actions";
 import { ADMIN_CARD, ADMIN_CARD_PAD, ADMIN_SECTION_GAP, ADMIN_SUBTITLE, ADMIN_TITLE } from "@/lib/admin/admin-layout";
@@ -52,7 +51,8 @@ export function TeamSettingsClient({
 
         <section className={cn(ADMIN_CARD, ADMIN_CARD_PAD, "space-y-6")}>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-400">Public link</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-400">Page link</p>
+            <p className="mt-1 text-[11px] text-zinc-500">This is the link you will send to parents.</p>
             <a
               href={publicUrl}
               target="_blank"
@@ -75,8 +75,6 @@ export function TeamSettingsClient({
           memberRole={memberRole}
           onPatchTeam={patchTeam}
         />
-
-        <PaymentsTrackerPanel team={team} onPatchTeam={patchTeam} />
       </div>
     </TeamAdminShell>
   );

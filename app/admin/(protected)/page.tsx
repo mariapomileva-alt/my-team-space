@@ -78,6 +78,8 @@ export default async function AdminHomePage({
   const billingConfigured = isBillingConfigured();
   const needsFirstTeamSetup = ownedTeams.length === 0 && !isAssistantOnly && !fatalError;
   const hasOwnedTeam = ownedTeams.length > 0;
+  const deferBillingCta =
+    hasOwnedTeam && teamsUsed <= 1 && primaryTeam?.publish_status !== "published";
 
   function publishLabel(status: string | null | undefined) {
     return status === "published" ? "Live" : "Not live";
@@ -197,7 +199,7 @@ export default async function AdminHomePage({
           </div>
         ) : null}
 
-        {isCoach && !billingActive && hasOwnedTeam ? (
+        {isCoach && !billingActive && hasOwnedTeam && !deferBillingCta ? (
           <div
             role="status"
             className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
@@ -285,7 +287,7 @@ export default async function AdminHomePage({
                       Manage billing
                     </button>
                   </form>
-                ) : billingConfigured ? (
+                ) : billingConfigured && !deferBillingCta ? (
                   <form action={startCheckoutFormAction}>
                     <input type="hidden" name="plan" value={checkoutPlanDefault} />
                     <button
@@ -351,7 +353,7 @@ export default async function AdminHomePage({
           </section>
         ) : null}
 
-        {isCoach && billingConfigured && (startPlan || (!billingActive && !hasLemonSubscription && hasOwnedTeam)) ? (
+        {isCoach && billingConfigured && !deferBillingCta && (startPlan || (!billingActive && !hasLemonSubscription && hasOwnedTeam)) ? (
           <section className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm text-indigo-950">
             <p className="font-semibold">
               {checkoutPlanDefault === "academy" ? "Upgrade to Academy Plan" : "Start Team Plan"}
