@@ -178,38 +178,65 @@
 
 /* === 4 — Logo left, text right === */
 .hero-card--inline .hero-card__identity {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--hero-logo-size) minmax(0, 1fr);
+  column-gap: 0.75rem;
+  row-gap: 0.625rem;
   align-items: center;
-  gap: var(--hero-identity-gap);
   margin-top: calc(var(--hero-logo-size) * -0.5);
 }
 
 .hero-card--inline .hero-card__logo-spacer {
-  flex: 0 0 var(--hero-logo-size);
+  grid-column: 1;
+  grid-row: 1;
   width: var(--hero-logo-size);
+  min-height: 1px;
 }
 
 .hero-card--inline .hero-card__text-zone {
-  flex: 1 1 0;
+  grid-column: 2;
+  grid-row: 1;
   padding-top: 0;
+}
+
+.hero-card--inline .hero-card__social--inline-row {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin-top: 0;
+}
+
+.hero-card--inline .hero-card__body,
+.hero-card--square .hero-card__body {
+  padding-top: calc(var(--hero-logo-size) * 0.42);
 }
 
 /* === 5 — Square logo layout === */
 .hero-card--square .hero-card__identity {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--hero-logo-size) minmax(0, 1fr);
+  column-gap: 0.75rem;
+  row-gap: 0.625rem;
   align-items: center;
-  gap: var(--hero-identity-gap);
   margin-top: calc(var(--hero-logo-size) * -0.5);
 }
 
 .hero-card--square .hero-card__logo-spacer {
-  flex: 0 0 var(--hero-logo-size);
+  grid-column: 1;
+  grid-row: 1;
   width: var(--hero-logo-size);
+  min-height: 1px;
 }
 
 .hero-card--square .hero-card__text-zone {
-  flex: 1 1 0;
+  grid-column: 2;
+  grid-row: 1;
   padding-top: 0;
+}
+
+.hero-card--square .hero-card__social--inline-row {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin-top: 0;
 }
 
 .hero-card--square .mts-media-frame--logo-hero-card {
@@ -288,14 +315,6 @@
     --hero-logo-size: 6rem;
     --hero-cover-height: 15.5rem;
     --hero-identity-gap: 0.9375rem;
-  }
-
-  .hero-card--inline .hero-card__logo-spacer,
-  .hero-card--square .hero-card__logo-spacer {
-    flex: 0 0 25%;
-    width: auto;
-    min-width: var(--hero-logo-size);
-    max-width: 25%;
   }
 
   .hero-card__title {

@@ -87,11 +87,16 @@ export function TeamHeroCard({
     socialLinks.length > 0 ? (
       <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
     ) : null
+  ) : isInline ? (
+    <>
+      <HeroTitle teamName={teamName} />
+      <HeroMeta tagline={tagline} city={city} socialLinks={[]} />
+    </>
   ) : (
-  <>
-    <HeroTitle teamName={teamName} />
-    <HeroMeta tagline={tagline} city={city} socialLinks={socialLinks} />
-  </>
+    <>
+      <HeroTitle teamName={teamName} />
+      <HeroMeta tagline={tagline} city={city} socialLinks={socialLinks} />
+    </>
   );
 
   const showBody = Boolean(
@@ -158,6 +163,14 @@ export function TeamHeroCard({
               <div className={HERO_LAYOUT.identity}>
                 <div className="hero-card__logo-spacer" aria-hidden />
                 <div className={HERO_LAYOUT.textZone}>{bodyContent}</div>
+                {socialLinks.length > 0 ? (
+                  <SocialLinkButtons
+                    links={socialLinks}
+                    size="sm"
+                    tone="hero"
+                    className="hero-card__social hero-card__social--inline-row"
+                  />
+                ) : null}
               </div>
             ) : (
               <div className={HERO_LAYOUT.textZone}>{bodyContent}</div>
