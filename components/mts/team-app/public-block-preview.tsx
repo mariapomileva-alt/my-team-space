@@ -312,7 +312,7 @@ function AchievementsPreview({ team, block }: { team: TeamSpace; block: BlockIns
   const d = getDashboardData(team, block).achievements;
   if (!d?.cards.length) return null;
   return (
-    <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-2">
+    <div className="team-public-inner-grid-2">
       {d.cards.slice(0, 2).map((c, i) => (
         <div
           key={`${c.title}-${i}`}

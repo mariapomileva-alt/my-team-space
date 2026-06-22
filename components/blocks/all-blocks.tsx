@@ -360,7 +360,7 @@ export function BlockGallery({ block, embedded }: BlockProps) {
       ) : images.length === 0 ? (
         <BlockEmpty message="Photos from trainings and events will appear here." />
       ) : (
-        <div className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-3">
+        <div className="team-public-inner-grid-3">
           {images.map((img, i) => (
             <MtsGalleryPhoto key={i} src={img.url} alt="" />
           ))}

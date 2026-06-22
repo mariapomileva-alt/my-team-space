@@ -766,8 +766,19 @@
 }
 
 .team-app-detail-content {
+  container-type: inline-size;
+  container-name: team-app-detail;
   font-size: 0.9375rem;
   line-height: 1.5;
+}
+
+/* Detail sheet: never use viewport-based multi-column integration grids */
+@container team-app-detail (max-width: 47.99rem) {
+  .team-app-detail-content .integrations-scroll-rail {
+    display: flex !important;
+    overflow-x: auto !important;
+    grid-template-columns: unset !important;
+  }
 }
 
 .team-app-detail-content .mts-card {
@@ -823,7 +834,7 @@
 }
 
 /* ── Module cards (public team hub) ─────────────────────────────────────── */
-/* <1024px: max 2 columns (2 only with --double). ≥1024px: 3 columns. */
+/* Column count uses @container (not viewport) so builder phone preview stays correct. */
 
 .team-module-grid {
   container-type: inline-size;
@@ -832,6 +843,7 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 0.875rem;
   justify-items: stretch;
+  width: 100%;
 }
 
 .team-module-grid--double {
@@ -854,6 +866,7 @@
   box-sizing: border-box;
 }
 
+/* Default: every card spans the full row */
 .team-module-grid__item--full,
 .team-module-grid__item--standard {
   grid-column: 1 / -1;
@@ -863,49 +876,47 @@
   grid-column: 1 / -1;
 }
 
-/* Below desktop: never allow a 3-column module grid */
-@media (max-width: 1023.98px) {
-  .team-module-grid {
+/* Narrow containers (phones, builder preview): always single column */
+@container team-module-grid (max-width: 47.99rem) {
+  .team-module-grid,
+  .team-module-grid--double {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 
+  .team-module-grid__item--half,
+  .team-module-grid__item--standard,
+  .team-module-grid__item--full {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+/* Compact pair layout: two columns only when container is wide enough */
+@container team-module-grid (min-width: 22rem) and (max-width: 47.99rem) {
   .team-module-grid--double {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
-  .team-module-grid--double .team-module-grid__item--full {
+  .team-module-grid--double .team-module-grid__item--full,
+  .team-module-grid--double .team-module-grid__item--standard {
     grid-column: 1 / -1 !important;
-  }
-
-  .team-module-grid__item--standard {
-    grid-column: 1 / -1 !important;
-  }
-}
-
-/* Collapse compact pairs when the grid is too narrow for readable halves */
-@container team-module-grid (max-width: 22rem) {
-  .team-module-grid--double {
-    grid-template-columns: minmax(0, 1fr) !important;
   }
 
   .team-module-grid--double .team-module-grid__item--half {
-    grid-column: 1 / -1 !important;
+    grid-column: auto !important;
   }
 }
 
-@media (min-width: 768px) {
+@container team-module-grid (min-width: 48rem) {
   .team-module-grid {
     gap: 1rem;
   }
 }
 
-@media (min-width: 1024px) {
-  .team-module-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-
+/* Desktop: three columns when the content area is truly wide */
+@container team-module-grid (min-width: 48rem) {
+  .team-module-grid,
   .team-module-grid--double {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .team-module-grid__item--full {
@@ -918,21 +929,9 @@
   }
 }
 
-/* Prevent 3-column inner grids inside public module cards on narrow widths */
-@media (max-width: 1023.98px) {
-  .team-module-card .grid-cols-3 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@container team-module-grid (max-width: 22rem) {
-  .team-module-card .min-\[420px\]\:grid-cols-2,
-  .team-module-card .min-\[420px\]\:grid-cols-3 {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-}
-
 .team-module-card {
+  container-type: inline-size;
+  container-name: team-module-card;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -943,6 +942,38 @@
   border: 1px solid color-mix(in srgb, var(--mts-card-border) 55%, transparent);
   background: var(--mts-card, #fff);
   box-shadow: 0 2px 16px -10px rgba(15, 23, 42, 0.1);
+}
+
+/* Inner card grids — container-based, never viewport-based */
+.team-public-inner-grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+@container team-module-card (min-width: 18rem) {
+  .team-public-inner-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.team-public-inner-grid-3 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+@container team-module-card (min-width: 26rem) {
+  .team-public-inner-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container team-module-card (max-width: 25.99rem) {
+  .team-public-inner-grid-2,
+  .team-public-inner-grid-3 {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
 }
 
 .team-module-card__head {
