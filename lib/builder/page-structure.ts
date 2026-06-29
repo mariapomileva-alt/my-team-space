@@ -24,6 +24,38 @@ export const CORE_PAGE_NAV_IDS: PageStructureNavId[] = [
   "contacts",
 ];
 
+/** Always visible under More sections — coaches can turn them on from the nav. */
+export const MORE_PAGE_NAV_IDS: PageStructureNavId[] = [
+  "announcement_bar",
+  "achievements",
+  "quick_links",
+  "payments",
+  "quick_actions",
+  "integrations",
+  "team_shop",
+  "polls",
+  "team_feed",
+  "attendance",
+];
+
+const ADVANCED_PAGE_NAV_IDS = new Set<PageStructureNavId>([
+  "camp_trip",
+  "documents",
+  "resources",
+  "birthdays",
+  "sponsors",
+  "weather",
+  "countdown",
+]);
+
+function shouldShowNavItem(team: TeamSpace, id: PageStructureNavId): boolean {
+  if (id === "header") return true;
+  if (CORE_PAGE_NAV_IDS.includes(id)) return true;
+  if (MORE_PAGE_NAV_IDS.includes(id)) return true;
+  if (ADVANCED_PAGE_NAV_IDS.has(id)) return navItemEnabled(team, id);
+  return team.blocks.some((b) => blockTypesForNav(id).includes(b.type));
+}
+
 /** Full builder sidebar order — announcements, payments, integrations, etc. */
 export const BUILDER_NAV_ORDER: PageStructureNavId[] = [
   "header",
@@ -206,11 +238,11 @@ function navItemEnabled(team: TeamSpace, id: PageStructureNavId): boolean {
   return team.blocks.some((b) => types.includes(b.type) && b.enabled);
 }
 
-/** Sidebar page map — always lists every builder section (core + more). */
+/** Sidebar page map — core sections plus coach-friendly More sections. */
 export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
   const coreSet = new Set<PageStructureNavId>(CORE_PAGE_NAV_IDS);
 
-  return BUILDER_NAV_ORDER.map((id) => ({
+  return BUILDER_NAV_ORDER.filter((id) => shouldShowNavItem(team, id)).map((id) => ({
     id,
     label: navLabel(id),
     done: navItemDone(team, id),

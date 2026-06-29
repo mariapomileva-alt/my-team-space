@@ -52,4 +52,19 @@ describe("getPageStructureNav", () => {
     expect(BUILDER_NAV_ORDER.indexOf("payments")).toBeLessThan(BUILDER_NAV_ORDER.indexOf("integrations"));
     expect(BUILDER_NAV_ORDER.indexOf("announcement_bar")).toBeLessThan(BUILDER_NAV_ORDER.indexOf("gallery"));
   });
+
+  it("uses distinct labels for results board and trophies", () => {
+    const items = getPageStructureNav(demoTeam());
+    expect(items.find((i) => i.id === "results")?.label).toBe("Results board");
+    expect(items.find((i) => i.id === "achievements")?.label).toBe("Trophies");
+    const labels = items.map((i) => i.label);
+    expect(new Set(labels).size).toBe(labels.length);
+  });
+
+  it("hides advanced sections until they are enabled on the page", () => {
+    const team = demoTeam();
+    const ids = getPageStructureNav(team).map((i) => i.id);
+    expect(ids).not.toContain("weather");
+    expect(ids).not.toContain("countdown");
+  });
 });

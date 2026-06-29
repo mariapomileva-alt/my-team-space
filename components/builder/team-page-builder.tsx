@@ -36,7 +36,7 @@ import {
 import type { BuilderProgressTarget } from "@/components/builder/builder-progress";
 import { builderToolbarStatusLabel, getCompletionGuidance } from "@/lib/builder/page-completion";
 import { PUBLISH_CHECKOUT_MESSAGE, publishRequiresCheckout } from "@/lib/billing/publish-access";
-import { resolvePreviewBlockId, structureNavIdForBlockType, type PageStructureNavId } from "@/lib/builder/page-structure";
+import { resolvePreviewBlockId, PAGE_STRUCTURE_BLOCK_MAP, structureNavIdForBlockType, type PageStructureNavId } from "@/lib/builder/page-structure";
 import { applyBlockOrder, builderSortBlocks, partitionBlocksByEnabled } from "@/lib/blocks/meta";
 import {
   readStoredPreviewMode,
@@ -506,6 +506,12 @@ export function TeamPageBuilder({
     if (id === "header") {
       focusWorkspaceSection("header");
       return;
+    }
+
+    const types = PAGE_STRUCTURE_BLOCK_MAP[id];
+    const block = teamRef.current.blocks.find((b) => types.includes(b.type));
+    if (block && !block.enabled) {
+      quickAddBlock(block.type);
     }
 
     window.setTimeout(() => scrollTo(focusedSectionRef.current), 80);
