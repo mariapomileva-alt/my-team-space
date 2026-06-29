@@ -38,6 +38,7 @@ type Props = {
   onQuickAdd: (type: BlockType) => void;
   workspaceExpanded?: boolean;
   onWorkspaceExpandedChange?: (expanded: boolean) => void;
+  embedded?: boolean;
 };
 
 export function PageBlocksPanel({
@@ -55,6 +56,7 @@ export function PageBlocksPanel({
   onQuickAdd,
   workspaceExpanded,
   onWorkspaceExpandedChange,
+  embedded = false,
 }: Props) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -82,8 +84,8 @@ export function PageBlocksPanel({
       className={BUILDER_PANEL_SURFACE}
       expanded={workspaceExpanded}
       onExpandedChange={onWorkspaceExpandedChange}
-      title="Sections"
-      description="Manage page blocks."
+      title={embedded ? "Reorder sections" : "Sections"}
+      description={embedded ? "Drag to change order, or turn sections off to hide them from your public page." : "Manage page blocks."}
       summary={
         <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800">
           {summaryLabel}

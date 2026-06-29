@@ -4,6 +4,7 @@ import { BlockSettingsEditor } from "@/components/builder/block-settings-editor"
 import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
 import {
   getPageStructureNav,
+  navLabel,
   PAGE_STRUCTURE_BLOCK_MAP,
   type PageStructureNavId,
 } from "@/lib/builder/page-structure";
@@ -11,25 +12,8 @@ import { BLOCK_META } from "@/lib/blocks/meta";
 import type { BlockInstance, BlockType, TeamSpace } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 
-const FOCUSED_NAV_IDS = new Set<PageStructureNavId>([
-  "gallery",
-  "schedule",
-  "results",
-  "contacts",
-  "sponsors",
-]);
-
-const SECTION_LABELS: Record<PageStructureNavId, string> = {
-  header: "Team profile",
-  gallery: "Gallery",
-  schedule: "Schedule",
-  results: "Results",
-  contacts: "Contacts",
-  sponsors: "Sponsors",
-};
-
 export function isFocusedSectionNav(id: PageStructureNavId | null): id is PageStructureNavId {
-  return id != null && FOCUSED_NAV_IDS.has(id);
+  return id != null && id !== "header";
 }
 
 function resolveBlock(team: TeamSpace, id: PageStructureNavId): BlockInstance | undefined {
@@ -60,7 +44,7 @@ export function FocusedSectionPanel({
 }) {
   const items = getPageStructureNav(team);
   const item = items.find((i) => i.id === navId);
-  const label = item?.label ?? SECTION_LABELS[navId];
+  const label = item?.label ?? navLabel(navId);
   const block = resolveBlock(team, navId);
   const meta = block ? BLOCK_META[block.type] : undefined;
 

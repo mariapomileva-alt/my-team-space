@@ -33,6 +33,50 @@ export function BuilderPageStructureNav({
   const doneCount = checklist.filter((i) => i.done).length;
   const sectionDoneCount = items.filter((i) => i.done).length;
 
+  function renderNavItem(item: (typeof items)[number]) {
+    const isActive = activeId === item.id;
+    return (
+      <li key={item.id}>
+        <button
+          type="button"
+          onClick={() => onSelect(item.id)}
+          className={cn(
+            "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold transition-colors duration-150",
+            isActive ? "bg-violet-600 text-white shadow-sm" : "text-zinc-700 hover:bg-white/80",
+          )}
+        >
+          <span
+            className={cn(
+              "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[12px]",
+              isActive ? "bg-white/20" : "bg-zinc-100",
+            )}
+            aria-hidden
+          >
+            <BuilderSectionIcon structureId={item.id} size="sm" />
+          </span>
+          <span className="min-w-0 flex-1 truncate">{item.label}</span>
+          <span
+            className={cn(
+              "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[9px] font-bold",
+              item.done
+                ? isActive
+                  ? "bg-white/25 text-white"
+                  : "bg-emerald-100 text-emerald-700"
+                : isActive
+                  ? "bg-white/15 text-white/80"
+                  : item.enabled
+                    ? "bg-zinc-100 text-zinc-400"
+                    : "bg-zinc-50 text-zinc-300",
+            )}
+            aria-label={item.done ? "Complete" : item.enabled ? "Incomplete" : "Not on page"}
+          >
+            {item.done ? "✓" : item.enabled ? "·" : "—"}
+          </span>
+        </button>
+      </li>
+    );
+  }
+
   return (
     <nav className={cn("flex flex-col", className)} aria-label="Page sections">
       <div className="mb-3 rounded-xl border border-zinc-200/50 bg-white/80 px-3 py-2 shadow-sm">
@@ -85,52 +129,23 @@ export function BuilderPageStructureNav({
       </p>
 
       <ul className="space-y-0.5">
-        {items.map((item) => {
-          const isActive = activeId === item.id;
-          return (
-            <li key={item.id}>
-              <button
-                type="button"
-                onClick={() => onSelect(item.id)}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold transition-colors duration-150",
-                  isActive
-                    ? "bg-violet-600 text-white shadow-sm"
-                    : "text-zinc-700 hover:bg-white/80",
-                )}
-              >
-                <span
-                  className={cn(
-                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[12px]",
-                    isActive ? "bg-white/20" : "bg-zinc-100",
-                  )}
-                  aria-hidden
-                >
-                  <BuilderSectionIcon structureId={item.id} size="sm" />
-                </span>
-                <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                <span
-                  className={cn(
-                    "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[9px] font-bold",
-                    item.done
-                      ? isActive
-                        ? "bg-white/25 text-white"
-                        : "bg-emerald-100 text-emerald-700"
-                      : isActive
-                        ? "bg-white/15 text-white/80"
-                        : item.enabled
-                          ? "bg-zinc-100 text-zinc-400"
-                          : "bg-zinc-50 text-zinc-300",
-                  )}
-                  aria-label={item.done ? "Complete" : item.enabled ? "Incomplete" : "Not on page"}
-                >
-                  {item.done ? "✓" : item.enabled ? "·" : "—"}
-                </span>
-              </button>
-            </li>
-          );
-        })}
+        {items
+          .filter((item) => item.group === "core")
+          .map((item) => renderNavItem(item))}
       </ul>
+
+      {items.some((item) => item.group === "more") ? (
+        <>
+          <p className="mb-1.5 mt-4 px-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+            More sections
+          </p>
+          <ul className="max-h-[min(42vh,22rem)] space-y-0.5 overflow-y-auto pr-0.5 [scrollbar-width:thin]">
+            {items
+              .filter((item) => item.group === "more")
+              .map((item) => renderNavItem(item))}
+          </ul>
+        </>
+      ) : null}
 
       <div className="mt-5 space-y-0.5 border-t border-zinc-200/60 pt-3">
         <Link

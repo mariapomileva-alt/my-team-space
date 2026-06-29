@@ -727,24 +727,23 @@ export function TeamPageBuilder({
             ) : null}
 
             <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-6">
-              {!embedded ? (
-                <PageBlocksPanel
-                  blocks={pageBlocks}
-                  team={team}
-                  expanded={expanded}
-                  onToggleExpand={toggleExpand}
-                  onToggleEnabled={toggleBlock}
-                  onPatchBlock={patchBlock}
-                  onPatchTeam={patchTeam}
-                  onPreviewBlock={handlePreviewBlock}
-                  onMoveUp={(id) => moveBlock(id, -1)}
-                  onMoveDown={(id) => moveBlock(id, 1)}
-                  onDragEnd={onDragEnd}
-                  onQuickAdd={quickAddBlock}
-                  workspaceExpanded={openSection === "sections"}
-                  onWorkspaceExpandedChange={(open) => setWorkspaceExpanded("sections", open)}
-                />
-              ) : null}
+              <PageBlocksPanel
+                blocks={pageBlocks}
+                team={team}
+                expanded={expanded}
+                onToggleExpand={toggleExpand}
+                onToggleEnabled={toggleBlock}
+                onPatchBlock={patchBlock}
+                onPatchTeam={patchTeam}
+                onPreviewBlock={handlePreviewBlock}
+                onMoveUp={(id) => moveBlock(id, -1)}
+                onMoveDown={(id) => moveBlock(id, 1)}
+                onDragEnd={onDragEnd}
+                onQuickAdd={quickAddBlock}
+                workspaceExpanded={openSection === "sections"}
+                onWorkspaceExpandedChange={(open) => setWorkspaceExpanded("sections", open)}
+                embedded={embedded}
+              />
             </div>
 
             <div ref={designRef} id="builder-design" className="scroll-mt-6">
