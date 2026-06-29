@@ -2,7 +2,7 @@
 
 import { HeroIdentityEditor } from "@/components/builder/editors/hero-identity-editor";
 import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
-import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
+import { BUILDER_PANEL_SURFACE_COMPACT } from "@/lib/builder/layout";
 import { THEMES } from "@/lib/themes";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 
@@ -27,11 +27,12 @@ export function TeamIdentityPanel({
 
   return (
     <BuilderCollapsiblePanel
-      className={BUILDER_PANEL_SURFACE}
+      className={BUILDER_PANEL_SURFACE_COMPACT}
+      density="compact"
       expanded={expanded}
       onExpandedChange={onExpandedChange}
       title="Header"
-      description="Logo, cover image and team name."
+      description="Logo · Cover image · Team name"
       summary={
         <span className="inline-flex max-w-[220px] items-center gap-2 truncate rounded-full bg-white/80 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-700 ring-1 ring-zinc-200/80">
           <span

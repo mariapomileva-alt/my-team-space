@@ -749,13 +749,18 @@ export function TeamPageBuilder({
               />
             </div>
 
-            <div ref={paymentsRef} id="builder-payments" className="scroll-mt-6">
-              <PaymentsTrackerPanel
-                team={team}
-                onPatchTeam={patchTeam}
-                expanded={openSection === "payments"}
-                onExpandedChange={(open) => setWorkspaceExpanded("payments", open)}
-              />
+            <div className="scroll-mt-6 border-t border-zinc-200/50 pt-4">
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+                Optional tools
+              </p>
+              <div ref={paymentsRef} id="builder-payments">
+                <PaymentsTrackerPanel
+                  team={team}
+                  onPatchTeam={patchTeam}
+                  expanded={openSection === "payments"}
+                  onExpandedChange={(open) => setWorkspaceExpanded("payments", open)}
+                />
+              </div>
             </div>
           </div>
 

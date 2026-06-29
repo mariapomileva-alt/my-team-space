@@ -5,7 +5,7 @@ import { BlockModuleCard } from "@/components/builder/block-module-card";
 import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
 import { BuilderHiddenArchive } from "@/components/builder/builder-hidden-archive";
 import { builderBlockDisplayLabel } from "@/lib/builder/display-labels";
-import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
+import { BUILDER_PANEL_SURFACE_EMPHASIS } from "@/lib/builder/layout";
 import { BLOCK_META } from "@/lib/blocks/meta";
 import type { BlockInstance, BlockType, TeamSpace } from "@/lib/types";
 import {
@@ -79,13 +79,14 @@ export function PageBlocksPanel({
 
   return (
     <BuilderCollapsiblePanel
-      className={BUILDER_PANEL_SURFACE}
+      className={BUILDER_PANEL_SURFACE_EMPHASIS}
+      density="emphasis"
       expanded={workspaceExpanded}
       onExpandedChange={onWorkspaceExpandedChange}
       title="Sections"
       description="Manage page blocks."
       summary={
-        <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800">
+        <span className="rounded-full bg-zinc-900 px-3 py-1 text-[12px] font-bold tracking-tight text-white shadow-sm">
           {summaryLabel}
         </span>
       }

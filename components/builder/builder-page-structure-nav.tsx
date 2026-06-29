@@ -3,6 +3,7 @@
 import {
   builderCompletionPercent,
   formatSetupAction,
+  getProgressMotivationLine,
   getSetupSnapshot,
 } from "@/lib/builder/page-completion";
 import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
@@ -33,33 +34,35 @@ export function BuilderPageStructureNav({
   const items = getPageStructureNav(team);
   const percent = builderCompletionPercent(team);
   const snap = getSetupSnapshot(team);
+  const motivation = getProgressMotivationLine(team);
   const doneCount = items.filter((i) => i.done).length;
 
   return (
     <nav className={cn("flex flex-col", className)} aria-label="Page sections">
-      <div className="mb-3 rounded-xl border border-zinc-200/50 bg-white/80 px-3 py-2 shadow-sm">
+      <div className="mb-3 rounded-xl border border-zinc-200/50 bg-white/80 px-3 py-2.5 shadow-sm">
         <div className="flex items-baseline justify-between gap-2">
           <p className="text-[15px] font-bold text-zinc-900">{percent}% Ready</p>
           <p className="text-[10px] font-medium text-zinc-500">
             {doneCount}/{items.length}
           </p>
         </div>
+        <p className="mt-1 text-[11px] leading-snug text-zinc-500">{motivation}</p>
         {snap.next ? (
           onJump ? (
             <button
               type="button"
               onClick={() => onJump(snap.next!.id)}
-              className="mt-1 w-full text-left text-[11px] leading-snug text-zinc-600 transition hover:text-violet-800"
+              className="mt-1.5 w-full text-left text-[11px] leading-snug text-zinc-600 transition hover:text-violet-800"
             >
               <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
             </button>
           ) : (
-            <p className="mt-1 text-[11px] leading-snug text-zinc-600">
+            <p className="mt-1.5 text-[11px] leading-snug text-zinc-600">
               <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
             </p>
           )
         ) : (
-          <p className="mt-1 text-[11px] font-medium text-emerald-700">All sections complete</p>
+          <p className="mt-1.5 text-[11px] font-medium text-emerald-700">All sections complete</p>
         )}
       </div>
 

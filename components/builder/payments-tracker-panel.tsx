@@ -2,7 +2,7 @@
 
 import {
   BUILDER_FIELD_INPUT,
-  BUILDER_PANEL_SURFACE,
+  BUILDER_PANEL_SURFACE_OPTIONAL,
   BUILDER_RADIUS_CHOICE,
 } from "@/lib/builder/layout";
 import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
@@ -98,19 +98,20 @@ export function PaymentsTrackerPanel({
 
   return (
     <BuilderCollapsiblePanel
-      className={`${BUILDER_PANEL_SURFACE} border-amber-200/50 bg-gradient-to-br from-amber-50/30 via-white to-orange-50/20`}
+      className={BUILDER_PANEL_SURFACE_OPTIONAL}
+      density="compact"
       expanded={expanded}
       onExpandedChange={onExpandedChange}
       title="Payments and fees"
-      description="Optional — track fees privately. Not required to publish."
+      description="Track fees privately — not required to publish."
       summary={
-        <span className="max-w-[200px] truncate rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-900">
+        <span className="max-w-[200px] truncate rounded-full bg-white px-2.5 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200/80">
           {summaryPill}
         </span>
       }
       headerRight={
-        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900">
-          Just for you
+        <span className="rounded-full bg-zinc-200/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
+          Optional
         </span>
       }
       defaultExpanded={expanded === undefined ? false : undefined}
@@ -136,7 +137,7 @@ export function PaymentsTrackerPanel({
       ) : null}
 
       {rows.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-amber-200/80 bg-amber-50/30 px-4 py-8 text-center">
+        <div className="rounded-2xl border border-dashed border-zinc-200 bg-zinc-50/60 px-4 py-6 text-center">
           <p className="text-sm font-semibold text-zinc-800">No athletes added yet</p>
           <p className="mt-1 text-xs leading-relaxed text-zinc-500">
             Start tracking membership payments — tap ✅ ⏳ ❌ to mark who paid each month.

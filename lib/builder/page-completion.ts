@@ -136,6 +136,24 @@ export function getSetupSnapshot(team: TeamSpace): SetupSnapshot {
   };
 }
 
+/** Supportive one-liner for the builder progress card — calm, not pushy. */
+export function getProgressMotivationLine(team: TeamSpace): string {
+  const percent = builderCompletionPercent(team);
+  const incomplete = getCompletionItems(team).filter((i) => !i.done);
+
+  if (percent >= 100) {
+    return "Your page is ready — publish when you feel good about it.";
+  }
+  if (incomplete.length <= 2) {
+    return "Almost there — about 2 minutes to finish.";
+  }
+  if (percent >= 55) {
+    return "Complete your page to look more professional.";
+  }
+  const minutes = Math.min(8, Math.max(2, Math.ceil(incomplete.length * 1.5)));
+  return `About ${minutes} minutes to finish the essentials.`;
+}
+
 export type CompletionGuidance = {
   readinessPercent: number;
   emotionalHeadline: string;

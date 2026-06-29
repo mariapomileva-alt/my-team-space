@@ -13,9 +13,14 @@ export const BUILDER_RADIUS_SHELL = "rounded-2xl";
 export const BUILDER_RADIUS_CHOICE = "rounded-xl";
 
 export const BUILDER_PANEL_PADDING = "p-5 sm:p-6";
+export const BUILDER_PANEL_PADDING_COMPACT = "p-3.5 sm:p-4";
+export const BUILDER_PANEL_PADDING_EMPHASIS = "p-5 sm:p-5";
 
 const BUILDER_PANEL_SHADOW =
   "shadow-[0_2px_24px_-12px_rgba(15,23,42,0.08)]";
+
+const BUILDER_PANEL_SHADOW_EMPHASIS =
+  "shadow-[0_4px_32px_-16px_rgba(15,23,42,0.1)]";
 
 /** White settings card (team colors, privacy, payments) */
 export const BUILDER_PANEL_SURFACE = cn(
@@ -23,6 +28,30 @@ export const BUILDER_PANEL_SURFACE = cn(
   BUILDER_RADIUS_SHELL,
   BUILDER_PANEL_PADDING,
   BUILDER_PANEL_SHADOW,
+);
+
+/** Header — tighter vertical rhythm */
+export const BUILDER_PANEL_SURFACE_COMPACT = cn(
+  "w-full overflow-hidden border border-zinc-200/50 bg-white/90 backdrop-blur-sm",
+  BUILDER_RADIUS_SHELL,
+  BUILDER_PANEL_PADDING_COMPACT,
+  BUILDER_PANEL_SHADOW,
+);
+
+/** Sections — primary editing surface */
+export const BUILDER_PANEL_SURFACE_EMPHASIS = cn(
+  "w-full overflow-hidden border border-zinc-200/60 bg-white backdrop-blur-sm",
+  BUILDER_RADIUS_SHELL,
+  BUILDER_PANEL_PADDING_EMPHASIS,
+  BUILDER_PANEL_SHADOW_EMPHASIS,
+);
+
+/** Optional tools — subdued */
+export const BUILDER_PANEL_SURFACE_OPTIONAL = cn(
+  "w-full overflow-hidden border border-zinc-200/40 bg-zinc-50/50 backdrop-blur-sm",
+  BUILDER_RADIUS_SHELL,
+  BUILDER_PANEL_PADDING_COMPACT,
+  "shadow-[0_1px_16px_-12px_rgba(15,23,42,0.06)]",
 );
 
 /** Sticky top bar — compact premium SaaS header */
@@ -83,7 +112,7 @@ export const BUILDER_STRUCTURE_NAV_COLUMN =
   "hidden min-w-0 shrink-0 lg:sticky lg:top-4 lg:col-start-1 lg:row-start-1 lg:block lg:max-h-[calc(100dvh-6rem)] lg:w-full lg:overflow-y-auto lg:overscroll-contain";
 
 export const BUILDER_EDITOR_IN_NAV_GRID =
-  "min-w-0 w-full space-y-5 overflow-x-clip lg:col-start-2 lg:row-start-1 lg:space-y-6";
+  "min-w-0 w-full space-y-4 overflow-x-clip lg:col-start-2 lg:row-start-1";
 
 export const BUILDER_PREVIEW_IN_NAV_GRID = cn(
   "mx-auto hidden w-full shrink-0",
@@ -92,7 +121,7 @@ export const BUILDER_PREVIEW_IN_NAV_GRID = cn(
   "lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto lg:overscroll-contain lg:scroll-smooth",
 );
 
-export const BUILDER_EDITOR_COLUMN = "min-w-0 w-full space-y-5 overflow-x-clip lg:space-y-6";
+export const BUILDER_EDITOR_COLUMN = "min-w-0 w-full space-y-4 overflow-x-clip";
 
 export const BUILDER_PREVIEW_COLUMN = cn(
   "mx-auto hidden w-full shrink-0",

@@ -96,11 +96,7 @@ export function HeroIdentityEditor({
   }
 
   return (
-    <div className="space-y-6">
-      <p className="text-[13px] leading-relaxed text-zinc-500">
-        Your team&apos;s face to the world — logo, name and cover photo.
-      </p>
-
+    <div className="space-y-5">
       <ImageUploadField
         teamId={team.id}
         label="Team logo"
