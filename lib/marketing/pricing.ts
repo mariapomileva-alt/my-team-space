@@ -1,4 +1,6 @@
-/** Public marketing pricing — single source of truth for all site copy. */
+import { getPlanSpec, PLAN_CATALOG } from "@/lib/billing/plan-catalog";
+
+/** Public marketing pricing — copy aligned with {@link PLAN_CATALOG}. */
 
 export type MarketingPlanId = "single_team" | "academy";
 
@@ -15,10 +17,10 @@ export type MarketingPlan = {
   features: string[];
 };
 
-export const TEAM_PLAN_PRICE = "€29";
-export const ACADEMY_PLAN_PRICE = "€199";
-export const TEAM_PLAN_LABEL = "Team Plan";
-export const ACADEMY_PLAN_LABEL = "Academy Plan";
+export const TEAM_PLAN_PRICE = getPlanSpec("single_team").displayPrice;
+export const ACADEMY_PLAN_PRICE = getPlanSpec("academy").displayPrice;
+export const TEAM_PLAN_LABEL = getPlanSpec("single_team").label;
+export const ACADEMY_PLAN_LABEL = getPlanSpec("academy").label;
 
 export const MARKETING_PLANS: MarketingPlan[] = [
   {

@@ -2,6 +2,7 @@
 
 import { variantIdForPlan, isSingleTeamVariantConfigured } from "@/lib/billing/config";
 import type { PlanType } from "@/lib/billing/types";
+import { buildLemonCheckoutRequestBody } from "@/lib/lemon/build-checkout-request";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { redirect } from "next/navigation";
 
@@ -32,14 +33,6 @@ export async function startCheckoutForPlan(plan: PlanType) {
     adminBillingRedirect("not_configured", plan);
   }
 
-  const checkout_data: Record<string, unknown> = {
-    custom: {
-      user_id: user.id,
-      plan_type: plan,
-    },
-  };
-  if (user.email) checkout_data.email = user.email;
-
   const res = await fetch(`${LEMON_API}/checkouts`, {
     method: "POST",
     headers: {
@@ -47,21 +40,16 @@ export async function startCheckoutForPlan(plan: PlanType) {
       "Content-Type": "application/vnd.api+json",
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      data: {
-        type: "checkouts",
-        attributes: {
-          product_options: {
-            redirect_url: `${appUrl}/admin?checkout=success&plan=${plan}`,
-          },
-          checkout_data,
-        },
-        relationships: {
-          store: { data: { type: "stores", id: String(storeId) } },
-          variant: { data: { type: "variants", id: String(variantId) } },
-        },
-      },
-    }),
+    body: JSON.stringify(
+      buildLemonCheckoutRequestBody({
+        plan,
+        userId: user.id,
+        email: user.email,
+        storeId,
+        variantId,
+        appUrl,
+      }),
+    ),
   });
 
   if (!res.ok) {
