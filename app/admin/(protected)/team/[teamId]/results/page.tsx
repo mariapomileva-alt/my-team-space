@@ -14,6 +14,7 @@ export default async function TeamResultsPage({ params }: Props) {
       team={ctx.team}
       publicUrl={ctx.publicUrl}
       achievementCount={ctx.stats.achievementCount}
+      showAcademyHub={ctx.showAcademyHub}
     />
   );
 }

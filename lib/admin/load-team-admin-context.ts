@@ -1,3 +1,4 @@
+import { loadCoachEntitlements } from "@/lib/billing/coach-subscription";
 import { loadBuilderBillingContext } from "@/lib/billing/load-builder-billing";
 import type { BuilderBillingContext } from "@/lib/billing/builder-context-types";
 import { requireAuth } from "@/lib/auth/require-auth";
@@ -23,6 +24,8 @@ export type TeamAdminContext = {
   memberRole: "coach" | "assistant";
   billing: BuilderBillingContext | null;
   stats: TeamAdminStats;
+  /** True when coach should see the multi-team hub at /admin */
+  showAcademyHub: boolean;
 };
 
 export async function loadTeamAdminContext(teamId: string): Promise<TeamAdminContext> {
@@ -58,7 +61,9 @@ export async function loadTeamAdminContext(teamId: string): Promise<TeamAdminCon
 
   const upcomingEvents = getUpcomingScheduleEventsFromTeam(team, { limit: 4 });
 
-  const [{ count: memberCount }, { data: recentUpdates }, { count: achievementCount }] = await Promise.all([
+  const [{ data: allMemberships }, { count: memberCount }, { data: recentUpdates }, { count: achievementCount }] =
+    await Promise.all([
+    supabase.from("team_members").select("team_id").eq("user_id", user.id),
     supabase.from("team_members").select("user_id", { count: "exact", head: true }).eq("team_id", teamId),
     supabase
       .from("team_updates")
@@ -68,6 +73,14 @@ export async function loadTeamAdminContext(teamId: string): Promise<TeamAdminCon
       .limit(4),
     supabase.from("achievements").select("id", { count: "exact", head: true }).eq("team_id", teamId),
   ]);
+
+  let showAcademyHub = (allMemberships?.length ?? 0) > 1;
+  if (memberRole === "coach") {
+    const entitlements = await loadCoachEntitlements(supabase, user.id);
+    if (entitlements?.subscription?.planType === "academy") {
+      showAcademyHub = true;
+    }
+  }
 
   return {
     teamId,
@@ -82,5 +95,6 @@ export async function loadTeamAdminContext(teamId: string): Promise<TeamAdminCon
       recentUpdates: recentUpdates ?? [],
       achievementCount: achievementCount ?? 0,
     },
+    showAcademyHub,
   };
 }

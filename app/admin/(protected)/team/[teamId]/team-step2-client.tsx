@@ -13,6 +13,7 @@ export function TeamStep2Client({
   memberRole,
   billing,
   embedded = false,
+  showAcademyHub = false,
 }: {
   teamId: string;
   initialTeam: TeamSpace;
@@ -20,6 +21,7 @@ export function TeamStep2Client({
   memberRole: TeamMemberRole;
   billing: BuilderBillingContext | null;
   embedded?: boolean;
+  showAcademyHub?: boolean;
 }) {
   const builder = (
     <TeamPageBuilder
@@ -29,12 +31,19 @@ export function TeamStep2Client({
       memberRole={memberRole}
       billing={billing}
       embedded={embedded}
+      showAcademyHub={showAcademyHub}
     />
   );
 
   if (embedded) {
     return (
-      <TeamAdminShell teamId={teamId} team={initialTeam} activeNav="build" hideSidebar>
+      <TeamAdminShell
+        teamId={teamId}
+        team={initialTeam}
+        activeNav="build"
+        hideSidebar
+        showAcademyHub={showAcademyHub}
+      >
         {builder}
       </TeamAdminShell>
     );

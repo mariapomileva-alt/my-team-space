@@ -14,6 +14,7 @@ export default async function TeamSettingsPage({ params }: Props) {
       initialTeam={ctx.team}
       publicUrl={ctx.publicUrl}
       memberRole={ctx.memberRole}
+      showAcademyHub={ctx.showAcademyHub}
     />
   );
 }

@@ -12,13 +12,15 @@ export function TeamMembersClient({
   teamId,
   team,
   memberCount,
+  showAcademyHub = false,
 }: {
   teamId: string;
   team: TeamSpace;
   memberCount: number;
+  showAcademyHub?: boolean;
 }) {
   return (
-    <TeamAdminShell teamId={teamId} team={team} activeNav="members">
+    <TeamAdminShell teamId={teamId} team={team} activeNav="members" showAcademyHub={showAcademyHub}>
       <div className={ADMIN_SECTION_GAP}>
         <header>
           <h1 className={ADMIN_TITLE}>Members</h1>

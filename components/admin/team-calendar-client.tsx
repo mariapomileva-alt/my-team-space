@@ -26,13 +26,15 @@ export function TeamCalendarClient({
   teamId,
   team,
   events,
+  showAcademyHub = false,
 }: {
   teamId: string;
   team: TeamSpace;
   events: TeamAdminStats["upcomingEvents"];
+  showAcademyHub?: boolean;
 }) {
   return (
-    <TeamAdminShell teamId={teamId} team={team} activeNav="calendar">
+    <TeamAdminShell teamId={teamId} team={team} activeNav="calendar" showAcademyHub={showAcademyHub}>
       <div className={ADMIN_SECTION_GAP}>
         <header>
           <h1 className={ADMIN_TITLE}>Schedule</h1>

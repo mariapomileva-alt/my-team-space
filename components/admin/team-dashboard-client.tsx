@@ -48,7 +48,7 @@ export function TeamDashboardClient({
   const level = getTeamLevel(team);
 
   return (
-    <TeamAdminShell teamId={teamId} team={team} activeNav="dashboard">
+    <TeamAdminShell teamId={teamId} team={team} activeNav="build">
       <div className={ADMIN_SECTION_GAP}>
         <div className="lg:hidden">
           <TeamProgressWidget team={team} />

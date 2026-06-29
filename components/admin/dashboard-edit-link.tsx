@@ -1,3 +1,4 @@
+import { teamBuildPath } from "@/lib/admin/admin-nav";
 import Link from "next/link";
 
 export function DashboardEditLink({
@@ -21,7 +22,7 @@ export function DashboardEditLink({
   }
 
   return (
-    <Link href={`/admin/team/${teamId}`} className={`${sizeClass} ${enabledClass}`}>
+    <Link href={teamBuildPath(teamId)} className={`${sizeClass} ${enabledClass}`}>
       {label}
     </Link>
   );

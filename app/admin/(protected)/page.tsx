@@ -1,7 +1,9 @@
 import { setPrimaryTeamFormAction } from "@/app/admin/billing-actions";
 import { startCheckoutFormAction } from "@/lib/admin/checkout-actions";
 import { openBillingPortal } from "@/app/admin/lemon-actions";
-import { FirstTeamSetup } from "@/components/admin/first-team-setup";
+import { loadAcademyTeamSummaries } from "@/lib/admin/load-academy-team-summaries";
+import { teamBuildPath } from "@/lib/admin/admin-nav";
+import { AcademyTeamStats } from "@/components/admin/academy-team-stats";
 import { DashboardEditLink } from "@/components/admin/dashboard-edit-link";
 import type { CoachTeamListItem } from "@/lib/admin/load-coach-teams";
 import { isBillingConfigured } from "@/lib/billing/config";
@@ -12,6 +14,8 @@ import { publicTeamUrl } from "@/lib/teams/public-url";
 import { CopyLinkButton } from "@/components/mts/copy-link-button";
 import Link from "next/link";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { FirstTeamSetup } from "@/components/admin/first-team-setup";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +84,36 @@ export default async function AdminHomePage({
   const hasOwnedTeam = ownedTeams.length > 0;
   const deferBillingCta =
     hasOwnedTeam && teamsUsed <= 1 && primaryTeam?.publish_status !== "published";
+
+  const hasAdminNotice =
+    checkoutSuccess ||
+    Boolean(billingNotice) ||
+    upgrade === "academy" ||
+    Boolean(teamsError) ||
+    Boolean(fatalError) ||
+    Boolean(entitlements?.needsPrimaryTeamSelection) ||
+    (isCoach && !billingActive && hasOwnedTeam && !deferBillingCta) ||
+    (isCoach &&
+      billingConfigured &&
+      !deferBillingCta &&
+      Boolean(startPlan || (!billingActive && !hasLemonSubscription && hasOwnedTeam)));
+
+  if (!hasAdminNotice && !needsFirstTeamSetup) {
+    if (isCoach && !isAcademy && primaryTeam) {
+      redirect(teamBuildPath(primaryTeam.id));
+    }
+    if (isAssistantOnly && assistedTeams.length === 1) {
+      redirect(teamBuildPath(assistedTeams[0]!.id));
+    }
+  }
+
+  const academySummaries =
+    isCoach && isAcademy && ownedTeams.length > 0
+      ? await loadAcademyTeamSummaries(
+          supabase,
+          ownedTeams.map((t) => t.id),
+        )
+      : new Map();
 
   function publishLabel(status: string | null | undefined) {
     return status === "published" ? "Live" : "Not live";
@@ -259,7 +293,7 @@ export default async function AdminHomePage({
                 {isAssistantOnly
                   ? "Teams you help manage"
                   : isAcademy
-                    ? "My Teams"
+                    ? "Academy dashboard"
                     : "Your team"}
               </h1>
               {isAssistantOnly ? (
@@ -267,7 +301,9 @@ export default async function AdminHomePage({
                   You can edit these team pages. Billing and publishing stay with the team owner.
                 </p>
               ) : isAcademy ? (
-                <p className="mt-1 text-sm text-zinc-600">Create and manage all your team pages from one place.</p>
+                <p className="mt-1 text-sm text-zinc-600">
+                  All your teams in one place — open any page to build, manage members, and track progress.
+                </p>
               ) : null}
             </div>
             {isCoach ? (
@@ -418,6 +454,9 @@ export default async function AdminHomePage({
                       <DashboardEditLink teamId={t.id} disabled={locked} label="Edit" />
                       <CopyLinkButton url={url} />
                     </div>
+                    {academySummaries.has(t.id) ? (
+                      <AcademyTeamStats summary={academySummaries.get(t.id)!} />
+                    ) : null}
                     {locked ? (
                       <p className="mt-3 text-xs text-amber-700">
                         Locked by your current plan. Update billing to edit.

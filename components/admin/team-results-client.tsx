@@ -15,11 +15,13 @@ export function TeamResultsClient({
   team,
   publicUrl,
   achievementCount,
+  showAcademyHub = false,
 }: {
   teamId: string;
   team: TeamSpace;
   publicUrl: string;
   achievementCount: number;
+  showAcademyHub?: boolean;
 }) {
   const resultsBlock = team.blocks.find((b) => b.type === "results");
   const hasResults = resultsBlock?.enabled;
@@ -37,7 +39,7 @@ export function TeamResultsClient({
   const canShare = Boolean(hasResults && resultsSettings && resultsBoardHasContent(resultsSettings));
 
   return (
-    <TeamAdminShell teamId={teamId} team={team} activeNav="results">
+    <TeamAdminShell teamId={teamId} team={team} activeNav="results" showAcademyHub={showAcademyHub}>
       <div className={ADMIN_SECTION_GAP}>
         <header>
           <h1 className={ADMIN_TITLE}>Results</h1>

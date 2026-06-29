@@ -66,6 +66,7 @@ export function TeamPageBuilder({
   memberRole = "coach",
   billing = null,
   embedded = false,
+  showAcademyHub = false,
 }: {
   teamId: string;
   initialTeam: TeamSpace;
@@ -73,6 +74,7 @@ export function TeamPageBuilder({
   memberRole?: TeamMemberRole;
   billing?: BuilderBillingContext | null;
   embedded?: boolean;
+  showAcademyHub?: boolean;
 }) {
   /** One team on Single Team plan is always editable in the builder. */
   const canEdit =
@@ -688,6 +690,7 @@ export function TeamPageBuilder({
                 activeId={activeStructureNav}
                 onSelect={navigateToStructureItem}
                 onJump={jumpTo}
+                showAcademyHub={showAcademyHub}
               />
             </aside>
           ) : null}

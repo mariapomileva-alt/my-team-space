@@ -21,6 +21,7 @@ export default async function TeamBuildPage({ params }: Props) {
           memberRole={ctx.memberRole}
           billing={ctx.billing}
           embedded
+          showAcademyHub={ctx.showAcademyHub}
         />
       </Suspense>
     );
@@ -30,11 +31,8 @@ export default async function TeamBuildPage({ params }: Props) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#f7f7f8] px-6 text-center">
         <h1 className="text-xl font-bold text-zinc-900">Could not load builder</h1>
-        <Link
-          href={`/admin/team/${teamId}`}
-          className="mt-6 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white"
-        >
-          Back to dashboard
+        <Link href="/admin" className="mt-6 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white">
+          Back to teams
         </Link>
       </div>
     );

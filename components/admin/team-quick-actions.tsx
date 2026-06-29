@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
+import type { BuilderIconId } from "@/lib/builder/section-icons";
 import { ADMIN_CARD, ADMIN_CARD_PAD } from "@/lib/admin/admin-layout";
 import { cn } from "@/lib/utils/cn";
 
-const ACTIONS = [
-  { id: "event", label: "Add Event", emoji: "📅", href: (id: string) => `/admin/team/${id}/calendar` },
-  { id: "result", label: "Add Result", emoji: "🏆", href: (id: string) => `/admin/team/${id}/results` },
-  { id: "photo", label: "Add Photo", emoji: "📸", href: (id: string) => `/admin/team/${id}/build?focus=sections` },
-  { id: "announce", label: "Add Announcement", emoji: "📣", href: (id: string) => `/admin/team/${id}/build?focus=sections` },
-  { id: "invite", label: "Invite Member", emoji: "👥", href: (id: string) => `/admin/team/${id}/members` },
-] as const;
+const ACTIONS: { id: string; label: string; icon: BuilderIconId; href: (id: string) => string }[] = [
+  { id: "event", label: "Add Event", icon: "calendar", href: (id) => `/admin/team/${id}/calendar` },
+  { id: "result", label: "Add Result", icon: "trophy", href: (id) => `/admin/team/${id}/results` },
+  { id: "photo", label: "Add Photo", icon: "image", href: (id) => `/admin/team/${id}/build?focus=sections` },
+  { id: "announce", label: "Add Announcement", icon: "megaphone", href: (id) => `/admin/team/${id}/build?focus=sections` },
+  { id: "invite", label: "Invite Member", icon: "users", href: (id) => `/admin/team/${id}/members` },
+];
 
 export function TeamQuickActions({ teamId, className }: { teamId: string; className?: string }) {
   return (
@@ -23,8 +25,11 @@ export function TeamQuickActions({ teamId, className }: { teamId: string; classN
             href={action.href(teamId)}
             className="flex flex-col items-center gap-2 rounded-2xl border border-zinc-100 bg-zinc-50/60 px-3 py-4 text-center transition hover:border-violet-100 hover:bg-violet-50/40 active:scale-[0.98]"
           >
-            <span className="text-2xl" aria-hidden>
-              {action.emoji}
+            <span
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700"
+              aria-hidden
+            >
+              <BuilderSectionIcon icon={action.icon} size="md" />
             </span>
             <span className="text-[12px] font-semibold leading-tight text-zinc-800">{action.label}</span>
           </Link>

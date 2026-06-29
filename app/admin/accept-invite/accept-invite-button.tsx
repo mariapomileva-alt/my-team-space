@@ -1,6 +1,7 @@
 "use client";
 
 import { acceptTeamAdminInvite } from "@/app/admin/team-admin-actions";
+import { teamBuildPath } from "@/lib/admin/admin-nav";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
@@ -35,7 +36,7 @@ export function AcceptInviteButton({ token }: { token: string }) {
             try {
               setErr(null);
               const { teamId } = await acceptTeamAdminInvite(token);
-              router.push(`/admin/team/${teamId}`);
+              router.push(teamBuildPath(teamId));
               router.refresh();
             } catch (e) {
               const message = e instanceof Error ? e.message : "Could not accept invite";

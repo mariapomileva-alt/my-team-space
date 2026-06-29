@@ -7,6 +7,7 @@ import {
 } from "@/lib/builder/page-completion";
 import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { getPageStructureNav, type PageStructureNavId } from "@/lib/builder/page-structure";
+import { BUILDER_TEAM_TOOL_LINKS } from "@/lib/admin/admin-nav";
 import type { BuilderProgressTarget } from "@/lib/builder/page-completion";
 import type { TeamSpace } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
@@ -18,6 +19,7 @@ export function BuilderPageStructureNav({
   activeId,
   onSelect,
   onJump,
+  showAcademyHub = false,
   className,
 }: {
   teamId: string;
@@ -25,6 +27,7 @@ export function BuilderPageStructureNav({
   activeId: PageStructureNavId | null;
   onSelect: (id: PageStructureNavId) => void;
   onJump?: (target: BuilderProgressTarget) => void;
+  showAcademyHub?: boolean;
   className?: string;
 }) {
   const items = getPageStructureNav(team);
@@ -113,12 +116,19 @@ export function BuilderPageStructureNav({
       </ul>
 
       <div className="mt-5 space-y-0.5 border-t border-zinc-200/60 pt-3">
-        <Link
-          href={`/admin/team/${teamId}`}
-          className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-zinc-500 transition hover:bg-white/60 hover:text-zinc-800"
-        >
-          ← Dashboard
-        </Link>
+        <p className="mb-1.5 px-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+          Team tools
+        </p>
+        {BUILDER_TEAM_TOOL_LINKS.map((item) => (
+          <Link
+            key={item.label}
+            href={item.href(teamId)}
+            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-zinc-500 transition hover:bg-white/60 hover:text-zinc-800"
+          >
+            <BuilderSectionIcon icon={item.icon} size="sm" className="opacity-70" />
+            {item.label}
+          </Link>
+        ))}
         <Link
           href={`/admin/team/${teamId}/settings`}
           className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-zinc-500 transition hover:bg-white/60 hover:text-zinc-800"
@@ -126,6 +136,14 @@ export function BuilderPageStructureNav({
           <BuilderSectionIcon icon="settings" size="sm" className="opacity-70" />
           Settings
         </Link>
+        {showAcademyHub ? (
+          <Link
+            href="/admin"
+            className="mt-1 flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-zinc-500 transition hover:bg-white/60 hover:text-zinc-800"
+          >
+            ← All teams
+          </Link>
+        ) : null}
       </div>
     </nav>
   );

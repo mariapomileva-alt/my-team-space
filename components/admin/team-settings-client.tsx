@@ -15,11 +15,13 @@ export function TeamSettingsClient({
   initialTeam,
   publicUrl,
   memberRole,
+  showAcademyHub = false,
 }: {
   teamId: string;
   initialTeam: TeamSpace;
   publicUrl: string;
   memberRole: TeamMemberRole;
+  showAcademyHub?: boolean;
 }) {
   const [team, setTeam] = useState(initialTeam);
   const dirtyRef = useRef(false);
@@ -42,7 +44,7 @@ export function TeamSettingsClient({
   }, [team, teamId]);
 
   return (
-    <TeamAdminShell teamId={teamId} team={team} activeNav="settings">
+    <TeamAdminShell teamId={teamId} team={team} activeNav="settings" showAcademyHub={showAcademyHub}>
       <div className={ADMIN_SECTION_GAP}>
         <header>
           <h1 className={ADMIN_TITLE}>Settings</h1>
