@@ -49,9 +49,22 @@ export function FocusedSectionPanel({
   const meta = block ? BLOCK_META[block.type] : undefined;
 
   if (!block) {
+    const fallbackType = PAGE_STRUCTURE_BLOCK_MAP[navId]?.[0];
     return (
-      <div className={cn(BUILDER_PANEL_SURFACE, "px-5 py-6", className)}>
-        <p className="text-sm text-zinc-600">{label} is not available on this page.</p>
+      <div className={cn(BUILDER_PANEL_SURFACE, "px-5 py-8 text-center", className)}>
+        <p className="text-base font-semibold text-zinc-900">{label} is not on your page yet.</p>
+        <p className="mt-2 text-sm text-zinc-500">
+          Add it so parents can see {label.toLowerCase()} on your team page.
+        </p>
+        {fallbackType ? (
+          <button
+            type="button"
+            onClick={() => onEnableBlock(fallbackType)}
+            className="mt-5 rounded-full bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+          >
+            Add {label}
+          </button>
+        ) : null}
       </div>
     );
   }

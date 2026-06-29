@@ -206,14 +206,11 @@ function navItemEnabled(team: TeamSpace, id: PageStructureNavId): boolean {
   return team.blocks.some((b) => types.includes(b.type) && b.enabled);
 }
 
-/** Sidebar page map — core sections plus announcements, payments, integrations, and more. */
+/** Sidebar page map — always lists every builder section (core + more). */
 export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
   const coreSet = new Set<PageStructureNavId>(CORE_PAGE_NAV_IDS);
 
-  return BUILDER_NAV_ORDER.filter((id) => {
-    if (id === "header") return true;
-    return team.blocks.some((b) => blockTypesForNav(id).includes(b.type));
-  }).map((id) => ({
+  return BUILDER_NAV_ORDER.map((id) => ({
     id,
     label: navLabel(id),
     done: navItemDone(team, id),

@@ -75,21 +75,21 @@ export function builderChoiceClass(selected: boolean, extra?: string) {
 export const BUILDER_WORKSPACE_GRID =
   "grid w-full min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,34%)] lg:gap-8 xl:grid-cols-[minmax(0,1.25fr)_minmax(380px,32%)]";
 
-/** Build mode: page-structure nav + editor + preview */
+/** Build mode: page-structure nav + editor (+ preview on xl) */
 export const BUILDER_WITH_NAV_GRID =
-  "grid w-full min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-[13.5rem_minmax(0,1.15fr)_minmax(320px,33%)] lg:gap-6 xl:grid-cols-[14rem_minmax(0,1.2fr)_minmax(380px,32%)] xl:gap-8";
+  "grid w-full min-w-0 grid-cols-1 items-start gap-5 md:grid-cols-[12.5rem_minmax(0,1fr)] md:gap-5 xl:grid-cols-[13.5rem_minmax(0,1.15fr)_minmax(320px,33%)] xl:gap-8";
 
 export const BUILDER_STRUCTURE_NAV_COLUMN =
-  "hidden min-w-0 shrink-0 lg:sticky lg:top-4 lg:col-start-1 lg:row-start-1 lg:block lg:max-h-[calc(100dvh-6rem)] lg:w-full lg:overflow-y-auto lg:overscroll-contain";
+  "hidden min-w-0 shrink-0 md:sticky md:top-4 md:col-start-1 md:row-start-1 md:block md:max-h-[calc(100dvh-6rem)] md:w-full md:overflow-y-auto md:overscroll-contain md:rounded-2xl md:border md:border-zinc-200/50 md:bg-white/85 md:p-3 md:shadow-[0_8px_40px_-24px_rgba(15,23,42,0.12)]";
 
 export const BUILDER_EDITOR_IN_NAV_GRID =
-  "min-w-0 w-full space-y-5 overflow-x-clip lg:col-start-2 lg:row-start-1 lg:space-y-6";
+  "min-w-0 w-full space-y-5 overflow-x-clip md:col-start-2 md:row-start-1 md:space-y-6";
 
 export const BUILDER_PREVIEW_IN_NAV_GRID = cn(
   "mx-auto hidden w-full shrink-0",
-  "lg:sticky lg:top-4 lg:z-10 lg:col-start-3 lg:row-start-1",
-  "lg:mx-0 lg:block lg:w-full lg:max-w-none lg:justify-self-stretch",
-  "lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto lg:overscroll-contain lg:scroll-smooth",
+  "xl:sticky xl:top-4 xl:z-10 xl:col-start-3 xl:row-start-1",
+  "xl:mx-0 xl:block xl:w-full xl:max-w-none xl:justify-self-stretch",
+  "xl:max-h-[calc(100dvh-6rem)] xl:overflow-y-auto xl:overscroll-contain xl:scroll-smooth",
 );
 
 export const BUILDER_EDITOR_COLUMN = "min-w-0 w-full space-y-5 overflow-x-clip lg:space-y-6";

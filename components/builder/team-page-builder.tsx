@@ -693,7 +693,10 @@ export function TeamPageBuilder({
             aria-disabled={editLocked}
           >
             {embedded ? (
-              <div className="mb-2 lg:hidden">
+              <div className="mb-3 rounded-2xl border border-zinc-200/60 bg-white/90 p-2 shadow-sm md:hidden">
+                <p className="mb-1.5 px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+                  Page sections
+                </p>
                 <BuilderPageStructureNavMobile
                   team={team}
                   activeId={activeStructureNav}
