@@ -499,6 +499,7 @@ export function TeamPageBuilder({
 
   function navigateToStructureItem(id: PageStructureNavId) {
     setActiveStructureNav(id);
+    setOpenSection(null);
     const previewId = resolvePreviewBlockId(teamRef.current, id);
     if (previewId) setFocusBlockId(previewId);
 
@@ -507,8 +508,14 @@ export function TeamPageBuilder({
       return;
     }
 
-    setOpenSection(null);
     window.setTimeout(() => scrollTo(focusedSectionRef.current), 80);
+  }
+
+  function openReorderPanel() {
+    setActiveStructureNav(null);
+    setOpenSection("sections");
+    setExpanded(new Set());
+    window.setTimeout(() => scrollTo(blocksRef.current), 80);
   }
 
   useEffect(() => {
@@ -680,7 +687,9 @@ export function TeamPageBuilder({
                 teamId={teamId}
                 team={team}
                 activeId={activeStructureNav}
+                reorderActive={openSection === "sections"}
                 onSelect={navigateToStructureItem}
+                onReorder={openReorderPanel}
                 onJump={jumpTo}
                 onPublish={publish}
                 onShare={openShareModal}
@@ -705,16 +714,30 @@ export function TeamPageBuilder({
               </div>
             ) : null}
 
-            <div ref={identityRef} id="builder-team-identity" className="scroll-mt-6">
-              <TeamIdentityPanel
-                team={team}
-                heroBlock={heroBlock}
-                onPatchTeam={patchTeam}
-                onPatchBlock={patchBlock}
-                expanded={openSection === "header" || activeStructureNav === "header"}
-                onExpandedChange={(open) => setWorkspaceExpanded("header", open)}
-              />
-            </div>
+            {(!embedded || activeStructureNav === "header") && (
+              <div ref={identityRef} id="builder-team-identity" className="scroll-mt-6">
+                <TeamIdentityPanel
+                  team={team}
+                  heroBlock={heroBlock}
+                  onPatchTeam={patchTeam}
+                  onPatchBlock={patchBlock}
+                  expanded={embedded ? true : openSection === "header" || activeStructureNav === "header"}
+                  onExpandedChange={(open) => setWorkspaceExpanded("header", open)}
+                />
+              </div>
+            )}
+
+            {embedded && activeStructureNav === "header" ? (
+              <div ref={designRef} id="builder-design" className="scroll-mt-6">
+                <TeamDesignPanel
+                  team={team}
+                  onSelectTheme={setTheme}
+                  onPatchTeam={patchTeam}
+                  expanded={openSection === "design"}
+                  onExpandedChange={(open) => setWorkspaceExpanded("design", open)}
+                />
+              </div>
+            ) : null}
 
             {isFocusedSectionNav(activeStructureNav) ? (
               <div ref={focusedSectionRef} className="scroll-mt-6">
@@ -729,35 +752,41 @@ export function TeamPageBuilder({
               </div>
             ) : null}
 
-            <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-6">
-              <PageBlocksPanel
-                blocks={pageBlocks}
-                team={team}
-                expanded={expanded}
-                onToggleExpand={toggleExpand}
-                onToggleEnabled={toggleBlock}
-                onPatchBlock={patchBlock}
-                onPatchTeam={patchTeam}
-                onPreviewBlock={handlePreviewBlock}
-                onMoveUp={(id) => moveBlock(id, -1)}
-                onMoveDown={(id) => moveBlock(id, 1)}
-                onDragEnd={onDragEnd}
-                onQuickAdd={quickAddBlock}
-                workspaceExpanded={openSection === "sections"}
-                onWorkspaceExpandedChange={(open) => setWorkspaceExpanded("sections", open)}
-                embedded={embedded}
-              />
-            </div>
+            {!embedded || openSection === "sections" ? (
+              <div ref={blocksRef} id="builder-page-blocks" className="scroll-mt-6">
+                <PageBlocksPanel
+                  blocks={pageBlocks}
+                  team={team}
+                  expanded={expanded}
+                  onToggleExpand={toggleExpand}
+                  onToggleEnabled={toggleBlock}
+                  onPatchBlock={patchBlock}
+                  onPatchTeam={patchTeam}
+                  onPreviewBlock={handlePreviewBlock}
+                  onMoveUp={(id) => moveBlock(id, -1)}
+                  onMoveDown={(id) => moveBlock(id, 1)}
+                  onDragEnd={onDragEnd}
+                  onQuickAdd={quickAddBlock}
+                  workspaceExpanded={embedded ? true : openSection === "sections"}
+                  onWorkspaceExpandedChange={(open) => setWorkspaceExpanded("sections", open)}
+                  embedded={embedded}
+                  reorderOnly={embedded}
+                  onOpenSection={embedded ? navigateToStructureItem : undefined}
+                />
+              </div>
+            ) : null}
 
-            <div ref={designRef} id="builder-design" className="scroll-mt-6">
-              <TeamDesignPanel
-                team={team}
-                onSelectTheme={setTheme}
-                onPatchTeam={patchTeam}
-                expanded={openSection === "design"}
-                onExpandedChange={(open) => setWorkspaceExpanded("design", open)}
-              />
-            </div>
+            {!embedded ? (
+              <div ref={designRef} id="builder-design" className="scroll-mt-6">
+                <TeamDesignPanel
+                  team={team}
+                  onSelectTheme={setTheme}
+                  onPatchTeam={patchTeam}
+                  expanded={openSection === "design"}
+                  onExpandedChange={(open) => setWorkspaceExpanded("design", open)}
+                />
+              </div>
+            ) : null}
           </div>
 
           <aside

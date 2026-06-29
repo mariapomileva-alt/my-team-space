@@ -6,6 +6,7 @@ import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsibl
 import { BuilderHiddenArchive } from "@/components/builder/builder-hidden-archive";
 import { builderBlockDisplayLabel } from "@/lib/builder/display-labels";
 import { BUILDER_PANEL_SURFACE } from "@/lib/builder/layout";
+import { structureNavIdForBlockType, type PageStructureNavId } from "@/lib/builder/page-structure";
 import { BLOCK_META } from "@/lib/blocks/meta";
 import type { BlockInstance, BlockType, TeamSpace } from "@/lib/types";
 import {
@@ -39,6 +40,9 @@ type Props = {
   workspaceExpanded?: boolean;
   onWorkspaceExpandedChange?: (expanded: boolean) => void;
   embedded?: boolean;
+  /** Sidebar mode: drag + toggle only; tap opens section in the left nav */
+  reorderOnly?: boolean;
+  onOpenSection?: (id: PageStructureNavId) => void;
 };
 
 export function PageBlocksPanel({
@@ -57,6 +61,8 @@ export function PageBlocksPanel({
   workspaceExpanded,
   onWorkspaceExpandedChange,
   embedded = false,
+  reorderOnly = false,
+  onOpenSection,
 }: Props) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -85,7 +91,11 @@ export function PageBlocksPanel({
       expanded={workspaceExpanded}
       onExpandedChange={onWorkspaceExpandedChange}
       title={embedded ? "Reorder sections" : "Sections"}
-      description={embedded ? "Drag to change order, or turn sections off to hide them from your public page." : "Manage page blocks."}
+      description={
+        embedded
+          ? "Drag to change order, or turn sections off to hide them from your public page. Tap a row to edit that section."
+          : "Manage page blocks."
+      }
       summary={
         <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-semibold text-violet-800">
           {summaryLabel}
@@ -117,6 +127,7 @@ export function PageBlocksPanel({
           </div>
         </div>
       ) : (
+        !reorderOnly ? (
         <>
           <nav className="mb-4 flex flex-wrap gap-1.5" aria-label="Jump to page section">
             {enabledBlocks.map((block) => (
@@ -141,6 +152,11 @@ export function PageBlocksPanel({
             Drag to reorder · tap a card to edit · turn off to move a section to the archive below.
           </p>
         </>
+        ) : (
+          <p className="mb-3 text-[11px] text-zinc-500">
+            Drag to reorder · tap a row to open that section · turn off to hide from your public page.
+          </p>
+        )
       )}
 
       <DndContext
@@ -163,18 +179,26 @@ export function PageBlocksPanel({
                     block={block}
                     team={team}
                     position={index + 1}
-                    expanded={expanded.has(block.id)}
+                    expanded={reorderOnly ? false : expanded.has(block.id)}
                     canMoveUp={index > 0}
                     canMoveDown={index < enabledBlocks.length - 1}
                     onMoveUp={() => onMoveUp(block.id)}
                     onMoveDown={() => onMoveDown(block.id)}
-                    onToggleExpand={() => onToggleExpand(block.id)}
+                    onToggleExpand={() => {
+                      if (reorderOnly && onOpenSection) {
+                        const navId = structureNavIdForBlockType(block.type);
+                        if (navId) onOpenSection(navId);
+                        return;
+                      }
+                      onToggleExpand(block.id);
+                    }}
                     onToggleEnabled={() => onToggleEnabled(block.id)}
                     onPatchBlock={onPatchBlock}
                     onPatchTeam={onPatchTeam}
                     onPreviewBlock={onPreviewBlock}
                     isDraggingOverlay={false}
                     legoLayout
+                    reorderOnly={reorderOnly}
                   />
                 ))}
               </AnimatePresence>

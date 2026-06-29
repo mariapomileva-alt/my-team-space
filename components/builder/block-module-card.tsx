@@ -35,6 +35,8 @@ type Props = {
   legoLayout?: boolean;
   /** In the hidden-sections archive — no drag handle */
   archived?: boolean;
+  /** Reorder list only — no inline editor expansion */
+  reorderOnly?: boolean;
 };
 
 const RESULTS_TYPES = new Set(["results", "achievements"]);
@@ -70,6 +72,7 @@ export function BlockModuleCard({
   isDraggingOverlay = false,
   legoLayout = false,
   archived = false,
+  reorderOnly = false,
 }: Props) {
   const meta = BLOCK_META[block.type];
   const isGallery = block.type === "gallery";
@@ -190,14 +193,16 @@ export function BlockModuleCard({
                   {coachBlockDescription(block.type, meta.description)}
                 </span>
               </span>
-              <motion.span
-                animate={{ rotate: expanded && block.enabled ? 180 : 0 }}
-                transition={{ duration: 0.22 }}
-                className="mt-1 shrink-0 text-sm text-zinc-400"
-                aria-hidden
-              >
-                ▾
-              </motion.span>
+              {!reorderOnly ? (
+                <motion.span
+                  animate={{ rotate: expanded && block.enabled ? 180 : 0 }}
+                  transition={{ duration: 0.22 }}
+                  className="mt-1 shrink-0 text-sm text-zinc-400"
+                  aria-hidden
+                >
+                  ▾
+                </motion.span>
+              ) : null}
             </button>
 
             <label className="mt-1 flex shrink-0 flex-col items-center gap-1">
@@ -243,7 +248,7 @@ export function BlockModuleCard({
         </motion.div>
 
         <AnimatePresence initial={false}>
-          {expanded && block.enabled && !isDraggingOverlay ? (
+          {expanded && block.enabled && !isDraggingOverlay && !reorderOnly ? (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}

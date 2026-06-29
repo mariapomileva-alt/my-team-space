@@ -12,7 +12,9 @@ export function BuilderPageStructureNav({
   teamId,
   team,
   activeId,
+  reorderActive = false,
   onSelect,
+  onReorder,
   onJump,
   onPublish,
   onShare,
@@ -21,7 +23,9 @@ export function BuilderPageStructureNav({
   teamId: string;
   team: TeamSpace;
   activeId: PageStructureNavId | null;
+  reorderActive?: boolean;
   onSelect: (id: PageStructureNavId) => void;
+  onReorder?: () => void;
   onJump?: (target: BuilderProgressTarget) => void;
   onPublish?: () => void;
   onShare?: () => void;
@@ -145,6 +149,32 @@ export function BuilderPageStructureNav({
               .map((item) => renderNavItem(item))}
           </ul>
         </>
+      ) : null}
+
+      {onReorder ? (
+        <div className="mt-4 border-t border-zinc-200/60 pt-3">
+          <button
+            type="button"
+            onClick={onReorder}
+            className={cn(
+              "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold transition-colors duration-150",
+              reorderActive
+                ? "bg-violet-600 text-white shadow-sm"
+                : "text-zinc-700 hover:bg-white/80",
+            )}
+          >
+            <span
+              className={cn(
+                "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[12px]",
+                reorderActive ? "bg-white/20" : "bg-zinc-100",
+              )}
+              aria-hidden
+            >
+              <BuilderSectionIcon icon="layers" size="sm" />
+            </span>
+            <span className="min-w-0 flex-1 truncate">Reorder sections</span>
+          </button>
+        </div>
       ) : null}
 
       <div className="mt-5 space-y-0.5 border-t border-zinc-200/60 pt-3">
