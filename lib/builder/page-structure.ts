@@ -1,10 +1,14 @@
-import { builderBlockDisplayLabel } from "@/lib/builder/display-labels";
-import { BLOCK_META } from "@/lib/blocks/meta";
 import { getBlockSettings } from "@/lib/blocks/settings";
 import type { BlockType, TeamSpace } from "@/lib/types";
 
-/** Hero uses a coach-friendly label; every other block type has its own nav id. */
-export type PageStructureNavId = "header" | Exclude<BlockType, "hero">;
+export type PageStructureNavId =
+  | "header"
+  | "about"
+  | "gallery"
+  | "calendar"
+  | "results"
+  | "contacts"
+  | "sponsors";
 
 export type PageStructureNavItem = {
   id: PageStructureNavId;
@@ -13,82 +17,13 @@ export type PageStructureNavItem = {
   /** Block is on the public page */
   enabled: boolean;
   blockTypes: BlockType[];
-  group: "core" | "more";
 };
-
-export const CORE_PAGE_NAV_IDS: PageStructureNavId[] = [
-  "header",
-  "gallery",
-  "schedule",
-  "results",
-  "contacts",
-];
-
-/** Always visible under More sections — coaches can turn them on from the nav. */
-export const MORE_PAGE_NAV_IDS: PageStructureNavId[] = [
-  "announcement_bar",
-  "achievements",
-  "quick_links",
-  "payments",
-  "quick_actions",
-  "integrations",
-  "team_shop",
-  "polls",
-  "team_feed",
-  "attendance",
-];
-
-const ADVANCED_PAGE_NAV_IDS = new Set<PageStructureNavId>([
-  "camp_trip",
-  "documents",
-  "resources",
-  "birthdays",
-  "sponsors",
-  "weather",
-  "countdown",
-]);
-
-function shouldShowNavItem(team: TeamSpace, id: PageStructureNavId): boolean {
-  if (id === "header") return true;
-  if (CORE_PAGE_NAV_IDS.includes(id)) return true;
-  if (MORE_PAGE_NAV_IDS.includes(id)) return true;
-  if (ADVANCED_PAGE_NAV_IDS.has(id)) return navItemEnabled(team, id);
-  return team.blocks.some((b) => blockTypesForNav(id).includes(b.type));
-}
-
-/** Full builder sidebar order — announcements, payments, integrations, etc. */
-export const BUILDER_NAV_ORDER: PageStructureNavId[] = [
-  "header",
-  "announcement_bar",
-  "gallery",
-  "schedule",
-  "results",
-  "achievements",
-  "contacts",
-  "quick_links",
-  "payments",
-  "quick_actions",
-  "integrations",
-  "team_shop",
-  "polls",
-  "team_feed",
-  "attendance",
-  "camp_trip",
-  "documents",
-  "resources",
-  "birthdays",
-  "sponsors",
-  "weather",
-  "countdown",
-];
 
 type HeroSettings = {
   quote: string;
   description?: string;
   coverImageUrl: string;
   teamPhotoUrl?: string;
-  city?: string;
-  social?: Record<string, string | undefined>;
 };
 
 function heroSettings(team: TeamSpace) {
@@ -100,22 +35,6 @@ function blockOf(team: TeamSpace, type: BlockType) {
   return team.blocks.find((b) => b.type === type);
 }
 
-function firstBlockForNav(team: TeamSpace, id: PageStructureNavId) {
-  const types = blockTypesForNav(id);
-  return team.blocks.find((b) => types.includes(b.type));
-}
-
-export function blockTypesForNav(id: PageStructureNavId): BlockType[] {
-  if (id === "header") return ["hero"];
-  if (id === "schedule") return ["schedule", "calendar"];
-  return [id];
-}
-
-export function navLabel(id: PageStructureNavId): string {
-  if (id === "header") return "Team profile";
-  return builderBlockDisplayLabel(id);
-}
-
 function headerDone(team: TeamSpace, hs: HeroSettings | undefined) {
   const hasName = Boolean(team.name?.trim());
   const hasLogo = Boolean((team.logoUrl ?? hs?.teamPhotoUrl ?? "").trim());
@@ -123,141 +42,136 @@ function headerDone(team: TeamSpace, hs: HeroSettings | undefined) {
   return hasName && hasLogo && hasCover;
 }
 
-function hasNonEmptyString(value: unknown): boolean {
-  return typeof value === "string" && Boolean(value.trim());
+function aboutDone(team: TeamSpace, hs: ReturnType<typeof heroSettings>) {
+  return Boolean(team.tagline?.trim() || hs?.description?.trim() || hs?.quote?.trim());
 }
 
-function navItemDone(team: TeamSpace, id: PageStructureNavId): boolean {
-  if (id === "header") return headerDone(team, heroSettings(team));
-
-  const block = firstBlockForNav(team, id);
+function galleryDone(team: TeamSpace) {
+  const block = blockOf(team, "gallery");
   if (!block?.enabled) return false;
-
-  switch (id) {
-    case "announcement_bar": {
-      const s = getBlockSettings<{ message?: string }>(block);
-      return hasNonEmptyString(s.message);
-    }
-    case "gallery": {
-      const s = getBlockSettings<{ externalUrl?: string; images?: { url?: string }[] }>(block);
-      return Boolean(
-        hasNonEmptyString(s.externalUrl) || (s.images ?? []).some((img) => hasNonEmptyString(img.url)),
-      );
-    }
-    case "schedule": {
-      const schedule = blockOf(team, "schedule") ?? blockOf(team, "calendar");
-      if (!schedule?.enabled) return false;
-      const s = getBlockSettings<{ externalUrl?: string; events?: unknown[] }>(schedule);
-      return Boolean(
-        hasNonEmptyString(s.externalUrl) || (Array.isArray(s.events) && s.events.length > 0),
-      );
-    }
-    case "results": {
-      const s = getBlockSettings<{ simpleResults?: unknown[]; competitions?: unknown[]; categories?: unknown[] }>(
-        block,
-      );
-      return Boolean(
-        (s.simpleResults?.length ?? 0) > 0 ||
-          (s.competitions?.length ?? 0) > 0 ||
-          (s.categories?.length ?? 0) > 0,
-      );
-    }
-    case "achievements": {
-      const s = getBlockSettings<{ cards?: { title?: string }[] }>(block);
-      return Boolean((s.cards ?? []).some((c) => hasNonEmptyString(c.title)));
-    }
-    case "contacts": {
-      const s = getBlockSettings<{ items?: { name?: string }[] }>(block);
-      return Boolean((s.items ?? []).some((i) => hasNonEmptyString(i.name)));
-    }
-    case "quick_links": {
-      const s = getBlockSettings<Record<string, string | undefined>>(block);
-      return Object.values(s).some((v) => hasNonEmptyString(v));
-    }
-    case "payments": {
-      const s = getBlockSettings<{ paymentUrl?: string; title?: string }>(block);
-      return hasNonEmptyString(s.paymentUrl) || hasNonEmptyString(s.title);
-    }
-    case "quick_actions": {
-      const s = getBlockSettings<{ actions?: { title?: string; url?: string }[] }>(block);
-      return Boolean((s.actions ?? []).some((a) => hasNonEmptyString(a.title) || hasNonEmptyString(a.url)));
-    }
-    case "integrations": {
-      const s = getBlockSettings<{ links?: { url?: string; label?: string }[] }>(block);
-      return Boolean((s.links ?? []).some((l) => hasNonEmptyString(l.url) || hasNonEmptyString(l.label)));
-    }
-    case "team_shop": {
-      const s = getBlockSettings<{ products?: { name?: string }[] }>(block);
-      return Boolean((s.products ?? []).some((p) => hasNonEmptyString(p.name)));
-    }
-    case "polls": {
-      const s = getBlockSettings<{ question?: string }>(block);
-      return hasNonEmptyString(s.question);
-    }
-    case "team_feed": {
-      const s = getBlockSettings<{ items?: { title?: string; body?: string }[] }>(block);
-      return Boolean((s.items ?? []).some((i) => hasNonEmptyString(i.title) || hasNonEmptyString(i.body)));
-    }
-    case "attendance": {
-      const s = getBlockSettings<{ roster?: { name?: string }[] }>(block);
-      return Boolean((s.roster ?? []).some((p) => hasNonEmptyString(p.name)));
-    }
-    case "camp_trip": {
-      const s = getBlockSettings<{ items?: { title?: string }[] }>(block);
-      return Boolean((s.items ?? []).some((i) => hasNonEmptyString(i.title)));
-    }
-    case "documents":
-    case "resources": {
-      const s = getBlockSettings<{ items?: { title?: string }[] }>(block);
-      return Boolean((s.items ?? []).some((i) => hasNonEmptyString(i.title)));
-    }
-    case "birthdays": {
-      const s = getBlockSettings<{ items?: { name?: string }[] }>(block);
-      return Boolean((s.items ?? []).some((i) => hasNonEmptyString(i.name)));
-    }
-    case "sponsors": {
-      const s = getBlockSettings<{ items?: { name?: string }[] }>(block);
-      return Boolean((s.items ?? []).some((i) => hasNonEmptyString(i.name)));
-    }
-    case "weather": {
-      const s = getBlockSettings<{ temp?: string; note?: string; location?: string }>(block);
-      return [s.temp, s.note, s.location].some((v) => hasNonEmptyString(v));
-    }
-    case "countdown": {
-      const s = getBlockSettings<{ label?: string; targetDate?: string }>(block);
-      return hasNonEmptyString(s.label) && hasNonEmptyString(s.targetDate);
-    }
-    default:
-      return block.enabled;
-  }
+  const s = getBlockSettings<{ externalUrl?: string; images?: { url?: string }[] }>(block);
+  return Boolean(
+    (s.externalUrl?.trim() ?? "") || (s.images ?? []).some((img) => Boolean(img.url?.trim())),
+  );
 }
 
-function navItemEnabled(team: TeamSpace, id: PageStructureNavId): boolean {
-  if (id === "header") return true;
-  const types = blockTypesForNav(id);
-  return team.blocks.some((b) => types.includes(b.type) && b.enabled);
+function calendarDone(team: TeamSpace) {
+  const block = blockOf(team, "calendar") ?? blockOf(team, "schedule");
+  if (!block?.enabled) return false;
+  const s = getBlockSettings<{ externalUrl?: string; events?: unknown[] }>(block);
+  return Boolean(
+    (s.externalUrl?.trim() ?? "") || (Array.isArray(s.events) && s.events.length > 0),
+  );
 }
 
-/** Sidebar page map — core sections plus coach-friendly More sections. */
+function resultsDone(team: TeamSpace) {
+  const block = blockOf(team, "results");
+  if (!block?.enabled) return false;
+  const s = getBlockSettings<{ simpleResults?: unknown[]; competitions?: unknown[]; categories?: unknown[] }>(
+    block,
+  );
+  return Boolean(
+    (s.simpleResults?.length ?? 0) > 0 ||
+      (s.competitions?.length ?? 0) > 0 ||
+      (s.categories?.length ?? 0) > 0,
+  );
+}
+
+function contactsDone(team: TeamSpace) {
+  const block = blockOf(team, "contacts");
+  if (!block?.enabled) return false;
+  const s = getBlockSettings<{ items?: { name?: string }[] }>(block);
+  return Boolean((s.items ?? []).some((i) => Boolean(i.name?.trim())));
+}
+
+function sponsorsDone(team: TeamSpace) {
+  const block = blockOf(team, "sponsors");
+  if (!block?.enabled) return false;
+  const s = getBlockSettings<{ items?: { name?: string }[] }>(block);
+  return Boolean((s.items ?? []).some((i) => Boolean(i.name?.trim())));
+}
+
+/** Sidebar page map — what families see, and what still needs work. */
 export function getPageStructureNav(team: TeamSpace): PageStructureNavItem[] {
-  const coreSet = new Set<PageStructureNavId>(CORE_PAGE_NAV_IDS);
+  const hs = heroSettings(team);
+  const sponsorsBlock = blockOf(team, "sponsors");
 
-  return BUILDER_NAV_ORDER.filter((id) => shouldShowNavItem(team, id)).map((id) => ({
-    id,
-    label: navLabel(id),
-    done: navItemDone(team, id),
-    enabled: navItemEnabled(team, id),
-    blockTypes: blockTypesForNav(id),
-    group: coreSet.has(id) ? "core" : "more",
-  }));
+  const items: PageStructureNavItem[] = [
+    {
+      id: "header",
+      label: "Header",
+      done: headerDone(team, hs),
+      enabled: true,
+      blockTypes: ["hero"],
+    },
+    {
+      id: "about",
+      label: "About Team",
+      done: aboutDone(team, hs),
+      enabled: true,
+      blockTypes: ["hero"],
+    },
+    {
+      id: "gallery",
+      label: "Gallery",
+      done: galleryDone(team),
+      enabled: Boolean(blockOf(team, "gallery")?.enabled),
+      blockTypes: ["gallery"],
+    },
+    {
+      id: "calendar",
+      label: "Calendar",
+      done: calendarDone(team),
+      enabled: Boolean(
+        blockOf(team, "calendar")?.enabled || blockOf(team, "schedule")?.enabled,
+      ),
+      blockTypes: ["calendar", "schedule"],
+    },
+    {
+      id: "results",
+      label: "Results",
+      done: resultsDone(team),
+      enabled: Boolean(blockOf(team, "results")?.enabled),
+      blockTypes: ["results"],
+    },
+    {
+      id: "contacts",
+      label: "Contacts",
+      done: contactsDone(team),
+      enabled: Boolean(blockOf(team, "contacts")?.enabled),
+      blockTypes: ["contacts"],
+    },
+  ];
+
+  if (sponsorsBlock?.enabled) {
+    items.push({
+      id: "sponsors",
+      label: "Sponsors",
+      done: sponsorsDone(team),
+      enabled: true,
+      blockTypes: ["sponsors"],
+    });
+  }
+
+  return items;
 }
 
-export const PAGE_STRUCTURE_BLOCK_MAP = Object.fromEntries(
-  BUILDER_NAV_ORDER.map((id) => [id, blockTypesForNav(id)]),
-) as Record<PageStructureNavId, BlockType[]>;
+export const PAGE_STRUCTURE_BLOCK_MAP: Record<
+  Exclude<PageStructureNavId, "header" | "about">,
+  BlockType[]
+> = {
+  gallery: ["gallery"],
+  calendar: ["calendar", "schedule"],
+  results: ["results"],
+  contacts: ["contacts"],
+  sponsors: ["sponsors"],
+};
 
 /** Block id to highlight in live preview when a sidebar section is selected. */
 export function resolvePreviewBlockId(team: TeamSpace, id: PageStructureNavId): string | null {
+  if (id === "header" || id === "about") {
+    return team.blocks.find((b) => b.type === "hero")?.id ?? null;
+  }
   const types = PAGE_STRUCTURE_BLOCK_MAP[id];
   const enabled = team.blocks.find((b) => types.includes(b.type) && b.enabled);
   if (enabled) return enabled.id;
@@ -265,8 +179,11 @@ export function resolvePreviewBlockId(team: TeamSpace, id: PageStructureNavId): 
 }
 
 export function structureNavIdForBlockType(type: BlockType): PageStructureNavId | null {
+  if (type === "gallery") return "gallery";
+  if (type === "calendar" || type === "schedule") return "calendar";
+  if (type === "results") return "results";
+  if (type === "contacts") return "contacts";
+  if (type === "sponsors") return "sponsors";
   if (type === "hero") return "header";
-  if (type === "calendar") return "schedule";
-  if (type in BLOCK_META) return type as PageStructureNavId;
   return null;
 }

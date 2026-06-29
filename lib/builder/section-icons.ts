@@ -28,10 +28,11 @@ export type BuilderIconId =
   | "settings"
   | "layers";
 
-export const PAGE_STRUCTURE_ICON: Partial<Record<PageStructureNavId, BuilderIconId>> = {
+export const PAGE_STRUCTURE_ICON: Record<PageStructureNavId, BuilderIconId> = {
   header: "layout-panel",
+  about: "users",
   gallery: "image",
-  schedule: "calendar",
+  calendar: "calendar",
   results: "trophy",
   contacts: "phone",
   sponsors: "handshake",
@@ -64,9 +65,7 @@ const BLOCK_TYPE_ICON: Partial<Record<BlockType, BuilderIconId>> = {
 };
 
 export function iconForPageStructure(id: PageStructureNavId): BuilderIconId {
-  if (id === "header") return PAGE_STRUCTURE_ICON.header ?? "layout-panel";
-  if (id === "schedule") return "calendar";
-  return iconForBlockType(id);
+  return PAGE_STRUCTURE_ICON[id];
 }
 
 export function iconForBlockType(type: BlockType): BuilderIconId {

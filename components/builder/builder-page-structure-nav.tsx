@@ -1,6 +1,10 @@
 "use client";
 
-import { getLaunchChecklist, nextLaunchStep } from "@/lib/builder/launch-checklist";
+import {
+  builderCompletionPercent,
+  formatSetupAction,
+  getSetupSnapshot,
+} from "@/lib/builder/page-completion";
 import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { getPageStructureNav, type PageStructureNavId } from "@/lib/builder/page-structure";
 import type { BuilderProgressTarget } from "@/lib/builder/page-completion";
@@ -12,119 +16,47 @@ export function BuilderPageStructureNav({
   teamId,
   team,
   activeId,
-  reorderActive = false,
   onSelect,
-  onReorder,
   onJump,
-  onPublish,
-  onShare,
   className,
 }: {
   teamId: string;
   team: TeamSpace;
   activeId: PageStructureNavId | null;
-  reorderActive?: boolean;
   onSelect: (id: PageStructureNavId) => void;
-  onReorder?: () => void;
   onJump?: (target: BuilderProgressTarget) => void;
-  onPublish?: () => void;
-  onShare?: () => void;
   className?: string;
 }) {
   const items = getPageStructureNav(team);
-  const checklist = getLaunchChecklist(team);
-  const next = nextLaunchStep(team);
-  const doneCount = checklist.filter((i) => i.done).length;
-  const sectionDoneCount = items.filter((i) => i.done).length;
-
-  function renderNavItem(item: (typeof items)[number]) {
-    const isActive = activeId === item.id;
-    return (
-      <li key={item.id}>
-        <button
-          type="button"
-          onClick={() => onSelect(item.id)}
-          className={cn(
-            "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold transition-colors duration-150",
-            isActive ? "bg-violet-600 text-white shadow-sm" : "text-zinc-700 hover:bg-white/80",
-          )}
-        >
-          <span
-            className={cn(
-              "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[12px]",
-              isActive ? "bg-white/20" : "bg-zinc-100",
-            )}
-            aria-hidden
-          >
-            <BuilderSectionIcon structureId={item.id} size="sm" />
-          </span>
-          <span className="min-w-0 flex-1 truncate">{item.label}</span>
-          <span
-            className={cn(
-              "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[9px] font-bold",
-              item.done
-                ? isActive
-                  ? "bg-white/25 text-white"
-                  : "bg-emerald-100 text-emerald-700"
-                : isActive
-                  ? "bg-white/15 text-white/80"
-                  : item.enabled
-                    ? "bg-zinc-100 text-zinc-400"
-                    : "bg-zinc-50 text-zinc-300",
-            )}
-            aria-label={item.done ? "Complete" : item.enabled ? "Incomplete" : "Not on page"}
-          >
-            {item.done ? "✓" : item.enabled ? "·" : "—"}
-          </span>
-        </button>
-      </li>
-    );
-  }
+  const percent = builderCompletionPercent(team);
+  const snap = getSetupSnapshot(team);
+  const doneCount = items.filter((i) => i.done).length;
 
   return (
     <nav className={cn("flex flex-col", className)} aria-label="Page sections">
       <div className="mb-3 rounded-xl border border-zinc-200/50 bg-white/80 px-3 py-2 shadow-sm">
         <div className="flex items-baseline justify-between gap-2">
-          <p className="text-[15px] font-bold text-zinc-900">
-            {doneCount}/{checklist.length} steps
-          </p>
+          <p className="text-[15px] font-bold text-zinc-900">{percent}% Ready</p>
           <p className="text-[10px] font-medium text-zinc-500">
-            {sectionDoneCount}/{items.length} sections
+            {doneCount}/{items.length}
           </p>
         </div>
-        {next ? (
-          onJump || onPublish || onShare ? (
+        {snap.next ? (
+          onJump ? (
             <button
               type="button"
-              onClick={() => {
-                if (next.id === "publish") {
-                  onPublish?.();
-                  return;
-                }
-                if (next.id === "share") {
-                  onShare?.();
-                  return;
-                }
-                const map: Record<string, BuilderProgressTarget> = {
-                  team_name: "identity",
-                  logo: "identity",
-                  schedule: "schedule",
-                  contacts: "contacts",
-                };
-                const target = map[next.id];
-                if (target) onJump?.(target);
-              }}
+              onClick={() => onJump(snap.next!.id)}
               className="mt-1 w-full text-left text-[11px] leading-snug text-zinc-600 transition hover:text-violet-800"
             >
-              <span className="font-semibold text-violet-700">Next:</span> {next.nextAction}
+              <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
             </button>
           ) : (
             <p className="mt-1 text-[11px] leading-snug text-zinc-600">
-              <span className="font-semibold text-violet-700">Next:</span> {next.nextAction}
+              <span className="font-semibold text-violet-700">Next:</span> {formatSetupAction(snap.next)}
             </p>
           )
         ) : (
-          <p className="mt-1 text-[11px] font-medium text-emerald-700">Ready to share!</p>
+          <p className="mt-1 text-[11px] font-medium text-emerald-700">All sections complete</p>
         )}
       </div>
 
@@ -133,49 +65,52 @@ export function BuilderPageStructureNav({
       </p>
 
       <ul className="space-y-0.5">
-        {items
-          .filter((item) => item.group === "core")
-          .map((item) => renderNavItem(item))}
+        {items.map((item) => {
+          const isActive = activeId === item.id;
+          return (
+            <li key={item.id}>
+              <button
+                type="button"
+                onClick={() => onSelect(item.id)}
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold transition-colors duration-150",
+                  isActive
+                    ? "bg-violet-600 text-white shadow-sm"
+                    : "text-zinc-700 hover:bg-white/80",
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[12px]",
+                    isActive ? "bg-white/20" : "bg-zinc-100",
+                  )}
+                  aria-hidden
+                >
+                  <BuilderSectionIcon structureId={item.id} size="sm" />
+                </span>
+                <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                <span
+                  className={cn(
+                    "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[9px] font-bold",
+                    item.done
+                      ? isActive
+                        ? "bg-white/25 text-white"
+                        : "bg-emerald-100 text-emerald-700"
+                      : isActive
+                        ? "bg-white/15 text-white/80"
+                        : item.enabled
+                          ? "bg-zinc-100 text-zinc-400"
+                          : "bg-zinc-50 text-zinc-300",
+                  )}
+                  aria-label={item.done ? "Complete" : item.enabled ? "Incomplete" : "Not on page"}
+                >
+                  {item.done ? "✓" : item.enabled ? "·" : "—"}
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
-
-      {items.some((item) => item.group === "more") ? (
-        <>
-          <p className="mb-1.5 mt-4 px-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
-            More sections
-          </p>
-          <ul className="max-h-[min(42vh,22rem)] space-y-0.5 overflow-y-auto pr-0.5 [scrollbar-width:thin]">
-            {items
-              .filter((item) => item.group === "more")
-              .map((item) => renderNavItem(item))}
-          </ul>
-        </>
-      ) : null}
-
-      {onReorder ? (
-        <div className="mt-4 border-t border-zinc-200/60 pt-3">
-          <button
-            type="button"
-            onClick={onReorder}
-            className={cn(
-              "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold transition-colors duration-150",
-              reorderActive
-                ? "bg-violet-600 text-white shadow-sm"
-                : "text-zinc-700 hover:bg-white/80",
-            )}
-          >
-            <span
-              className={cn(
-                "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[12px]",
-                reorderActive ? "bg-white/20" : "bg-zinc-100",
-              )}
-              aria-hidden
-            >
-              <BuilderSectionIcon icon="layers" size="sm" />
-            </span>
-            <span className="min-w-0 flex-1 truncate">Reorder sections</span>
-          </button>
-        </div>
-      ) : null}
 
       <div className="mt-5 space-y-0.5 border-t border-zinc-200/60 pt-3">
         <Link

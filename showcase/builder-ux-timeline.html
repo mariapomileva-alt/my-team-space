@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MyTeamSpace — как менялся конструктор</title>
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --card: #fff;
+      --border: #e4e4e7;
+      --violet: #7c3aed;
+      --violet-soft: #ede9fe;
+      --emerald: #059669;
+      --red: #dc2626;
+      --amber: #d97706;
+      --text: #18181b;
+      --muted: #71717a;
+      --radius: 16px;
+      --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding: 2rem 1rem 4rem;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    h1 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+    }
+    .lead { color: var(--muted); max-width: 52ch; margin-bottom: 2rem; }
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+    .stage {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 4px);
+      overflow: hidden;
+      box-shadow: 0 8px 40px -24px rgba(0,0,0,.12);
+    }
+    .stage-head {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+    }
+    .badge--good { background: #d1fae5; color: #065f46; }
+    .badge--bad { background: #fee2e2; color: #991b1b; }
+    .badge--mid { background: #fef3c7; color: #92400e; }
+    .stage-title { font-size: 1.05rem; font-weight: 700; }
+    .stage-meta { font-size: 0.8rem; color: var(--muted); width: 100%; }
+    .stage-body { padding: 1.25rem; }
+
+    /* wireframe */
+    .wf {
+      display: grid;
+      grid-template-columns: 11rem 1fr 10.5rem;
+      gap: 0.65rem;
+      min-height: 280px;
+      background: #fafafa;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 0.65rem;
+      font-size: 0.68rem;
+    }
+    @media (max-width: 720px) {
+      .wf { grid-template-columns: 1fr; min-height: auto; }
+      .wf-preview { order: 3; }
+    }
+    .wf-col {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      overflow: hidden;
+    }
+    .wf-label {
+      font-size: 0.55rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 0.15rem;
+    }
+    .wf-item {
+      padding: 0.35rem 0.45rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .wf-item--active {
+      background: var(--violet);
+      color: #fff;
+      border-color: var(--violet);
+      font-weight: 600;
+    }
+    .wf-item--group {
+      background: transparent;
+      border: none;
+      font-size: 0.55rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      padding: 0.5rem 0.2rem 0.1rem;
+    }
+    .wf-panel {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.45rem;
+      background: #fff;
+    }
+    .wf-panel--open {
+      border-color: #c4b5fd;
+      box-shadow: 0 0 0 2px var(--violet-soft);
+    }
+    .wf-panel--dim { opacity: 0.45; }
+    .wf-panel-title { font-weight: 700; margin-bottom: 0.25rem; }
+    .wf-panel-desc { color: var(--muted); font-size: 0.62rem; }
+    .wf-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.35rem;
+      margin-top: 0.25rem;
+      font-size: 0.62rem;
+    }
+    .wf-card--open {
+      border-color: var(--violet);
+      background: var(--violet-soft);
+    }
+    .wf-preview-phone {
+      margin: auto;
+      width: 5.5rem;
+      height: 9rem;
+      border: 2px solid #27272a;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #e0e7ff, #fff 40%);
+      position: relative;
+    }
+    .wf-preview-phone::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1.5rem;
+      height: 3px;
+      background: #27272a;
+      border-radius: 2px;
+    }
+    .wf-arrow {
+      text-align: center;
+      color: var(--muted);
+      font-size: 1.5rem;
+      padding: 0.25rem 0;
+    }
+    .callout {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+    .callout--good { background: #ecfdf5; border: 1px solid #a7f3d0; }
+    .callout--bad { background: #fef2f2; border: 1px solid #fecaca; }
+    .callout--mid { background: #fffbeb; border: 1px solid #fde68a; }
+    .callout strong { display: block; margin-bottom: 0.25rem; }
+    .flow-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .flow-box {
+      padding: 0.35rem 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+    .flow-box--hi {
+      border-color: var(--violet);
+      background: var(--violet-soft);
+      color: var(--violet);
+      font-weight: 600;
+    }
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin-top: 2rem;
+      padding: 1rem;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+    }
+    .legend dt { font-weight: 700; margin-bottom: 0.15rem; }
+    .legend dd { color: var(--muted); margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Как менялся конструктор</h1>
+    <p class="lead"><strong>Baseline restored:</strong> commit <code>b5e0fcd</code> (19 Jun 2026) — polished 3-column builder. Drift started at <code>b1a98e8</code>, regressed further in <code>862a4b7</code>–<code>a1936fc</code>.</p>
+
+    <div class="timeline">
+
+      <!-- STAGE 1 -->
+      <section class="stage">
+        <div class="stage-head">
+          <span class="badge badge--good">Было · «супер»</span>
+          <span class="stage-title">Готовый конструктор (~июнь, polish)</span>
+          <span class="stage-meta">Коммит ~5986d53 · ты говорила, что всё получилось</span>
+        </div>
+        <div class="stage-body">
+          <div class="wf">
+            <div class="wf-col">
+              <div class="wf-label">Слева · меню</div>
+              <div class="wf-item">Team profile</div>
+              <div class="wf-item">About</div>
+              <div class="wf-item">Gallery</div>
+              <div class="wf-item">Calendar</div>
+              <div class="wf-item wf-item--active">Results</div>
+              <div class="wf-item">Contacts</div>
+              <div class="wf-item" style="opacity:.5">Sponsors</div>
+            </div>
+            <div class="wf-col">
+              <div class="wf-label">Центр · одна колонка редакторов</div>
+              <div class="wf-panel wf-panel--dim">
+                <div class="wf-panel-title">Team profile</div>
+                <div class="wf-panel-desc">свёрнуто</div>
+              </div>
+              <div class="wf-panel wf-panel--open">
+                <div class="wf-panel-title">Sections</div>
+                <div class="wf-card">Gallery · On</div>
+                <div class="wf-card">Schedule · On</div>
+                <div class="wf-card wf-card--open">Results · On · ▾ открыта</div>
+                <div class="wf-card" style="margin-left:.5rem;border-style:dashed">↳ Competitions, Scoring…</div>
+                <div class="wf-card">Contacts · On</div>
+              </div>
+              <div class="wf-panel wf-panel--dim">
+                <div class="wf-panel-title">Design · Payments</div>
+              </div>
+            </div>
+            <div class="wf-col wf-preview">
+              <div class="wf-label">Справа · preview</div>
+              <div class="wf-preview-phone" title="подсвечен блок Results"></div>
+            </div>
+          </div>
+          <div class="flow-row">
+            <span class="flow-box">Клик «Results» слева</span>
+            <span>→</span>
+            <span class="flow-box flow-box--hi">раскрывается карточка Results в центре</span>
+            <span>→</span>
+            <span class="flow-box">превью прокручивается к блоку</span>
+          </div>
+          <div class="callout callout--good">
+            <strong>Почему это работало</strong>
+            Меню короткое (6–7 пунктов). Список секций — только по центру. Слева навигация, по центру редактирование. Без дублей.
+          </div>
+        </div>
+      </section>
+
+      <div class="wf-arrow">↓</div>
+
+      <!-- STAGE 2 -->
+      <section class="stage">
+        <div class="stage-head">
+          <span class="badge badge--bad">Сломали</span>
+          <span class="stage-title">Упрощение + «восстановление меню»</span>
+          <span class="stage-meta">b1a98e8 спрятал панель · потом переписали навигацию (862a4b7…)</span>
+        </div>
+        <div class="stage-body">
+          <div class="wf">
+            <div class="wf-col">
+              <div class="wf-label">Слева · раздутое меню</div>
+              <div class="wf-item wf-item--group">Your page</div>
+              <div class="wf-item">Team profile</div>
+              <div class="wf-item">Gallery</div>
+              <div class="wf-item wf-item--active">Results</div>
+              <div class="wf-item wf-item--group">More sections</div>
+              <div class="wf-item">Announcements</div>
+              <div class="wf-item wf-item--active" style="background:#9333ea">Results ← дубль!</div>
+              <div class="wf-item">Payments</div>
+              <div class="wf-item">Integrations</div>
+              <div class="wf-item">Polls</div>
+              <div class="wf-item">Weather</div>
+              <div class="wf-item">…ещё 8</div>
+            </div>
+            <div class="wf-col">
+              <div class="wf-label">Центр · два списка сразу</div>
+              <div class="wf-panel wf-panel--open" style="border-color:#fca5a5">
+                <div class="wf-panel-title">Results editor</div>
+                <div class="wf-panel-desc">Competitions · Scoring</div>
+              </div>
+              <div class="wf-panel wf-panel--open" style="border-color:#fca5a5;margin-top:.5rem">
+                <div class="wf-panel-title">Reorder sections</div>
+                <div class="wf-card">Contacts</div>
+                <div class="wf-card">Announcements</div>
+                <div class="wf-card">Payments</div>
+                <div class="wf-card wf-card--open">Results ← снова!</div>
+              </div>
+            </div>
+            <div class="wf-col wf-preview">
+              <div class="wf-label">Preview</div>
+              <div class="wf-preview-phone"></div>
+            </div>
+          </div>
+          <div class="callout callout--bad">
+            <strong>Что пошло не так</strong>
+            Сначала спрятали центральную панель. Потом вместо «вернуть 4 пункта» переписали весь UX: 20+ пунктов слева, второй такой же список по центру, два разных блока с подписью «Results».
+          </div>
+        </div>
+      </section>
+
+      <div class="wf-arrow">↓</div>
+
+      <!-- STAGE 3 -->
+      <section class="stage">
+        <div class="stage-head">
+          <span class="badge badge--mid">Сейчас · латки</span>
+          <span class="stage-title">После фиксов a1936fc</span>
+          <span class="stage-meta">Убрали дубль по центру · Results board / Trophies · короче меню</span>
+        </div>
+        <div class="stage-body">
+          <div class="wf">
+            <div class="wf-col">
+              <div class="wf-label">Слева</div>
+              <div class="wf-item wf-item--group">Your page</div>
+              <div class="wf-item wf-item--active">Results board</div>
+              <div class="wf-item wf-item--group">More</div>
+              <div class="wf-item">Trophies</div>
+              <div class="wf-item">Payments</div>
+              <div class="wf-item">Integrations</div>
+              <div class="wf-item" style="opacity:.45">Reorder sections</div>
+            </div>
+            <div class="wf-col">
+              <div class="wf-label">Центр · один редактор</div>
+              <div class="wf-panel wf-panel--open">
+                <div class="wf-panel-title">Results board</div>
+                <div class="wf-panel-desc">Setup · Competitions · Scoring · Preview</div>
+              </div>
+              <div class="wf-panel wf-panel--dim" style="margin-top:.35rem">
+                <div class="wf-panel-title">Reorder sections (отдельно)</div>
+                <div class="wf-panel-desc">только если нажать внизу слева</div>
+              </div>
+            </div>
+            <div class="wf-col wf-preview">
+              <div class="wf-label">Preview</div>
+              <div class="wf-preview-phone"></div>
+            </div>
+          </div>
+          <div class="callout callout--mid">
+            <strong>Лучше, но это всё ещё не та модель</strong>
+            Дубли убрали, но архитектура другая: отдельный FocusedSectionPanel вместо «клик → карточка в Sections». Можно откатить к готовой версии + добавить Payments в меню.
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <dl class="legend">
+      <div>
+        <dt>Что ты просила</dt>
+        <dd>Вернуть Payments, Integrations, Announcements в меню.</dd>
+      </div>
+      <div>
+        <dt>Что сделали лишнего</dt>
+        <dd>Переписали навигацию и центральную колонку целиком.</dd>
+      </div>
+      <div>
+        <dt>Что предлагаю</dt>
+        <dd>Откат UX к «супер»-версии + 4 пункта в More sections. Без нового редизайна.</dd>
+      </div>
+    </dl>
+  </div>
+</body>
+</html>
