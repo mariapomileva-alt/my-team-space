@@ -1,5 +1,7 @@
 "use client";
 
+import { SocialProofAvatars } from "@/components/landing/social-proof-avatars";
+import type { SocialProofVariant } from "@/components/landing/social-proof-avatars";
 import { MarketingTeamPagePreview } from "@/components/landing/marketing-team-preview";
 import { PricingPlans } from "@/components/marketing/pricing-plans";
 import { ACADEMY_PLAN_PRICE, TEAM_PLAN_PRICE } from "@/lib/marketing/pricing";
@@ -24,21 +26,6 @@ const FLOATING: { text: string; className: string; hideOnMobile?: boolean }[] = 
   { text: "Trip details updated", className: "left-[8%] bottom-[8%] sm:left-[4%]" },
   { text: "Player of the week", className: "right-[6%] bottom-[6%] sm:right-[2%]", hideOnMobile: true },
 ];
-
-function AvatarStack({ className = "" }: { className?: string }) {
-  const fills = ["bg-rose-300", "bg-amber-300", "bg-emerald-300", "bg-sky-300"];
-  return (
-    <span className={`flex -space-x-1.5 ${className}`}>
-      {fills.map((c, i) => (
-        <span
-          key={i}
-          className={`inline-block h-5 w-5 rounded-full ring-2 ring-white ${c}`}
-          aria-hidden
-        />
-      ))}
-    </span>
-  );
-}
 
 function FloatingLiveCard({ text, className, delay, hideOnMobile }: { text: string; className: string; delay: number; hideOnMobile?: boolean }) {
   return (
@@ -80,7 +67,7 @@ function DesktopTeamPreview({ phase }: { phase: "simple" | "rich" }) {
             <div>
               <div className="text-sm font-semibold tracking-tight text-neutral-900">City Juniors U12</div>
               <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] text-neutral-500">
-                <AvatarStack />
+                <SocialProofAvatars variant="mixed" hideLabel size="sm" />
                 <span className="text-neutral-300">·</span>
                 <span className="text-indigo-600/90">Live</span>
               </div>
@@ -179,7 +166,7 @@ function PhoneTeamPreview({ phase }: { phase: "simple" | "rich" }) {
               <p className="text-[9px] text-indigo-600">Today · 18:00</p>
             </div>
           </div>
-          <AvatarStack className="scale-90" />
+          <SocialProofAvatars variant="mixed" hideLabel size="sm" className="scale-95 origin-right" />
         </div>
       </div>
       <div className="flex-1 space-y-2 overflow-hidden p-2.5">
@@ -597,23 +584,28 @@ export function HomeLanding() {
         <section className="border-t border-neutral-100/80 bg-white/50 backdrop-blur-[2px]">
           <div className="mx-auto max-w-6xl px-6 py-16 sm:px-8 sm:py-20">
             <div className="grid gap-6 sm:grid-cols-3 sm:gap-8">
-              {[
-                {
-                  title: "Easy for coaches",
-                  text: "Update schedules, announcements, trips, and results in minutes.",
-                  emoji: "🧢",
-                },
-                {
-                  title: "Clear for parents",
-                  text: "Everything important in one link — always up to date.",
-                  emoji: "👨‍👩‍👧",
-                },
-                {
-                  title: "Motivating for kids",
-                  text: "Badges, trophies, streaks, and team spirit built in.",
-                  emoji: "⭐",
-                },
-              ].map((card) => (
+              {(
+                [
+                  {
+                    title: "Easy for coaches",
+                    text: "Update schedules, announcements, trips, and results in minutes.",
+                    emoji: "🧢",
+                    social: "coaches" as SocialProofVariant,
+                  },
+                  {
+                    title: "Clear for parents",
+                    text: "Everything important in one link — always up to date.",
+                    emoji: "👨‍👩‍👧",
+                    social: "parents" as SocialProofVariant,
+                  },
+                  {
+                    title: "Motivating for kids",
+                    text: "Badges, trophies, streaks, and team spirit built in.",
+                    emoji: "⭐",
+                    social: "kids" as SocialProofVariant,
+                  },
+                ] as const
+              ).map((card) => (
                 <div
                   key={card.title}
                   className={`relative overflow-hidden rounded-3xl border border-neutral-100/90 bg-white p-8 shadow-[0_2px_28px_-10px_rgba(79,70,229,0.08)]`}
@@ -624,10 +616,7 @@ export function HomeLanding() {
                   </span>
                   <h2 className="mt-3 text-lg font-semibold tracking-tight text-neutral-900">{card.title}</h2>
                   <p className="mt-2 text-[15px] leading-relaxed text-neutral-500">{card.text}</p>
-                  <div className="mt-4 flex items-center gap-1">
-                    <AvatarStack />
-                    <span className="text-[11px] text-neutral-400">Loved by families</span>
-                  </div>
+                  <SocialProofAvatars variant={card.social} className="mt-5" />
                 </div>
               ))}
             </div>
