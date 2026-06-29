@@ -19,9 +19,9 @@ const FACES: Record<SocialProofVariant, readonly string[]> = {
   ],
   kids: [
     face("photo-1521572163474-6864f9cf17ab"),
-    face("photo-1595435934249-26df3d350cea"),
-    face("photo-1554068865-24cecd4e9b26"),
-    face("photo-1622163649001-09445f787b59"),
+    face("photo-1503454537195-1dcabb73ffb9"),
+    face("photo-1544776193-352d25ca82cd"),
+    face("photo-1504609773096-104ff2c73ba4"),
   ],
   mixed: [
     face("photo-1573496359142-b8d87734a5a2"),
