@@ -1,5 +1,6 @@
 "use client";
 
+import { SetupSection } from "@/components/landing/setup-section";
 import { SocialProofAvatars } from "@/components/landing/social-proof-avatars";
 import type { SocialProofVariant } from "@/components/landing/social-proof-avatars";
 import { MarketingTeamPagePreview } from "@/components/landing/marketing-team-preview";
@@ -255,97 +256,6 @@ function HeroProductVisual({ phase }: { phase: "simple" | "rich" }) {
   );
 }
 
-
-function SetupSection() {
-  const [step, setStep] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setStep((s) => (s + 1) % 4), 2200);
-    return () => clearInterval(id);
-  }, []);
-
-  return (
-    <section className="border-y border-neutral-100/90 bg-gradient-to-b from-white to-indigo-50/20">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:px-8 lg:py-24">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-500/90">Setup in minutes</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
-              Ready before your next training session.
-            </h2>
-            <p className="mt-4 max-w-md text-[15px] leading-relaxed text-neutral-500">
-              Set up your team page in about five minutes — toggle blocks, pick colors, drop your logo, and share one
-              link. Updates show up instantly for everyone.
-            </p>
-          </div>
-
-          <div className="relative rounded-3xl border border-neutral-100/90 bg-white p-6 shadow-[0_24px_60px_-24px_rgba(79,70,229,0.12)]">
-            <div className="mb-4 flex items-center justify-between border-b border-neutral-100 pb-3">
-              <span className="text-sm font-semibold text-neutral-800">Page editor</span>
-              <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
-                Saved
-              </span>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <p className="text-[11px] font-medium text-neutral-500">Blocks</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {["Schedule", "Results", "Trips", "MVP"].map((label, i) => (
-                    <motion.button
-                      key={label}
-                      type="button"
-                      className={`rounded-full px-3 py-1 text-[11px] font-medium ring-1 transition ${
-                        (step + i) % 2 === 0
-                          ? "bg-indigo-600 text-white ring-indigo-500"
-                          : "bg-neutral-100 text-neutral-500 ring-neutral-200/80"
-                      }`}
-                      animate={{ scale: step === i ? [1, 1.04, 1] : 1 }}
-                      transition={{ duration: 0.35 }}
-                    >
-                      {label}
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="text-[11px] font-medium text-neutral-500">Team colors</p>
-                <div className="mt-2 flex gap-2">
-                  {["#4f46e5", "#0ea5e9", "#f97316", "#10b981"].map((hex, i) => (
-                    <motion.span
-                      key={hex}
-                      className={`h-8 w-8 rounded-full ring-2 ring-offset-2 ring-offset-white ${
-                        step === i ? "ring-indigo-400" : "ring-black/5"
-                      }`}
-                      style={{ backgroundColor: hex }}
-                      animate={step === i ? { scale: [1, 1.08, 1] } : { scale: 1 }}
-                      transition={{ duration: 0.45 }}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-100">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-dashed border-indigo-200 bg-indigo-50/50 text-[10px] font-semibold text-indigo-600">
-                  Logo
-                </div>
-                <div className="flex-1">
-                  <p className="text-[12px] font-medium text-neutral-800">Upload team crest</p>
-                  <p className="text-[10px] text-neutral-500">PNG or JPG · shows on every page</p>
-                </div>
-              </div>
-              <motion.div
-                className="rounded-xl border border-neutral-100 bg-gradient-to-r from-indigo-50/50 to-white p-3 ring-1 ring-indigo-100/40"
-                animate={{ opacity: [0.85, 1, 0.85] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-indigo-600/90">Live preview</p>
-                <p className="mt-1 text-[11px] text-neutral-600">Parents see changes the moment you hit save.</p>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 const COMMUNITY_PILLS = [
   "Football academies",
