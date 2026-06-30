@@ -1,5 +1,6 @@
 "use client";
 
+import { SetupSection } from "@/components/landing/setup-section";
 import { SocialProofAvatars } from "@/components/landing/social-proof-avatars";
 import type { SocialProofVariant } from "@/components/landing/social-proof-avatars";
 import { MarketingTeamPagePreview } from "@/components/landing/marketing-team-preview";
@@ -266,171 +267,6 @@ const COMMUNITY_PILLS = [
 
 const COMMUNITY_PLUS_LABEL = "+ Your community";
 
-type ExploreDemo = {
-  href: string;
-  name: string;
-  category: string;
-  headerBg: string;
-  iconBg: string;
-  icon: string;
-  ringColor: string;
-  previews: { label: string; value: string }[];
-};
-
-const EXPLORE_DEMOS: ExploreDemo[] = [
-  {
-    href: "/city-juniors",
-    name: "Tigers Basketball Academy",
-    category: "Basketball",
-    headerBg: "bg-gradient-to-r from-amber-100/95 via-orange-50/90 to-amber-50/80",
-    iconBg: "bg-amber-200/70 text-amber-950",
-    icon: "🏀",
-    ringColor: "ring-amber-200/60",
-    previews: [
-      { label: "Next training", value: "Monday, 18:00" },
-      { label: "Achievement", value: "12 new badges unlocked" },
-      { label: "Team points", value: "2,450" },
-    ],
-  },
-  {
-    href: "/riga-swim",
-    name: "Blue Wave Swim Team",
-    category: "Swimming",
-    headerBg: "bg-gradient-to-r from-sky-100/95 via-cyan-50/90 to-blue-50/80",
-    iconBg: "bg-sky-200/70 text-sky-950",
-    icon: "🌊",
-    ringColor: "ring-sky-200/60",
-    previews: [
-      { label: "Next training", value: "Wednesday, 17:30" },
-      { label: "Achievement", value: "Mia earned Gold Star" },
-      { label: "Parent update", value: "New schedule added" },
-    ],
-  },
-  {
-    href: "/dance-kids",
-    name: "Little Stars Gymnastics",
-    category: "Gymnastics",
-    headerBg: "bg-gradient-to-r from-fuchsia-100/90 via-pink-50/85 to-violet-50/75",
-    iconBg: "bg-fuchsia-200/60 text-fuchsia-950",
-    icon: "⭐",
-    ringColor: "ring-fuchsia-200/50",
-    previews: [
-      { label: "Next training", value: "Friday, 16:00" },
-      { label: "Achievement", value: "8 kids completed level 2" },
-      { label: "Team badges", value: "34" },
-    ],
-  },
-  {
-    href: "/city-juniors",
-    name: "Future FC Academy",
-    category: "Football",
-    headerBg: "bg-gradient-to-r from-emerald-100/95 via-lime-50/80 to-green-50/75",
-    iconBg: "bg-emerald-200/70 text-emerald-950",
-    icon: "⚽",
-    ringColor: "ring-emerald-200/55",
-    previews: [
-      { label: "Next match", value: "Saturday, 11:00" },
-      { label: "Achievement", value: "Team streak: 5 wins" },
-      { label: "Parent update", value: "New photos uploaded" },
-    ],
-  },
-  {
-    href: "/riga-swim",
-    name: "North Tennis Club",
-    category: "Tennis",
-    headerBg: "bg-gradient-to-r from-slate-200/90 via-teal-50/85 to-cyan-50/70",
-    iconBg: "bg-slate-700/90 text-white",
-    icon: "🎾",
-    ringColor: "ring-slate-200/70",
-    previews: [
-      { label: "Next session", value: "Tuesday, 15:30" },
-      { label: "Achievement", value: "4 new personal records" },
-      { label: "Team points", value: "1,980" },
-    ],
-  },
-  {
-    href: "/dance-kids",
-    name: "Riga Dance Kids",
-    category: "Dance",
-    headerBg: "bg-gradient-to-r from-violet-100/90 via-rose-50/80 to-orange-50/65",
-    iconBg: "bg-violet-200/65 text-violet-950",
-    icon: "🎵",
-    ringColor: "ring-violet-200/55",
-    previews: [
-      { label: "Next class", value: "Thursday, 18:30" },
-      { label: "Achievement", value: "New performance video added" },
-      { label: "Team badges", value: "27" },
-    ],
-  },
-];
-
-function ExploreTeamSpacesSection() {
-  return (
-    <section className="border-t border-neutral-100/80 bg-gradient-to-b from-white/80 to-neutral-50/40">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:px-8 lg:py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">Explore ready-made Team Spaces</h2>
-          <p className="mt-3 text-[15px] leading-relaxed text-neutral-500">
-            See how different teams can use MyTeamSpace to share updates, motivate kids, and keep parents in the loop.
-          </p>
-        </div>
-
-        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {EXPLORE_DEMOS.map((demo, i) => (
-            <motion.article
-              key={`${demo.name}-${i}`}
-              initial={{ opacity: 0, y: 22 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-48px 0px" }}
-              transition={{ duration: 0.45, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-              className="group flex h-full flex-col overflow-hidden rounded-3xl border border-neutral-100/90 bg-white shadow-[0_4px_28px_-14px_rgba(15,23,42,0.08)] ring-1 ring-neutral-50 transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_20px_48px_-20px_rgba(15,23,42,0.12)]"
-            >
-              <div className={`relative px-5 pb-4 pt-5 ${demo.headerBg}`}>
-                <div className="absolute inset-x-0 top-0 h-1 bg-white/40" aria-hidden />
-                <div className="flex items-start gap-3">
-                  <div
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xl shadow-sm ring-2 ring-white/80 ${demo.iconBg} ${demo.ringColor}`}
-                    aria-hidden
-                  >
-                    {demo.icon}
-                  </div>
-                  <div className="min-w-0 pt-0.5">
-                    <h3 className="text-[15px] font-semibold leading-snug tracking-tight text-neutral-900">{demo.name}</h3>
-                    <p className="mt-0.5 text-[12px] font-medium text-neutral-500">{demo.category}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-1 flex-col px-5 pb-5 pt-1">
-                <ul className="space-y-2.5 border-t border-neutral-100/80 pt-4">
-                  {demo.previews.map((row) => (
-                    <li key={row.label} className="flex flex-col gap-0.5 rounded-xl bg-neutral-50/80 px-3 py-2 ring-1 ring-neutral-100/80">
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">{row.label}</span>
-                      <span className="text-[12px] font-medium leading-snug text-neutral-800">{row.value}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-5 flex flex-1 items-end">
-                  <Link
-                    href={demo.href}
-                    className="inline-flex w-full items-center justify-center rounded-full border border-neutral-200/90 bg-white py-2.5 text-[13px] font-semibold text-neutral-800 shadow-sm transition group-hover:border-indigo-200 group-hover:bg-indigo-50/40 group-hover:text-indigo-800"
-                  >
-                    View demo
-                  </Link>
-                </div>
-              </div>
-            </motion.article>
-          ))}
-        </div>
-
-        <p className="mx-auto mt-12 max-w-2xl text-center text-[13px] leading-relaxed text-neutral-400">
-          Every space can be customized with your team colors, logo, schedule, achievements, and updates.
-        </p>
-      </div>
-    </section>
-  );
-}
-
 export function HomeLanding() {
   const [cycle, setCycle] = useState(0);
   const [phase, setPhase] = useState<"simple" | "rich">("rich");
@@ -551,6 +387,8 @@ export function HomeLanding() {
           </div>
         </section>
 
+        <SetupSection />
+
         <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28 lg:py-32">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-[family-name:var(--font-brand)] text-2xl font-bold tracking-tight text-[#1A1C23] sm:text-3xl lg:text-[2rem]">
@@ -598,8 +436,6 @@ export function HomeLanding() {
             </p>
           </div>
         </section>
-
-        <ExploreTeamSpacesSection />
     </div>
   );
 }
