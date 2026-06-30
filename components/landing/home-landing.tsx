@@ -1,9 +1,16 @@
 "use client";
 
 import { SetupSection } from "@/components/landing/setup-section";
+import { LandingFeatureGroupsSection } from "@/components/landing/landing-feature-groups";
+import {
+  LandingBeforeAfterSection,
+  LandingBuildFlowSection,
+  LandingFinalCtaSection,
+  LandingPrideSection,
+  LandingSocialQuotesSection,
+} from "@/components/landing/landing-marketing-sections";
 import { SocialProofAvatars } from "@/components/landing/social-proof-avatars";
 import type { SocialProofVariant } from "@/components/landing/social-proof-avatars";
-import { MarketingTeamPagePreview } from "@/components/landing/marketing-team-preview";
 import { PricingPlans } from "@/components/marketing/pricing-plans";
 import { ACADEMY_PLAN_PRICE, TEAM_PLAN_PRICE } from "@/lib/marketing/pricing";
 import Link from "next/link";
@@ -292,14 +299,14 @@ export function HomeLanding() {
           <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-10 xl:gap-14">
             <div className="max-w-xl lg:max-w-none">
               <h1 className="font-[family-name:var(--font-brand)] text-[2.15rem] font-bold leading-[1.08] tracking-tight text-[#1A1C23] sm:text-4xl lg:text-[2.85rem]">
-                Your Team.
+                Give your team a home
                 <span className="mt-1 block bg-[linear-gradient(135deg,#6C5CE7,#FF6B9D,#FFA94D)] bg-clip-text text-transparent">
-                  One Space.
+                  you&apos;ll be proud to share.
                 </span>
               </h1>
               <p className="mt-5 text-lg leading-relaxed text-neutral-500 sm:text-[1.06rem]">
-                Schedules, announcements, achievements, and updates — beautifully organized for coaches, parents, and
-                kids. One link. No app download.
+                The modern home for your team — schedule, updates, photos, contacts, and payments in one beautiful
+                link. Less chaos for coaches. One calm page for parents.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
@@ -368,24 +375,15 @@ export function HomeLanding() {
           </div>
         </section>
 
-        <section id="features" className="mx-auto max-w-6xl px-6 py-20 sm:px-8 lg:py-24">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">Your digital team home</p>
-            <h2 className="mt-3 font-[family-name:var(--font-brand)] text-3xl font-bold tracking-tight text-[#1A1C23] sm:text-4xl">
-              Everything your team needs. In one beautiful place.
-            </h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
-              Live widgets for coaches, parents, and kids — schedules, wins, photos, and proud moments. Mobile-first,
-              calm, and alive.
-            </p>
-          </div>
-          <div className="mt-12 sm:mt-14">
-            <MarketingTeamPagePreview />
-            <p className="mx-auto mt-10 max-w-xl text-center text-[13px] leading-relaxed text-neutral-400">
-              Every block is optional — coaches turn on what their team needs. Parents get one calm link, not another app.
-            </p>
-          </div>
-        </section>
+        <LandingPrideSection />
+
+        <LandingBeforeAfterSection />
+
+        <LandingFeatureGroupsSection />
+
+        <LandingBuildFlowSection />
+
+        <LandingSocialQuotesSection />
 
         <SetupSection />
 
@@ -413,6 +411,8 @@ export function HomeLanding() {
             </li>
           </ul>
         </section>
+
+        <LandingFinalCtaSection />
 
         <section className="border-t border-neutral-100/80 bg-white/60">
           <div className="mx-auto max-w-5xl px-6 py-20 sm:px-8 lg:py-24">
