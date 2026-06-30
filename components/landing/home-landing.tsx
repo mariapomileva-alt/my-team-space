@@ -19,35 +19,25 @@ import { useEffect, useState } from "react";
 
 const accentBtn =
   "bg-[#6C5CE7] text-white shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_-6px_rgba(108,92,231,0.45)] hover:bg-[#5b4bd6] active:scale-[0.99]";
-const accentRing = "ring-[#6C5CE7]/15";
 const accentBorder = "border-[#6C5CE7]/20";
 const accentSoft = "from-[#6C5CE7]/8 via-white to-[#FF6B9D]/6";
 const accentGlow = "shadow-[0_0_80px_-20px_rgba(108,92,231,0.28)]";
 
-const FLOATING: { text: string; className: string; hideOnMobile?: boolean }[] = [
+const FLOATING: { text: string; className: string }[] = [
   { text: "Training today · 18:00", className: "left-0 top-[10%] sm:left-[-2%]" },
-  { text: "+1 trophy unlocked", className: "right-0 top-[16%] sm:right-[-4%]" },
-  { text: "12 parents viewed update", className: "left-[-6%] top-[38%] sm:left-[-8%]", hideOnMobile: true },
-  { text: "Coach Anna updated the schedule", className: "right-[-4%] top-[44%] sm:right-[-6%]", hideOnMobile: true },
-  { text: "New tournament results added", className: "left-0 bottom-[26%] sm:left-[-2%]" },
-  { text: "24 kids completed challenge", className: "right-0 bottom-[18%] sm:right-[-2%]", hideOnMobile: true },
-  { text: "Trip details updated", className: "left-[8%] bottom-[8%] sm:left-[4%]" },
-  { text: "Player of the week", className: "right-[6%] bottom-[6%] sm:right-[2%]", hideOnMobile: true },
+  { text: "New tournament results", className: "right-0 top-[16%] sm:right-[-4%]" },
+  { text: "Coach updated the schedule", className: "right-[-4%] top-[44%] sm:right-[-6%]" },
+  { text: "Trip details updated", className: "left-0 bottom-[26%] sm:left-[-2%]" },
 ];
 
-function FloatingLiveCard({ text, className, delay, hideOnMobile }: { text: string; className: string; delay: number; hideOnMobile?: boolean }) {
+function FloatingLiveCard({ text, className }: { text: string; className: string }) {
   return (
-    <motion.div
-      className={`pointer-events-none absolute z-10 max-w-[210px] rounded-2xl border ${accentBorder} bg-white/95 px-3.5 py-2.5 text-[12px] font-medium leading-snug text-neutral-800 shadow-[0_12px_40px_-12px_rgba(79,70,229,0.2),0_0_0_1px_rgba(255,255,255,0.9)_inset] backdrop-blur-md ${hideOnMobile ? "hidden md:block" : ""} ${className}`}
-      initial={false}
-      animate={{ y: [0, -4, 0] }}
-      transition={{
-        y: { delay: delay + 0.35, duration: 6, repeat: Infinity, ease: "easeInOut" },
-      }}
+    <div
+      className={`pointer-events-none absolute z-10 hidden max-w-[200px] rounded-2xl border ${accentBorder} bg-white px-3.5 py-2.5 text-[12px] font-medium leading-snug text-neutral-800 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.12)] md:block ${className}`}
     >
       <span className="mr-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" aria-hidden />
       {text}
-    </motion.div>
+    </div>
   );
 }
 
@@ -81,14 +71,10 @@ function DesktopTeamPreview({ phase }: { phase: "simple" | "rich" }) {
               </div>
             </div>
           </div>
-          <motion.div
-            className="flex items-center gap-0.5 rounded-full bg-neutral-50 px-2 py-1 text-xs ring-1 ring-neutral-100"
-            animate={{ scale: [1, 1.03, 1] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          >
+          <div className="flex items-center gap-0.5 rounded-full bg-neutral-50 px-2 py-1 text-xs ring-1 ring-neutral-100">
             <span aria-hidden>🔥</span>
             <span className="text-[11px] font-semibold text-neutral-600">8</span>
-          </motion.div>
+          </div>
         </div>
       </div>
 
@@ -213,14 +199,8 @@ function HeroProductVisual({ phase }: { phase: "simple" | "rich" }) {
       className={`relative mx-auto w-full max-w-[480px] min-h-[320px] pt-4 sm:min-h-[380px] sm:max-w-[520px] sm:pt-6 ${accentGlow}`}
       initial={false}
     >
-      {FLOATING.map((f, i) => (
-        <FloatingLiveCard
-          key={f.text}
-          text={f.text}
-          className={f.className}
-          delay={0.1 * i}
-          hideOnMobile={f.hideOnMobile}
-        />
+      {FLOATING.map((f) => (
+        <FloatingLiveCard key={f.text} text={f.text} className={f.className} />
       ))}
 
       <motion.div className="relative z-10 mt-3 sm:mt-5">
@@ -233,31 +213,14 @@ function HeroProductVisual({ phase }: { phase: "simple" | "rich" }) {
           initial={false}
           style={{ rotate: -2 }}
         >
-          <motion.div
-            className="rounded-[2.15rem] border-[7px] border-neutral-900 bg-neutral-900 p-[5px] shadow-[0_24px_50px_-12px_rgba(0,0,0,0.45)]"
-            animate={{ y: [0, -4, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          >
+          <div className="rounded-[2.15rem] border-[7px] border-neutral-900 bg-neutral-900 p-[5px] shadow-[0_24px_50px_-12px_rgba(0,0,0,0.45)]">
             <div className="overflow-hidden rounded-[1.55rem] bg-neutral-900">
               <div className="aspect-[9/18.2]">
                 <PhoneTeamPreview phase={phase} />
               </div>
             </div>
-          </motion.div>
+          </div>
         </motion.div>
-
-        <motion.div
-          className="pointer-events-none absolute -left-4 top-1/3 z-0 hidden h-32 w-32 rounded-full bg-indigo-400/20 blur-3xl sm:block"
-          animate={{ opacity: [0.4, 0.65, 0.4], scale: [1, 1.08, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          aria-hidden
-        />
-        <motion.div
-          className="pointer-events-none absolute -right-8 top-0 z-0 h-40 w-40 rounded-full bg-violet-400/15 blur-3xl"
-          animate={{ opacity: [0.35, 0.55, 0.35] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          aria-hidden
-        />
       </motion.div>
     </motion.div>
   );
@@ -298,15 +261,18 @@ export function HomeLanding() {
         <section className="mx-auto max-w-6xl px-6 pb-14 pt-4 sm:px-8 sm:pb-20 lg:pb-20">
           <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-12 xl:gap-14">
             <div className="max-w-xl lg:max-w-none">
-              <h1 className="font-[family-name:var(--font-brand)] text-[2.15rem] font-bold leading-[1.08] tracking-tight text-[#1A1C23] sm:text-4xl lg:text-[2.85rem]">
-                Give your team a home
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">
+                Team page builder
+              </p>
+              <h1 className="mt-3 font-[family-name:var(--font-brand)] text-[2rem] font-bold leading-[1.1] tracking-tight text-[#1A1C23] sm:text-4xl lg:text-[2.75rem]">
+                The modern home page
                 <span className="mt-1 block bg-[linear-gradient(135deg,#6C5CE7,#FF6B9D,#FFA94D)] bg-clip-text text-transparent">
-                  you&apos;ll be proud to share.
+                  for your sports team.
                 </span>
               </h1>
-              <p className="mt-5 text-lg leading-relaxed text-neutral-500 sm:text-[1.06rem]">
-                Schedule, photos, contacts, and updates — organized for coaches, parents, and athletes. Professional
-                presentation without the admin headache.
+              <p className="mt-5 text-[17px] leading-relaxed text-neutral-600 sm:text-lg">
+                One professional page for schedule, photos, contacts, and updates — the link parents bookmark instead
+                of asking again.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
@@ -322,7 +288,9 @@ export function HomeLanding() {
                   View Demo
                 </Link>
               </div>
-              <p className="mt-7 text-sm font-medium text-neutral-400">No coding required.</p>
+              <p className="mt-7 text-sm font-medium text-neutral-400">
+                No coding required · Opens in any browser · No app for parents
+              </p>
             </div>
 
             <div className="relative isolate mx-auto w-full max-w-md pt-2 sm:max-w-lg sm:pt-3 lg:mx-0 lg:max-w-none lg:pt-4">
@@ -337,20 +305,20 @@ export function HomeLanding() {
               {(
                 [
                   {
-                    title: "Easy for coaches",
-                    text: "Update schedules, announcements, trips, and results when things change.",
+                    title: "Less admin for you",
+                    text: "Post once. Parents stop asking where, when, and how much.",
                     emoji: "🧢",
                     social: "coaches" as SocialProofVariant,
                   },
                   {
-                    title: "Clear for parents",
-                    text: "Schedules, fees, and updates in one place — always current.",
+                    title: "Calm for parents",
+                    text: "Schedule, fees, and contacts — always current, always in one place.",
                     emoji: "👨‍👩‍👧",
                     social: "parents" as SocialProofVariant,
                   },
                   {
-                    title: "Motivating for kids",
-                    text: "Badges, trophies, streaks, and team spirit built in.",
+                    title: "Pride for athletes",
+                    text: "Wins, photos, and team moments they actually want to show.",
                     emoji: "⭐",
                     social: "kids" as SocialProofVariant,
                   },
@@ -358,9 +326,8 @@ export function HomeLanding() {
               ).map((card) => (
                 <div
                   key={card.title}
-                  className={`relative overflow-hidden rounded-3xl border border-neutral-100/90 bg-white p-6 shadow-[0_2px_28px_-10px_rgba(79,70,229,0.08)] sm:p-8`}
+                  className="rounded-3xl border border-neutral-100/90 bg-white p-6 shadow-[0_2px_28px_-10px_rgba(79,70,229,0.08)] sm:p-8"
                 >
-                  <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-indigo-100/40 blur-2xl" aria-hidden />
                   <span className="text-2xl" aria-hidden>
                     {card.emoji}
                   </span>
@@ -388,22 +355,22 @@ export function HomeLanding() {
         <section className="mx-auto max-w-6xl px-6 py-12 sm:px-8 sm:py-16 lg:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-[family-name:var(--font-brand)] text-2xl font-bold tracking-tight text-[#1A1C23] sm:text-3xl lg:text-[2rem]">
-              Built for modern teams and communities
+              For every kind of team
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-neutral-500 sm:text-base">
-              One calm home for the chaos of schedules, feelings, and big little wins.
+              Academies, clubs, studios, and school teams — same calm home page.
             </p>
           </div>
           <ul className="mx-auto mt-12 flex max-w-3xl flex-wrap justify-center gap-3 sm:mt-14 sm:gap-4">
             {COMMUNITY_PILLS.map((name) => (
               <li key={name}>
-                <span className="inline-flex min-h-11 items-center rounded-full border border-black/[0.06] bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 shadow-[0_2px_12px_-4px_rgba(15,23,42,0.08)] transition duration-300 ease-out hover:-translate-y-0.5 hover:border-[#6C5CE7]/20 hover:shadow-[0_8px_24px_-8px_rgba(108,92,231,0.15)]">
+                <span className="inline-flex min-h-11 items-center rounded-full border border-black/[0.06] bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 shadow-[0_2px_12px_-4px_rgba(15,23,42,0.08)]">
                   {name}
                 </span>
               </li>
             ))}
             <li>
-              <span className="inline-flex min-h-11 items-center rounded-full border border-[#6C5CE7]/30 bg-gradient-to-r from-[#6C5CE7]/10 via-white to-[#FF6B9D]/10 px-6 py-2.5 text-sm font-semibold text-[#6C5CE7] shadow-[0_4px_20px_-6px_rgba(108,92,231,0.2)] ring-1 ring-[#6C5CE7]/10 transition duration-300 ease-out hover:-translate-y-0.5 hover:border-[#6C5CE7]/45 hover:from-[#6C5CE7]/15 hover:to-[#FF6B9D]/15 hover:shadow-[0_12px_32px_-10px_rgba(108,92,231,0.28)]">
+              <span className="inline-flex min-h-11 items-center rounded-full border border-[#6C5CE7]/25 bg-violet-50/50 px-6 py-2.5 text-sm font-semibold text-[#6C5CE7] ring-1 ring-[#6C5CE7]/10">
                 {COMMUNITY_PLUS_LABEL}
               </span>
             </li>

@@ -267,12 +267,12 @@ export function LandingFeatureGroupsSection() {
         transition={{ duration: 0.5 }}
         className="mx-auto max-w-2xl text-center"
       >
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">Features</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">What you get</p>
         <h2 className="mt-3 font-[family-name:var(--font-brand)] text-3xl font-bold tracking-tight text-[#1A1C23] sm:text-4xl">
-          Everything parents need. Nothing they don&apos;t.
+          Every parent question, answered on one page.
         </h2>
         <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
-          Turn on only what your team uses — schedule, gallery, results, payments, and more.
+          Turn on only what your team uses. Parents get clarity — you get fewer repeat messages.
         </p>
       </motion.div>
 
@@ -300,7 +300,7 @@ export function LandingFeatureGroupsSection() {
               {group.features.map((feature) => (
                 <article
                   key={feature.title}
-                  className="flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-100/90 bg-white shadow-[0_2px_24px_-12px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-16px_rgba(108,92,231,0.15)]"
+                  className="flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-100/90 bg-white shadow-[0_2px_24px_-12px_rgba(15,23,42,0.08)]"
                 >
                   <div className="flex min-h-[88px] items-center border-b border-neutral-50 bg-neutral-50/40 p-3">
                     {feature.preview}

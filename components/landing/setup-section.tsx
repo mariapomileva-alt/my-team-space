@@ -95,18 +95,18 @@ export function SetupSection() {
   );
 
   return (
-    <section className="border-y border-neutral-100/90 bg-gradient-to-b from-white via-indigo-50/15 to-white">
+    <section className="border-y border-neutral-100/90 bg-white">
       <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8 sm:py-16 lg:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-12 xl:gap-16">
           <div className="max-w-lg">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-500/90">
-              Setup in minutes
+              Get started
             </p>
             <h2 className="mt-3 font-[family-name:var(--font-brand)] text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
-              Ready before your next training session.
+              Live before your next session.
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
-              Designed for quick setup — no designer, no IT ticket, no new app for parents to install.
+              Pick a look, turn on your blocks, share with families — no designer, no IT ticket, no parent app.
             </p>
 
             <ol className="mt-8 space-y-3">
@@ -242,11 +242,9 @@ export function SetupSection() {
               </div>
 
               <motion.p
-                className="mt-4 rounded-xl border border-indigo-100/60 bg-indigo-50/40 px-3 py-2.5 text-center text-[11px] text-neutral-600"
-                animate={{ opacity: [0.88, 1, 0.88] }}
-                transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+                className="mt-4 rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-2.5 text-center text-[11px] text-neutral-600"
               >
-                <span className="font-semibold text-indigo-700">Parents see changes instantly</span>
+                <span className="font-semibold text-neutral-800">Parents see changes instantly</span>
                 <span className="text-neutral-400"> · </span>
                 no refresh, no app download
               </motion.p>

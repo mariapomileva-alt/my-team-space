@@ -16,15 +16,15 @@ const fadeUp = {
 
 export function LandingPrideSection() {
   return (
-    <section className="border-t border-neutral-100/80 bg-gradient-to-b from-white via-violet-50/15 to-white">
+    <section className="border-t border-neutral-100/80 bg-white">
       <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8 sm:py-16 lg:py-20">
         <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">The result</p>
           <h2 className="mt-3 font-[family-name:var(--font-brand)] text-3xl font-bold tracking-tight text-[#1A1C23] sm:text-4xl">
-            Every great team deserves its own space.
+            This is what your team could look like.
           </h2>
           <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
-            A real team page — schedule, photos, wins, and contacts — that families bookmark and coaches enjoy updating.
+            A page families bookmark — schedule, photos, wins, and contacts that reflect how you already run your team.
           </p>
         </motion.div>
         <div className="mt-10 sm:mt-12">
@@ -56,7 +56,7 @@ export function LandingBeforeAfterSection() {
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">Less chaos</p>
         <h2 className="mt-3 font-[family-name:var(--font-brand)] text-2xl font-bold tracking-tight text-[#1A1C23] sm:text-3xl">
-          From scattered links to one calm home
+          Stop juggling five places parents check
         </h2>
       </motion.div>
 
@@ -81,7 +81,7 @@ export function LandingBeforeAfterSection() {
         <motion.div
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.1 }}
-          className="rounded-3xl border border-violet-200/60 bg-gradient-to-br from-violet-50/90 via-white to-white p-6 shadow-[0_8px_40px_-20px_rgba(108,92,231,0.2)] sm:p-7"
+          className="rounded-3xl border border-violet-200/50 bg-violet-50/40 p-6 sm:p-7"
         >
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-violet-600">With MyTeamSpace</p>
           <p className="mt-2 text-sm font-semibold text-neutral-800">One home. Always current.</p>
@@ -105,19 +105,19 @@ const BUILD_STEPS = [
   {
     step: "1",
     title: "Build",
-    text: "Add your logo, schedule, and the blocks your team actually needs.",
+    text: "Add your logo, schedule, and only the blocks your team needs.",
     emoji: "✨",
   },
   {
     step: "2",
     title: "Publish",
-    text: "Go live when you're ready. Parents open a clean page in the browser.",
+    text: "Go live when it feels right. Parents open it in any browser.",
     emoji: "🚀",
   },
   {
     step: "3",
     title: "Share",
-    text: "Send the link or QR once. Edits appear on the page right after you save.",
+    text: "Send the link once. Every save updates what families see.",
     emoji: "🔗",
   },
 ] as const;
@@ -188,10 +188,10 @@ export function LandingFinalCtaSection() {
     <section className="mx-auto max-w-6xl px-6 py-14 sm:px-8 sm:py-16">
       <motion.div
         {...fadeUp}
-        className="overflow-hidden rounded-[1.75rem] border border-violet-200/50 bg-gradient-to-br from-[#6C5CE7]/10 via-white to-[#FF6B9D]/8 px-6 py-10 text-center shadow-[0_24px_60px_-28px_rgba(108,92,231,0.3)] sm:px-10 sm:py-12"
+        className="overflow-hidden rounded-[1.75rem] border border-violet-200/40 bg-white px-6 py-10 text-center shadow-[0_16px_48px_-24px_rgba(15,23,42,0.12)] sm:px-10 sm:py-12"
       >
         <h2 className="font-[family-name:var(--font-brand)] text-2xl font-bold tracking-tight text-[#1A1C23] sm:text-3xl">
-          Create a team page you&apos;ll be proud to share.
+          Give your team a page worth sharing.
         </h2>
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <Link
@@ -207,6 +207,7 @@ export function LandingFinalCtaSection() {
             View Demo
           </Link>
         </div>
+        <p className="mt-5 text-sm text-neutral-400">No coding required · View the live demo first</p>
       </motion.div>
     </section>
   );
