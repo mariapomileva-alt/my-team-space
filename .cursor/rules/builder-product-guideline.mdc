@@ -1,0 +1,25 @@
+# Builder product guideline (always)
+
+When changing the team page builder, blocks, editors, WhatsApp flows, or data collection — read and follow **`docs/BUILDER_GUIDELINE.md`**.
+
+## Quick reference
+
+- **Layout:** 3 columns (structure nav + single editor card + live preview). See `docs/BUILDER_BASELINE_LOCK.md` — do not redesign without explicit request.
+- **Blocks:** metadata in `lib/blocks/meta.ts` (essential / engagement / advanced). Empty blocks hidden on public page.
+- **WhatsApp:** three modes — click-to-chat (free), share summary (free), Twilio auto-notify (optional). No two-way chat sync.
+- **Data collection:** polls → `poll_votes`; roster → attendance block; payments tracker → `page_settings.payments`.
+- **External services:** link/embed based (Google Calendar URL, Strava link, etc.) — not API sync.
+- **Publish gate:** team name + logo required; checkout may be required when billing is configured.
+- **Coach guide in UI:** `lib/builder/coach-help-content.ts` — keep in sync with `docs/BUILDER_GUIDELINE.md`; sidebar «How it works» + mobile Guide modal.
+- **Academy:** hub at `/admin`, up to 20 teams, `showAcademyHub` in builder — see guideline §2.1.
+- **Hero:** one `TeamHeroCard`, four CSS variants — see `team-hero-layout.mdc`.
+
+## Do not
+
+- Promise WhatsApp or calendar "sync" beyond click-to-chat, share text, or embed URLs.
+- Add duplicate section nav or fork hero per layout variant.
+- Store coach/parent data outside documented locations without updating the guideline.
+
+## After product changes
+
+Update `docs/BUILDER_GUIDELINE.md` in the same change when behavior, data model, or WhatsApp flows change.

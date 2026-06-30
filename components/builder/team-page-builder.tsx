@@ -3,6 +3,7 @@
 import { TeamIdentityPanel } from "@/components/builder/team-identity-panel";
 import { TeamDesignPanel } from "@/components/builder/team-design-panel";
 import { PageBlocksPanel } from "@/components/builder/page-blocks-panel";
+import { BuilderHowItWorksModal } from "@/components/builder/builder-how-it-works";
 import { BuilderFullPreviewModal } from "@/components/builder/builder-full-preview-modal";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderBillingStatus } from "@/components/builder/builder-billing-status";
@@ -112,6 +113,7 @@ export function TeamPageBuilder({
   const [mobileTab, setMobileTab] = useState<BuilderMobileTab>("edit");
   const [fullPreviewOpen, setFullPreviewOpen] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [helpModalOpen, setHelpModalOpen] = useState(false);
   const [previewMode, setPreviewMode] = useState<BuilderPreviewMode>("mobile");
 
   useEffect(() => {
@@ -705,6 +707,7 @@ export function TeamPageBuilder({
                   team={team}
                   activeId={activeStructureNav}
                   onSelect={navigateToStructureItem}
+                  onOpenGuide={() => setHelpModalOpen(true)}
                 />
               </div>
             ) : null}
@@ -834,6 +837,12 @@ export function TeamPageBuilder({
         onClose={() => setShareModalOpen(false)}
         shareUrl={parentShareUrl}
         publicUrl={publicUrl}
+      />
+
+      <BuilderHowItWorksModal
+        open={helpModalOpen}
+        onClose={() => setHelpModalOpen(false)}
+        isAcademy={showAcademyHub}
       />
 
       {!embedded ? (

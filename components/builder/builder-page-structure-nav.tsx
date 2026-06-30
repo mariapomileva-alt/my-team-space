@@ -8,6 +8,7 @@ import {
 } from "@/lib/builder/page-completion";
 import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { getPageStructureNav, type PageStructureNavId } from "@/lib/builder/page-structure";
+import { BuilderHowItWorksGuideButton, BuilderHowItWorksSidebar } from "@/components/builder/builder-how-it-works";
 import { BUILDER_TEAM_TOOL_LINKS } from "@/lib/admin/admin-nav";
 import type { BuilderProgressTarget } from "@/lib/builder/page-completion";
 import type { TeamSpace } from "@/lib/types";
@@ -148,6 +149,10 @@ export function BuilderPageStructureNav({
           </Link>
         ) : null}
       </div>
+
+      <div className="hidden lg:block">
+        <BuilderHowItWorksSidebar isAcademy={showAcademyHub} />
+      </div>
     </nav>
   );
 }
@@ -156,11 +161,13 @@ export function BuilderPageStructureNavMobile({
   team,
   activeId,
   onSelect,
+  onOpenGuide,
   className,
 }: {
   team: TeamSpace;
   activeId: PageStructureNavId | null;
   onSelect: (id: PageStructureNavId) => void;
+  onOpenGuide?: () => void;
   className?: string;
 }) {
   const items = getPageStructureNav(team);
@@ -168,11 +175,12 @@ export function BuilderPageStructureNavMobile({
   return (
     <nav
       className={cn(
-        "flex gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        "flex items-center gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className,
       )}
       aria-label="Page sections"
     >
+      {onOpenGuide ? <BuilderHowItWorksGuideButton onClick={onOpenGuide} /> : null}
       {items.map((item) => {
         const isActive = activeId === item.id;
         return (
