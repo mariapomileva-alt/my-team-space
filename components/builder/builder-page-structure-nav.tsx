@@ -47,13 +47,7 @@ export function BuilderPageStructureNav({
           <p className="text-[15px] font-bold text-zinc-900">{percent}% Ready</p>
           <div className="flex items-center gap-1.5">
             {onOpenGuide ? (
-              <button
-                type="button"
-                onClick={onOpenGuide}
-                className="rounded-full bg-violet-50 px-2.5 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-100 transition hover:bg-violet-100"
-              >
-                💡 How it works
-              </button>
+              <BuilderHowItWorksGuideButton onClick={onOpenGuide} className="px-2.5 py-0.5 text-[10px]" />
             ) : null}
             <p className="text-[10px] font-medium text-zinc-500">
               {doneCount}/{items.length}

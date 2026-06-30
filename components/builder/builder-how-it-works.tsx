@@ -19,7 +19,7 @@ export function BuilderHowItWorksGuideButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex shrink-0 items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1.5 text-[11px] font-semibold text-violet-700 ring-1 ring-violet-100 transition hover:bg-violet-100",
+        "inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-violet-50 px-2.5 py-1.5 text-[11px] font-semibold text-violet-700 ring-1 ring-violet-100 transition hover:bg-violet-100",
         className,
       )}
     >
