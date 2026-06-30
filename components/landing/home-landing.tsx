@@ -1,6 +1,5 @@
 "use client";
 
-import { SetupSection } from "@/components/landing/setup-section";
 import { SocialProofAvatars } from "@/components/landing/social-proof-avatars";
 import type { SocialProofVariant } from "@/components/landing/social-proof-avatars";
 import { MarketingTeamPagePreview } from "@/components/landing/marketing-team-preview";
@@ -551,8 +550,6 @@ export function HomeLanding() {
             </p>
           </div>
         </section>
-
-        <SetupSection />
 
         <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28 lg:py-32">
           <div className="mx-auto max-w-2xl text-center">
