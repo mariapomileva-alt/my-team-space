@@ -3,7 +3,6 @@
 import { getCoachHelpSections, type CoachHelpSection } from "@/lib/builder/coach-help-content";
 import { cn } from "@/lib/utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
 
 function HelpSectionList({ sections, compact }: { sections: CoachHelpSection[]; compact?: boolean }) {
   return (
@@ -30,46 +29,7 @@ function HelpSectionList({ sections, compact }: { sections: CoachHelpSection[]; 
   );
 }
 
-/** Compact guide in the left page-structure nav (desktop). */
-export function BuilderHowItWorksSidebar({ isAcademy = false }: { isAcademy?: boolean }) {
-  const [open, setOpen] = useState(false);
-  const sections = getCoachHelpSections({ isAcademy });
-
-  return (
-    <div className="mt-4 border-t border-zinc-200/60 pt-3">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-[12px] font-semibold text-violet-700 transition hover:bg-violet-50/80"
-        aria-expanded={open}
-      >
-        <span className="flex items-center gap-1.5">
-          <span aria-hidden>💡</span>
-          How it works
-        </span>
-        <motion.span animate={{ rotate: open ? 180 : 0 }} className="text-[10px] text-zinc-400" aria-hidden>
-          ▾
-        </motion.span>
-      </button>
-      <AnimatePresence initial={false}>
-        {open ? (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="overflow-hidden"
-          >
-            <div className="max-h-[min(52vh,420px)] overflow-y-auto px-1 pb-1 pt-2 [scrollbar-width:thin]">
-              <HelpSectionList sections={sections} compact />
-            </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </div>
-  );
-}
-
+/** Compact guide trigger for mobile section row. */
 export function BuilderHowItWorksGuideButton({
   onClick,
   className,

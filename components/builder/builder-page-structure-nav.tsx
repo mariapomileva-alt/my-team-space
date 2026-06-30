@@ -8,7 +8,7 @@ import {
 } from "@/lib/builder/page-completion";
 import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { getPageStructureNav, type PageStructureNavId } from "@/lib/builder/page-structure";
-import { BuilderHowItWorksGuideButton, BuilderHowItWorksSidebar } from "@/components/builder/builder-how-it-works";
+import { BuilderHowItWorksGuideButton } from "@/components/builder/builder-how-it-works";
 import { BUILDER_TEAM_TOOL_LINKS } from "@/lib/admin/admin-nav";
 import type { BuilderProgressTarget } from "@/lib/builder/page-completion";
 import type { TeamSpace } from "@/lib/types";
@@ -21,6 +21,7 @@ export function BuilderPageStructureNav({
   activeId,
   onSelect,
   onJump,
+  onOpenGuide,
   showAcademyHub = false,
   className,
 }: {
@@ -29,6 +30,7 @@ export function BuilderPageStructureNav({
   activeId: PageStructureNavId | null;
   onSelect: (id: PageStructureNavId) => void;
   onJump?: (target: BuilderProgressTarget) => void;
+  onOpenGuide?: () => void;
   showAcademyHub?: boolean;
   className?: string;
 }) {
@@ -43,9 +45,20 @@ export function BuilderPageStructureNav({
       <div className="mb-3 rounded-xl border border-zinc-200/50 bg-white/80 px-3 py-2.5 shadow-sm">
         <div className="flex items-baseline justify-between gap-2">
           <p className="text-[15px] font-bold text-zinc-900">{percent}% Ready</p>
-          <p className="text-[10px] font-medium text-zinc-500">
-            {doneCount}/{items.length}
-          </p>
+          <div className="flex items-center gap-1.5">
+            {onOpenGuide ? (
+              <button
+                type="button"
+                onClick={onOpenGuide}
+                className="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-100 transition hover:bg-violet-100"
+              >
+                💡 Guide
+              </button>
+            ) : null}
+            <p className="text-[10px] font-medium text-zinc-500">
+              {doneCount}/{items.length}
+            </p>
+          </div>
         </div>
         <p className="mt-1 text-[11px] leading-snug text-zinc-500">{motivation}</p>
         {snap.next ? (
@@ -148,10 +161,6 @@ export function BuilderPageStructureNav({
             ← All teams
           </Link>
         ) : null}
-      </div>
-
-      <div className="hidden lg:block">
-        <BuilderHowItWorksSidebar isAcademy={showAcademyHub} />
       </div>
     </nav>
   );

@@ -4,6 +4,7 @@ import { TeamIdentityPanel } from "@/components/builder/team-identity-panel";
 import { TeamDesignPanel } from "@/components/builder/team-design-panel";
 import { PageBlocksPanel } from "@/components/builder/page-blocks-panel";
 import { BuilderHowItWorksModal } from "@/components/builder/builder-how-it-works";
+import { BuilderMobileActionBar } from "@/components/builder/builder-mobile-action-bar";
 import { BuilderFullPreviewModal } from "@/components/builder/builder-full-preview-modal";
 import { BuilderLivePreview } from "@/components/builder/builder-live-preview";
 import { BuilderBillingStatus } from "@/components/builder/builder-billing-status";
@@ -682,7 +683,7 @@ export function TeamPageBuilder({
         </motion.p>
       ) : null}
 
-      <div className={`${shellClass} ${embedded ? "pb-8 pt-2" : "pb-24 pt-1"} lg:pb-10`}>
+      <div className={`${shellClass} ${embedded ? "pb-28 pt-2 lg:pb-8" : "pb-24 pt-1"} lg:pb-10`}>
         <div className={embedded ? BUILDER_WITH_NAV_GRID : BUILDER_WORKSPACE_GRID}>
           {embedded ? (
             <aside className={BUILDER_STRUCTURE_NAV_COLUMN}>
@@ -692,6 +693,7 @@ export function TeamPageBuilder({
                 activeId={activeStructureNav}
                 onSelect={navigateToStructureItem}
                 onJump={jumpTo}
+                onOpenGuide={() => setHelpModalOpen(true)}
                 showAcademyHub={showAcademyHub}
               />
             </aside>
@@ -844,6 +846,20 @@ export function TeamPageBuilder({
         onClose={() => setHelpModalOpen(false)}
         isAcademy={showAcademyHub}
       />
+
+      {embedded ? (
+        <BuilderMobileActionBar
+          team={team}
+          pending={pending}
+          publishBlockedByBilling={publishBlockedByBilling}
+          readinessCanPublish={readinessCanPublish}
+          canPublish={memberRole === "coach"}
+          onPreview={() => setFullPreviewOpen(true)}
+          onPublish={publish}
+          onShare={openShareModal}
+          onViewLive={previewAsParent}
+        />
+      ) : null}
 
       {!embedded ? (
         <BuilderMobileNav
