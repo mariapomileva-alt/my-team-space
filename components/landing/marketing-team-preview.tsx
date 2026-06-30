@@ -120,16 +120,38 @@ function ResultsList() {
   );
 }
 
+function thumbUrl(id: string, w: number, h: number, crop?: "faces") {
+  const base = `https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
+  return crop ? `${base}&crop=${crop}` : base;
+}
+
 function ContactsList() {
   const people = [
-    { name: "Coach Anna", role: "Artistic director" },
-    { name: "Ms. Liga", role: "Studio manager" },
+    {
+      name: "Coach Anna",
+      role: "Artistic director",
+      photo: thumbUrl("photo-1573496359142-b8d87734a5a2", 96, 96, "faces"),
+    },
+    {
+      name: "Ms. Liga",
+      role: "Studio manager",
+      photo: thumbUrl("photo-1580489944761-15a19d654956", 96, 96, "faces"),
+    },
   ];
   return (
     <div className="space-y-2.5">
       {people.map((p) => (
         <div key={p.name} className="flex items-center gap-2.5">
-          <span className="h-8 w-8 shrink-0 rounded-full bg-neutral-200 ring-2 ring-white" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- marketing preview avatars */}
+          <img
+            src={p.photo}
+            alt=""
+            width={32}
+            height={32}
+            loading="lazy"
+            decoding="async"
+            className="h-8 w-8 shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm"
+          />
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-semibold text-neutral-800">{p.name}</p>
             <p className="text-[10px] text-neutral-400">{p.role}</p>
@@ -165,17 +187,27 @@ function TripsList() {
 }
 
 function GalleryStrip() {
-  const thumbs = [
-    "from-sky-200 to-cyan-300",
-    "from-blue-200 to-indigo-300",
-    "from-teal-200 to-emerald-300",
+  const photos = [
+    thumbUrl("photo-1530549387789-4c1017266635", 96, 128),
+    thumbUrl("photo-1571902943202-507ec2618e8f", 96, 128),
+    thumbUrl("photo-1519315901367-f34ff9154487", 96, 128),
   ];
   return (
     <div>
       <p className="mb-2 text-[10px] text-neutral-400">3 photos</p>
       <div className="flex gap-2">
-        {thumbs.map((tone, i) => (
-          <div key={i} className={`h-16 w-12 shrink-0 rounded-lg bg-gradient-to-b ${tone} shadow-sm`} />
+        {photos.map((src) => (
+          // eslint-disable-next-line @next/next/no-img-element -- marketing preview gallery
+          <img
+            key={src}
+            src={src}
+            alt=""
+            width={48}
+            height={64}
+            loading="lazy"
+            decoding="async"
+            className="h-16 w-12 shrink-0 rounded-lg object-cover shadow-sm ring-1 ring-black/[0.04]"
+          />
         ))}
       </div>
     </div>
