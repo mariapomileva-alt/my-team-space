@@ -844,6 +844,7 @@ export function TeamPageBuilder({
       <BuilderHowItWorksModal
         open={helpModalOpen}
         onClose={() => setHelpModalOpen(false)}
+        teamId={teamId}
         isAcademy={showAcademyHub}
       />
 

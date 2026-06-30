@@ -50,9 +50,9 @@ export function BuilderPageStructureNav({
               <button
                 type="button"
                 onClick={onOpenGuide}
-                className="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-100 transition hover:bg-violet-100"
+                className="rounded-full bg-violet-50 px-2.5 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-100 transition hover:bg-violet-100"
               >
-                💡 Guide
+                💡 How it works
               </button>
             ) : null}
             <p className="text-[10px] font-medium text-zinc-500">
