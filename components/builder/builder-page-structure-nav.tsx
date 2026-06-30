@@ -45,15 +45,15 @@ export function BuilderPageStructureNav({
       <div className="mb-3 rounded-xl border border-zinc-200/50 bg-white/80 px-3 py-2.5 shadow-sm">
         <div className="flex items-baseline justify-between gap-2">
           <p className="text-[15px] font-bold text-zinc-900">{percent}% Ready</p>
-          <div className="flex items-center gap-1.5">
-            {onOpenGuide ? (
-              <BuilderHowItWorksGuideButton onClick={onOpenGuide} className="px-2.5 py-0.5 text-[10px]" />
-            ) : null}
-            <p className="text-[10px] font-medium text-zinc-500">
-              {doneCount}/{items.length}
-            </p>
-          </div>
+          <p className="shrink-0 text-[10px] font-medium text-zinc-500">
+            {doneCount}/{items.length}
+          </p>
         </div>
+        {onOpenGuide ? (
+          <div className="mt-1.5">
+            <BuilderHowItWorksGuideButton onClick={onOpenGuide} className="px-2.5 py-0.5 text-[10px]" />
+          </div>
+        ) : null}
         <p className="mt-1 text-[11px] leading-snug text-zinc-500">{motivation}</p>
         {snap.next ? (
           onJump ? (

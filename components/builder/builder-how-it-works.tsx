@@ -23,8 +23,10 @@ export function BuilderHowItWorksGuideButton({
         className,
       )}
     >
-      <span aria-hidden>💡</span>
-      {label}
+      <span className="whitespace-nowrap" aria-hidden>
+        💡
+      </span>
+      <span className="whitespace-nowrap">{label}</span>
     </button>
   );
 }

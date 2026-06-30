@@ -267,12 +267,12 @@ export function LandingFeatureGroupsSection() {
         transition={{ duration: 0.5 }}
         className="mx-auto max-w-2xl text-center"
       >
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">What you get</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6C5CE7]">Your team&apos;s home</p>
         <h2 className="mt-3 font-[family-name:var(--font-brand)] text-3xl font-bold tracking-tight text-[#1A1C23] sm:text-4xl">
-          Every parent question, answered on one page.
+          Everything important, one place.
         </h2>
         <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
-          Turn on only what your team uses. Parents get clarity — you get fewer repeat messages.
+          Schedule, photos, wins, and contacts — the page your whole team comes back to.
         </p>
       </motion.div>
 
