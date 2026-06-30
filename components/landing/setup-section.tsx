@@ -19,8 +19,8 @@ const SETUP_STEPS = [
     text: "Schedule, results, trips, MVP board — toggle blocks like Lego.",
   },
   {
-    title: "Share one calm link",
-    text: "Parents bookmark it. Every save updates what they see instantly.",
+    title: "Share with families",
+    text: "Send your page link or QR. Updates appear as soon as you save.",
   },
 ] as const;
 
@@ -96,7 +96,7 @@ export function SetupSection() {
 
   return (
     <section className="border-y border-neutral-100/90 bg-gradient-to-b from-white via-indigo-50/15 to-white">
-      <div className="mx-auto max-w-6xl px-6 py-16 sm:px-8 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8 sm:py-16 lg:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-12 xl:gap-16">
           <div className="max-w-lg">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-500/90">
@@ -106,8 +106,7 @@ export function SetupSection() {
               Ready before your next training session.
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
-              Most coaches publish in under five minutes — no designer, no IT ticket, no new app for parents to
-              install.
+              Designed for quick setup — no designer, no IT ticket, no new app for parents to install.
             </p>
 
             <ol className="mt-8 space-y-3">
@@ -140,7 +139,7 @@ export function SetupSection() {
             </ol>
 
             <div className="mt-6 flex flex-wrap items-center gap-2 text-[11px] font-medium text-neutral-500">
-              {["~5 min setup", "No code", "One parent link"].map((chip) => (
+              {["Quick start", "No code", "Browser-based"].map((chip) => (
                 <span key={chip} className="rounded-full bg-white px-3 py-1 ring-1 ring-neutral-200/80">
                   {chip}
                 </span>

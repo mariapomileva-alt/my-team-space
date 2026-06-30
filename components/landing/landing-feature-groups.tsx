@@ -169,8 +169,8 @@ function MiniEdit() {
 function MiniOneLink() {
   return (
     <div className="rounded-xl border border-dashed border-violet-200 bg-violet-50/50 px-2.5 py-2 text-center">
-      <p className="text-[10px] font-semibold text-violet-800">One link for everything</p>
-      <p className="mt-0.5 text-[9px] text-violet-600/80">No app · no login for parents</p>
+      <p className="text-[10px] font-semibold text-violet-800">Your team URL</p>
+      <p className="mt-0.5 text-[9px] text-violet-600/80">Bookmark-friendly · opens in browser</p>
     </div>
   );
 }
@@ -250,7 +250,7 @@ const GROUPS: FeatureGroup[] = [
       },
       {
         title: "One link",
-        description: "Replace Instagram, Drive, PDFs, and chat threads with one home.",
+        description: "Replace scattered docs and chat threads with one team home.",
         preview: <MiniOneLink />,
       },
     ],
@@ -259,7 +259,7 @@ const GROUPS: FeatureGroup[] = [
 
 export function LandingFeatureGroupsSection() {
   return (
-    <section id="features" className="mx-auto max-w-6xl px-6 py-20 sm:px-8 lg:py-24">
+    <section id="features" className="mx-auto max-w-6xl px-6 py-14 sm:px-8 sm:py-16 lg:py-20">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -272,12 +272,11 @@ export function LandingFeatureGroupsSection() {
           Everything parents need. Nothing they don&apos;t.
         </h2>
         <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
-          Turn on only what your team uses — schedule, gallery, results, payments, and more. One beautiful page, not
-          another app.
+          Turn on only what your team uses — schedule, gallery, results, payments, and more.
         </p>
       </motion.div>
 
-      <div className="mt-14 space-y-14 sm:mt-16">
+      <div className="mt-10 space-y-12 sm:mt-12">
         {GROUPS.map((group, gi) => (
           <motion.div
             key={group.id}
@@ -301,9 +300,11 @@ export function LandingFeatureGroupsSection() {
               {group.features.map((feature) => (
                 <article
                   key={feature.title}
-                  className="flex flex-col overflow-hidden rounded-2xl border border-neutral-100/90 bg-white shadow-[0_2px_24px_-12px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-16px_rgba(108,92,231,0.15)]"
+                  className="flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-100/90 bg-white shadow-[0_2px_24px_-12px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-16px_rgba(108,92,231,0.15)]"
                 >
-                  <div className="border-b border-neutral-50 bg-neutral-50/40 p-3">{feature.preview}</div>
+                  <div className="flex min-h-[88px] items-center border-b border-neutral-50 bg-neutral-50/40 p-3">
+                    {feature.preview}
+                  </div>
                   <div className="flex flex-1 flex-col p-4">
                     <h3 className="text-[15px] font-semibold text-neutral-900">{feature.title}</h3>
                     <p className="mt-1.5 flex-1 text-[13px] leading-relaxed text-neutral-500">{feature.description}</p>
@@ -314,10 +315,6 @@ export function LandingFeatureGroupsSection() {
           </motion.div>
         ))}
       </div>
-
-      <p className="mx-auto mt-12 max-w-xl text-center text-[13px] leading-relaxed text-neutral-400">
-        Every block is optional — coaches turn on what their team needs. Parents get one calm link, not another app.
-      </p>
     </section>
   );
 }

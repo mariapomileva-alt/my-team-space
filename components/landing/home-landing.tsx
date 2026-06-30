@@ -210,7 +210,7 @@ function PhoneTeamPreview({ phase }: { phase: "simple" | "rich" }) {
 function HeroProductVisual({ phase }: { phase: "simple" | "rich" }) {
   return (
     <motion.div
-      className={`relative mx-auto w-full max-w-[520px] min-h-[380px] pt-6 sm:min-h-[400px] sm:pt-8 ${accentGlow}`}
+      className={`relative mx-auto w-full max-w-[480px] min-h-[320px] pt-4 sm:min-h-[380px] sm:max-w-[520px] sm:pt-6 ${accentGlow}`}
       initial={false}
     >
       {FLOATING.map((f, i) => (
@@ -295,8 +295,8 @@ export function HomeLanding() {
 
   return (
     <div className={`bg-gradient-to-b ${accentSoft} to-[#f8fafc] text-neutral-900`}>
-        <section className="mx-auto max-w-6xl px-6 pb-16 pt-4 sm:px-8 lg:pb-24">
-          <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-10 xl:gap-14">
+        <section className="mx-auto max-w-6xl px-6 pb-14 pt-4 sm:px-8 sm:pb-20 lg:pb-20">
+          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-12 xl:gap-14">
             <div className="max-w-xl lg:max-w-none">
               <h1 className="font-[family-name:var(--font-brand)] text-[2.15rem] font-bold leading-[1.08] tracking-tight text-[#1A1C23] sm:text-4xl lg:text-[2.85rem]">
                 Give your team a home
@@ -305,8 +305,8 @@ export function HomeLanding() {
                 </span>
               </h1>
               <p className="mt-5 text-lg leading-relaxed text-neutral-500 sm:text-[1.06rem]">
-                The modern home for your team — schedule, updates, photos, contacts, and payments in one beautiful
-                link. Less chaos for coaches. One calm page for parents.
+                Schedule, photos, contacts, and updates — organized for coaches, parents, and athletes. Professional
+                presentation without the admin headache.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
@@ -322,31 +322,29 @@ export function HomeLanding() {
                   View Demo
                 </Link>
               </div>
-              <p className="mt-7 text-sm font-medium text-neutral-400">
-                No coding required. Setup in minutes.
-              </p>
+              <p className="mt-7 text-sm font-medium text-neutral-400">No coding required.</p>
             </div>
 
-            <div className="relative isolate mx-auto w-full max-w-lg pt-2 sm:pt-3 lg:mx-0 lg:max-w-none lg:pt-6">
+            <div className="relative isolate mx-auto w-full max-w-md pt-2 sm:max-w-lg sm:pt-3 lg:mx-0 lg:max-w-none lg:pt-4">
               <HeroProductVisual phase={phase} />
             </div>
           </div>
         </section>
 
         <section className="border-t border-neutral-100/80 bg-white/50 backdrop-blur-[2px]">
-          <div className="mx-auto max-w-6xl px-6 py-16 sm:px-8 sm:py-20">
-            <div className="grid gap-6 sm:grid-cols-3 sm:gap-8">
+          <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8 sm:py-16">
+            <div className="grid gap-5 sm:grid-cols-3 sm:gap-6">
               {(
                 [
                   {
                     title: "Easy for coaches",
-                    text: "Update schedules, announcements, trips, and results in minutes.",
+                    text: "Update schedules, announcements, trips, and results when things change.",
                     emoji: "🧢",
                     social: "coaches" as SocialProofVariant,
                   },
                   {
                     title: "Clear for parents",
-                    text: "Everything important in one link — always up to date.",
+                    text: "Schedules, fees, and updates in one place — always current.",
                     emoji: "👨‍👩‍👧",
                     social: "parents" as SocialProofVariant,
                   },
@@ -360,7 +358,7 @@ export function HomeLanding() {
               ).map((card) => (
                 <div
                   key={card.title}
-                  className={`relative overflow-hidden rounded-3xl border border-neutral-100/90 bg-white p-8 shadow-[0_2px_28px_-10px_rgba(79,70,229,0.08)]`}
+                  className={`relative overflow-hidden rounded-3xl border border-neutral-100/90 bg-white p-6 shadow-[0_2px_28px_-10px_rgba(79,70,229,0.08)] sm:p-8`}
                 >
                   <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-indigo-100/40 blur-2xl" aria-hidden />
                   <span className="text-2xl" aria-hidden>
@@ -375,19 +373,19 @@ export function HomeLanding() {
           </div>
         </section>
 
-        <LandingPrideSection />
-
         <LandingBeforeAfterSection />
+
+        <LandingPrideSection />
 
         <LandingFeatureGroupsSection />
 
         <LandingBuildFlowSection />
 
-        <LandingSocialQuotesSection />
-
         <SetupSection />
 
-        <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28 lg:py-32">
+        <LandingSocialQuotesSection />
+
+        <section className="mx-auto max-w-6xl px-6 py-12 sm:px-8 sm:py-16 lg:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-[family-name:var(--font-brand)] text-2xl font-bold tracking-tight text-[#1A1C23] sm:text-3xl lg:text-[2rem]">
               Built for modern teams and communities
