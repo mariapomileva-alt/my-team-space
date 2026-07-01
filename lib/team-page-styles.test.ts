@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { paletteForTheme } from "@/lib/team-color-palettes";
 import {
   designStyleClassName,
   personalityTeamPatch,
   resolveDesignStyle,
-  resolveEffectiveThemeId,
-  TEAM_PAGE_STYLES,
+  TEAM_PERSONALITIES,
 } from "@/lib/team-page-styles";
 
 describe("resolveDesignStyle", () => {
@@ -31,43 +31,36 @@ describe("resolveDesignStyle", () => {
   });
 });
 
-describe("resolveEffectiveThemeId", () => {
-  it("keeps legacy theme when personality was never saved", () => {
-    expect(resolveEffectiveThemeId(undefined, "ocean_aqua")).toBe("ocean_aqua");
-  });
-
-  it("applies personality palette after explicit choice", () => {
-    expect(resolveEffectiveThemeId({ designStyle: "playful" }, "ocean_aqua")).toBe("pastel_youth");
-    expect(resolveEffectiveThemeId({ designStyle: "premium" }, "ocean_aqua")).toBe("minimal_mono");
-    expect(resolveEffectiveThemeId({ designStyle: "performance" }, "ocean_aqua")).toBe(
-      "energetic_orange",
-    );
-  });
-});
-
 describe("personalityTeamPatch", () => {
-  it("sets designStyle and matching theme", () => {
+  it("sets designStyle only and keeps palette independent", () => {
     const patch = personalityTeamPatch("performance", { mobileCardColumns: "single" });
     expect(patch.pageSettings?.designStyle).toBe("performance");
-    expect(patch.themeId).toBe("energetic_orange");
     expect(patch.pageSettings?.mobileCardColumns).toBe("single");
+    expect(patch.themeId).toBeUndefined();
   });
 });
 
-describe("TEAM_PAGE_STYLES", () => {
-  it("defines exactly three public moods", () => {
-    expect(TEAM_PAGE_STYLES.map((s) => s.id)).toEqual(["premium", "playful", "performance"]);
+describe("TEAM_PERSONALITIES", () => {
+  it("defines exactly three personalities", () => {
+    expect(TEAM_PERSONALITIES.map((s) => s.id)).toEqual(["premium", "playful", "performance"]);
   });
 
   it("maps to stable shell class names", () => {
-    for (const style of TEAM_PAGE_STYLES) {
+    for (const style of TEAM_PERSONALITIES) {
       expect(designStyleClassName(style.id)).toBe(`team-page-style--${style.id}`);
     }
   });
 
-  it("bundles a theme per personality", () => {
-    expect(TEAM_PAGE_STYLES.find((s) => s.id === "premium")?.themeId).toBe("minimal_mono");
-    expect(TEAM_PAGE_STYLES.find((s) => s.id === "playful")?.themeId).toBe("pastel_youth");
-    expect(TEAM_PAGE_STYLES.find((s) => s.id === "performance")?.themeId).toBe("energetic_orange");
+  it("uses svg icons for premium and performance", () => {
+    expect(TEAM_PERSONALITIES.find((s) => s.id === "premium")?.iconPresentation).toBe("svg");
+    expect(TEAM_PERSONALITIES.find((s) => s.id === "performance")?.iconPresentation).toBe("svg");
+    expect(TEAM_PERSONALITIES.find((s) => s.id === "playful")?.iconPresentation).toBe("emoji");
+  });
+});
+
+describe("paletteForTheme", () => {
+  it("resolves friendly palette labels", () => {
+    expect(paletteForTheme("ocean_aqua").label).toBe("Ocean");
+    expect(paletteForTheme("premium_forest").label).toBe("Forest");
   });
 });

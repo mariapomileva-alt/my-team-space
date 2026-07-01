@@ -787,6 +787,7 @@ export function TeamPageBuilder({
             <div ref={designRef} id="builder-design" className="scroll-mt-6">
               <TeamDesignPanel
                 team={team}
+                onSelectTheme={setTheme}
                 onPatchTeam={patchTeam}
                 expanded={openSection === "design"}
                 onExpandedChange={(open) => setWorkspaceExpanded("design", open)}

@@ -4,7 +4,6 @@ import {
   designStyleClassName,
   designStyleCssVars,
   resolveDesignStyle,
-  resolveEffectiveThemeId,
 } from "@/lib/team-page-styles";
 import type { CSSProperties, ReactNode } from "react";
 
@@ -14,15 +13,14 @@ type Props = {
   className?: string;
   /** Builder live preview — no full-viewport min height */
   preview?: boolean;
-  /** Applies personality palette and visual tokens on top of the theme preset. */
+  /** Palette (themeId) + personality tokens on the public shell. */
   team?: Pick<TeamSpace, "primaryColor" | "secondaryColor" | "pageSettings" | "themeId">;
 };
 
 export function TeamShell({ themeId, children, className, preview, team }: Props) {
-  const storedThemeId = team?.themeId ?? themeId;
-  const designStyle = resolveDesignStyle(team?.pageSettings, storedThemeId);
-  const effectiveThemeId = resolveEffectiveThemeId(team?.pageSettings, storedThemeId);
-  const theme = getTheme(effectiveThemeId);
+  const paletteId = team?.themeId ?? themeId;
+  const designStyle = resolveDesignStyle(team?.pageSettings, paletteId);
+  const theme = getTheme(paletteId);
   const style = {
     ...theme.cssVars,
     ...designStyleCssVars(designStyle),

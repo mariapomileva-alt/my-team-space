@@ -1,32 +1,29 @@
 import { BLOCK_APP_META } from "@/lib/blocks/block-app-meta";
-import { getTheme } from "@/lib/themes";
 import type { TeamPageSettings, ThemeId, BlockType } from "@/lib/types";
 import type { CSSProperties } from "react";
 
 export type TeamPageDesignStyle = "premium" | "playful" | "performance";
-export type TeamIconPresentation = "mark" | "emoji" | "mixed";
+export type TeamIconPresentation = "svg" | "emoji";
 
-export type TeamPageStyleSpec = {
+export type TeamPersonalitySpec = {
   id: TeamPageDesignStyle;
   label: string;
   tagline: string;
   description: string;
   emoji: string;
-  themeId: ThemeId;
   iconPresentation: TeamIconPresentation;
   cssVars: CSSProperties;
 };
 
-/** One personality → full visual system (colors, surfaces, rhythm). Presentation only. */
-export const TEAM_PAGE_STYLES: TeamPageStyleSpec[] = [
+/** Layer 1 — visual language (surfaces, rhythm, icons). Independent from color palette. */
+export const TEAM_PERSONALITIES: TeamPersonalitySpec[] = [
   {
     id: "premium",
     label: "Premium",
     tagline: "Clean and elegant",
-    description: "Calm whites, refined cards, and a polished club feel.",
+    description: "Calm surfaces, refined cards, and polished club energy.",
     emoji: "✨",
-    themeId: "minimal_mono",
-    iconPresentation: "mark",
+    iconPresentation: "svg",
     cssVars: {
       "--team-style-card-radius": "1.4rem",
       "--team-style-card-shadow": "0 4px 32px -16px rgba(15, 23, 42, 0.1)",
@@ -41,16 +38,14 @@ export const TEAM_PAGE_STYLES: TeamPageStyleSpec[] = [
       "--team-style-head-weight": "700",
       "--team-style-head-tracking": "-0.02em",
       "--team-style-gallery-radius": "0.875rem",
-      "--team-style-body-scale": "1",
     } as CSSProperties,
   },
   {
     id: "playful",
     label: "Playful",
     tagline: "Bright and kids-friendly",
-    description: "Warm gradients, soft cards, and cheerful energy.",
+    description: "Warmer cards, soft gradients, and cheerful friendly energy.",
     emoji: "🎨",
-    themeId: "pastel_youth",
     iconPresentation: "emoji",
     cssVars: {
       "--team-style-card-radius": "1.5rem",
@@ -68,17 +63,15 @@ export const TEAM_PAGE_STYLES: TeamPageStyleSpec[] = [
       "--team-style-head-weight": "700",
       "--team-style-head-tracking": "-0.01em",
       "--team-style-gallery-radius": "1rem",
-      "--team-style-body-scale": "1",
     } as CSSProperties,
   },
   {
     id: "performance",
     label: "Performance",
     tagline: "Bold and sporty",
-    description: "Strong contrast, confident type, and competitive energy.",
+    description: "Strong contrast, confident type, and competitive rhythm.",
     emoji: "⚡",
-    themeId: "energetic_orange",
-    iconPresentation: "mark",
+    iconPresentation: "svg",
     cssVars: {
       "--team-style-card-radius": "1rem",
       "--team-style-card-shadow": "0 3px 24px -12px rgba(0, 0, 0, 0.2)",
@@ -94,12 +87,14 @@ export const TEAM_PAGE_STYLES: TeamPageStyleSpec[] = [
       "--team-style-head-weight": "800",
       "--team-style-head-tracking": "-0.03em",
       "--team-style-gallery-radius": "0.625rem",
-      "--team-style-body-scale": "1",
     } as CSSProperties,
   },
 ];
 
-const STYLE_SET = new Set<TeamPageDesignStyle>(TEAM_PAGE_STYLES.map((s) => s.id));
+/** @deprecated alias */
+export const TEAM_PAGE_STYLES = TEAM_PERSONALITIES;
+
+const STYLE_SET = new Set<TeamPageDesignStyle>(TEAM_PERSONALITIES.map((s) => s.id));
 
 const LEGACY_THEME_PERSONALITY: Partial<Record<ThemeId, TeamPageDesignStyle>> = {
   pastel_youth: "playful",
@@ -110,15 +105,8 @@ const LEGACY_THEME_PERSONALITY: Partial<Record<ThemeId, TeamPageDesignStyle>> = 
   ocean_aqua: "premium",
 };
 
-const PREMIUM_TILE = "bg-neutral-100 text-neutral-700 ring-1 ring-neutral-200/80";
-const PERFORMANCE_TILE = "bg-neutral-900 text-white shadow-sm";
-
 export function isTeamPageDesignStyle(value: unknown): value is TeamPageDesignStyle {
   return typeof value === "string" && STYLE_SET.has(value as TeamPageDesignStyle);
-}
-
-export function hasExplicitPersonality(settings?: TeamPageSettings): boolean {
-  return isTeamPageDesignStyle(settings?.designStyle);
 }
 
 function inferPersonalityFromTheme(themeId?: ThemeId): TeamPageDesignStyle {
@@ -135,28 +123,17 @@ export function resolveDesignStyle(
   return inferPersonalityFromTheme(themeId);
 }
 
-/** Theme colors follow personality once coach has chosen it; legacy teams keep stored theme. */
-export function resolveEffectiveThemeId(
-  settings: TeamPageSettings | undefined,
-  themeId: ThemeId,
-): ThemeId {
-  if (hasExplicitPersonality(settings)) {
-    return teamPageStyleSpec(settings!.designStyle!).themeId;
-  }
-  return themeId;
-}
-
 export function designStyleClassName(style: TeamPageDesignStyle): string {
   return `team-page-style--${style}`;
 }
 
 export function designStyleCssVars(style: TeamPageDesignStyle): CSSProperties {
-  const spec = TEAM_PAGE_STYLES.find((s) => s.id === style) ?? TEAM_PAGE_STYLES[0]!;
+  const spec = TEAM_PERSONALITIES.find((s) => s.id === style) ?? TEAM_PERSONALITIES[0]!;
   return spec.cssVars;
 }
 
-export function teamPageStyleSpec(style: TeamPageDesignStyle): TeamPageStyleSpec {
-  return TEAM_PAGE_STYLES.find((s) => s.id === style) ?? TEAM_PAGE_STYLES[0]!;
+export function teamPageStyleSpec(style: TeamPageDesignStyle): TeamPersonalitySpec {
+  return TEAM_PERSONALITIES.find((s) => s.id === style) ?? TEAM_PERSONALITIES[0]!;
 }
 
 export function iconPresentationForStyle(style: TeamPageDesignStyle): TeamIconPresentation {
@@ -164,24 +141,16 @@ export function iconPresentationForStyle(style: TeamPageDesignStyle): TeamIconPr
 }
 
 export function resolveBlockTileClass(blockType: BlockType, style: TeamPageDesignStyle): string {
-  const meta = BLOCK_APP_META[blockType];
-  if (style === "premium") return PREMIUM_TILE;
-  if (style === "performance") return PERFORMANCE_TILE;
-  return meta.tileClass;
+  if (style === "playful") return BLOCK_APP_META[blockType].tileClass;
+  return `team-icon-tile team-icon-tile--${style}`;
 }
 
-/** Single builder action: personality + matching palette. */
+/** Personality only — palette stays independent (themeId unchanged). */
 export function personalityTeamPatch(
   style: TeamPageDesignStyle,
   pageSettings?: TeamPageSettings,
 ): Partial<import("@/lib/types").TeamSpace> {
-  const spec = teamPageStyleSpec(style);
-  const theme = getTheme(spec.themeId);
-  const vars = theme.cssVars as Record<string, string>;
   return {
-    themeId: spec.themeId,
-    primaryColor: vars["--mts-primary"] ?? "",
-    secondaryColor: vars["--mts-accent"] ?? "",
     pageSettings: {
       ...pageSettings,
       designStyle: style,

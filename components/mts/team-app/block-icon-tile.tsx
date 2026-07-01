@@ -1,5 +1,6 @@
 "use client";
 
+import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { BLOCK_APP_META } from "@/lib/blocks/block-app-meta";
 import {
   iconPresentationForStyle,
@@ -28,12 +29,15 @@ export function BlockIconTile({
 
   return (
     <span className={cn("team-module-card__icon", tileClass, className)} aria-hidden>
-      {presentation === "mark" || presentation === "mixed" ? (
-        <span className="team-module-card__icon-mark">{meta.mark}</span>
-      ) : null}
-      {presentation === "emoji" || presentation === "mixed" ? (
+      {presentation === "svg" ? (
+        <BuilderSectionIcon
+          blockType={blockType}
+          size="md"
+          className="team-module-card__icon-svg"
+        />
+      ) : (
         <span className="team-module-card__icon-glyph">{meta.emoji}</span>
-      ) : null}
+      )}
     </span>
   );
 }

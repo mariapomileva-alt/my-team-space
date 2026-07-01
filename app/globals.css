@@ -1088,14 +1088,25 @@
   filter: saturate(1.05);
 }
 
-.team-module-card__icon-mark {
-  display: block;
-  font-family: var(--font-brand), sans-serif;
-  font-size: 0.625rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  text-transform: uppercase;
+.team-module-card__icon-svg {
+  height: 1.125rem;
+  width: 1.125rem;
+  flex-shrink: 0;
+}
+
+/* Personality-aware icon tiles — palette tints via CSS variables */
+.team-icon-tile--premium {
+  background: color-mix(in srgb, var(--mts-primary) 7%, #fff);
+  color: color-mix(in srgb, var(--mts-primary) 70%, var(--mts-text));
+}
+
+.team-icon-tile--performance {
+  background: color-mix(in srgb, var(--mts-primary) 88%, #0a0a0a);
+  color: color-mix(in srgb, var(--mts-primary-bright, #fff) 35%, #fff);
+}
+
+.mts-shell.team-page-style--performance .team-module-card__icon-svg {
+  stroke-width: 2.25;
 }
 
 .team-module-card__title {

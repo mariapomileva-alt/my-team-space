@@ -57,7 +57,6 @@ export function TeamSaaSExtras({
       id: "saas-schedule",
       meta: {
         emoji: "📅",
-        mark: "SC",
         title: "Schedule",
         subtitle: "Training & events",
         tileClass: "bg-sky-100 text-sky-700",
@@ -90,7 +89,6 @@ export function TeamSaaSExtras({
       id: "saas-updates",
       meta: {
         emoji: "📣",
-        mark: "FD",
         title: "Announcements",
         subtitle: "Team updates",
         tileClass: "bg-indigo-100 text-indigo-700",
@@ -123,7 +121,6 @@ export function TeamSaaSExtras({
       id: "saas-achievements",
       meta: {
         emoji: "🏆",
-        mark: "AC",
         title: "Cups & achievements",
         subtitle: "Celebrate wins",
         tileClass: "bg-amber-100 text-amber-800",
