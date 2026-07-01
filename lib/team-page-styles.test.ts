@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { paletteForTheme } from "@/lib/team-color-palettes";
+import { TEAM_COLOR_PALETTES, paletteForTheme, resolvePaletteThemeId } from "@/lib/team-color-palettes";
 import {
   designStyleClassName,
   personalityTeamPatch,
@@ -59,10 +59,17 @@ describe("TEAM_PERSONALITIES", () => {
 });
 
 describe("paletteForTheme", () => {
+  it("exposes six public palettes", () => {
+    expect(TEAM_COLOR_PALETTES).toHaveLength(6);
+    expect(TEAM_COLOR_PALETTES.map((p) => p.label)).toContain("Sunset");
+    expect(TEAM_COLOR_PALETTES.map((p) => p.label)).toContain("Chrome");
+  });
+
   it("resolves friendly palette labels", () => {
     expect(paletteForTheme("ocean_aqua").label).toBe("Ocean");
     expect(paletteForTheme("premium_forest").label).toBe("Forest");
     expect(paletteForTheme("minimal_mono").label).toBe("Chrome");
+    expect(paletteForTheme("sunset_coral").label).toBe("Sunset");
   });
 
   it("maps retired dark palette to Chrome", () => {

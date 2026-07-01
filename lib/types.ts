@@ -34,7 +34,8 @@ export type ThemeId =
   | "energetic_orange"
   | "minimal_mono"
   | "premium_forest"
-  | "pastel_youth";
+  | "pastel_youth"
+  | "sunset_coral";
 
 export type BlockType =
   | "hero"

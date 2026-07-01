@@ -44,6 +44,7 @@ import {
 import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
 import { BuilderSaveProvider } from "@/lib/builder/save-context";
 import { clearTeamPreviewLocal, purgeStaleTeamPreview } from "@/lib/preview-storage";
+import { normalizeBuilderTeam, migrateRetiredPalette } from "@/lib/team-color-palettes";
 import { publicTeamPath, siteOriginFromPublicTeamUrl } from "@/lib/teams/public-url";
 import { shouldReplaceLocalWithServer } from "@/lib/teams/sync-policy";
 import { applyTeamLogoPatch } from "@/lib/teams/apply-logo-patch";
@@ -87,7 +88,7 @@ export function TeamPageBuilder({
   const siteUrl = siteOriginFromPublicTeamUrl(publicUrl);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [team, setTeam] = useState<TeamSpace>(initialTeam);
+  const [team, setTeam] = useState<TeamSpace>(() => normalizeBuilderTeam(initialTeam));
   const completionGuidance = useMemo(() => getCompletionGuidance(team), [team]);
   const readinessCanPublish = completionGuidance.canPublish;
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
@@ -98,7 +99,7 @@ export function TeamPageBuilder({
   const [msg, setMsg] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [focusBlockId, setFocusBlockId] = useState<string | null>(null);
-  const dirtyRef = useRef(false);
+  const dirtyRef = useRef(migrateRetiredPalette(initialTeam) != null);
   const teamRef = useRef(team);
   teamRef.current = team;
   const syncingRef = useRef(false);
@@ -134,8 +135,10 @@ export function TeamPageBuilder({
       return false;
     }
     dirtyRef.current = false;
-    teamRef.current = fresh;
-    setTeam(fresh);
+    const normalized = normalizeBuilderTeam(fresh);
+    if (migrateRetiredPalette(fresh)) dirtyRef.current = true;
+    teamRef.current = normalized;
+    setTeam(normalized);
     return true;
   }, []);
 

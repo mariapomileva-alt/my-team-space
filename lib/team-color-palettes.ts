@@ -1,4 +1,5 @@
-import type { ThemeId } from "@/lib/types";
+import type { TeamSpace, ThemeId } from "@/lib/types";
+import { getTheme } from "@/lib/themes";
 
 export type TeamColorPalette = {
   themeId: ThemeId;
@@ -34,6 +35,12 @@ export const TEAM_COLOR_PALETTES: TeamColorPalette[] = [
     description: "High-energy orange — training day vibes",
   },
   {
+    themeId: "sunset_coral",
+    emoji: "🌅",
+    label: "Sunset",
+    description: "Coral & peach glow — creative and expressive",
+  },
+  {
     themeId: "minimal_mono",
     emoji: "◼️",
     label: "Chrome",
@@ -50,4 +57,25 @@ export function resolvePaletteThemeId(themeId: ThemeId): ThemeId {
 export function paletteForTheme(themeId: ThemeId): TeamColorPalette {
   const resolved = resolvePaletteThemeId(themeId);
   return TEAM_COLOR_PALETTES.find((p) => p.themeId === resolved) ?? TEAM_COLOR_PALETTES[0]!;
+}
+
+export function paletteShellClassName(themeId: ThemeId): string {
+  return resolvePaletteThemeId(themeId) === "minimal_mono" ? "mts-palette--chrome" : "";
+}
+
+/** One-time upgrade for teams still saved on the retired dark palette. */
+export function migrateRetiredPalette(team: TeamSpace): Partial<TeamSpace> | null {
+  if (team.themeId !== "dark_athletic") return null;
+  const chrome = getTheme("minimal_mono");
+  const vars = chrome.cssVars as Record<string, string>;
+  return {
+    themeId: "minimal_mono",
+    primaryColor: vars["--mts-primary"] ?? team.primaryColor,
+    secondaryColor: vars["--mts-accent"] ?? team.secondaryColor,
+  };
+}
+
+export function normalizeBuilderTeam(team: TeamSpace): TeamSpace {
+  const patch = migrateRetiredPalette(team);
+  return patch ? { ...team, ...patch } : team;
 }

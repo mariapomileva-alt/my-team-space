@@ -102,6 +102,7 @@ const STYLE_SET = new Set<TeamPageDesignStyle>(TEAM_PERSONALITIES.map((s) => s.i
 
 const LEGACY_THEME_PERSONALITY: Partial<Record<ThemeId, TeamPageDesignStyle>> = {
   pastel_youth: "playful",
+  sunset_coral: "playful",
   energetic_orange: "performance",
   dark_athletic: "performance",
   premium_forest: "premium",
