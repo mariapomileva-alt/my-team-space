@@ -4,7 +4,7 @@ import { MarketingLayout } from "@/components/marketing/marketing-layout";
 export const metadata = {
   title: "Team page examples — MyTeamSpace",
   description:
-    "Six team structures across one day — morning swim squads, city clubs, studios, and academies. Scroll live previews before you sign up.",
+    "Three portfolio-level team pages — premium academy, playful kids studio, and competitive sports club. Scroll live previews built with MyTeamSpace.",
 };
 
 export default function ExamplesRoute() {

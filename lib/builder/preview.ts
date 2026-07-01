@@ -15,6 +15,11 @@ export const SHOWCASE_PHONE_H = 580;
 export const SHOWCASE_PHONE_VIEWPORT_H =
   SHOWCASE_PHONE_H - BUILDER_PHONE_NOTCH_H - BUILDER_PHONE_HOME_H;
 
+/** Portfolio examples — taller frame to show more of a polished page. */
+export const EXAMPLES_PHONE_H = 660;
+export const EXAMPLES_PHONE_VIEWPORT_H =
+  EXAMPLES_PHONE_H - BUILDER_PHONE_NOTCH_H - BUILDER_PHONE_HOME_H;
+
 /** Desktop browser chrome preview */
 export const BUILDER_DESKTOP_FRAME_H = 440;
 export const BUILDER_DESKTOP_CHROME_H = 32;
