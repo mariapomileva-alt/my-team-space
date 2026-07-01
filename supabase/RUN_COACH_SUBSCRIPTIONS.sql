@@ -135,7 +135,7 @@ begin
     return 1;
   end if;
   if sub.subscription_status not in ('active', 'trialing') then
-    return sub.current_team_count;
+    return greatest(sub.current_team_count, 1);
   end if;
   if sub.plan_type = 'academy' then
     return coalesce(sub.team_limit, 20);

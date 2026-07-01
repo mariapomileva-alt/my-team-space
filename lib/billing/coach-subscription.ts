@@ -53,9 +53,15 @@ export async function loadCoachSubscription(
 }
 
 function effectiveTeamLimit(sub: CoachSubscription | null): number {
-  if (!sub?.planType) return 1;
+  if (!sub?.planType) {
+    if (!sub) return 1;
+    if (!coachStatusAllowsBillingFeatures(sub.subscriptionStatus)) {
+      return Math.max(sub.currentTeamCount, 1);
+    }
+    return 1;
+  }
   if (!coachStatusAllowsBillingFeatures(sub.subscriptionStatus)) {
-    return sub.currentTeamCount;
+    return Math.max(sub.currentTeamCount, 1);
   }
   if (sub.planType === "academy") {
     return sub.teamLimit ?? ACADEMY_TEAM_LIMIT;

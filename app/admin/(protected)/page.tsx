@@ -85,23 +85,32 @@ export default async function AdminHomePage({
   const deferBillingCta =
     hasOwnedTeam && teamsUsed <= 1 && primaryTeam?.publish_status !== "published";
 
+  if (!fatalError && !teamsError && ownedTeams.length > 0 && !isAssistantOnly && primaryTeam) {
+    const stayOnDashboard =
+      checkoutSuccess ||
+      Boolean(billingNotice) ||
+      Boolean(entitlements?.needsPrimaryTeamSelection) ||
+      (isAcademy && ownedTeams.length > 1);
+
+    if (!stayOnDashboard) {
+      redirect(teamBuildPath(primaryTeam.id));
+    }
+  }
+
   const hasAdminNotice =
     checkoutSuccess ||
     Boolean(billingNotice) ||
     upgrade === "academy" ||
     Boolean(teamsError) ||
     Boolean(fatalError) ||
-    Boolean(entitlements?.needsPrimaryTeamSelection) ||
-    (isCoach && !billingActive && hasOwnedTeam && !deferBillingCta) ||
-    (isCoach &&
-      billingConfigured &&
-      !deferBillingCta &&
-      Boolean(startPlan || (!billingActive && !hasLemonSubscription && hasOwnedTeam)));
+      Boolean(entitlements?.needsPrimaryTeamSelection) ||
+      (isCoach && !billingActive && hasOwnedTeam && !deferBillingCta) ||
+      (isCoach &&
+        billingConfigured &&
+        !deferBillingCta &&
+        Boolean(startPlan || (!billingActive && !hasLemonSubscription && hasOwnedTeam)));
 
   if (!hasAdminNotice && !needsFirstTeamSetup) {
-    if (isCoach && !isAcademy && primaryTeam) {
-      redirect(teamBuildPath(primaryTeam.id));
-    }
     if (isAssistantOnly && assistedTeams.length === 1) {
       redirect(teamBuildPath(assistedTeams[0]!.id));
     }
@@ -206,7 +215,35 @@ export default async function AdminHomePage({
           </div>
         ) : null}
 
-        {upgrade === "academy" ? (
+        {upgrade === "academy" && needsFirstTeamSetup ? (
+          <div
+            role="status"
+            className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm text-indigo-950"
+          >
+            <p className="font-semibold">Your Team Plan includes one team page.</p>
+            <p className="mt-1 text-indigo-900/90">
+              If you already created a page, sign out and back in, or pick a different page link. Otherwise upgrade
+              to Academy for more teams.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <form action={startCheckoutFormAction}>
+                <input type="hidden" name="plan" value="academy" />
+                <button
+                  type="submit"
+                  className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-bold text-white"
+                >
+                  Upgrade to Academy
+                </button>
+              </form>
+              <Link
+                href="/admin/login"
+                className="inline-flex items-center rounded-full border border-indigo-200 bg-white px-4 py-2 text-xs font-semibold text-indigo-800"
+              >
+                Sign in again
+              </Link>
+            </div>
+          </div>
+        ) : upgrade === "academy" ? (
           <div
             role="status"
             className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm text-indigo-950"

@@ -43,7 +43,21 @@ async function createTeamAndRedirect(formData: FormData, options: { sport?: bool
 
   if (error) {
     if (error.message.includes("team_limit_reached")) {
+      const { data: memberships } = await supabase
+        .from("team_members")
+        .select("team_id")
+        .eq("user_id", user.id)
+        .eq("role", "coach")
+        .limit(1);
+
+      const existingTeamId = memberships?.[0]?.team_id as string | undefined;
+      if (existingTeamId) {
+        redirect(`/admin/team/${existingTeamId}/build`);
+      }
       redirect("/admin?upgrade=academy");
+    }
+    if (error.message.includes("duplicate key") || error.message.includes("teams_slug")) {
+      throw new Error("This page link is already taken. Pick a different one.");
     }
     throw new Error(error.message);
   }
@@ -65,9 +79,31 @@ async function createTeamAndRedirect(formData: FormData, options: { sport?: bool
   redirect(`/admin/team/${teamId}/build`);
 }
 
-/** First team after signup — full setup form. */
-export async function createFirstTeamAction(formData: FormData) {
-  await createTeamAndRedirect(formData, { sport: true, city: true });
+function isNextRedirect(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "digest" in error &&
+    String((error as { digest?: string }).digest ?? "").startsWith("NEXT_REDIRECT")
+  );
+}
+
+export type CreateTeamFormState = { error?: string } | null;
+
+/** First team after signup — full setup form (supports inline errors). */
+export async function createFirstTeamAction(
+  _prev: CreateTeamFormState,
+  formData: FormData,
+): Promise<CreateTeamFormState> {
+  try {
+    await createTeamAndRedirect(formData, { sport: true, city: true });
+    return null;
+  } catch (error) {
+    if (isNextRedirect(error)) throw error;
+    return {
+      error: error instanceof Error ? error.message : "Could not create your team page. Please try again.",
+    };
+  }
 }
 
 /** Additional team (Academy) — name + page link only. */

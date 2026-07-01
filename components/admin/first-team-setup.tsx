@@ -1,6 +1,6 @@
 "use client";
 
-import { createFirstTeamAction, createTeamAction } from "@/app/admin/actions";
+import { createFirstTeamAction, createTeamAction, type CreateTeamFormState } from "@/app/admin/actions";
 import {
   formatPublicPageLink,
   isValidPageLink,
@@ -8,7 +8,7 @@ import {
   sanitizePageLinkInput,
 } from "@/lib/teams/page-link";
 import { cn } from "@/lib/utils/cn";
-import { useMemo, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 
 const SPORTS = [
   "Dance",
@@ -42,7 +42,13 @@ export function FirstTeamSetup({ siteOrigin, variant = "first", disabled }: Prop
   const previewUrl = effectiveLink ? formatPublicPageLink(siteOrigin, effectiveLink) : "";
   const linkValid = effectiveLink.length >= 2 && isValidPageLink(effectiveLink);
 
-  const action = variant === "first" ? createFirstTeamAction : createTeamAction;
+  const [formState, submitAction, pending] = useActionState<CreateTeamFormState, FormData>(
+    variant === "first" ? createFirstTeamAction : async (_prev, formData) => {
+      await createTeamAction(formData);
+      return null;
+    },
+    null,
+  );
 
   return (
     <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
@@ -55,7 +61,7 @@ export function FirstTeamSetup({ siteOrigin, variant = "first", disabled }: Prop
           : "Choose a page link and team name. You'll land in the builder right away."}
       </p>
 
-      <form action={action} className="mt-6 space-y-4">
+      <form action={submitAction} className="mt-6 space-y-4">
         <div>
           <label htmlFor="team-name" className="text-xs font-semibold text-zinc-500">
             Team name
@@ -139,15 +145,25 @@ export function FirstTeamSetup({ siteOrigin, variant = "first", disabled }: Prop
 
         <button
           type="submit"
-          disabled={disabled || !name.trim() || !linkValid}
+          disabled={disabled || pending || !name.trim() || !linkValid}
           className={cn(
             "w-full rounded-full bg-violet-600 py-3 text-sm font-semibold text-white shadow-sm transition",
             "hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50",
           )}
         >
-          {variant === "first" ? "Create page & open builder" : "Create team & open builder"}
+          {pending
+            ? "Creating your page…"
+            : variant === "first"
+              ? "Create page & open builder"
+              : "Create team & open builder"}
         </button>
       </form>
+
+      {formState?.error ? (
+        <p role="alert" className="mt-3 text-sm leading-relaxed text-red-600">
+          {formState.error}
+        </p>
+      ) : null}
 
       {previewUrl ? (
         <p className="mt-3 text-center text-[11px] text-zinc-500">
