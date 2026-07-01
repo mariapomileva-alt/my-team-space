@@ -25,6 +25,21 @@ function HeroTitle({ teamName }: { teamName: string }) {
   return <h1 className={HERO_LAYOUT.title}>{teamName}</h1>;
 }
 
+function HeroMeta({
+  tagline,
+  city,
+}: {
+  tagline?: string | null;
+  city?: string | null;
+}) {
+  return (
+    <>
+      {tagline?.trim() ? <p className={HERO_LAYOUT.subtitle}>{tagline.trim()}</p> : null}
+      {city?.trim() ? <p className={HERO_LAYOUT.city}>📍 {city.trim()}</p> : null}
+    </>
+  );
+}
+
 function HeroDetails({
   motto,
   description,
@@ -43,24 +58,36 @@ function HeroDetails({
   );
 }
 
-function HeroMeta({
+function HeroFollowUp({
   tagline,
   city,
+  motto,
+  description,
   socialLinks,
 }: {
   tagline?: string | null;
   city?: string | null;
+  motto?: string | null;
+  description?: string | null;
   socialLinks: SocialLinkItem[];
 }) {
-  const hasSocial = socialLinks.length > 0;
+  const hasMeta = Boolean(
+    tagline?.trim() ||
+      city?.trim() ||
+      motto?.trim() ||
+      description?.trim() ||
+      socialLinks.length > 0,
+  );
+  if (!hasMeta) return null;
+
   return (
-    <>
-      {tagline?.trim() ? <p className={HERO_LAYOUT.subtitle}>{tagline.trim()}</p> : null}
-      {city?.trim() ? <p className={HERO_LAYOUT.city}>📍 {city.trim()}</p> : null}
-      {hasSocial ? (
+    <div className={HERO_LAYOUT.metaZone}>
+      <HeroMeta tagline={tagline} city={city} />
+      <HeroDetails motto={motto} description={description} />
+      {socialLinks.length > 0 ? (
         <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
       ) : null}
-    </>
+    </div>
   );
 }
 
@@ -108,32 +135,6 @@ export function TeamHeroCard({
   const logo = showLogo ? (
     <MtsTeamLogo src={logoSrc} teamName={teamName} className={HERO_LAYOUT.logoFrame} />
   ) : null;
-
-  const bodyContent = isCoverIdentity ? (
-    <>
-      <HeroMeta tagline={tagline} city={city} socialLinks={socialLinks} />
-      <HeroDetails motto={motto} description={description} />
-    </>
-  ) : isMinimal ? (
-    <>
-      {socialLinks.length > 0 ? (
-        <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
-      ) : null}
-      <HeroDetails motto={motto} description={description} />
-    </>
-  ) : isInline ? (
-    <>
-      <HeroTitle teamName={teamName} />
-      <HeroMeta tagline={tagline} city={city} socialLinks={[]} />
-      <HeroDetails motto={motto} description={description} />
-    </>
-  ) : (
-    <>
-      <HeroTitle teamName={teamName} />
-      <HeroMeta tagline={tagline} city={city} socialLinks={socialLinks} />
-      <HeroDetails motto={motto} description={description} />
-    </>
-  );
 
   const showBody = Boolean(
     isCoverIdentity
@@ -185,7 +186,7 @@ export function TeamHeroCard({
           {isMinimal ? (
             <div className={HERO_LAYOUT.overlayText}>
               <HeroTitle teamName={teamName} />
-              <HeroMeta tagline={tagline} city={city} socialLinks={[]} />
+              <HeroMeta tagline={tagline} city={city} />
             </div>
           ) : null}
 
@@ -199,18 +200,46 @@ export function TeamHeroCard({
             {isInline ? (
               <div className={HERO_LAYOUT.identity}>
                 <div className="hero-card__logo-spacer" aria-hidden />
-                <div className={HERO_LAYOUT.textZone}>{bodyContent}</div>
-                {socialLinks.length > 0 ? (
-                  <SocialLinkButtons
-                    links={socialLinks}
-                    size="sm"
-                    tone="hero"
-                    className="hero-card__social hero-card__social--inline-row"
-                  />
-                ) : null}
+                <div className={HERO_LAYOUT.nameZone}>
+                  <HeroTitle teamName={teamName} />
+                </div>
+                <HeroFollowUp
+                  tagline={tagline}
+                  city={city}
+                  motto={motto}
+                  description={description}
+                  socialLinks={socialLinks}
+                />
               </div>
+            ) : isMinimal ? (
+              <HeroFollowUp
+                tagline={null}
+                city={null}
+                motto={motto}
+                description={description}
+                socialLinks={socialLinks}
+              />
+            ) : isCoverIdentity ? (
+              <HeroFollowUp
+                tagline={tagline}
+                city={city}
+                motto={motto}
+                description={description}
+                socialLinks={socialLinks}
+              />
             ) : (
-              <div className={HERO_LAYOUT.textZone}>{bodyContent}</div>
+              <div className={HERO_LAYOUT.textZone}>
+                <div className={HERO_LAYOUT.nameZone}>
+                  <HeroTitle teamName={teamName} />
+                </div>
+                <HeroFollowUp
+                  tagline={tagline}
+                  city={city}
+                  motto={motto}
+                  description={description}
+                  socialLinks={socialLinks}
+                />
+              </div>
             )}
           </div>
         ) : null}

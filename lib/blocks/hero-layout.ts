@@ -147,5 +147,7 @@ export const HERO_LAYOUT = {
   coverIdentity: "hero-card__cover-identity",
   coverTitle: "hero-card__cover-title",
   overlayText: "hero-card__overlay-text",
+  nameZone: "hero-card__name-zone",
+  metaZone: "hero-card__meta-zone",
   logoFrame: "mts-media-frame--logo-hero-card",
 } as const;

@@ -390,6 +390,22 @@
   min-width: 0;
 }
 
+.hero-card__meta-zone {
+  width: 100%;
+  text-align: center;
+}
+
+.hero-card__meta-zone .hero-card__social {
+  display: flex;
+  justify-content: center;
+}
+
+.hero-card__meta-zone .hero-card__details {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 36rem;
+}
+
 /* === 1 — Logo inside header (name on cover beside logo) === */
 .hero-card--inside_header .hero-card__logo-anchor,
 .hero-card--circle_on_header .hero-card__logo-anchor {
@@ -429,16 +445,20 @@
   text-align: center;
 }
 
+.hero-card--overlap_large .hero-card__name-zone {
+  text-align: center;
+}
+
 .hero-card--overlap_large .hero-card__text-zone {
   width: 100%;
 }
 
-.hero-card--overlap_large .hero-card__social {
-  display: flex;
-  justify-content: center;
+.hero-card--inside_header .hero-card__body,
+.hero-card--circle_on_header .hero-card__body {
+  text-align: center;
 }
 
-/* === 4 — Logo left, text right === */
+/* === 4 — Logo left, text right (name beside logo; follow-up centered below) === */
 .hero-card--inline .hero-card__identity {
   display: grid;
   grid-template-columns: var(--hero-logo-size) minmax(0, 1fr);
@@ -455,16 +475,17 @@
   min-height: 1px;
 }
 
-.hero-card--inline .hero-card__text-zone {
+.hero-card--inline .hero-card__name-zone {
   grid-column: 2;
   grid-row: 1;
   padding-top: 0;
+  text-align: left;
 }
 
-.hero-card--inline .hero-card__social--inline-row {
+.hero-card--inline .hero-card__meta-zone {
   grid-column: 1 / -1;
   grid-row: 2;
-  margin-top: 0;
+  margin-top: 0.125rem;
 }
 
 .hero-card--inline .hero-card__body,
@@ -489,16 +510,17 @@
   min-height: 1px;
 }
 
-.hero-card--square .hero-card__text-zone {
+.hero-card--square .hero-card__name-zone {
   grid-column: 2;
   grid-row: 1;
   padding-top: 0;
+  text-align: left;
 }
 
-.hero-card--square .hero-card__social--inline-row {
+.hero-card--square .hero-card__meta-zone {
   grid-column: 1 / -1;
   grid-row: 2;
-  margin-top: 0;
+  margin-top: 0.125rem;
 }
 
 .hero-card--square .mts-media-frame--logo-hero-card {
@@ -512,6 +534,13 @@
   right: 1rem;
   bottom: 0.9rem;
   z-index: 25;
+  text-align: center;
+}
+
+.hero-card--minimal .hero-card__overlay-text .hero-card__subtitle,
+.hero-card--minimal .hero-card__overlay-text .hero-card__city {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero-card--minimal .hero-card__title {
@@ -649,6 +678,7 @@
 
 .hero-card__details {
   margin-top: 0.875rem;
+  text-align: center;
 }
 
 .hero-card__motto {
