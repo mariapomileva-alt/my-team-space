@@ -13,6 +13,8 @@ export type TeamHeroCardProps = {
   teamName: string;
   logoSrc?: string | null;
   tagline?: string | null;
+  motto?: string | null;
+  description?: string | null;
   city?: string | null;
   coverSrc?: string | null;
   socialLinks?: SocialLinkItem[];
@@ -21,6 +23,24 @@ export type TeamHeroCardProps = {
 
 function HeroTitle({ teamName }: { teamName: string }) {
   return <h1 className={HERO_LAYOUT.title}>{teamName}</h1>;
+}
+
+function HeroDetails({
+  motto,
+  description,
+}: {
+  motto?: string | null;
+  description?: string | null;
+}) {
+  const quote = motto?.trim();
+  const about = description?.trim();
+  if (!quote && !about) return null;
+  return (
+    <div className="hero-card__details">
+      {quote ? <p className="hero-card__motto">&ldquo;{quote}&rdquo;</p> : null}
+      {about ? <p className="hero-card__description">{about}</p> : null}
+    </div>
+  );
 }
 
 function HeroMeta({
@@ -52,6 +72,8 @@ export function TeamHeroCard({
   teamName,
   logoSrc,
   tagline,
+  motto,
+  description,
   city,
   coverSrc,
   socialLinks = [],
@@ -63,7 +85,10 @@ export function TeamHeroCard({
   const isInline = variant === "inline" || variant === "square";
   const showLogo = !isMinimal;
 
-  const hasOptionalMeta = Boolean(tagline?.trim() || city?.trim() || socialLinks.length > 0);
+  const hasDetails = Boolean(motto?.trim() || description?.trim());
+  const hasOptionalMeta = Boolean(
+    tagline?.trim() || city?.trim() || socialLinks.length > 0 || hasDetails,
+  );
   const essentialOnly = !hasOptionalMeta;
 
   const liveBadge = (
@@ -85,20 +110,28 @@ export function TeamHeroCard({
   ) : null;
 
   const bodyContent = isCoverIdentity ? (
-    <HeroMeta tagline={tagline} city={city} socialLinks={socialLinks} />
+    <>
+      <HeroMeta tagline={tagline} city={city} socialLinks={socialLinks} />
+      <HeroDetails motto={motto} description={description} />
+    </>
   ) : isMinimal ? (
-    socialLinks.length > 0 ? (
-      <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
-    ) : null
+    <>
+      {socialLinks.length > 0 ? (
+        <SocialLinkButtons links={socialLinks} size="sm" tone="hero" className="hero-card__social" />
+      ) : null}
+      <HeroDetails motto={motto} description={description} />
+    </>
   ) : isInline ? (
     <>
       <HeroTitle teamName={teamName} />
       <HeroMeta tagline={tagline} city={city} socialLinks={[]} />
+      <HeroDetails motto={motto} description={description} />
     </>
   ) : (
     <>
       <HeroTitle teamName={teamName} />
       <HeroMeta tagline={tagline} city={city} socialLinks={socialLinks} />
+      <HeroDetails motto={motto} description={description} />
     </>
   );
 
@@ -106,7 +139,7 @@ export function TeamHeroCard({
     isCoverIdentity
       ? hasOptionalMeta
       : isMinimal
-        ? socialLinks.length > 0
+        ? socialLinks.length > 0 || hasDetails
         : true,
   );
 

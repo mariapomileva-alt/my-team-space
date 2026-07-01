@@ -155,11 +155,92 @@
 .mts-shell.mts-palette--chrome :is(
   [class*="from-sky"],
   [class*="from-indigo"],
+  [class*="from-rose"],
+  [class*="from-emerald"],
+  [class*="from-amber"],
   [class*="to-indigo"],
-  [class*="to-sky"]
-) {
+  [class*="to-sky"],
+  [class*="to-violet"],
+  [class*="to-orange"],
+  [class*="to-teal"],
+  [class*="to-amber"]
+):not(.team-announcement-bar) {
   background-image: none !important;
   background-color: #ececec !important;
+  color: #171717 !important;
+}
+
+/* Colored CTAs → ink buttons (avoid white label on flattened gray) */
+.mts-shell.mts-palette--chrome :is(button, a)[class*="bg-indigo"],
+.mts-shell.mts-palette--chrome :is(button, a)[class*="bg-violet"],
+.mts-shell.mts-palette--chrome :is(button, a)[class*="bg-emerald"] {
+  background-color: #111111 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.mts-shell.mts-palette--chrome .integration-card--featured [class*="bg-gradient"] {
+  background: #111111 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.mts-shell.mts-palette--chrome .integration-card--featured [class*="text-white"] {
+  color: #ffffff !important;
+}
+
+.mts-shell.mts-palette--chrome .integration-card--tile .bg-gradient-to-br {
+  background: #f0f0f0 !important;
+  background-image: none !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+}
+
+.mts-shell.mts-palette--chrome .integration-card--tile .bg-gradient-to-br span,
+.mts-shell.mts-palette--chrome .integration-card--tile .bg-gradient-to-br {
+  filter: grayscale(1) saturate(0);
+}
+
+/* Announcement bar — intentional chrome variants (never white-on-gray) */
+.mts-shell.mts-palette--chrome .team-announcement-bar--info {
+  background: #111111 !important;
+  background-image: none !important;
+  border-color: rgba(0, 0, 0, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.mts-shell.mts-palette--chrome .team-announcement-bar--urgent {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1.5px solid #111111 !important;
+  color: #111111 !important;
+}
+
+.mts-shell.mts-palette--chrome .team-announcement-bar--confirm {
+  background: #f5f5f5 !important;
+  background-image: none !important;
+  border-color: rgba(0, 0, 0, 0.14) !important;
+  color: #171717 !important;
+}
+
+.mts-shell.mts-palette--chrome .team-announcement-bar span[aria-hidden] {
+  filter: grayscale(1) saturate(0);
+}
+
+.mts-shell.mts-palette--chrome .bg-gradient-to-br.text-white {
+  background: #111111 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.mts-shell.mts-palette--chrome a[class*="text-violet"],
+.mts-shell.mts-palette--chrome a[class*="text-indigo"],
+.mts-shell.mts-palette--chrome a[class*="text-sky"] {
+  color: #171717 !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .mts-shell.mts-palette--chrome :is(
@@ -568,6 +649,37 @@
 
 .hero-card__details {
   margin-top: 0.875rem;
+}
+
+.hero-card__motto {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--mts-primary-bright, var(--mts-primary));
+}
+
+.hero-card__description {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--mts-muted, #6b6b6b);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.hero-card__details > .hero-card__description:first-child {
+  margin-top: 0;
+}
+
+.hero-card--minimal .hero-card__motto,
+.hero-card--minimal .hero-card__description {
+  color: var(--mts-muted, #6b6b6b);
+  text-shadow: none;
 }
 
 /* Shared media frames — consistent crop, padding, and alignment */

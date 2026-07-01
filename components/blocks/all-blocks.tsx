@@ -62,6 +62,8 @@ export function BlockHero({ team, block, embedded }: BlockProps) {
       teamName={team.name}
       logoSrc={logoSrc}
       tagline={team.tagline}
+      motto={s.quote}
+      description={s.description}
       city={s.city}
       coverSrc={s.coverImageUrl}
       socialLinks={socialLinks}
@@ -82,7 +84,14 @@ export function BlockAnnouncementBar({ team: _team, block, embedded }: BlockProp
         ? "border-emerald-200/90 bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-950"
         : "border-indigo-200/80 bg-gradient-to-r from-indigo-600 to-violet-600 text-white";
   return (
-    <div className={`rounded-[1.25rem] border px-4 py-3.5 shadow-sm ${shell}`}>
+    <div
+      className={cn(
+        "team-announcement-bar",
+        `team-announcement-bar--${tone}`,
+        "rounded-[1.25rem] border px-4 py-3.5 shadow-sm",
+        shell,
+      )}
+    >
       <p className={`text-center text-[13px] leading-snug ${tone === "urgent" ? "font-bold" : "font-semibold"}`}>
         <span className="mr-1.5" aria-hidden>
           {tone === "urgent" ? "⚠️" : "📣"}
