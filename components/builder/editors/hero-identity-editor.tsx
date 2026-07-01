@@ -28,9 +28,19 @@ type Settings = {
   social: Partial<Record<SocialKey, string>>;
 };
 
-const OTHER_SOCIALS = (Object.keys(SOCIAL_LABELS) as SocialKey[])
-  .filter((key) => key !== "whatsapp")
-  .map((key) => ({ key, label: SOCIAL_LABELS[key] }));
+const HERO_SOCIAL_ORDER: SocialKey[] = [
+  "whatsapp",
+  "instagram",
+  "telegram",
+  "tiktok",
+  "facebook",
+  "youtube",
+];
+
+const HERO_SOCIAL_FIELDS = HERO_SOCIAL_ORDER.map((key) => ({
+  key,
+  label: SOCIAL_LABELS[key],
+}));
 
 const SOCIAL_PLACEHOLDERS: Record<SocialKey, string> = {
   instagram: "@username or link",
@@ -47,7 +57,7 @@ function hasMoreDetailsFields(team: TeamSpace, s: Settings) {
       s.city?.trim() ||
       s.quote?.trim() ||
       s.description?.trim() ||
-      OTHER_SOCIALS.some(({ key }) => s.social?.[key]?.trim()),
+      HERO_SOCIAL_FIELDS.some(({ key }) => s.social?.[key]?.trim()),
   );
 }
 
@@ -138,29 +148,6 @@ export function HeroIdentityEditor({
         onChange={(url) => set({ coverImageUrl: url })}
       />
 
-      <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/40 p-4">
-        <label className={fieldLabel}>
-          <span className="inline-flex items-center gap-1.5">
-            <SocialIcon network="whatsapp" className="h-4 w-4 text-emerald-600" />
-            WhatsApp for parents
-          </span>
-        </label>
-        <p className="mt-1 text-[11px] text-zinc-500">
-          The fastest way for families to reach you — shown on your team page.
-        </p>
-        <label className="relative mt-2 block">
-          <span className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${SOCIAL_ICON_CLASS.whatsapp}`} aria-hidden>
-            <SocialIcon network="whatsapp" className="h-4 w-4" />
-          </span>
-          <input
-            className={cn(BUILDER_FIELD_INPUT, "py-2.5 pl-10")}
-            placeholder={SOCIAL_PLACEHOLDERS.whatsapp}
-            value={s.social?.whatsapp ?? ""}
-            onChange={(e) => set({ social: { ...s.social, whatsapp: e.target.value } })}
-          />
-        </label>
-      </div>
-
       <div id="builder-about-team" className="border-t border-zinc-100/90 pt-2">
         <button
           type="button"
@@ -238,10 +225,12 @@ export function HeroIdentityEditor({
                 </div>
 
                 <div>
-                  <p className={fieldLabel}>Other social links</p>
-                  <p className="mt-1 text-[11px] text-zinc-400">Only filled icons appear on your page.</p>
+                  <p className={fieldLabel}>Social links</p>
+                  <p className="mt-1 text-[11px] text-zinc-400">
+                    WhatsApp, Instagram, and more — only filled icons appear on your page.
+                  </p>
                   <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
-                    {OTHER_SOCIALS.map(({ key, label }) => (
+                    {HERO_SOCIAL_FIELDS.map(({ key, label }) => (
                       <label key={key} className="relative block">
                         <span
                           className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${SOCIAL_ICON_CLASS[key]}`}
