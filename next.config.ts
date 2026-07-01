@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { LEGACY_DEMO_SLUGS } from "./lib/marketing/legacy-demo-slugs";
 
 /**
  * SaaS mode: full Next.js (SSR, API routes, Supabase auth, Lemon Squeezy webhooks).
@@ -33,6 +34,13 @@ const nextConfig: NextConfig = {
   },
   turbopack: {
     root: process.cwd(),
+  },
+  async redirects() {
+    return LEGACY_DEMO_SLUGS.map((slug) => ({
+      source: `/${slug}`,
+      destination: "/examples",
+      permanent: true,
+    }));
   },
 };
 

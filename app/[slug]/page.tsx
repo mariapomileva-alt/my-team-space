@@ -4,9 +4,10 @@ import { getTeamBySlug } from "@/lib/data/teams";
 import { isCurrentUserTeamCoach } from "@/lib/teams/is-team-coach";
 import { bundleToTeamSpace, loadPublicTeamBySlug } from "@/lib/teams/public";
 import { isReservedTeamSlug, normalizeTeamSlug } from "@/lib/teams/public-url";
+import { isLegacyDemoSlug } from "@/lib/marketing/legacy-demo-slugs";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -16,6 +17,7 @@ export const revalidate = 60;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const teamSlug = normalizeTeamSlug(slug);
+  if (isLegacyDemoSlug(teamSlug)) redirect("/examples");
   if (isReservedTeamSlug(teamSlug)) return { title: "Not found" };
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
@@ -84,6 +86,7 @@ function InactiveTeamPage({ name }: { name: string }) {
 export default async function TeamPublicRoute({ params }: Props) {
   const { slug } = await params;
   const teamSlug = normalizeTeamSlug(slug);
+  if (isLegacyDemoSlug(teamSlug)) redirect("/examples");
   if (isReservedTeamSlug(teamSlug)) notFound();
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {

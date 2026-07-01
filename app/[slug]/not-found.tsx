@@ -8,9 +8,17 @@ export default function TeamNotFound() {
         There is no team at this URL yet. Ask your coach for the correct link or start from the
         MyTeamSpace home page.
       </p>
-      <Link href="/" className="rounded-full bg-zinc-900 px-6 py-3 font-semibold text-white">
-        Back to MyTeamSpace
-      </Link>
+      <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+        <Link href="/examples" className="rounded-full bg-zinc-900 px-6 py-3 font-semibold text-white">
+          View demo examples
+        </Link>
+        <Link
+          href="/"
+          className="rounded-full border border-zinc-200 bg-white px-6 py-3 font-semibold text-zinc-800"
+        >
+          Back to home
+        </Link>
+      </div>
     </div>
   );
 }
