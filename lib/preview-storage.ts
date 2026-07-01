@@ -71,6 +71,11 @@ export function mergeStoredPreview(fallback: TeamSpace): TeamSpace {
         ? o.logoUrl.trim().slice(0, 2048)
         : fallback.logoUrl;
 
+    const storedPageSettings =
+      o.pageSettings && typeof o.pageSettings === "object" && !Array.isArray(o.pageSettings)
+        ? (o.pageSettings as TeamSpace["pageSettings"])
+        : undefined;
+
     return {
       ...fallback,
       name: typeof o.name === "string" ? o.name.slice(0, 120) : fallback.name,
@@ -83,6 +88,9 @@ export function mergeStoredPreview(fallback: TeamSpace): TeamSpace {
         typeof o.secondaryColor === "string"
           ? o.secondaryColor.slice(0, 32)
           : fallback.secondaryColor,
+      pageSettings: storedPageSettings
+        ? { ...fallback.pageSettings, ...storedPageSettings }
+        : fallback.pageSettings,
       blocks: normalizeBlocks(o.blocks, fallback.blocks),
       updatedAt: typeof o.updatedAt === "string" ? o.updatedAt : fallback.updatedAt,
     };

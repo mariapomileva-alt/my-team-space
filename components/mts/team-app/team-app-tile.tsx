@@ -3,6 +3,7 @@
 import { BLOCK_APP_META, type BlockAppMeta } from "@/lib/blocks/block-app-meta";
 import type { BlockPreview } from "@/lib/blocks/block-preview";
 import type { BlockInstance } from "@/lib/types";
+import { cn } from "@/lib/utils/cn";
 import { motion } from "framer-motion";
 
 export function TeamAppTile({
@@ -31,11 +32,8 @@ export function TeamAppTile({
       className="mts-app-surface mts-app-surface--interactive group flex w-full flex-col rounded-[1.35rem] p-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--mts-ring)]"
     >
       <motion.div className="flex items-start gap-3">
-        <span
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-xl ${meta.tileClass}`}
-          aria-hidden
-        >
-          {meta.emoji}
+        <span className={cn("team-module-card__icon", meta.tileClass)} aria-hidden>
+          <span className="team-module-card__icon-glyph">{meta.emoji}</span>
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">

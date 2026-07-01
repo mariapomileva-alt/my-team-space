@@ -24,6 +24,8 @@ export type TeamPageSettings = {
   logoUrl?: string;
   /** Public compact grid: one card per row (default) or two per row below desktop */
   mobileCardColumns?: "single" | "double";
+  /** Public page visual mood — presentation only */
+  designStyle?: "premium" | "playful" | "performance";
 };
 
 export type ThemeId =

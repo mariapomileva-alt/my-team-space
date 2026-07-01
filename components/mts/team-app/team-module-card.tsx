@@ -48,8 +48,8 @@ export function TeamModuleCard({
       data-preview-block-id={block.id}
     >
       <header className="team-module-card__head">
-        <span className="team-module-card__icon" aria-hidden>
-          {meta.emoji}
+        <span className={cn("team-module-card__icon", meta.tileClass)} aria-hidden>
+          <span className="team-module-card__icon-glyph">{meta.emoji}</span>
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="team-module-card__title">{cardTitle(block)}</h2>

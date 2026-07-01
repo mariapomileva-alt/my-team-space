@@ -3,6 +3,7 @@
 import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
 import { BUILDER_PANEL_SURFACE, builderChoiceClass } from "@/lib/builder/layout";
 import { STYLE_PRESETS, stylePresetForTheme, type StylePresetId } from "@/lib/style-presets";
+import { TEAM_PAGE_STYLES, resolveDesignStyle, type TeamPageDesignStyle } from "@/lib/team-page-styles";
 import { THEMES } from "@/lib/themes";
 import type { TeamSpace, ThemeId } from "@/lib/types";
 import { useState } from "react";
@@ -24,6 +25,7 @@ export function TeamDesignPanel({
   const [showCustomPalettes, setShowCustomPalettes] = useState(activePreset === "custom");
   const activeTheme = THEMES.find((t) => t.id === team.themeId) ?? THEMES[0];
   const mobileColumns = team.pageSettings?.mobileCardColumns ?? "single";
+  const pageStyle = resolveDesignStyle(team.pageSettings);
 
   function pickPreset(id: StylePresetId) {
     const preset = STYLE_PRESETS.find((p) => p.id === id);
@@ -45,13 +47,22 @@ export function TeamDesignPanel({
     });
   }
 
+  function setPageStyle(value: TeamPageDesignStyle) {
+    onPatchTeam?.({
+      pageSettings: {
+        ...team.pageSettings,
+        designStyle: value,
+      },
+    });
+  }
+
   return (
     <BuilderCollapsiblePanel
       className={BUILDER_PANEL_SURFACE}
       expanded={expanded}
       onExpandedChange={onExpandedChange}
       title="Design"
-      description="Colors and theme."
+      description="Page style, colors, and layout."
       summary={
         <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-700 ring-1 ring-zinc-200/80">
           <span
@@ -65,7 +76,37 @@ export function TeamDesignPanel({
       }
       defaultExpanded={expanded === undefined ? false : undefined}
     >
-      <p className="text-[13px] text-zinc-500">Pick a mood — colors, spacing and cards update together.</p>
+      {onPatchTeam ? (
+        <div className="mb-6">
+          <p className="text-xs font-bold text-zinc-800">Choose your team page style</p>
+          <p className="mt-1 text-[11px] leading-snug text-zinc-500">
+            Pick the mood of your team page. We&apos;ll apply the right layout, colors, cards, and icons
+            automatically.
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {TEAM_PAGE_STYLES.map((style) => {
+              const selected = pageStyle === style.id;
+              return (
+                <button
+                  key={style.id}
+                  type="button"
+                  onClick={() => setPageStyle(style.id)}
+                  className={builderChoiceClass(selected, "flex flex-col items-start gap-1 p-3 text-left")}
+                >
+                  <span className="text-xl" aria-hidden>
+                    {style.emoji}
+                  </span>
+                  <span className="text-xs font-bold text-zinc-900">{style.label}</span>
+                  <span className="text-[10px] font-semibold text-indigo-700/90">{style.tagline}</span>
+                  <span className="line-clamp-2 text-[10px] leading-snug text-zinc-500">{style.description}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      <p className="text-[13px] text-zinc-500">Color palette — pairs with your page style.</p>
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
         {STYLE_PRESETS.map((preset) => {
           const selected =

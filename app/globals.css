@@ -35,6 +35,65 @@
   }
 }
 
+/* Page design style layer — tokens from lib/team-page-styles.ts via TeamShell */
+.mts-shell {
+  --team-style-card-radius: 1.25rem;
+  --team-style-card-shadow: 0 2px 16px -10px rgba(15, 23, 42, 0.1);
+  --team-style-card-border: color-mix(in srgb, var(--mts-card-border) 55%, transparent);
+  --team-style-icon-radius: 0.75rem;
+  --team-style-icon-size: 2.25rem;
+  --team-style-icon-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mts-card-border) 35%, transparent);
+  --team-style-page-veil: none;
+  --team-style-cta-radius: 9999px;
+  --team-style-head-weight: 700;
+  position: relative;
+  isolation: isolate;
+}
+
+.mts-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--team-style-page-veil);
+  transition: background 0.45s ease;
+}
+
+.mts-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.mts-shell.team-page-style--premium .hero-card {
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 44px -22px rgba(15, 23, 42, 0.14);
+}
+
+.mts-shell.team-page-style--playful .hero-card {
+  border-radius: 1.625rem;
+  border-color: color-mix(in srgb, var(--mts-accent) 14%, var(--mts-card-border));
+  box-shadow: 0 12px 40px -18px color-mix(in srgb, var(--mts-accent) 22%, rgba(15, 23, 42, 0.1));
+}
+
+.mts-shell.team-page-style--performance .hero-card {
+  border-radius: var(--team-style-card-radius);
+  box-shadow: var(--team-style-card-shadow);
+  border-color: var(--team-style-card-border);
+}
+
+.mts-shell.team-page-style--performance .team-module-card--core .team-module-card__title {
+  letter-spacing: -0.01em;
+}
+
+.mts-shell.team-page-style--playful .team-module-card {
+  background: color-mix(in srgb, var(--mts-card, #fff) 92%, var(--mts-accent-soft, #fff));
+}
+
+.mts-shell .team-module-card :where(button.rounded-2xl, a.rounded-2xl, button.rounded-xl, a.rounded-xl) {
+  border-radius: var(--team-style-cta-radius);
+}
+
 .builder-live-preview {
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -938,10 +997,15 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  border-radius: 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--mts-card-border) 55%, transparent);
+  border-radius: var(--team-style-card-radius, 1.25rem);
+  border: 1px solid var(--team-style-card-border, color-mix(in srgb, var(--mts-card-border) 55%, transparent));
   background: var(--mts-card, #fff);
-  box-shadow: 0 2px 16px -10px rgba(15, 23, 42, 0.1);
+  box-shadow: var(--team-style-card-shadow, 0 2px 16px -10px rgba(15, 23, 42, 0.1));
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    border-radius 0.35s ease,
+    background 0.35s ease;
 }
 
 /* Inner card grids — container-based, never viewport-based */
@@ -986,22 +1050,32 @@
 
 .team-module-card__icon {
   display: flex;
-  height: 2.25rem;
-  width: 2.25rem;
+  height: var(--team-style-icon-size, 2.25rem);
+  width: var(--team-style-icon-size, 2.25rem);
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--mts-page-bg) 70%, var(--mts-accent-soft));
-  font-size: 1.125rem;
+  border-radius: var(--team-style-icon-radius, 0.75rem);
   line-height: 1;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mts-card-border) 35%, transparent);
+  box-shadow: var(--team-style-icon-shadow, inset 0 0 0 1px color-mix(in srgb, var(--mts-card-border) 35%, transparent));
+  transition:
+    box-shadow 0.35s ease,
+    border-radius 0.35s ease,
+    transform 0.2s ease;
+}
+
+.team-module-card__icon-glyph {
+  display: block;
+  font-size: 1.05em;
+  line-height: 1;
+  transform: scale(0.94);
+  filter: saturate(1.05);
 }
 
 .team-module-card__title {
   font-family: var(--font-brand), sans-serif;
   font-size: 0.8125rem;
-  font-weight: 700;
+  font-weight: var(--team-style-head-weight, 700);
   line-height: 1.25;
   color: var(--mts-text);
   min-width: 0;

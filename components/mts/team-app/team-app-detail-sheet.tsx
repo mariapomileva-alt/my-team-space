@@ -2,6 +2,7 @@
 
 import { BLOCK_APP_META, type BlockAppMeta } from "@/lib/blocks/block-app-meta";
 import type { BlockInstance } from "@/lib/types";
+import { cn } from "@/lib/utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useId, type ReactNode } from "react";
 
@@ -70,11 +71,8 @@ export function TeamAppDetailSheet({
             >
               <span className="mb-3 h-1 w-10 rounded-full bg-[color:var(--mts-card-border)] sm:hidden" aria-hidden />
               <div className="flex w-full items-start gap-3 pb-3">
-                <span
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl ${meta.tileClass}`}
-                  aria-hidden
-                >
-                  {meta.emoji}
+                <span className={cn("team-module-card__icon", meta.tileClass)} aria-hidden>
+                  <span className="team-module-card__icon-glyph">{meta.emoji}</span>
                 </span>
                 <motion.div className="min-w-0 flex-1 pt-0.5">
                   <h2 id={titleId} className="text-lg font-bold tracking-tight text-[color:var(--mts-text)]">
