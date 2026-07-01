@@ -35,10 +35,10 @@ export const STYLE_PRESETS: StylePreset[] = [
   },
   {
     id: "dark_mode",
-    emoji: "🌙",
-    label: "Dark Mode",
-    description: "Night mode with electric highlights",
-    themeId: "dark_athletic",
+    emoji: "◼️",
+    label: "Chrome",
+    description: "Black & white editorial — solid and timeless",
+    themeId: "minimal_mono",
   },
   {
     id: "custom",

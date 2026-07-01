@@ -2,7 +2,7 @@
 
 import { BuilderCollapsiblePanel } from "@/components/builder/builder-collapsible-panel";
 import { BUILDER_PANEL_SURFACE, builderChoiceClass } from "@/lib/builder/layout";
-import { TEAM_COLOR_PALETTES, paletteForTheme } from "@/lib/team-color-palettes";
+import { TEAM_COLOR_PALETTES, paletteForTheme, resolvePaletteThemeId } from "@/lib/team-color-palettes";
 import {
   personalityTeamPatch,
   resolveDesignStyle,
@@ -27,6 +27,7 @@ export function TeamDesignPanel({
 }) {
   const personality = resolveDesignStyle(team.pageSettings, team.themeId);
   const personalitySpec = teamPageStyleSpec(personality);
+  const paletteId = resolvePaletteThemeId(team.themeId);
   const palette = paletteForTheme(team.themeId);
 
   function setPersonality(value: TeamPageDesignStyle) {
@@ -100,7 +101,7 @@ export function TeamDesignPanel({
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {TEAM_COLOR_PALETTES.map((item) => {
-            const selected = team.themeId === item.themeId;
+            const selected = paletteId === item.themeId;
             return (
               <button
                 key={item.themeId}

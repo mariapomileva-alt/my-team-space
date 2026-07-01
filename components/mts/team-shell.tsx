@@ -1,5 +1,6 @@
 import type { TeamSpace, ThemeId } from "@/lib/types";
 import { getTheme } from "@/lib/themes";
+import { resolvePaletteThemeId } from "@/lib/team-color-palettes";
 import {
   designStyleClassName,
   designStyleCssVars,
@@ -18,7 +19,7 @@ type Props = {
 };
 
 export function TeamShell({ themeId, children, className, preview, team }: Props) {
-  const paletteId = team?.themeId ?? themeId;
+  const paletteId = resolvePaletteThemeId(team?.themeId ?? themeId);
   const designStyle = resolveDesignStyle(team?.pageSettings, paletteId);
   const theme = getTheme(paletteId);
   const style = {

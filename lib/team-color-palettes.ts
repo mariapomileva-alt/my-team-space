@@ -35,18 +35,19 @@ export const TEAM_COLOR_PALETTES: TeamColorPalette[] = [
   },
   {
     themeId: "minimal_mono",
-    emoji: "◻️",
-    label: "Mono",
-    description: "Editorial black & white calm",
-  },
-  {
-    themeId: "dark_athletic",
-    emoji: "🌙",
-    label: "Dark",
-    description: "Night mode with electric highlights",
+    emoji: "◼️",
+    label: "Chrome",
+    description: "Black & white editorial — solid and timeless",
   },
 ];
 
+/** Retired dark palette — existing teams fall back to Chrome at render time. */
+export function resolvePaletteThemeId(themeId: ThemeId): ThemeId {
+  if (themeId === "dark_athletic") return "minimal_mono";
+  return themeId;
+}
+
 export function paletteForTheme(themeId: ThemeId): TeamColorPalette {
-  return TEAM_COLOR_PALETTES.find((p) => p.themeId === themeId) ?? TEAM_COLOR_PALETTES[0]!;
+  const resolved = resolvePaletteThemeId(themeId);
+  return TEAM_COLOR_PALETTES.find((p) => p.themeId === resolved) ?? TEAM_COLOR_PALETTES[0]!;
 }

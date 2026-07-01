@@ -62,5 +62,11 @@ describe("paletteForTheme", () => {
   it("resolves friendly palette labels", () => {
     expect(paletteForTheme("ocean_aqua").label).toBe("Ocean");
     expect(paletteForTheme("premium_forest").label).toBe("Forest");
+    expect(paletteForTheme("minimal_mono").label).toBe("Chrome");
+  });
+
+  it("maps retired dark palette to Chrome", () => {
+    expect(paletteForTheme("dark_athletic").label).toBe("Chrome");
+    expect(paletteForTheme("dark_athletic").themeId).toBe("minimal_mono");
   });
 });

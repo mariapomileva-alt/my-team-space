@@ -33,7 +33,11 @@ export function BlockIconTile({
         <BuilderSectionIcon
           blockType={blockType}
           size="md"
-          className="team-module-card__icon-svg"
+          className={cn(
+            "team-module-card__icon-svg",
+            style === "premium" && "team-module-card__icon-svg--premium",
+            style === "performance" && "team-module-card__icon-svg--performance",
+          )}
         />
       ) : (
         <span className="team-module-card__icon-glyph">{meta.emoji}</span>
