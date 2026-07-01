@@ -28,13 +28,15 @@ export function LandingPrideSection() {
           </p>
         </motion.div>
         <div className="mt-10 sm:mt-12">
-          <MarketingTeamPagePreview />
+          <Link href="/examples" className="block transition hover:opacity-[0.98]">
+            <MarketingTeamPagePreview />
+          </Link>
           <p className="mt-6 text-center">
             <Link
               href="/examples"
               className="text-sm font-semibold text-[#6C5CE7] transition hover:underline"
             >
-              See six team pages with photos & schedules →
+              View three portfolio team pages →
             </Link>
           </p>
         </div>

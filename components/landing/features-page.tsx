@@ -11,10 +11,12 @@ export function FeaturesPage() {
         subtitle="Not a website builder. Not a link-in-bio. The modern team page where schedule, wins, photos, and contacts live together."
       />
       <div className="mx-auto max-w-6xl px-6 pb-4 pt-10 sm:px-8 sm:pt-12">
-        <MarketingTeamPagePreview />
+        <Link href="/examples" className="block transition hover:opacity-[0.98]">
+          <MarketingTeamPagePreview />
+        </Link>
         <p className="mt-6 text-center text-sm font-medium text-neutral-500">
           <Link href="/examples" className="text-[#6C5CE7] hover:underline">
-            Browse six team page examples with photos, schedules, and results →
+            View three portfolio examples with photos, schedules, and results →
           </Link>
         </p>
       </div>

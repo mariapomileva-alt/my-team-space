@@ -6,11 +6,14 @@ import { usePathname } from "next/navigation";
 
 const NAV = [
   { href: "/features", label: "Features" },
-  { href: "/examples", label: "Examples" },
   { href: "/pricing", label: "Pricing" },
   { href: "/faq", label: "FAQ" },
   { href: "/about", label: "About" },
-];
+] as const;
+
+function navActive(pathname: string, href: string) {
+  return pathname === href || (href === "/examples" && pathname.startsWith("/examples"));
+}
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -25,7 +28,7 @@ export function SiteHeader() {
               key={item.href}
               href={item.href}
               className={`rounded-full px-3 py-2 text-[13px] font-medium transition ${
-                pathname === item.href
+                navActive(pathname, item.href)
                   ? "bg-white text-[#6C5CE7] shadow-sm"
                   : "text-neutral-600 hover:bg-white/60 hover:text-[#1A1C23]"
               }`}
@@ -33,6 +36,16 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          <Link
+            href="/examples"
+            className={`rounded-full px-4 py-2 text-[13px] font-semibold transition ${
+              navActive(pathname, "/examples")
+                ? "bg-[#6C5CE7] text-white shadow-sm"
+                : "border border-neutral-200/90 bg-white text-neutral-800 shadow-sm hover:border-[#6C5CE7]/30 hover:text-[#6C5CE7]"
+            }`}
+          >
+            View Demo
+          </Link>
           <Link
             href="/admin/login"
             className="rounded-full px-3 py-2 text-[13px] font-medium text-neutral-600 transition hover:text-[#6C5CE7]"
