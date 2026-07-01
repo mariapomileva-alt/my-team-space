@@ -62,12 +62,12 @@ export const HERO_VARIANT_META: Record<
   inline: {
     number: 4,
     label: "Logo left, text right",
-    hint: "Compact club card — logo overlaps, name sits to the right.",
+    hint: "Compact club card — name beside the logo, details aligned left.",
   },
   square: {
     number: 5,
     label: "Square logo layout",
-    hint: "Square logo frame for complex marks, text to the right.",
+    hint: "Square logo frame — name beside it, details centered below.",
   },
   minimal: {
     number: 6,

@@ -468,7 +468,7 @@
   text-align: center;
 }
 
-/* === 4 — Logo left, text right (name beside logo; follow-up centered below) === */
+/* === 4 — Logo left, text right (name beside logo; follow-up left below) === */
 .hero-card--inline .hero-card__identity {
   display: grid;
   grid-template-columns: var(--hero-logo-size) minmax(0, 1fr);
@@ -494,6 +494,23 @@
 
 .hero-card--inline .hero-card__meta-zone {
   margin-top: 0.625rem;
+  align-items: flex-start;
+  text-align: left;
+  padding-left: calc(var(--hero-logo-size) + 0.75rem);
+  box-sizing: border-box;
+}
+
+.hero-card--inline .hero-card__meta-zone .hero-card__subtitle,
+.hero-card--inline .hero-card__meta-zone .hero-card__city,
+.hero-card--inline .hero-card__meta-zone .hero-card__motto,
+.hero-card--inline .hero-card__meta-zone .hero-card__description,
+.hero-card--inline .hero-card__meta-zone .hero-card__details {
+  max-width: none;
+  text-align: left;
+}
+
+.hero-card--inline .hero-card__meta-zone .hero-card__social {
+  justify-content: flex-start;
 }
 
 .hero-card--inline .hero-card__body,
@@ -501,7 +518,7 @@
   padding-top: calc(var(--hero-logo-size) * 0.42);
 }
 
-/* === 5 — Square logo layout === */
+/* === 5 — Square logo layout (name beside logo; follow-up centered below) === */
 .hero-card--square .hero-card__identity {
   display: grid;
   grid-template-columns: var(--hero-logo-size) minmax(0, 1fr);

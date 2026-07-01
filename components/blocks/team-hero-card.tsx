@@ -109,7 +109,7 @@ export function TeamHeroCard({
   const hasCover = Boolean(coverSrc?.trim());
   const isCoverIdentity = variant === "inside_header" || variant === "circle_on_header";
   const isMinimal = variant === "minimal";
-  const isInline = variant === "inline" || variant === "square";
+  const isSideBySide = variant === "inline" || variant === "square";
   const showLogo = !isMinimal;
 
   const hasDetails = Boolean(motto?.trim() || description?.trim());
@@ -197,7 +197,7 @@ export function TeamHeroCard({
 
         {showBody ? (
           <div className={HERO_LAYOUT.body}>
-            {isInline ? (
+            {isSideBySide ? (
               <>
                 <div className={HERO_LAYOUT.identity}>
                   <div className="hero-card__logo-spacer" aria-hidden />
