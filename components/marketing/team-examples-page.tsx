@@ -1,5 +1,4 @@
 import { TeamExamplesGallery } from "@/components/marketing/team-examples-gallery";
-import { PageHero } from "@/components/marketing/page-hero";
 import { SHOWCASE_TEAMS } from "@/lib/showcase/demo-teams";
 import Link from "next/link";
 
@@ -8,37 +7,66 @@ const accentBtn =
 const secondaryBtn =
   "inline-flex min-h-11 items-center justify-center rounded-full border border-neutral-200/90 bg-white px-7 text-[15px] font-medium text-neutral-800 shadow-sm transition hover:border-[#6C5CE7]/30 hover:text-[#6C5CE7] active:scale-[0.99]";
 
-const DIFFERENTIATORS = [
+const DAY_LANES = [
   {
-    title: "Not a link-in-bio",
-    text: "Schedule, gallery, results, and payments — not just one Instagram link in a bio.",
+    icon: "🌅",
+    title: "Early morning",
+    text: "06:30 lane sessions and 09:00 tournament draws — squads that start before breakfast.",
   },
   {
-    title: "Not a generic website builder",
-    text: "Blocks made for sports teams. Turn on what you need, skip what you don't.",
+    icon: "☀️",
+    title: "Midday & weekend",
+    text: "City league games and travel-team ice — structures built around fixtures, not flex time.",
   },
   {
-    title: "No app for parents",
-    text: "Opens in any browser. Families bookmark once — you update from the builder.",
+    icon: "🌇",
+    title: "After school",
+    text: "Studios and conservatories — rehearsal blocks parents actually need on one page.",
   },
 ] as const;
 
 export function TeamExamplesPage() {
   return (
     <>
-      <PageHero
-        title="Six teams. Six real pages."
-        subtitle="Scroll inside every preview — the same live components parents see. No signup required to look."
-      />
+      <section className="relative overflow-hidden border-b border-black/[0.04] bg-gradient-to-b from-amber-50/40 via-white to-white px-6 py-16 sm:px-8 sm:py-20">
+        <div
+          className="pointer-events-none absolute -right-16 top-8 h-48 w-48 rounded-full bg-violet-200/30 blur-3xl"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-amber-200/40 blur-3xl"
+          aria-hidden
+        />
+        <div className="relative mx-auto max-w-3xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/70 bg-white/90 px-4 py-1.5 shadow-sm">
+            <span className="text-sm" aria-hidden>
+              🕐
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-amber-900/80">
+              A day in team life
+            </span>
+          </div>
+          <h1 className="mt-5 font-[family-name:var(--font-brand)] text-3xl font-bold tracking-tight text-[#1A1C23] sm:text-4xl lg:text-[2.6rem]">
+            Six structures. Six rhythms.
+          </h1>
+          <p className="mt-4 text-lg leading-relaxed text-neutral-500">
+            Swim squads at dawn, clubs at noon, studios at dusk — scroll inside every phone. Real pages, real
+            blocks, no signup to look.
+          </p>
+        </div>
+      </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-6 sm:px-8">
+      <section className="mx-auto max-w-6xl px-6 pb-8 sm:px-8">
         <div className="grid gap-4 sm:grid-cols-3">
-          {DIFFERENTIATORS.map((item) => (
+          {DAY_LANES.map((item) => (
             <div
               key={item.title}
               className="rounded-2xl border border-neutral-100 bg-white px-5 py-4 shadow-[0_2px_20px_-12px_rgba(15,23,42,0.06)]"
             >
-              <p className="text-[14px] font-semibold text-[#1A1C23]">{item.title}</p>
+              <p className="flex items-center gap-2 text-[14px] font-semibold text-[#1A1C23]">
+                <span aria-hidden>{item.icon}</span>
+                {item.title}
+              </p>
               <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-500">{item.text}</p>
             </div>
           ))}
@@ -49,10 +77,10 @@ export function TeamExamplesPage() {
 
       <section className="mx-auto max-w-3xl px-6 pb-20 text-center sm:px-8">
         <h2 className="font-[family-name:var(--font-brand)] text-2xl font-bold tracking-tight text-[#1A1C23] sm:text-3xl">
-          Like what you see? Make it yours.
+          Pick a rhythm. Make it yours.
         </h2>
         <p className="mt-3 text-[15px] leading-relaxed text-neutral-500">
-          Start with a look you love — then shape the page around how your team actually works.
+          Start with a structure you recognise — then shape the page around how your team actually runs its day.
         </p>
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <Link href="/admin/signup" className={accentBtn}>

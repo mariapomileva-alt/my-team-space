@@ -3,13 +3,29 @@ import { getTheme } from "@/lib/themes";
 import { SHOWCASE_COVERS, SHOWCASE_LOGOS } from "@/lib/showcase/logo-svg";
 import type { BlockInstance, BlockLayout, TeamSpace, ThemeId } from "@/lib/types";
 
+export type ShowcaseDayMoment = {
+  clockTime: string;
+  clockIcon: string;
+  momentRu: string;
+  momentEn: string;
+};
+
+export type ShowcaseStructure = {
+  icon: string;
+  labelRu: string;
+  labelEn: string;
+};
+
 export type ShowcaseTeamCard = {
   team: TeamSpace;
   sportRu: string;
+  sportEn: string;
   presetLabel: string;
   heroLayout: HeroLayoutVariant;
   heroLayoutLabel: string;
   builderSteps: string[];
+  day: ShowcaseDayMoment;
+  structure: ShowcaseStructure;
 };
 
 function themeColors(themeId: ThemeId) {
@@ -377,7 +393,8 @@ const GALLERY_TENNIS = [
 
 export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
   {
-    sportRu: "Танцевальная секция",
+    sportRu: "Творческая студия",
+    sportEn: "Creative studio",
     presetLabel: "Pastel youth",
     heroLayout: "circle_on_header",
     heroLayoutLabel: HERO_VARIANT_META.circle_on_header.label,
@@ -386,10 +403,21 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
       "Design → Pastel youth",
       "Gallery + Polls + Countdown",
     ],
+    day: {
+      clockTime: "16:30",
+      clockIcon: "🌇",
+      momentRu: "После школы",
+      momentEn: "After school",
+    },
+    structure: {
+      icon: "💃",
+      labelRu: "Танцевальная студия",
+      labelEn: "Dance studio",
+    },
     team: makeTeam(
       "demo_dance",
       "rhythm-motion",
-      "Rhythm & Motion",
+      "Afterglow Studio",
       "pastel_youth",
       "Hip-hop · Contemporary · Kids 7–14",
       SHOWCASE_LOGOS.dance,
@@ -420,17 +448,29 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
     ),
   },
   {
-    sportRu: "Баскетбольный кружок",
+    sportRu: "Городской кружок",
+    sportEn: "City league club",
     presetLabel: "Energetic orange",
     heroLayout: "inline",
     heroLayoutLabel: HERO_VARIANT_META.inline.label,
     builderSteps: ["Header → Logo left, text right", "Design → Energetic orange", "Results + Shop"],
+    day: {
+      clockTime: "10:00",
+      clockIcon: "☀️",
+      momentRu: "Выходной матч",
+      momentEn: "Game day",
+    },
+    structure: {
+      icon: "🏀",
+      labelRu: "Баскетбольный кружок",
+      labelEn: "Youth basketball club",
+    },
     team: makeTeam(
       "demo_hoops",
       "thunder-hoops",
-      "Thunder Hoops U14",
+      "Courtside Collective",
       "energetic_orange",
-      "Boys U14 · City league",
+      "U14 city league · Saturday energy",
       SHOWCASE_LOGOS.basketball,
       [
         ann("🏀 Playoff Saturday 10:00 — white kit.", "urgent"),
@@ -482,17 +522,29 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
     ),
   },
   {
-    sportRu: "Хоккейная команда",
+    sportRu: "Элитная команда",
+    sportEn: "Elite travel team",
     presetLabel: "Dark athletic",
     heroLayout: "inside_header",
     heroLayoutLabel: HERO_VARIANT_META.inside_header.label,
     builderSteps: ["Header → Logo inside header", "Design → Dark athletic", "Trips + Gallery"],
+    day: {
+      clockTime: "16:00",
+      clockIcon: "❄️",
+      momentRu: "Лёд после школы",
+      momentEn: "After-school ice",
+    },
+    structure: {
+      icon: "🏒",
+      labelRu: "Хоккейная академия",
+      labelEn: "Hockey academy",
+    },
     team: makeTeam(
       "demo_hockey",
       "nordic-ice",
-      "Nordic Ice Wolves",
+      "First Freeze Wolves",
       "dark_athletic",
-      "U12–U16 elite",
+      "U12–U16 elite · Ice after school",
       SHOWCASE_LOGOS.hockey,
       [
         ann("❄️ Rink B closed Monday — session at 16:00.", "info"),
@@ -519,17 +571,29 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
     ),
   },
   {
-    sportRu: "Плавательная команда",
+    sportRu: "Утренняя спортивная школа",
+    sportEn: "Morning swim squad",
     presetLabel: "Ocean aqua",
     heroLayout: "overlap_large",
     heroLayoutLabel: HERO_VARIANT_META.overlap_large.label,
     builderSteps: ["Header → Logo overlapping header", "Design → Ocean aqua", "Results + Poll"],
+    day: {
+      clockTime: "06:30",
+      clockIcon: "🌅",
+      momentRu: "Раннее утро",
+      momentEn: "Early morning",
+    },
+    structure: {
+      icon: "🏊",
+      labelRu: "Соревновательная секция",
+      labelEn: "Competitive squad",
+    },
     team: makeTeam(
       "demo_swim",
       "aqua-wave",
-      "Aqua Wave Swim Club",
+      "Blue Hour Lanes",
       "ocean_aqua",
-      "Competitive swimming · 8–16",
+      "Dawn laps · County meets · Ages 8–16",
       SHOWCASE_LOGOS.swim,
       [
         ann("🏊 County meet Sunday — warm-up 08:00.", "confirm"),
@@ -566,17 +630,29 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
     ),
   },
   {
-    sportRu: "Балетная студия",
+    sportRu: "Консерваторская студия",
+    sportEn: "Conservatory studio",
     presetLabel: "Minimal mono",
     heroLayout: "minimal",
     heroLayoutLabel: HERO_VARIANT_META.minimal.label,
     builderSteps: ["Header → Minimal text-focused", "Design → Minimal mono", "Countdown + Resources"],
+    day: {
+      clockTime: "17:00",
+      clockIcon: "🩰",
+      momentRu: "Вечер у станка",
+      momentEn: "Evening barre",
+    },
+    structure: {
+      icon: "✨",
+      labelRu: "Балетная школа",
+      labelEn: "Ballet school",
+    },
     team: makeTeam(
       "demo_ballet",
       "etoile-ballet",
-      "Étoile Ballet Studio",
+      "Lumière Ballet",
       "minimal_mono",
-      "Classical · Pre-professional",
+      "Classical · Pre-professional · Evening barre",
       SHOWCASE_LOGOS.ballet,
       [
         ann("🩰 Nutcracker audition — sign up by Wednesday.", "info"),
@@ -604,17 +680,29 @@ export const SHOWCASE_TEAMS: ShowcaseTeamCard[] = [
     ),
   },
   {
-    sportRu: "Теннисная академия",
+    sportRu: "Частная академия",
+    sportEn: "Private academy",
     presetLabel: "Premium forest",
     heroLayout: "square",
     heroLayoutLabel: HERO_VARIANT_META.square.label,
     builderSteps: ["Header → Square logo layout", "Design → Premium forest", "UTR integration + Shop"],
+    day: {
+      clockTime: "09:00",
+      clockIcon: "🎾",
+      momentRu: "Утренний турнир",
+      momentEn: "Morning draw",
+    },
+    structure: {
+      icon: "🎾",
+      labelRu: "Теннисная академия",
+      labelEn: "Tennis academy",
+    },
     team: makeTeam(
       "demo_tennis",
       "ace-tennis",
-      "Ace Tennis Academy",
+      "Golden Set Academy",
       "premium_forest",
-      "Red clay · UTR juniors",
+      "Red clay · Sunday tournaments · UTR juniors",
       SHOWCASE_LOGOS.tennis,
       [
         ann("🎾 Club tournament Sunday — register by Friday.", "confirm"),

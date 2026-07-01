@@ -234,7 +234,7 @@ function IntegrationsList() {
   );
 }
 
-/** Aqua Wave Swim Club mockup — faithful to the reference design. */
+/** Blue Hour Lanes mockup — faithful to the reference design. */
 export function MarketingTeamPagePreview() {
   return (
     <motion.div
@@ -279,7 +279,7 @@ export function MarketingTeamPagePreview() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h4 className="font-[family-name:var(--font-brand)] text-xl font-bold tracking-tight text-neutral-900 sm:text-[1.35rem]">
-                    Aqua Wave Swim Club
+                    Blue Hour Lanes
                   </h4>
                   <p className="mt-1 text-[12px] font-medium text-sky-600">Competitive swimming · 8–16</p>
                   <p className="mt-1 flex items-center gap-1 text-[11px] text-neutral-400">
