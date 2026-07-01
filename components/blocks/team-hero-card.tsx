@@ -198,10 +198,12 @@ export function TeamHeroCard({
         {showBody ? (
           <div className={HERO_LAYOUT.body}>
             {isInline ? (
-              <div className={HERO_LAYOUT.identity}>
-                <div className="hero-card__logo-spacer" aria-hidden />
-                <div className={HERO_LAYOUT.nameZone}>
-                  <HeroTitle teamName={teamName} />
+              <>
+                <div className={HERO_LAYOUT.identity}>
+                  <div className="hero-card__logo-spacer" aria-hidden />
+                  <div className={HERO_LAYOUT.nameZone}>
+                    <HeroTitle teamName={teamName} />
+                  </div>
                 </div>
                 <HeroFollowUp
                   tagline={tagline}
@@ -210,7 +212,7 @@ export function TeamHeroCard({
                   description={description}
                   socialLinks={socialLinks}
                 />
-              </div>
+              </>
             ) : isMinimal ? (
               <HeroFollowUp
                 tagline={null}

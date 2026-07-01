@@ -391,8 +391,19 @@
 }
 
 .hero-card__meta-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   text-align: center;
+}
+
+.hero-card__meta-zone .hero-card__subtitle,
+.hero-card__meta-zone .hero-card__city,
+.hero-card__meta-zone .hero-card__motto,
+.hero-card__meta-zone .hero-card__description {
+  width: 100%;
+  max-width: 22rem;
 }
 
 .hero-card__meta-zone .hero-card__social {
@@ -401,9 +412,8 @@
 }
 
 .hero-card__meta-zone .hero-card__details {
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 36rem;
+  width: 100%;
+  max-width: 22rem;
 }
 
 /* === 1 — Logo inside header (name on cover beside logo) === */
@@ -483,9 +493,7 @@
 }
 
 .hero-card--inline .hero-card__meta-zone {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  margin-top: 0.125rem;
+  margin-top: 0.625rem;
 }
 
 .hero-card--inline .hero-card__body,
@@ -518,9 +526,7 @@
 }
 
 .hero-card--square .hero-card__meta-zone {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  margin-top: 0.125rem;
+  margin-top: 0.625rem;
 }
 
 .hero-card--square .mts-media-frame--logo-hero-card {
@@ -695,7 +701,7 @@
   font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.45;
-  color: var(--mts-muted, #6b6b6b);
+  color: color-mix(in srgb, var(--mts-text, #1a1c23) 72%, var(--mts-muted, #6b6b6b));
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;

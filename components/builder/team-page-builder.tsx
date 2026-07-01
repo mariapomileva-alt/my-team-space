@@ -251,7 +251,17 @@ export function TeamPageBuilder({
     setTeam((prev) => {
       const next = {
         ...prev,
-        blocks: prev.blocks.map((b) => (b.id === id ? { ...b, ...patch } : b)),
+        blocks: prev.blocks.map((b) => {
+          if (b.id !== id) return b;
+          const merged = { ...b, ...patch };
+          if (patch.settings && typeof patch.settings === "object") {
+            merged.settings = {
+              ...(b.settings && typeof b.settings === "object" ? b.settings : {}),
+              ...patch.settings,
+            };
+          }
+          return merged;
+        }),
       };
       teamRef.current = next;
       return next;
