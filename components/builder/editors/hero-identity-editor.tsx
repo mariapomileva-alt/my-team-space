@@ -58,12 +58,14 @@ export function HeroIdentityEditor({
   team,
   onPatchBlock,
   onPatchTeam,
+  onPatchLogo,
   focusAboutKey = 0,
 }: {
   block: BlockInstance;
   team: TeamSpace;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
+  onPatchLogo?: (url: string) => void;
   /** Increment to expand about-team fields and scroll into view */
   focusAboutKey?: number;
 }) {
@@ -105,6 +107,10 @@ export function HeroIdentityEditor({
         hint="Parents recognize your team instantly."
         value={logo}
         onChange={(url) => {
+          if (onPatchLogo) {
+            onPatchLogo(url);
+            return;
+          }
           onPatchTeam({ logoUrl: url || undefined });
           set({ teamPhotoUrl: url });
         }}

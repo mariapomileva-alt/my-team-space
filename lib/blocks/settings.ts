@@ -327,11 +327,9 @@ export function newTeamShopProduct(partial?: Partial<TeamShopProduct>): TeamShop
 
 export const ACHIEVEMENT_ICONS = ["🏆", "🥇", "🥈", "🥉", "⭐", "🎖", "📜", "🔥", "❤️"] as const;
 
-export const LAYOUT_OPTIONS: { value: NonNullable<BlockInstance["layout"]>; label: string }[] = [
+export const LAYOUT_OPTIONS: { value: "full" | "half"; label: string }[] = [
   { value: "full", label: "Full width" },
-  { value: "featured", label: "Featured hero" },
   { value: "half", label: "Half width" },
-  { value: "card", label: "Card grid" },
 ];
 
 export const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

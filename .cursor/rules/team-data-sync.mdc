@@ -29,7 +29,27 @@ Never pass `publicLogoUrlFromPath(logo_path)` as fallback when `logo_url` is set
 ## Sync policy (`lib/teams/sync-policy.ts`)
 
 - Server wins when `isTeamVersionNewer(server.updatedAt, local.updatedAt)`.
-- If not dirty, always accept fresh server snapshot on focus/mount.
+- **While `dirty` and server is not newer, never replace local state** (mount sync, focus sync, `loadTeamForBuilder` on open).
+- If not dirty, accept fresh server snapshot on focus/mount.
+
+## Media uploads
+
+- Files land in Supabase Storage `team-assets/{team_id}/{folder}/{file}` — RLS checks `team_members` for that `team_id`.
+- Public URL saved on the team row: `teams.logo_url`, hero `blocks` JSON (`teamPhotoUrl`, `coverImageUrl`), etc.
+- After every successful upload, `ImageUploadField` calls `flushSave()` → `saveTeamContent` with `updated_at` lock.
+- Logo: `applyTeamLogoPatch` keeps `logo_url` and hero `teamPhotoUrl` in one state update.
+
+## Backend layout (1000+ teams, one project)
+
+| What | Where |
+|------|--------|
+| Team identity, blocks, theme | `public.teams` row (`id` = UUID, unique `slug`) |
+| Logo URL (canonical) | `teams.logo_url` (+ hero block settings) |
+| Coach membership | `public.team_members` (`team_id`, `user_id`) |
+| Images/files | Storage bucket `team-assets` at `{team_id}/…` |
+| Billing | `public.coach_subscriptions` per coach `user_id` |
+
+Teams never share rows or storage prefixes — all queries filter by `team.id` / `team_id`.
 
 ## Do not
 

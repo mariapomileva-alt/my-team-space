@@ -10,6 +10,7 @@ export function TeamIdentityPanel({
   team,
   heroBlock,
   onPatchTeam,
+  onPatchLogo,
   onPatchBlock,
   expanded,
   onExpandedChange,
@@ -18,6 +19,7 @@ export function TeamIdentityPanel({
   team: TeamSpace;
   heroBlock: BlockInstance | undefined;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
+  onPatchLogo?: (url: string) => void;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
   expanded?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
@@ -52,6 +54,7 @@ export function TeamIdentityPanel({
           team={team}
           onPatchBlock={onPatchBlock}
           onPatchTeam={onPatchTeam}
+          onPatchLogo={onPatchLogo}
           focusAboutKey={focusAboutKey}
         />
       ) : (

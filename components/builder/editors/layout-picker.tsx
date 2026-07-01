@@ -4,14 +4,14 @@ import type { BlockLayout } from "@/lib/types";
 import { LAYOUT_OPTIONS } from "@/lib/blocks/settings";
 import { cn } from "@/lib/utils/cn";
 
-const LAYOUT_HINTS: Record<BlockLayout, string> = {
-  full: "Full row on the page",
-  featured: "Large hero-style card",
-  half: "Half row — pairs with the next block",
-  card: "Compact tile in the grid",
+type PickerLayout = "full" | "half";
+
+const LAYOUT_HINTS: Record<PickerLayout, string> = {
+  full: "One full-width plate across the page",
+  half: "Half width — sits beside the next half block",
 };
 
-function LayoutThumbnail({ layout, active }: { layout: BlockLayout; active: boolean }) {
+function LayoutThumbnail({ layout, active }: { layout: PickerLayout; active: boolean }) {
   return (
     <div
       className={cn(
@@ -22,45 +22,36 @@ function LayoutThumbnail({ layout, active }: { layout: BlockLayout; active: bool
     >
       {layout === "full" ? (
         <div className="flex w-full flex-col gap-1">
-          <div className="h-1.5 w-full rounded-sm bg-current opacity-70" />
-          <div className="h-1.5 w-3/4 rounded-sm bg-current opacity-70" />
+          <div className="h-2 w-full rounded-sm bg-current opacity-70" />
+          <div className="h-1.5 w-4/5 rounded-sm bg-current opacity-50" />
         </div>
-      ) : null}
-      {layout === "featured" ? (
-        <div className="flex w-full flex-col gap-1">
-          <div className="h-3 w-full rounded-sm bg-current opacity-70" />
-          <div className="h-1 w-1/2 rounded-sm bg-current opacity-70" />
-        </div>
-      ) : null}
-      {layout === "half" ? (
+      ) : (
         <div className="flex w-full gap-1">
           <div className="flex flex-1 flex-col gap-1">
-            <div className="h-1.5 w-full rounded-sm bg-current opacity-70" />
-            <div className="h-1.5 w-2/3 rounded-sm bg-current opacity-70" />
+            <div className="h-2 w-full rounded-sm bg-current opacity-70" />
+            <div className="h-1.5 w-2/3 rounded-sm bg-current opacity-50" />
           </div>
-          <div className="w-1/2 rounded-sm border border-dashed border-current opacity-40" />
+          <div className="w-[42%] rounded-sm border border-dashed border-current opacity-35" />
         </div>
-      ) : null}
-      {layout === "card" ? (
-        <div className="grid w-full grid-cols-2 gap-1">
-          <div className="flex flex-col gap-1 rounded-sm border border-current p-1 opacity-80">
-            <div className="h-1.5 w-full rounded-sm bg-current opacity-70" />
-          </div>
-          <div className="rounded-sm border border-dashed border-current opacity-40" />
-        </div>
-      ) : null}
+      )}
     </div>
   );
 }
 
-export function LayoutPicker({ layout, onChange }: { layout: BlockLayout; onChange: (l: BlockLayout) => void }) {
+export function LayoutPicker({
+  layout,
+  onChange,
+}: {
+  layout: PickerLayout;
+  onChange: (l: PickerLayout) => void;
+}) {
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Layout on page</p>
       <p className="mt-1 text-[11px] leading-relaxed text-zinc-500">
-        Pick a shape — preview jumps to this block instantly.
+        Full row or half row — each block is a plate on the page.
       </p>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-2">
         {LAYOUT_OPTIONS.map((opt) => (
           <button
             key={opt.value}

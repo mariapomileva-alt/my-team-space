@@ -31,6 +31,7 @@ type Props = {
   onToggleEnabled: (id: string) => void;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
+  onPatchLogo?: (url: string) => void;
   onPreviewBlock?: (id: string) => void;
   onMoveUp: (id: string) => void;
   onMoveDown: (id: string) => void;
@@ -48,6 +49,7 @@ export function PageBlocksPanel({
   onToggleEnabled,
   onPatchBlock,
   onPatchTeam,
+  onPatchLogo,
   onPreviewBlock,
   onMoveUp,
   onMoveDown,
@@ -171,6 +173,7 @@ export function PageBlocksPanel({
                     onToggleEnabled={() => onToggleEnabled(block.id)}
                     onPatchBlock={onPatchBlock}
                     onPatchTeam={onPatchTeam}
+                    onPatchLogo={onPatchLogo}
                     onPreviewBlock={onPreviewBlock}
                     isDraggingOverlay={false}
                     legoLayout

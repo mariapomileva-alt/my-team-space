@@ -29,6 +29,7 @@ type Props = {
   onToggleEnabled: () => void;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
+  onPatchLogo?: (url: string) => void;
   onPreviewBlock?: (id: string) => void;
   isDraggingOverlay?: boolean;
   /** Single-column visual builder cards (Step 2) */
@@ -66,6 +67,7 @@ export function BlockModuleCard({
   onToggleEnabled,
   onPatchBlock,
   onPatchTeam,
+  onPatchLogo,
   onPreviewBlock,
   isDraggingOverlay = false,
   legoLayout = false,
@@ -258,6 +260,7 @@ export function BlockModuleCard({
                 team={team}
                 onPatchBlock={onPatchBlock}
                 onPatchTeam={onPatchTeam}
+                onPatchLogo={onPatchLogo}
                 onPreviewBlock={onPreviewBlock}
               />
             </motion.div>

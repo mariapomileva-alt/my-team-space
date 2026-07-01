@@ -42,9 +42,11 @@ import {
   type BuilderPreviewMode,
 } from "@/lib/builder/preview";
 import { formatBuilderSaveLabel, humanizeSaveError } from "@/lib/builder/save-status";
+import { BuilderSaveProvider } from "@/lib/builder/save-context";
 import { clearTeamPreviewLocal, purgeStaleTeamPreview } from "@/lib/preview-storage";
 import { publicTeamPath, siteOriginFromPublicTeamUrl } from "@/lib/teams/public-url";
 import { shouldReplaceLocalWithServer } from "@/lib/teams/sync-policy";
+import { applyTeamLogoPatch } from "@/lib/teams/apply-logo-patch";
 import { magicInviteUrl } from "@/lib/team-access";
 import { THEMES } from "@/lib/themes";
 import type { BuilderBillingContext } from "@/lib/billing/builder-context-types";
@@ -56,7 +58,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
-const AUTOSAVE_MS = 2500;
+const AUTOSAVE_MS = 1500;
 const PAGE_BLOCK_TYPES = new Set<BlockType>(["hero"]);
 
 type WorkspaceSection = "header" | "sections" | "design" | "payments";
@@ -120,15 +122,27 @@ export function TeamPageBuilder({
     setPreviewMode(readStoredPreviewMode());
   }, []);
 
-  const applyServerTeam = useCallback((fresh: TeamSpace) => {
+  const replaceTeamFromServer = useCallback((fresh: TeamSpace, force = false) => {
+    const local = teamRef.current;
+    if (
+      !force &&
+      !shouldReplaceLocalWithServer(
+        { updatedAt: local.updatedAt, dirty: dirtyRef.current },
+        { updatedAt: fresh.updatedAt },
+      )
+    ) {
+      return false;
+    }
     dirtyRef.current = false;
+    teamRef.current = fresh;
     setTeam(fresh);
+    return true;
   }, []);
 
   useEffect(() => {
     if (dirtyRef.current) return;
-    applyServerTeam(initialTeam);
-  }, [initialTeam, applyServerTeam]);
+    replaceTeamFromServer(initialTeam);
+  }, [initialTeam, replaceTeamFromServer]);
 
   useEffect(() => {
     purgeStaleTeamPreview(initialTeam.slug, initialTeam.updatedAt);
@@ -136,13 +150,12 @@ export function TeamPageBuilder({
       try {
         const fresh = await loadTeamForBuilder(teamId);
         purgeStaleTeamPreview(fresh.slug, fresh.updatedAt);
-        applyServerTeam(fresh);
-        if (!dirtyRef.current) {
+        if (replaceTeamFromServer(fresh)) {
           setSaveError(null);
           setSaveState("saved");
         }
       } catch {
-        applyServerTeam(initialTeam);
+        if (!dirtyRef.current) replaceTeamFromServer(initialTeam, true);
       }
     })();
     // Always pull cloud truth when opening the builder for this team.
@@ -164,8 +177,7 @@ export function TeamPageBuilder({
           setMsg("Loaded the latest saved version from the cloud.");
         }
         purgeStaleTeamPreview(fresh.slug, fresh.updatedAt);
-        applyServerTeam(fresh);
-        if (!dirtyRef.current) {
+        if (replaceTeamFromServer(fresh)) {
           setSaveError(null);
           setSaveState("saved");
         }
@@ -175,7 +187,7 @@ export function TeamPageBuilder({
     } finally {
       syncingRef.current = false;
     }
-  }, [teamId, applyServerTeam]);
+  }, [teamId, replaceTeamFromServer]);
 
   useEffect(() => {
     function onFocus() {
@@ -224,15 +236,23 @@ export function TeamPageBuilder({
 
   const patchTeam = useCallback((patch: Partial<TeamSpace>) => {
     dirtyRef.current = true;
-    setTeam((prev) => ({ ...prev, ...patch }));
+    setTeam((prev) => {
+      const next = { ...prev, ...patch };
+      teamRef.current = next;
+      return next;
+    });
   }, []);
 
   const patchBlock = useCallback((id: string, patch: Partial<BlockInstance>) => {
     dirtyRef.current = true;
-    setTeam((prev) => ({
-      ...prev,
-      blocks: prev.blocks.map((b) => (b.id === id ? { ...b, ...patch } : b)),
-    }));
+    setTeam((prev) => {
+      const next = {
+        ...prev,
+        blocks: prev.blocks.map((b) => (b.id === id ? { ...b, ...patch } : b)),
+      };
+      teamRef.current = next;
+      return next;
+    });
   }, []);
 
   const persist = useCallback(
@@ -259,7 +279,11 @@ export function TeamPageBuilder({
       const { updatedAt } = await saveTeamContent(teamId, payload, options);
       dirtyRef.current = false;
       clearTeamPreviewLocal(teamRef.current.slug);
-      setTeam((prev) => ({ ...prev, updatedAt }));
+      setTeam((prev) => {
+        const next = { ...prev, updatedAt };
+        teamRef.current = next;
+        return next;
+      });
       setLastSaved(new Date());
       setSaveState("saved");
       setSaveError(null);
@@ -272,7 +296,7 @@ export function TeamPageBuilder({
       if (detail === STALE_TEAM_VERSION) {
         try {
           const fresh = await loadTeamForBuilder(teamId);
-          applyServerTeam(fresh);
+          replaceTeamFromServer(fresh, true);
           setLastSaved(new Date());
           setSaveState("saved");
           setSaveError(null);
@@ -293,8 +317,21 @@ export function TeamPageBuilder({
       return false;
     }
     },
-    [teamId, router, canEdit, applyServerTeam],
+    [teamId, router, canEdit, replaceTeamFromServer],
   );
+
+  const patchLogo = useCallback((url: string) => {
+    dirtyRef.current = true;
+    setTeam((prev) => {
+      const next = applyTeamLogoPatch(prev, url);
+      teamRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const flushSave = useCallback(() => {
+    void persist(false);
+  }, [persist]);
 
   useEffect(() => {
     if (!canEdit || !dirtyRef.current) return;
@@ -625,6 +662,7 @@ export function TeamPageBuilder({
   const shellClass = embedded ? "w-full max-w-none px-0" : BUILDER_PAGE_SHELL;
 
   return (
+    <BuilderSaveProvider flushSave={flushSave}>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -718,6 +756,7 @@ export function TeamPageBuilder({
                 team={team}
                 heroBlock={heroBlock}
                 onPatchTeam={patchTeam}
+                onPatchLogo={patchLogo}
                 onPatchBlock={patchBlock}
                 expanded={openSection === "header"}
                 onExpandedChange={(open) => setWorkspaceExpanded("header", open)}
@@ -734,6 +773,7 @@ export function TeamPageBuilder({
                 onToggleEnabled={toggleBlock}
                 onPatchBlock={patchBlock}
                 onPatchTeam={patchTeam}
+                onPatchLogo={patchLogo}
                 onPreviewBlock={handlePreviewBlock}
                 onMoveUp={(id) => moveBlock(id, -1)}
                 onMoveDown={(id) => moveBlock(id, 1)}
@@ -870,5 +910,6 @@ export function TeamPageBuilder({
         />
       ) : null}
     </motion.div>
+    </BuilderSaveProvider>
   );
 }

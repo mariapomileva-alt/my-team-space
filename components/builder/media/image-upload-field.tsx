@@ -6,6 +6,7 @@ import {
   presetForUpload,
   uploadHintForPreset,
 } from "@/lib/media/image-presets";
+import { useBuilderFlushSave } from "@/lib/builder/save-context";
 import { MtsMediaFrame } from "@/components/mts/media/mts-media";
 import { cn } from "@/lib/utils/cn";
 import { useCallback, useRef, useState } from "react";
@@ -47,6 +48,7 @@ export function ImageUploadField({
   const displayRole = displayRoleForUpload(folder, aspect);
   const autoHint = uploadHintForPreset(preset, folder);
   const previewClass = PREVIEW_FRAME[displayRole];
+  const builderSave = useBuilderFlushSave();
 
   const uploadFile = useCallback(
     async (file: File) => {
@@ -63,13 +65,14 @@ export function ImageUploadField({
         if (!res.ok || !data.url) throw new Error(data.error ?? "Upload failed");
         onChange(data.url);
         setUrlDraft("");
+        builderSave?.flushSave();
       } catch (e) {
         setError(e instanceof Error ? e.message : "Upload failed");
       } finally {
         setUploading(false);
       }
     },
-    [folder, onChange, preset, teamId],
+    [builderSave, folder, onChange, preset, teamId],
   );
 
   async function onPick(files: FileList | null) {
@@ -80,7 +83,10 @@ export function ImageUploadField({
 
   function applyUrl() {
     const u = urlDraft.trim();
-    if (u) onChange(u);
+    if (u) {
+      onChange(u);
+      builderSave?.flushSave();
+    }
   }
 
   return (
@@ -165,7 +171,10 @@ export function ImageUploadField({
         type="file"
         accept="image/*"
         className="sr-only"
-        onChange={(e) => void onPick(e.target.files)}
+        onChange={(e) => {
+          void onPick(e.target.files);
+          e.target.value = "";
+        }}
       />
       {error ? <p className="text-xs text-red-600">{error}</p> : null}
     </div>

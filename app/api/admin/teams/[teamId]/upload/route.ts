@@ -55,6 +55,9 @@ export async function POST(
 
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}.${ext}`;
   const path = buildTeamAssetPath(teamId, folder, filename);
+  if (!path.startsWith(`${teamId}/`)) {
+    return NextResponse.json({ error: "Invalid storage path" }, { status: 500 });
+  }
 
   const supabase = await createServerSupabase();
   const buffer = Buffer.from(await file.arrayBuffer());

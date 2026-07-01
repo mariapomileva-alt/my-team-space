@@ -1,7 +1,7 @@
 "use client";
 
 import { BlockAudiencePicker } from "@/components/builder/block-audience-picker";
-import { effectiveBlockLayout } from "@/lib/blocks/block-layout";
+import { effectiveBlockLayout, normalizeBuilderLayout } from "@/lib/blocks/block-layout";
 import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { AnnouncementBarEditor } from "./editors/announcement-bar-editor";
 import { AchievementsEditor } from "./editors/achievements-editor";
@@ -26,6 +26,7 @@ type Props = {
   team: TeamSpace;
   onPatchBlock: (id: string, patch: Partial<BlockInstance>) => void;
   onPatchTeam: (patch: Partial<TeamSpace>) => void;
+  onPatchLogo?: (url: string) => void;
   onPreviewBlock?: (id: string) => void;
 };
 
@@ -38,12 +39,12 @@ const SIMPLE_TYPES = new Set([
   "weather",
 ]);
 
-export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam, onPreviewBlock }: Props) {
+export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam, onPatchLogo, onPreviewBlock }: Props) {
   return (
     <div className="space-y-4 border-t border-indigo-100/60 bg-gradient-to-b from-indigo-50/25 via-white to-white px-4 py-5 sm:px-5">
       <BlockAudiencePicker team={team} block={block} onPatchBlock={onPatchBlock} />
       <LayoutPicker
-        layout={effectiveBlockLayout(block)}
+        layout={normalizeBuilderLayout(effectiveBlockLayout(block))}
         onChange={(layout) => {
           onPatchBlock(block.id, { layout });
           onPreviewBlock?.(block.id);
@@ -54,7 +55,13 @@ export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam, on
         <AnnouncementBarEditor block={block} onPatchBlock={onPatchBlock} />
       ) : null}
       {block.type === "hero" ? (
-        <HeroIdentityEditor block={block} team={team} onPatchBlock={onPatchBlock} onPatchTeam={onPatchTeam} />
+        <HeroIdentityEditor
+          block={block}
+          team={team}
+          onPatchBlock={onPatchBlock}
+          onPatchTeam={onPatchTeam}
+          onPatchLogo={onPatchLogo}
+        />
       ) : null}
       {block.type === "quick_links" ? <QuickLinksEditor block={block} onPatchBlock={onPatchBlock} /> : null}
       {block.type === "payments" ? <PaymentLinkEditor block={block} onPatchBlock={onPatchBlock} /> : null}
