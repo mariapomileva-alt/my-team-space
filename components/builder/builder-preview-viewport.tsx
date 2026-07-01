@@ -15,7 +15,7 @@ import {
 import type { TeamSpace } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, type CSSProperties, type RefObject } from "react";
+import { useEffect, useRef, type CSSProperties, type RefObject, type WheelEvent } from "react";
 
 function scrollPreviewToBlock(viewport: HTMLElement, target: Element) {
   const vpRect = viewport.getBoundingClientRect();
@@ -23,6 +23,16 @@ function scrollPreviewToBlock(viewport: HTMLElement, target: Element) {
   const offset = tRect.top - vpRect.top - vpRect.height * 0.32 + tRect.height * 0.5;
   const nextTop = Math.max(0, viewport.scrollTop + offset);
   viewport.scrollTo({ top: nextTop, behavior: "smooth" });
+}
+
+/** Keep wheel scroll inside the preview viewport instead of the builder page. */
+function handlePreviewWheel(e: WheelEvent<HTMLDivElement>) {
+  const el = e.currentTarget;
+  const canScrollUp = el.scrollTop > 0;
+  const canScrollDown = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+  if ((e.deltaY < 0 && canScrollUp) || (e.deltaY > 0 && canScrollDown)) {
+    e.stopPropagation();
+  }
 }
 
 function usePreviewFocus(
@@ -137,6 +147,7 @@ export function BuilderPreviewViewport({
                 ref={mobileRef}
                 className="builder-preview-viewport absolute inset-x-0 z-0 overflow-x-hidden overflow-y-auto overscroll-contain"
                 style={{ top: BUILDER_PHONE_NOTCH_H, height: phoneViewportH }}
+                onWheel={handlePreviewWheel}
               >
                 <PreviewContent team={team} focusBlockId={focusBlockId} />
               </div>
@@ -174,6 +185,7 @@ export function BuilderPreviewViewport({
                 ref={desktopRef}
                 className="builder-preview-viewport builder-desktop-viewport overflow-x-hidden overflow-y-auto bg-white"
                 style={{ height: BUILDER_DESKTOP_FRAME_H - BUILDER_DESKTOP_CHROME_H }}
+                onWheel={handlePreviewWheel}
               >
                 <PreviewContent team={team} focusBlockId={focusBlockId} />
               </div>

@@ -1509,6 +1509,8 @@
   min-height: 0 !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -1549,7 +1551,6 @@
 
 .builder-live-preview .builder-phone-frame {
   flex: none !important;
-  contain: strict;
   overflow: hidden !important;
 }
 
@@ -1557,9 +1558,12 @@
   min-height: 0 !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .builder-live-preview .builder-desktop-viewport {
@@ -1575,11 +1579,7 @@
 
 .builder-live-preview .team-app-page {
   min-height: 0 !important;
-  padding-bottom: 2rem;
-}
-
-.builder-live-preview .builder-preview-viewport {
-  scroll-behavior: smooth;
+  padding-bottom: 2.5rem;
 }
 
 .builder-live-preview .builder-preview-viewport [data-preview-block-id].preview-block-focus {

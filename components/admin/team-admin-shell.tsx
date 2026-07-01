@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { BuilderSectionIcon } from "@/components/builder/builder-section-icon";
 import { TeamProgressWidget } from "@/components/admin/team-progress-widget";
 import { TEAM_ADMIN_NAV, teamBuildPath, type TeamAdminNavId } from "@/lib/admin/admin-nav";
@@ -49,15 +50,25 @@ export function TeamAdminShell({
     <div className="min-h-screen bg-[#f7f7f8]">
       <header className="sticky top-0 z-30 border-b border-zinc-200/50 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1680px] items-center justify-between gap-4 px-5 py-3 sm:px-8">
-          {!isBuild || showAcademyHub ? (
+          {isBuild ? (
+            <div className="flex min-w-0 items-center gap-3">
+              <BrandLogo href="/admin" size="sm" />
+              {showAcademyHub ? (
+                <Link
+                  href="/admin"
+                  className="hidden text-sm font-semibold text-zinc-500 transition hover:text-zinc-800 sm:inline"
+                >
+                  All teams
+                </Link>
+              ) : null}
+            </div>
+          ) : (
             <Link
               href={backHref}
               className="text-sm font-semibold text-zinc-500 transition hover:text-zinc-800"
             >
               {backLabel}
             </Link>
-          ) : (
-            <span className="text-sm font-semibold text-zinc-400">Build</span>
           )}
           {!isBuild ? <p className="truncate text-sm font-bold text-zinc-900">{team.name}</p> : <span />}
         </div>
