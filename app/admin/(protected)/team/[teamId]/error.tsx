@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-export default function TeamStep2Error({
+export default function TeamAdminError({
   reset,
 }: {
   error: Error & { digest?: string };
@@ -13,7 +13,7 @@ export default function TeamStep2Error({
       <p className="text-sm font-semibold uppercase tracking-wider text-zinc-400">Team builder</p>
       <h1 className="mt-3 max-w-md text-xl font-bold tracking-tight">This page couldn&apos;t load</h1>
       <p className="mt-2 max-w-sm text-sm text-zinc-600">
-        A server error occurred. You can reload or go back to your teams.
+        Something went wrong opening your team page. Reload to try again, or go back to your dashboard.
       </p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <button
@@ -24,10 +24,10 @@ export default function TeamStep2Error({
           Reload
         </button>
         <Link
-          href="/admin"
+          href="/admin?hub=1"
           className="rounded-full border border-zinc-200 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
         >
-          All teams
+          Dashboard
         </Link>
       </div>
     </div>

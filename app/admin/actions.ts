@@ -43,14 +43,21 @@ async function createTeamAndRedirect(formData: FormData, options: { sport?: bool
 
   if (error) {
     if (error.message.includes("team_limit_reached")) {
-      const { data: memberships } = await supabase
-        .from("team_members")
-        .select("team_id")
-        .eq("user_id", user.id)
-        .eq("role", "coach")
-        .limit(1);
+      const [{ data: sub }, { data: memberships }] = await Promise.all([
+        supabase.from("coach_subscriptions").select("primary_team_id").eq("user_id", user.id).maybeSingle(),
+        supabase
+          .from("team_members")
+          .select("team_id")
+          .eq("user_id", user.id)
+          .eq("role", "coach")
+          .order("team_id", { ascending: true }),
+      ]);
 
-      const existingTeamId = memberships?.[0]?.team_id as string | undefined;
+      const primaryId = sub?.primary_team_id as string | undefined;
+      const ownedIds = (memberships ?? []).map((m) => m.team_id as string);
+      const existingTeamId =
+        (primaryId && ownedIds.includes(primaryId) ? primaryId : undefined) ?? ownedIds[0];
+
       if (existingTeamId) {
         redirect(`/admin/team/${existingTeamId}/build`);
       }

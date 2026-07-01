@@ -412,6 +412,8 @@ begin
     raise exception 'invalid slug';
   end if;
 
+  perform pg_advisory_xact_lock(hashtext('create_team:' || uid::text));
+
   perform public.refresh_coach_team_count(uid);
   owned := public.coach_owned_team_count(uid);
   lim := public.effective_team_limit(uid);

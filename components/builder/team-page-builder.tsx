@@ -79,8 +79,7 @@ export function TeamPageBuilder({
   showAcademyHub?: boolean;
 }) {
   /** One team on Single Team plan is always editable in the builder. */
-  const canEdit =
-    billing == null ? true : billing.canEdit || billing.teamsUsed <= 1;
+  const canEdit = billing == null ? true : billing.canEdit;
   const editLocked = billing != null && !canEdit;
   const publishBlockedByBilling = publishRequiresCheckout(billing);
   const siteUrl = siteOriginFromPublicTeamUrl(publicUrl);

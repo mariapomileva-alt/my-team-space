@@ -26,13 +26,25 @@ export default async function TeamBuildPage({ params }: Props) {
       </Suspense>
     );
   } catch (e) {
-    if (e && typeof e === "object" && "digest" in e) throw e;
+    const digest =
+      e && typeof e === "object" && "digest" in e
+        ? String((e as { digest?: string }).digest ?? "")
+        : "";
+    if (digest.startsWith("NEXT_REDIRECT")) throw e;
     console.error("[TeamBuildPage]", e);
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#f7f7f8] px-6 text-center">
         <h1 className="text-xl font-bold text-zinc-900">Could not load builder</h1>
-        <Link href="/admin" className="mt-6 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white">
-          Back to teams
+        <p className="mt-2 max-w-sm text-sm text-zinc-600">
+          {digest.startsWith("NEXT_NOT_FOUND")
+            ? "This team page was not found or you no longer have access."
+            : "Try again from your dashboard."}
+        </p>
+        <Link
+          href="/admin?hub=1"
+          className="mt-6 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white"
+        >
+          Go to dashboard
         </Link>
       </div>
     );

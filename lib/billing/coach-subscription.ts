@@ -40,38 +40,57 @@ export async function loadCoachSubscription(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<CoachSubscription | null> {
+  const fullColumns =
+    "user_id, lemon_customer_id, lemon_subscription_id, lemon_variant_id, plan_type, subscription_status, team_limit, current_team_count, primary_team_id, current_period_end";
+
   const { data, error } = await supabase
     .from("coach_subscriptions")
-    .select(
-      "user_id, lemon_customer_id, lemon_subscription_id, lemon_variant_id, plan_type, subscription_status, team_limit, current_team_count, primary_team_id, current_period_end",
-    )
+    .select(fullColumns)
     .eq("user_id", userId)
     .maybeSingle();
 
-  if (error || !data) return null;
-  return mapCoachSubscriptionRow(data as CoachSubRow);
+  if (!error && data) return mapCoachSubscriptionRow(data as CoachSubRow);
+
+  const missingPeriodEnd =
+    error?.message?.includes("current_period_end") || error?.code === "42703";
+  if (missingPeriodEnd) {
+    const { data: legacy, error: legacyErr } = await supabase
+      .from("coach_subscriptions")
+      .select(
+        "user_id, lemon_customer_id, lemon_subscription_id, lemon_variant_id, plan_type, subscription_status, team_limit, current_team_count, primary_team_id",
+      )
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (!legacyErr && legacy) return mapCoachSubscriptionRow(legacy as CoachSubRow);
+  }
+
+  if (error) {
+    console.error("[loadCoachSubscription]", error.message);
+  }
+  return null;
 }
 
-function effectiveTeamLimit(sub: CoachSubscription | null): number {
-  if (!sub?.planType) {
-    if (!sub) return 1;
-    if (!coachStatusAllowsBillingFeatures(sub.subscriptionStatus)) {
-      return Math.max(sub.currentTeamCount, 1);
-    }
-    return 1;
-  }
+function effectivePlanType(sub: CoachSubscription | null): PlanType {
+  return sub?.planType ?? "single_team";
+}
+
+/** Mirrors SQL effective_team_limit — uses live team count when billing is inactive. */
+export function effectiveTeamLimit(sub: CoachSubscription | null, teamsUsed: number): number {
+  if (!sub) return 1;
+
   if (!coachStatusAllowsBillingFeatures(sub.subscriptionStatus)) {
-    return Math.max(sub.currentTeamCount, 1);
+    return Math.max(teamsUsed, sub.currentTeamCount, 1);
   }
-  if (sub.planType === "academy") {
+
+  const planType = effectivePlanType(sub);
+  if (planType === "academy") {
     return sub.teamLimit ?? ACADEMY_TEAM_LIMIT;
   }
   return 1;
 }
 
 function planLabel(sub: CoachSubscription | null): string {
-  if (!sub?.planType) return "Team Plan";
-  if (sub.planType === "academy") return "Academy Plan";
+  if (effectivePlanType(sub) === "academy") return "Academy Plan";
   return "Team Plan";
 }
 
@@ -80,19 +99,23 @@ export function buildCoachEntitlements(
   teamsUsed: number,
   ownedTeamIds: string[],
 ): CoachEntitlements {
-  const teamLimit = effectiveTeamLimit(sub);
+  const teamLimit = effectiveTeamLimit(sub, teamsUsed);
   const billingActive = sub ? coachStatusAllowsEdit(sub.subscriptionStatus) : true;
-  const canCreateTeam = teamsUsed < teamLimit && (sub ? coachStatusAllowsBillingFeatures(sub.subscriptionStatus) : teamsUsed < 1);
+  const planType = effectivePlanType(sub);
+  const isSingleTeam = planType === "single_team";
+  const canCreateTeam =
+    teamsUsed < teamLimit &&
+    (sub ? coachStatusAllowsBillingFeatures(sub.subscriptionStatus) : teamsUsed < 1);
 
   const needsPrimaryTeamSelection =
     Boolean(
-      sub?.planType === "single_team" &&
-        coachStatusAllowsBillingFeatures(sub.subscriptionStatus) &&
+      isSingleTeam &&
+        coachStatusAllowsBillingFeatures(sub?.subscriptionStatus ?? "inactive") &&
         ownedTeamIds.length > 1 &&
-        !sub.primaryTeamId,
+        !sub?.primaryTeamId,
     ) ||
     Boolean(
-      sub?.planType === "single_team" &&
+      isSingleTeam &&
         ownedTeamIds.length > 1 &&
         sub?.primaryTeamId &&
         !ownedTeamIds.includes(sub.primaryTeamId),

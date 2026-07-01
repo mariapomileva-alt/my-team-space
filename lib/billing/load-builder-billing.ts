@@ -3,7 +3,6 @@ import {
   defaultBuilderBillingContext,
   type BuilderBillingContext,
 } from "@/lib/billing/builder-context-types";
-import { ensureCoachTeamEditAccess } from "@/lib/billing/ensure-team-access";
 import { loadCoachEntitlements } from "@/lib/billing/coach-subscription";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -24,10 +23,6 @@ export async function loadBuilderBillingContext(
     const ent = await loadCoachEntitlements(supabase, userId);
     const planType = ent.subscription?.planType ?? "single_team";
     const isAcademy = planType === "academy";
-
-    if (!isAcademy) {
-      await ensureCoachTeamEditAccess(supabase, teamId);
-    }
 
     const edit = await resolveCoachCanEditTeam(supabase, userId, teamId);
     const canEdit = edit.allowed;

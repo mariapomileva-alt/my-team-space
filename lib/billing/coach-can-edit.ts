@@ -1,4 +1,3 @@
-import { ensureCoachTeamEditAccess } from "@/lib/billing/ensure-team-access";
 import { loadCoachEntitlements } from "@/lib/billing/coach-subscription";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -70,7 +69,6 @@ export async function assertTeamEditable(
   userId: string,
   teamId: string,
 ): Promise<void> {
-  await ensureCoachTeamEditAccess(supabase, teamId);
   await assertCoachCanEditTeam(supabase, userId, teamId);
 }
 

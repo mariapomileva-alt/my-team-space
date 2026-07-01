@@ -19,9 +19,9 @@ import { FirstTeamSetup } from "@/components/admin/first-team-setup";
 
 export const dynamic = "force-dynamic";
 
-function teamEditLocked(team: CoachTeamListItem, billingActive: boolean): boolean {
+function teamEditLocked(team: CoachTeamListItem): boolean {
   if (team.role !== "coach") return false;
-  return Boolean(team.plan_edit_locked) || !billingActive;
+  return Boolean(team.plan_edit_locked);
 }
 
 export default async function AdminHomePage({
@@ -77,6 +77,7 @@ export default async function AdminHomePage({
       ? (sp.plan as "academy" | "single_team")
       : null;
   const billingNotice = typeof sp.billing === "string" ? sp.billing : undefined;
+  const stayOnHub = sp.hub === "1" || sp.dashboard === "1" || sp.stay === "1";
 
   const primaryTeam = ownedTeams.find((t) => t.is_plan_primary) ?? ownedTeams[0];
   const billingConfigured = isBillingConfigured();
@@ -92,7 +93,7 @@ export default async function AdminHomePage({
       Boolean(entitlements?.needsPrimaryTeamSelection) ||
       (isAcademy && ownedTeams.length > 1);
 
-    if (!stayOnDashboard) {
+    if (!stayOnDashboard && !stayOnHub) {
       redirect(teamBuildPath(primaryTeam.id));
     }
   }
@@ -457,7 +458,7 @@ export default async function AdminHomePage({
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {ownedTeams.map((t) => {
                 const url = publicTeamUrl(siteUrl, t.slug);
-                const locked = teamEditLocked(t, billingActive);
+                const locked = teamEditLocked(t);
                 return (
                   <div
                     key={t.id}
@@ -518,7 +519,7 @@ export default async function AdminHomePage({
                 <div className="flex flex-wrap gap-2">
                   <DashboardEditLink
                     teamId={primaryTeam.id}
-                    disabled={teamEditLocked(primaryTeam, billingActive)}
+                    disabled={teamEditLocked(primaryTeam)}
                     label="Edit team"
                     size="md"
                   />
