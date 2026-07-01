@@ -62,7 +62,7 @@ export const HERO_VARIANT_META: Record<
   inline: {
     number: 4,
     label: "Logo left, text right",
-    hint: "Compact club card — name beside the logo, details aligned left.",
+    hint: "Compact club card — name beside the logo, details along the left edge.",
   },
   square: {
     number: 5,

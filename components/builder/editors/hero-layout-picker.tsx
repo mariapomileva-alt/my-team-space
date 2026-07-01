@@ -127,7 +127,7 @@ function HeroVariantThumb({ variant, active }: { variant: HeroLayoutVariant; act
           <div className={cn("absolute left-[34px] top-[46%]", text)}>
             <Bars />
           </div>
-          <div className={cn("absolute bottom-2 left-[34px]", text)}>
+          <div className={cn("absolute bottom-2 left-2", text)}>
             <Bars />
           </div>
         </>

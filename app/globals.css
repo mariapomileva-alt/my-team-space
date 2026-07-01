@@ -404,7 +404,7 @@
 .hero-card__meta-zone--align-start {
   align-items: flex-start;
   text-align: left;
-  padding-left: calc(var(--hero-logo-size) + 0.75rem);
+  padding-left: 0;
   box-sizing: border-box;
 }
 
