@@ -209,7 +209,7 @@ export function LandingFinalCtaSection() {
             Create Your Team Space
           </Link>
           <Link
-            href="/city-juniors"
+            href="/examples"
             className="inline-flex min-h-12 items-center justify-center rounded-full border border-neutral-200/90 bg-white/90 px-7 text-[15px] font-medium text-neutral-800 shadow-sm transition hover:border-[#6C5CE7]/30 hover:text-[#6C5CE7]"
           >
             View Demo

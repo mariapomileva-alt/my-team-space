@@ -52,7 +52,7 @@ function DesktopTeamPreview({ phase }: { phase: "simple" | "rich" }) {
         </div>
         <div className="mx-auto flex max-w-[55%] flex-1 items-center gap-1.5 rounded-lg bg-white px-2 py-1 ring-1 ring-neutral-100">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
-            <span className="truncate text-[10px] font-medium text-neutral-500">myteamspace.cc/city-juniors</span>
+            <span className="truncate text-[10px] font-medium text-neutral-500">myteamspace.cc/examples</span>
         </div>
       </div>
 
@@ -282,7 +282,7 @@ export function HomeLanding() {
                   Create Your Team Space
                 </Link>
                 <Link
-                  href="/city-juniors"
+                  href="/examples"
                   className="inline-flex min-h-12 items-center justify-center rounded-full border border-neutral-200/90 bg-white/90 px-7 text-[15px] font-medium text-neutral-800 shadow-sm backdrop-blur-sm transition hover:border-[#6C5CE7]/30 hover:text-[#6C5CE7] active:scale-[0.99]"
                 >
                   View Demo

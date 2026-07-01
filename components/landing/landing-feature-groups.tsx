@@ -43,7 +43,7 @@ function FeaturesSellingCtas({ className = "" }: { className?: string }) {
       <Link href="/admin/signup" className={accentBtn}>
         Create Your Team Space
       </Link>
-      <Link href="/city-juniors" className={secondaryBtn}>
+      <Link href="/examples" className={secondaryBtn}>
         View Demo
       </Link>
     </div>

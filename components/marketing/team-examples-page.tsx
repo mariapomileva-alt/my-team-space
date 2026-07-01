@@ -43,8 +43,8 @@ export function TeamExamplesPage() {
             <Link href="/admin/signup" className={accentBtn}>
               Create Your Team Space
             </Link>
-            <Link href="/city-juniors" className={secondaryBtn}>
-              View live demo
+            <Link href="/admin/signup" className={secondaryBtn}>
+              Start free
             </Link>
           </div>
           <p className="mt-4 text-sm text-neutral-400">No coding required · €29/month per team</p>

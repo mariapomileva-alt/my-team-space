@@ -19,6 +19,40 @@ function ExamplePhonePreview({ team }: { team: TeamSpace }) {
   );
 }
 
+function ExamplePhotoMosaic({ photos, teamName }: { photos: readonly string[]; teamName: string }) {
+  if (photos.length < 3) return null;
+  const [hero, left, right] = photos;
+  return (
+    <div className="mt-8 space-y-2">
+      <div className="overflow-hidden rounded-2xl shadow-[0_12px_40px_-20px_rgba(15,23,42,0.28)] ring-1 ring-black/[0.04]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={hero}
+          alt={`${teamName} — highlight`}
+          className="aspect-[16/10] w-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {[left, right].map((src, i) => (
+          <div
+            key={src}
+            className="overflow-hidden rounded-xl shadow-sm ring-1 ring-black/[0.04]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src}
+              alt={`${teamName} — gallery ${i + 2}`}
+              className="aspect-[4/3] w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function personalityAccent(personality: ProductExample["personality"]) {
   if (personality === "premium") return { bg: "#f5f5f5", ring: "#0a0a0a", text: "#0a0a0a" };
   if (personality === "playful") return { bg: "#faf5ff", ring: "#8b5cf6", text: "#6d28d9" };
@@ -92,6 +126,8 @@ function ExampleShowcaseSection({
               </li>
             ))}
           </ul>
+
+          <ExamplePhotoMosaic photos={example.spotlightPhotos} teamName={example.team.name} />
 
           <p className="mt-8 text-[13px] font-semibold text-neutral-400">
             {example.team.name} · scroll inside the preview

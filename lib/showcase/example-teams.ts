@@ -1,3 +1,4 @@
+import { EXAMPLE_PHOTO_SETS } from "@/lib/showcase/example-photos";
 import { SHOWCASE_LOGOS } from "@/lib/showcase/logo-svg";
 import {
   achievements,
@@ -19,15 +20,6 @@ import {
 } from "@/lib/showcase/team-factories";
 import type { TeamSpace } from "@/lib/types";
 
-/** High-quality Unsplash crops for portfolio examples. */
-function photo(id: string, w = 800, h = 800) {
-  return `https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&q=85&auto=format`;
-}
-
-function cover(id: string) {
-  return photo(id, 1400, 720);
-}
-
 export type ProductExample = {
   id: string;
   label: string;
@@ -38,39 +30,13 @@ export type ProductExample = {
   personalityLabel: string;
   paletteLabel: string;
   highlights: string[];
+  spotlightPhotos: readonly string[];
   team: TeamSpace;
 };
 
-const TENNIS_COVER = cover("photo-1595435934249-26df3d350cea");
-const DANCE_COVER = cover("photo-1518834107812-67b0bb7c2d2e");
-const HOOPS_COVER = cover("photo-1546519638-68e109498ffc");
-
-const TENNIS_GALLERY = [
-  photo("photo-1622163649001-09445f787b59"),
-  photo("photo-1554068865-24cecd4e9b26"),
-  photo("photo-1551698618-1dfe5d97d256"),
-  photo("photo-1587280508545-6392f456a209"),
-  photo("photo-1617885741078-665bb78490ba"),
-  photo("photo-1595435934249-26df3d350cea"),
-];
-
-const DANCE_GALLERY = [
-  photo("photo-1504609773096-104ff2c73ba4"),
-  photo("photo-1547159414-26d2a83f4a42"),
-  photo("photo-1508700115892-45ecd05ae2ad"),
-  photo("photo-1516450360432-1aa25ef1279e"),
-  photo("photo-1571019613454-1cb2f99b2d8b"),
-  photo("photo-1518834107812-67b0bb7c2d2e"),
-];
-
-const HOOPS_GALLERY = [
-  photo("photo-1519861531473-920026218ac7"),
-  photo("photo-1574623452334-1e0ac2bddd96"),
-  photo("photo-1577225245490-5cca4573a14f"),
-  photo("photo-1546519638-68e109498ffc"),
-  photo("photo-1574629810360-7efbbe195018"),
-  photo("photo-1546519638-68e109498ffc", 800, 600),
-];
+const tennisPhotos = EXAMPLE_PHOTO_SETS.tennis;
+const dancePhotos = EXAMPLE_PHOTO_SETS.dance;
+const hoopsPhotos = EXAMPLE_PHOTO_SETS.basketball;
 
 const northgateTennis = makeTeam(
   "example_premium",
@@ -81,7 +47,7 @@ const northgateTennis = makeTeam(
   SHOWCASE_LOGOS.tennis,
   [
     ann("Spring term registration closes Friday — 4 spots left in the 14U squad.", "info"),
-    hero("minimal", "Zurich, Switzerland", TENNIS_COVER, {
+    hero("minimal", "Zurich, Switzerland", tennisPhotos.cover, {
       quote: "Precision. Patience. Progress.",
       description:
         "A pre-professional academy for disciplined juniors. Parents get one calm page — schedule, results, fees, and coach contact — without chasing messages.",
@@ -100,18 +66,7 @@ const northgateTennis = makeTeam(
       ],
       "featured",
     ),
-    gallery(
-      TENNIS_GALLERY,
-      [
-        "Morning clay session",
-        "Match point — U16 final",
-        "Coach feedback on serve",
-        "Academy squad photo",
-        "Parents' viewing day",
-        "Regional doubles champions",
-      ],
-      "featured",
-    ),
+    gallery(tennisPhotos.gallery, [...tennisPhotos.galleryCaptions], "featured"),
     achievements(
       [
         { icon: "🥇", title: "Swiss Junior Open", player: "Lea M.", description: "U16 singles · April 2026" },
@@ -174,7 +129,7 @@ const sparkleSteps = makeTeam(
   SHOWCASE_LOGOS.dance,
   [
     ann("🎀 Spring showcase costumes ready for pickup — Studio B until Thursday.", "confirm"),
-    hero("overlap_large", "Copenhagen, Denmark", DANCE_COVER, {
+    hero("overlap_large", "Copenhagen, Denmark", dancePhotos.cover, {
       quote: "Every child deserves a moment on stage.",
       description:
         "A joyful studio where parents see rehearsals, medals, and what's coming next — all in one colourful place.",
@@ -192,18 +147,7 @@ const sparkleSteps = makeTeam(
       ],
       "featured",
     ),
-    gallery(
-      DANCE_GALLERY,
-      [
-        "First day smiles",
-        "Group routine — ages 7–9",
-        "Regional medals ceremony",
-        "Acro partner balance",
-        "Parents' open class",
-        "Backstage before showcase",
-      ],
-      "featured",
-    ),
+    gallery(dancePhotos.gallery, [...dancePhotos.galleryCaptions], "featured"),
     achievements(
       [
         { icon: "🥇", title: "Nordic youth festival", player: "Group A", description: "Gold · group jazz" },
@@ -246,7 +190,7 @@ const harborHawks = makeTeam(
   SHOWCASE_LOGOS.basketball,
   [
     ann("🏀 City cup semi-final Saturday 10:00 — white kit, arrive 09:15.", "urgent"),
-    hero("inline", "Copenhagen, Denmark", HOOPS_COVER, {
+    hero("inline", "Copenhagen, Denmark", hoopsPhotos.cover, {
       quote: "Built week by week. Played as one.",
       description:
         "A competitive neighbourhood club with fixtures every weekend — parents always know where, when, and who to contact.",
@@ -274,18 +218,7 @@ const harborHawks = makeTeam(
       "2025–26 Season",
       "featured",
     ),
-    gallery(
-      HOOPS_GALLERY,
-      [
-        "Tip-off — city league final",
-        "Team huddle",
-        "Away day bus",
-        "Parents' corner",
-        "MVP celebration",
-        "Summer training camp",
-      ],
-      "featured",
-    ),
+    gallery(hoopsPhotos.gallery, [...hoopsPhotos.galleryCaptions], "featured"),
     attendance([
       { name: "Lucas H.", role: "#7 · Captain" },
       { name: "Mikkel A.", role: "#11" },
@@ -313,12 +246,12 @@ const harborHawks = makeTeam(
         {
           name: "Hawks home jersey",
           price: "DKK 349",
-          imageUrl: photo("photo-1574623452334-1e0ac2bddd96", 400, 400),
+          imageUrl: hoopsPhotos.shopJersey,
         },
         {
           name: "Practice shorts",
           price: "DKK 199",
-          imageUrl: photo("photo-1519861531473-920026218ac7", 400, 400),
+          imageUrl: hoopsPhotos.shopShorts,
         },
       ],
       "half",
@@ -346,6 +279,7 @@ export const PRODUCT_EXAMPLES: ProductExample[] = [
       "Achievements parents can share",
       "Term payments & coach contacts",
     ],
+    spotlightPhotos: tennisPhotos.spotlight,
     team: northgateTennis,
   },
   {
@@ -364,6 +298,7 @@ export const PRODUCT_EXAMPLES: ProductExample[] = [
       "Parent poll for showcase volunteers",
       "Fees & updates in one friendly page",
     ],
+    spotlightPhotos: dancePhotos.spotlight,
     team: sparkleSteps,
   },
   {
@@ -382,6 +317,7 @@ export const PRODUCT_EXAMPLES: ProductExample[] = [
       "Game film links & team shop",
       "Club sponsors on display",
     ],
+    spotlightPhotos: hoopsPhotos.spotlight,
     team: harborHawks,
   },
 ];
