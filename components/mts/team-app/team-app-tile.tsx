@@ -2,18 +2,20 @@
 
 import { BLOCK_APP_META, type BlockAppMeta } from "@/lib/blocks/block-app-meta";
 import type { BlockPreview } from "@/lib/blocks/block-preview";
-import type { BlockInstance } from "@/lib/types";
-import { cn } from "@/lib/utils/cn";
+import { BlockIconTile } from "@/components/mts/team-app/block-icon-tile";
+import type { BlockInstance, TeamSpace } from "@/lib/types";
 import { motion } from "framer-motion";
 
 export function TeamAppTile({
   block,
+  team,
   preview,
   onOpen,
   index,
   metaOverride,
 }: {
   block: BlockInstance;
+  team?: Pick<TeamSpace, "pageSettings" | "themeId">;
   preview: BlockPreview;
   onOpen: () => void;
   index: number;
@@ -32,9 +34,7 @@ export function TeamAppTile({
       className="mts-app-surface mts-app-surface--interactive group flex w-full flex-col rounded-[1.35rem] p-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--mts-ring)]"
     >
       <motion.div className="flex items-start gap-3">
-        <span className={cn("team-module-card__icon", meta.tileClass)} aria-hidden>
-          <span className="team-module-card__icon-glyph">{meta.emoji}</span>
-        </span>
+        <BlockIconTile blockType={block.type} team={team} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--mts-muted)]">{meta.subtitle}</p>
@@ -51,15 +51,9 @@ export function TeamAppTile({
             {preview.headline}
           </p>
           {preview.detail ? (
-            <p className="mt-1 line-clamp-1 text-[12px] text-[color:var(--mts-muted)] opacity-80">{preview.detail}</p>
+            <p className="mt-1 line-clamp-2 text-[12px] text-[color:var(--mts-muted)] opacity-80">{preview.detail}</p>
           ) : null}
         </div>
-        <span
-          className="mt-1 shrink-0 text-[color:var(--mts-muted)] opacity-50 transition group-hover:translate-x-0.5 group-hover:text-[color:var(--mts-primary)] group-hover:opacity-100"
-          aria-hidden
-        >
-          ›
-        </span>
       </motion.div>
     </motion.button>
   );

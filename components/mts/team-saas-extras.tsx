@@ -37,10 +37,12 @@ const stubBlock = (id: string): BlockInstance => ({
 });
 
 export function TeamSaaSExtras({
+  team,
   schedule,
   updates,
   achievements,
 }: {
+  team?: Pick<import("@/lib/types").TeamSpace, "pageSettings" | "themeId">;
   schedule: ScheduleRow[];
   updates: UpdateRow[];
   achievements: AchRow[];
@@ -55,6 +57,7 @@ export function TeamSaaSExtras({
       id: "saas-schedule",
       meta: {
         emoji: "📅",
+        mark: "SC",
         title: "Schedule",
         subtitle: "Training & events",
         tileClass: "bg-sky-100 text-sky-700",
@@ -87,6 +90,7 @@ export function TeamSaaSExtras({
       id: "saas-updates",
       meta: {
         emoji: "📣",
+        mark: "FD",
         title: "Announcements",
         subtitle: "Team updates",
         tileClass: "bg-indigo-100 text-indigo-700",
@@ -119,6 +123,7 @@ export function TeamSaaSExtras({
       id: "saas-achievements",
       meta: {
         emoji: "🏆",
+        mark: "AC",
         title: "Cups & achievements",
         subtitle: "Celebrate wins",
         tileClass: "bg-amber-100 text-amber-800",
@@ -156,6 +161,7 @@ export function TeamSaaSExtras({
           <div key={card.id}>
             <TeamAppTile
               block={stubBlock(card.id)}
+              team={team}
               metaOverride={card.meta}
               preview={{
                 headline: card.headline,
@@ -171,6 +177,7 @@ export function TeamSaaSExtras({
       </div>
       <TeamAppDetailSheet
         block={open ? stubBlock(open.id) : null}
+        team={team ?? { themeId: "ocean_aqua" }}
         metaOverride={open?.meta}
         open={Boolean(open)}
         onClose={() => setOpenId(null)}

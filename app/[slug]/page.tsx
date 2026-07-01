@@ -115,6 +115,7 @@ export default async function TeamPublicRoute({ params }: Props) {
             enableLocalPreview={false}
             saasExtras={
               <TeamSaaSExtras
+                team={teamSpace}
                 schedule={showDbSchedule ? bundle.schedule : []}
                 updates={showDbUpdates ? bundle.updates : []}
                 achievements={showDbAchievements ? bundle.achievements : []}
@@ -146,6 +147,7 @@ export default async function TeamPublicRoute({ params }: Props) {
         enableLocalPreview={false}
         saasExtras={
           <TeamSaaSExtras
+            team={teamSpace}
             schedule={showDbSchedule ? bundle.schedule : []}
             updates={showDbUpdates ? bundle.updates : []}
             achievements={showDbAchievements ? bundle.achievements : []}

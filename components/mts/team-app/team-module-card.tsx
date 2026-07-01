@@ -1,5 +1,6 @@
 "use client";
 
+import { BlockIconTile } from "@/components/mts/team-app/block-icon-tile";
 import {
   PublicBlockPreview,
   hasPublicBlockContent,
@@ -48,9 +49,7 @@ export function TeamModuleCard({
       data-preview-block-id={block.id}
     >
       <header className="team-module-card__head">
-        <span className={cn("team-module-card__icon", meta.tileClass)} aria-hidden>
-          <span className="team-module-card__icon-glyph">{meta.emoji}</span>
-        </span>
+        <BlockIconTile blockType={block.type} team={team} />
         <div className="min-w-0 flex-1">
           <h2 className="team-module-card__title">{cardTitle(block)}</h2>
           <p className="team-module-card__subtitle">{meta.subtitle}</p>

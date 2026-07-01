@@ -92,6 +92,22 @@
 
 .mts-shell .team-module-card :where(button.rounded-2xl, a.rounded-2xl, button.rounded-xl, a.rounded-xl) {
   border-radius: var(--team-style-cta-radius);
+  font-weight: var(--team-style-cta-weight, 600);
+}
+
+.mts-shell .team-module-card__body :where(.rounded-lg, .rounded-xl) {
+  border-radius: var(--team-style-gallery-radius, 0.75rem);
+}
+
+.mts-shell.team-page-style--premium .team-module-card__body img {
+  border-radius: var(--team-style-gallery-radius, 0.875rem);
+}
+
+.mts-shell.team-page-style--performance .team-module-card__footer-link {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.625rem;
 }
 
 .builder-live-preview {
@@ -999,7 +1015,7 @@
   min-width: 0;
   border-radius: var(--team-style-card-radius, 1.25rem);
   border: 1px solid var(--team-style-card-border, color-mix(in srgb, var(--mts-card-border) 55%, transparent));
-  background: var(--mts-card, #fff);
+  background: var(--team-style-card-surface, var(--mts-card, #fff));
   box-shadow: var(--team-style-card-shadow, 0 2px 16px -10px rgba(15, 23, 42, 0.1));
   transition:
     border-color 0.35s ease,
@@ -1072,10 +1088,21 @@
   filter: saturate(1.05);
 }
 
+.team-module-card__icon-mark {
+  display: block;
+  font-family: var(--font-brand), sans-serif;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .team-module-card__title {
   font-family: var(--font-brand), sans-serif;
   font-size: 0.8125rem;
   font-weight: var(--team-style-head-weight, 700);
+  letter-spacing: var(--team-style-head-tracking, -0.01em);
   line-height: 1.25;
   color: var(--mts-text);
   min-width: 0;

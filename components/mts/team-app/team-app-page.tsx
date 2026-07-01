@@ -87,6 +87,7 @@ export function TeamAppPage({
 
       <TeamAppDetailSheet
         block={openBlock}
+        team={team}
         open={Boolean(openBlock)}
         onClose={() => setOpenBlockId(null)}
         metaOverride={detailMeta}
