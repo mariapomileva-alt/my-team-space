@@ -67,7 +67,7 @@ export const HERO_VARIANT_META: Record<
   square: {
     number: 5,
     label: "Square logo layout",
-    hint: "Square logo frame — name beside it, details centered below.",
+    hint: "Square logo on the left — team name and details centered below.",
   },
   minimal: {
     number: 6,

@@ -60,6 +60,7 @@ export function HeroIdentityEditor({
   onPatchTeam,
   onPatchLogo,
   focusAboutKey = 0,
+  onPreviewBlock,
 }: {
   block: BlockInstance;
   team: TeamSpace;
@@ -68,6 +69,7 @@ export function HeroIdentityEditor({
   onPatchLogo?: (url: string) => void;
   /** Increment to expand about-team fields and scroll into view */
   focusAboutKey?: number;
+  onPreviewBlock?: (id: string) => void;
 }) {
   const s = getBlockSettings<Settings>(block);
   const [moreOpen, setMoreOpen] = useState(() => hasMoreDetailsFields(team, s));
@@ -292,7 +294,10 @@ export function HeroIdentityEditor({
                 </p>
                 <HeroLayoutPicker
                   value={layoutIsManual ? resolveHeroVariant(s.heroLayout) : activeVariant}
-                  onChange={(heroLayout) => set({ heroLayout })}
+                  onChange={(heroLayout) => {
+                    set({ heroLayout });
+                    onPreviewBlock?.(block.id);
+                  }}
                 />
                 {layoutIsManual ? (
                   <button

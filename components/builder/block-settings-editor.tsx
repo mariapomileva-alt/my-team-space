@@ -61,6 +61,7 @@ export function BlockSettingsEditor({ block, team, onPatchBlock, onPatchTeam, on
           onPatchBlock={onPatchBlock}
           onPatchTeam={onPatchTeam}
           onPatchLogo={onPatchLogo}
+          onPreviewBlock={onPreviewBlock}
         />
       ) : null}
       {block.type === "quick_links" ? <QuickLinksEditor block={block} onPatchBlock={onPatchBlock} /> : null}

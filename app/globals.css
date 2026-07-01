@@ -393,27 +393,48 @@
 .hero-card__meta-zone {
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
+}
+
+.hero-card__meta-zone--align-center {
+  align-items: center;
   text-align: center;
 }
 
-.hero-card__meta-zone .hero-card__subtitle,
-.hero-card__meta-zone .hero-card__city,
-.hero-card__meta-zone .hero-card__motto,
-.hero-card__meta-zone .hero-card__description {
+.hero-card__meta-zone--align-start {
+  align-items: flex-start;
+  text-align: left;
+  padding-left: calc(var(--hero-logo-size) + 0.75rem);
+  box-sizing: border-box;
+}
+
+.hero-card__meta-zone--align-center .hero-card__subtitle,
+.hero-card__meta-zone--align-center .hero-card__city,
+.hero-card__meta-zone--align-center .hero-card__motto,
+.hero-card__meta-zone--align-center .hero-card__description,
+.hero-card__meta-zone--align-center .hero-card__details {
   width: 100%;
   max-width: 22rem;
 }
 
-.hero-card__meta-zone .hero-card__social {
+.hero-card__meta-zone--align-center .hero-card__social {
   display: flex;
   justify-content: center;
 }
 
-.hero-card__meta-zone .hero-card__details {
+.hero-card__meta-zone--align-start .hero-card__subtitle,
+.hero-card__meta-zone--align-start .hero-card__city,
+.hero-card__meta-zone--align-start .hero-card__motto,
+.hero-card__meta-zone--align-start .hero-card__description,
+.hero-card__meta-zone--align-start .hero-card__details {
   width: 100%;
-  max-width: 22rem;
+  max-width: none;
+  text-align: left;
+}
+
+.hero-card__meta-zone--align-start .hero-card__social {
+  display: flex;
+  justify-content: flex-start;
 }
 
 /* === 1 — Logo inside header (name on cover beside logo) === */
@@ -492,58 +513,34 @@
   text-align: left;
 }
 
-.hero-card--inline .hero-card__meta-zone {
+.hero-card--inline .hero-card__meta-zone--align-start {
   margin-top: 0.625rem;
-  align-items: flex-start;
-  text-align: left;
-  padding-left: calc(var(--hero-logo-size) + 0.75rem);
-  box-sizing: border-box;
 }
 
-.hero-card--inline .hero-card__meta-zone .hero-card__subtitle,
-.hero-card--inline .hero-card__meta-zone .hero-card__city,
-.hero-card--inline .hero-card__meta-zone .hero-card__motto,
-.hero-card--inline .hero-card__meta-zone .hero-card__description,
-.hero-card--inline .hero-card__meta-zone .hero-card__details {
-  max-width: none;
-  text-align: left;
-}
-
-.hero-card--inline .hero-card__meta-zone .hero-card__social {
-  justify-content: flex-start;
-}
-
-.hero-card--inline .hero-card__body,
-.hero-card--square .hero-card__body {
+.hero-card--inline .hero-card__body {
   padding-top: calc(var(--hero-logo-size) * 0.42);
 }
 
-/* === 5 — Square logo layout (name beside logo; follow-up centered below) === */
-.hero-card--square .hero-card__identity {
-  display: grid;
-  grid-template-columns: var(--hero-logo-size) minmax(0, 1fr);
-  column-gap: 0.75rem;
-  row-gap: 0.625rem;
-  align-items: center;
+/* === 5 — Square logo layout (centered name + details below square logo) === */
+.hero-card--square .hero-card__body {
+  padding-top: calc(var(--hero-logo-size) * 0.42);
+  text-align: center;
+}
+
+.hero-card--square .hero-card__logo-spacer--square {
+  width: var(--hero-logo-size);
+  min-height: calc(var(--hero-logo-size) * 0.5);
   margin-top: calc(var(--hero-logo-size) * -0.5);
 }
 
-.hero-card--square .hero-card__logo-spacer {
-  grid-column: 1;
-  grid-row: 1;
-  width: var(--hero-logo-size);
-  min-height: 1px;
+.hero-card--square .hero-card__name-zone--center {
+  width: 100%;
+  text-align: center;
+  margin-top: 0.125rem;
 }
 
-.hero-card--square .hero-card__name-zone {
-  grid-column: 2;
-  grid-row: 1;
-  padding-top: 0;
-  text-align: left;
-}
-
-.hero-card--square .hero-card__meta-zone {
-  margin-top: 0.625rem;
+.hero-card--square .hero-card__meta-zone--align-center {
+  margin-top: 0.5rem;
 }
 
 .hero-card--square .mts-media-frame--logo-hero-card {
@@ -701,7 +698,14 @@
 
 .hero-card__details {
   margin-top: 0.875rem;
+}
+
+.hero-card__meta-zone--align-center .hero-card__details {
   text-align: center;
+}
+
+.hero-card__meta-zone--align-start .hero-card__details {
+  text-align: left;
 }
 
 .hero-card__motto {

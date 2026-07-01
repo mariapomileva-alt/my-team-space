@@ -64,12 +64,14 @@ function HeroFollowUp({
   motto,
   description,
   socialLinks,
+  align = "center",
 }: {
   tagline?: string | null;
   city?: string | null;
   motto?: string | null;
   description?: string | null;
   socialLinks: SocialLinkItem[];
+  align?: "center" | "start";
 }) {
   const hasMeta = Boolean(
     tagline?.trim() ||
@@ -81,7 +83,12 @@ function HeroFollowUp({
   if (!hasMeta) return null;
 
   return (
-    <div className={HERO_LAYOUT.metaZone}>
+    <div
+      className={cn(
+        HERO_LAYOUT.metaZone,
+        align === "start" ? "hero-card__meta-zone--align-start" : "hero-card__meta-zone--align-center",
+      )}
+    >
       <HeroMeta tagline={tagline} city={city} />
       <HeroDetails motto={motto} description={description} />
       {socialLinks.length > 0 ? (
@@ -109,7 +116,8 @@ export function TeamHeroCard({
   const hasCover = Boolean(coverSrc?.trim());
   const isCoverIdentity = variant === "inside_header" || variant === "circle_on_header";
   const isMinimal = variant === "minimal";
-  const isSideBySide = variant === "inline" || variant === "square";
+  const isInline = variant === "inline";
+  const isSquare = variant === "square";
   const showLogo = !isMinimal;
 
   const hasDetails = Boolean(motto?.trim() || description?.trim());
@@ -197,7 +205,7 @@ export function TeamHeroCard({
 
         {showBody ? (
           <div className={HERO_LAYOUT.body}>
-            {isSideBySide ? (
+            {isInline ? (
               <>
                 <div className={HERO_LAYOUT.identity}>
                   <div className="hero-card__logo-spacer" aria-hidden />
@@ -206,6 +214,22 @@ export function TeamHeroCard({
                   </div>
                 </div>
                 <HeroFollowUp
+                  align="start"
+                  tagline={tagline}
+                  city={city}
+                  motto={motto}
+                  description={description}
+                  socialLinks={socialLinks}
+                />
+              </>
+            ) : isSquare ? (
+              <>
+                <div className="hero-card__logo-spacer hero-card__logo-spacer--square" aria-hidden />
+                <div className={cn(HERO_LAYOUT.nameZone, "hero-card__name-zone--center")}>
+                  <HeroTitle teamName={teamName} />
+                </div>
+                <HeroFollowUp
+                  align="center"
                   tagline={tagline}
                   city={city}
                   motto={motto}
@@ -215,6 +239,7 @@ export function TeamHeroCard({
               </>
             ) : isMinimal ? (
               <HeroFollowUp
+                align="center"
                 tagline={null}
                 city={null}
                 motto={motto}
@@ -223,6 +248,7 @@ export function TeamHeroCard({
               />
             ) : isCoverIdentity ? (
               <HeroFollowUp
+                align="center"
                 tagline={tagline}
                 city={city}
                 motto={motto}
@@ -235,6 +261,7 @@ export function TeamHeroCard({
                   <HeroTitle teamName={teamName} />
                 </div>
                 <HeroFollowUp
+                  align="center"
                   tagline={tagline}
                   city={city}
                   motto={motto}

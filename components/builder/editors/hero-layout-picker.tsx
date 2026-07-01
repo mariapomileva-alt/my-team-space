@@ -135,8 +135,8 @@ function HeroVariantThumb({ variant, active }: { variant: HeroLayoutVariant; act
       {variant === "square" ? (
         <>
           <Logo active={active} square className="absolute left-2 top-[42%] -translate-y-1/2" />
-          <div className={cn("absolute left-[34px] top-[46%]", text)}>
-            <Bars />
+          <div className={cn("absolute left-1/2 top-[52%] -translate-x-1/2", text)}>
+            <Bars align="center" />
           </div>
           <div className={cn("absolute bottom-2 left-1/2 -translate-x-1/2", text)}>
             <Bars align="center" />
