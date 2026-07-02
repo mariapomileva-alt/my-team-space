@@ -1,7 +1,6 @@
 "use client";
 
 import { SetupSection } from "@/components/landing/setup-section";
-import { LandingFeatureGroupsSection } from "@/components/landing/landing-feature-groups";
 import {
   LandingBeforeAfterSection,
   LandingBuildFlowSection,
@@ -418,8 +417,6 @@ export function HomeLanding() {
         <LandingBeforeAfterSection />
 
         <LandingPrideSection />
-
-        <LandingFeatureGroupsSection />
 
         <LandingBuildFlowSection />
 
