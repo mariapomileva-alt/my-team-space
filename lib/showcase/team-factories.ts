@@ -89,7 +89,7 @@ export function schedule(
   );
 }
 
-export function gallery(urls: string[], captions?: string[], layout: BlockLayout = "featured") {
+export function gallery(urls: readonly string[], captions?: readonly string[], layout: BlockLayout = "featured") {
   return blk(
     "blk_gal",
     "gallery",
