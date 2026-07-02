@@ -2,6 +2,11 @@ import { getPlanSpec, PLAN_CATALOG } from "@/lib/billing/plan-catalog";
 
 /** Public marketing pricing — copy aligned with {@link PLAN_CATALOG}. */
 
+export const MARKETING_TRIAL_DAYS = 7;
+export const MARKETING_TRIAL_LABEL = "7-day free trial";
+export const MARKETING_SIGNUP_CTA = "Start 7-day free trial";
+export const MARKETING_TRIAL_FOOTNOTE = `${MARKETING_TRIAL_LABEL} · Cancel anytime`;
+
 export type MarketingPlanId = "single_team" | "academy";
 
 export type MarketingPlan = {
@@ -31,7 +36,7 @@ export const MARKETING_PLANS: MarketingPlan[] = [
     description: "Everything you need for one team.",
     badge: null,
     featured: false,
-    cta: "Start Team Plan",
+    cta: MARKETING_SIGNUP_CTA,
     href: "/admin?startPlan=single_team",
     features: [
       "1 team space",
@@ -53,7 +58,7 @@ export const MARKETING_PLANS: MarketingPlan[] = [
     description: "For clubs and academies managing multiple teams.",
     badge: "For clubs & academies",
     featured: true,
-    cta: "Start Academy Plan",
+    cta: MARKETING_SIGNUP_CTA,
     href: "/admin?startPlan=academy",
     features: [
       "up to 20 teams",

@@ -1,5 +1,5 @@
 import { PricingCheckoutButton } from "@/components/marketing/pricing-checkout-button";
-import { MARKETING_PLANS } from "@/lib/marketing/pricing";
+import { MARKETING_PLANS, MARKETING_TRIAL_LABEL } from "@/lib/marketing/pricing";
 
 type PricingPlansProps = {
   className?: string;
@@ -30,7 +30,8 @@ export function PricingPlans({ className = "", isAuthenticated = false }: Pricin
             <span className="text-4xl font-bold tracking-tight text-[#1A1C23]">{plan.price}</span>
             <span className="text-sm text-neutral-500">{plan.period}</span>
           </p>
-          <p className="mt-2 text-sm text-neutral-500">{plan.description}</p>
+          <p className="mt-2 text-sm font-medium text-[#6C5CE7]">{MARKETING_TRIAL_LABEL}</p>
+          <p className="mt-1 text-sm text-neutral-500">{plan.description}</p>
           <ul className="mt-6 flex-1 space-y-2 text-sm text-neutral-600">
             {plan.features.map((feature) => (
               <li key={feature} className="flex gap-2">

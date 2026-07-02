@@ -3,6 +3,7 @@
 import { MarketingTeamPagePreview } from "@/components/landing/marketing-team-preview";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { MARKETING_SIGNUP_CTA, MARKETING_TRIAL_FOOTNOTE } from "@/lib/marketing/pricing";
 
 const accentBtn =
   "bg-[#6C5CE7] text-white shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_-6px_rgba(108,92,231,0.45)] hover:bg-[#5b4bd6] active:scale-[0.99]";
@@ -208,7 +209,7 @@ export function LandingFinalCtaSection() {
             href="/admin/signup"
             className={`inline-flex min-h-12 items-center justify-center rounded-full px-8 text-[15px] font-semibold transition ${accentBtn}`}
           >
-            Create Your Team Space
+            {MARKETING_SIGNUP_CTA}
           </Link>
           <Link
             href="/examples"
@@ -217,7 +218,7 @@ export function LandingFinalCtaSection() {
             View Demo
           </Link>
         </div>
-        <p className="mt-5 text-sm text-neutral-400">No coding required · View the live demo first</p>
+        <p className="mt-5 text-sm text-neutral-400">{MARKETING_TRIAL_FOOTNOTE} · View the live demo first</p>
       </motion.div>
     </section>
   );

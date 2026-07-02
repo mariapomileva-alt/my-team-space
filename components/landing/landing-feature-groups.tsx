@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { MARKETING_SIGNUP_CTA } from "@/lib/marketing/pricing";
 
 const accentBtn =
   "inline-flex min-h-11 items-center justify-center rounded-full px-7 text-[15px] font-medium transition bg-[#6C5CE7] text-white shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_24px_-6px_rgba(108,92,231,0.45)] hover:bg-[#5b4bd6] active:scale-[0.99]";
@@ -41,7 +42,7 @@ function FeaturesSellingCtas({ className = "" }: { className?: string }) {
   return (
     <div className={`flex flex-wrap items-center justify-center gap-3 ${className}`}>
       <Link href="/admin/signup" className={accentBtn}>
-        Create Your Team Space
+        {MARKETING_SIGNUP_CTA}
       </Link>
       <Link href="/examples" className={secondaryBtn}>
         View Demo
