@@ -46,73 +46,6 @@ function FloatingLiveCard({ text, className }: { text: string; className: string
   );
 }
 
-function HeroGamificationCard() {
-  return (
-    <div
-      className="mt-8 overflow-hidden rounded-2xl border border-amber-200/70 bg-gradient-to-br from-amber-50/90 via-white to-violet-50/80 p-4 shadow-[0_12px_40px_-20px_rgba(245,158,11,0.35)] sm:p-5"
-      aria-label="Achievement preview: Player of the week, coach praise, and results"
-    >
-      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700/90">
-        Kids share this · Parents save it
-      </p>
-      <div className="mt-3 flex items-start gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-lg font-bold text-white shadow-[0_6px_16px_-6px_rgba(245,158,11,0.55)]">
-          M
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-800">
-              Player of the week
-            </span>
-            <span className="text-[11px] font-semibold text-violet-700">+120 XP</span>
-          </div>
-          <p className="mt-1 text-sm font-bold text-neutral-900">Maya · 3 goals · 2 assists</p>
-          <div className="mt-1.5 flex gap-0.5" aria-hidden>
-            {["⭐", "⭐", "⭐", "⭐", "⭐"].map((star, i) => (
-              <span key={i} className="text-sm leading-none">
-                {star}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="mt-3 rounded-xl bg-white/90 px-3.5 py-2.5 ring-1 ring-violet-100/80">
-        <p className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400">Coach Maria</p>
-        <p className="mt-0.5 text-[13px] font-medium leading-snug text-neutral-800">
-          &ldquo;Incredible hustle yesterday — this squad makes me proud.&rdquo;
-        </p>
-      </div>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-amber-100/80 pt-3 text-[11px]">
-        <span className="inline-flex items-center gap-1.5 font-semibold text-neutral-700">
-          <span aria-hidden>🥇</span>
-          Regional cup · Gold
-        </span>
-        <span className="text-neutral-400">Shared 24× this week</span>
-      </div>
-    </div>
-  );
-}
-
-function HeroAchievementFloater() {
-  return (
-    <div
-      className="pointer-events-none absolute left-0 top-[48%] z-20 hidden w-[min(100%,220px)] -translate-y-1/2 rounded-2xl border border-amber-200/80 bg-white/95 p-3 shadow-[0_16px_40px_-16px_rgba(245,158,11,0.4)] backdrop-blur-sm md:block lg:left-[-4%]"
-      aria-hidden
-    >
-      <p className="text-[9px] font-bold uppercase tracking-wider text-amber-700">Player of the week</p>
-      <div className="mt-1.5 flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-400 text-xs font-bold text-white">
-          M
-        </span>
-        <div className="min-w-0">
-          <p className="truncate text-[12px] font-bold text-neutral-900">Maya</p>
-          <p className="text-[10px] text-amber-700">+120 XP · ⭐⭐⭐⭐⭐</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function DesktopTeamPreview({ phase }: { phase: "simple" | "rich" }) {
   return (
     <div className="overflow-hidden rounded-[1.25rem] bg-white shadow-inner ring-1 ring-neutral-200/70">
@@ -274,7 +207,6 @@ function HeroProductVisual({ phase }: { phase: "simple" | "rich" }) {
       {FLOATING.map((f) => (
         <FloatingLiveCard key={f.text} text={f.text} className={f.className} />
       ))}
-      <HeroAchievementFloater />
 
       <motion.div className="relative z-10 mt-3 sm:mt-5">
         <div className="rounded-[1.75rem] border border-neutral-200/80 bg-gradient-to-b from-neutral-100/60 to-neutral-50/80 p-2.5 shadow-[0_40px_80px_-32px_rgba(15,23,42,0.35)]">
@@ -361,8 +293,7 @@ export function HomeLanding() {
                 </Link>
               </div>
               <p className="mt-4 text-sm font-semibold text-[#6C5CE7]">{MARKETING_TRIAL_LABEL}</p>
-              <HeroGamificationCard />
-              <p className="mt-5 text-sm font-medium text-neutral-400">
+              <p className="mt-3 text-sm font-medium text-neutral-400">
                 {MARKETING_TRIAL_FOOTNOTE} · No coding · No app for parents
               </p>
             </div>
