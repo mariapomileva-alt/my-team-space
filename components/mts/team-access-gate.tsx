@@ -40,6 +40,8 @@ export function TeamAccessGate({
 
   useEffect(() => {
     if (readGrantedCookie(team.slug)) {
+      // Client-only: restore access from prior server-verified cookie
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional mount sync
       setGranted(true);
       return;
     }

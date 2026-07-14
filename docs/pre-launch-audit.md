@@ -1,9 +1,53 @@
 # MyTeamSpace — Pre-Launch Production Audit
 
-**Date:** 14 July 2026  
+**Date:** 14 July 2026 (updated after security milestone)  
 **Branch:** `pre-launch-audit`  
 **Site:** https://www.myteamspace.cc/  
 **Target:** 200 paying coaches by September 2026; infrastructure headroom for **500 teams** without data loss or manual firefighting.
+
+**Security milestone (P0-01, P0-04, P0-02, P0-05):** ✅ **Implemented** on `pre-launch-audit` — 4 commits, 4 migrations, 21 new regression tests. **Not yet applied to production Supabase** until owner runs migrations.
+
+---
+
+## Security milestone status (14 Jul 2026)
+
+| ID | Status | Migration | Tests | Notes |
+|----|--------|-----------|-------|-------|
+| **P0-01** | ✅ Fixed | `20260714120000_prevent_unauthorized_team_members_insert.sql` | `lib/security/team-members-insert.test.ts` | Dropped `team_members_insert_own`; INSERT only via `create_team` / `accept_team_admin_invite` RPCs |
+| **P0-04** | ✅ Fixed | `20260714130000_prevent_team_role_escalation.sql` | `lib/security/team-role-escalation.test.ts` | `team_members_guard` trigger; `update_team_staff_role` RPC; invite ON CONFLICT DO NOTHING |
+| **P0-02** | ✅ Fixed | `20260714140000_restrict_public_team_rpc_fields.sql` | `lib/security/public-team-fields.test.ts` | Explicit public DTO; `filter_public_page_settings`; `verify_team_access` + `/api/teams/[slug]/verify-access` |
+| **P0-05** | ✅ Fixed | `20260714150000_restrict_public_team_access_to_published.sql` | `lib/security/public-team-publish.test.ts` | Anon RPC + content RLS require `publish_status = published`; `get_member_team_by_slug` for coach draft preview |
+| P0-03 | ⏳ Pending | — | — | Server-side publish billing gate |
+| P0-06 | ⏳ Pending | — | — | Backup/PITR verification |
+| P0-07 | ⏳ Pending | — | — | Error monitoring |
+| P0-08 | ⏳ Pending | — | — | Webhook dedup + `current_period_end` |
+
+### Commits (security milestone)
+
+1. `security: prevent unauthorized team membership insertion`
+2. `security: prevent team role self-escalation`
+3. `security: restrict public team RPC fields`
+4. `security: restrict public team access to published pages`
+
+### Apply migrations (production Supabase)
+
+**Order (strict):**
+
+1. `20260714120000_prevent_unauthorized_team_members_insert.sql`
+2. `20260714130000_prevent_team_role_escalation.sql`
+3. `20260714140000_restrict_public_team_rpc_fields.sql`
+4. `20260714150000_restrict_public_team_access_to_published.sql`
+
+**How:** Supabase CLI `supabase db push` **or** paste each file in SQL Editor in order. All migrations are **additive** (no data deletion).
+
+**Deploy app:** After migrations, deploy `pre-launch-audit` branch to Vercel (includes `TeamAccessGate` server verify + member draft loader).
+
+### Remaining security risk (after milestone)
+
+- **P0-03:** Coach can still publish without server-side subscription check.
+- **P0-08:** Duplicate webhook events may double-process; `current_period_end` not persisted.
+- **RLS integration tests:** Vitest covers migration SQL + TS helpers; live PostgREST policy tests still recommended on staging.
+- **Storage:** Public `team-assets` bucket unchanged (P1).
 
 ---
 
@@ -13,20 +57,20 @@
 
 | Target | Verdict | Confidence |
 |--------|---------|------------|
-| **200 paying clients** | **Not ready without P0 fixes** | Medium — core product works; security and billing gaps are exploitable |
+| **200 paying clients** | **Not ready without P0-03+ ops fixes** | Medium — security milestone done; billing publish gate + monitoring remain |
 | **500 teams (platform)** | **Conditionally ready after P0 + P1** | Medium — DB model scales per-tenant; ops/monitoring weak |
 
 ### What breaks first if 500 teams sign up tomorrow
 
 1. **You won't know anything broke** — no error monitoring, no failed-save/webhook alerts (silent failures already happened with Vercel deploys).
-2. **Security / tenant isolation** — `team_members` INSERT policy allows any authenticated user to join any `team_id` as coach; `get_public_team_by_slug` leaks `access_code`, `invite_token`, `page_settings` to anon callers.
+2. **Billing edge cases** — publish can bypass checkout on server (P0-03); webhook has no event dedup (P0-08).
 3. **Write amplification on `teams` table** — autosave every 1.5s per active builder session; optimistic-lock conflicts under parallel tabs/devices (recoverable but noisy).
 4. **Supabase Storage + bandwidth** — public `team-assets` bucket; heavy galleries → egress and storage growth (see `docs/infrastructure-capacity.md`).
-5. **Billing edge cases** — publish can bypass checkout on server; webhook has no event dedup; `current_period_end` not written from webhook.
 
 ### Must fix before sales (P0)
 
-See [Risk table](#risk-table) — items **P0-01 through P0-08**.
+P0-01, P0-04, P0-02, P0-05 — **done on branch** (apply migrations + deploy).  
+Still required: **P0-03, P0-06, P0-07, P0-08** (see [Risk table](#risk-table)).
 
 ### Can wait until after first 50 customers (P2/P3)
 
@@ -40,7 +84,7 @@ Marketing polish, Lighthouse micro-optimizations, full load-test automation on s
 
 | Check | Result |
 |-------|--------|
-| `npm test` | **71/71 passed** (16 files) |
+| `npm test` | **92/92 passed** (20 files) |
 | `npx tsc --noEmit` | **Pass** |
 | `npm run build` | **Pass** |
 | `npm run lint` | **31 errors, ~2963 warnings** — majority from static `docs/` export artifacts, not app source |
@@ -118,8 +162,8 @@ Marketing polish, Lighthouse micro-optimizations, full load-test automation on s
 | `/api/lemonsqueezy/webhook` | **Canonical** billing webhook |
 | `/api/webhooks/lemon-squeezy` | **410 deprecated** (correct) |
 | `/api/admin/teams/[teamId]/upload` | Image/file upload → Storage |
+| `/api/teams/[teamSlug]/verify-access` | Server-side private/mixed access code check |
 | `/api/teams/[teamSlug]/poll-vote` | Public poll votes |
-| `/api/auth/public-config` | Runtime Supabase anon config |
 | `/auth/callback` | OAuth / magic link |
 
 ### Supabase tables (production)
@@ -184,11 +228,11 @@ Lemon Squeezy → HMAC verify → `processLemonSqueezyWebhook` → upsert subscr
 
 | ID | Sev | Probability | Impact | Affected flow | Evidence | Safe fix | Regression risk | Effort |
 |----|-----|-------------|--------|---------------|----------|----------|-----------------|--------|
-| P0-01 | P0 | High | Critical | Tenant isolation | `team_members_insert_own` only checks `user_id = auth.uid()` — any team_id | Restrict INSERT to `create_team` RPC / invite acceptance only; REVOKE direct INSERT | Medium — test invite + create flows | S |
-| P0-02 | P0 | High | Critical | Public privacy | `get_public_team_by_slug` returns `SELECT *` including `access_code`, `invite_token`, `page_settings` | New RPC returning public-safe projection only | Low if app switched | S |
+| P0-01 | P0 | ~~High~~ | Critical | Tenant isolation | ~~`team_members_insert_own`~~ **Fixed** — policy dropped | — | — | — |
+| P0-02 | P0 | ~~High~~ | Critical | Public privacy | ~~`SELECT *` RPC~~ **Fixed** — explicit DTO + `verify_team_access` | — | — | — |
 | P0-03 | P0 | Medium | High | Billing / go-live | `saveTeamContent` sets `publish_status` without `publishRequiresCheckout` (client-only gate) | Server-side billing check before publish | Low | S |
-| P0-04 | P0 | Medium | High | Role security | `team_members_update_own` allows self role change to `coach` | Immutability trigger or policy excluding `role` changes | Low | S |
-| P0-05 | P0 | Medium | High | Content leak | RLS `*_public_read` on schedule/updates/achievements ignores `publish_status` | Add `publish_status = 'published'` join to policies | Medium — test draft preview | M |
+| P0-04 | P0 | ~~Medium~~ | High | Role security | ~~`team_members_update_own`~~ **Fixed** — trigger + RPC | — | — | — |
+| P0-05 | P0 | ~~Medium~~ | High | Content leak | ~~RLS ignores publish~~ **Fixed** — RPC + RLS + member loader | — | — | — |
 | P0-06 | P0 | Low | Critical | DR | No documented backup/restore runbook (until this audit) | `docs/production-recovery.md` + verify Supabase PITR | None | S |
 | P0-07 | P0 | High | High | Operations | No error monitoring; deploy failures went unnoticed | Sentry or Vercel log drains + uptime ping | Low | S |
 | P0-08 | P0 | Medium | Medium | Billing accuracy | Webhook doesn't pass `current_period_end`; no webhook event dedup | Extend `process-webhook.ts`; optional `webhook_events` idempotency table | Low | M |
@@ -236,7 +280,7 @@ Lemon Squeezy → HMAC verify → `processLemonSqueezyWebhook` → upsert subscr
 | Area | Status |
 |------|--------|
 | RLS enabled | Yes on all tenant tables |
-| Tenant isolation | **Gaps** (P0-01, P0-04, P0-05) |
+| Tenant isolation | **Improved** — P0-01/04/05 fixed on branch; apply migrations |
 | Billing writes | Correct — client cannot UPDATE `coach_subscriptions` |
 | Service role | Server-only (`lib/supabase/admin.ts` + `server-only`) |
 | Webhook signature | HMAC verified |
@@ -244,12 +288,17 @@ Lemon Squeezy → HMAC verify → `processLemonSqueezyWebhook` → upsert subscr
 | Upload auth | Membership check + team-scoped path |
 | Secrets in client | Only anon key (expected) |
 
-**Required security regression tests (not yet implemented):**
+**Security regression tests (added on `pre-launch-audit`):**
+
+- `lib/security/team-members-insert.test.ts` — INSERT policy removal
+- `lib/security/team-role-escalation.test.ts` — role guard trigger + RPC
+- `lib/security/public-team-fields.test.ts` — public DTO allowlist, page_settings filter
+- `lib/security/public-team-publish.test.ts` — publish_status visibility rules
+
+**Still recommended on staging (live PostgREST):**
 
 - User A cannot read/update User B's team via PostgREST
-- User A cannot INSERT into User B's `team_members`
-- Anon RPC does not return `access_code` / `invite_token`
-- Publish without active subscription returns 403
+- Publish without active subscription returns 403 (P0-03)
 
 ---
 
@@ -302,7 +351,7 @@ See `docs/infrastructure-capacity.md` for capacity math.
 | saveTeamContent / publish | **No** |
 | Webhook signature + processing | **No** |
 | Block save round-trip | Partial (visibility, schedule) |
-| RLS tenant isolation | **No** |
+| RLS tenant isolation | Partial (migration SQL + helpers; live policy tests pending) |
 | Upload validation | **No** |
 
 ---
@@ -335,10 +384,10 @@ See `docs/launch-checklist.md`.
 
 ### Phase 1 — P0 only (1–2 weeks)
 
-1. Fix `team_members` INSERT/UPDATE policies (P0-01, P0-04)
-2. Public-safe `get_public_team_by_slug` (P0-02)
+1. ~~Fix `team_members` INSERT/UPDATE policies (P0-01, P0-04)~~ ✅
+2. ~~Public-safe `get_public_team_by_slug` (P0-02)~~ ✅
 3. Server-side publish billing gate (P0-03)
-4. Tighten public-read RLS (P0-05)
+4. ~~Tighten public-read RLS (P0-05)~~ ✅
 5. Monitoring + deploy alerts (P0-07)
 6. Verify Supabase backups (P0-06)
 7. Webhook `current_period_end` + idempotency (P0-08)
@@ -358,7 +407,8 @@ Blocks size limits, revision log, performance instrumentation, staging load test
 ### Supabase
 
 - [ ] Confirm production on **Pro plan** with **PITR** enabled
-- [ ] Verify all migrations applied (`20260514120000` … `20260613120000`)
+- [ ] Apply security migrations `20260714120000` … `20260714150000` (see [Security milestone](#security-milestone-status-14-jul-2026))
+- [ ] Verify all prior migrations applied (`20260514120000` … `20260613120000`)
 - [ ] Remove reliance on manual `RUN_*.sql` in production
 - [ ] Review Storage usage alerts
 - [ ] Rotate service role key if ever exposed
@@ -393,9 +443,11 @@ Blocks size limits, revision log, performance instrumentation, staging load test
 - Builder architecture
 - Block schema / `teams.blocks` format
 - Lemon variant IDs
-- Public renderer components
+- Public renderer block components (`TeamPageBlocks`, `TeamShell`, etc.)
 - Billing plan mapping logic
 - UI / marketing (except prior landing work on `main`)
+
+**Minimal exceptions for security milestone:** `TeamAccessGate` (server verify instead of client secret compare), `app/[slug]/page.tsx` member fallback for coach draft preview, `lib/teams/map-row.ts` public `page_settings` filter.
 
 ---
 
@@ -405,9 +457,9 @@ Blocks size limits, revision log, performance instrumentation, staging load test
 |---------|-------|
 | Save/publish | `app/admin/(protected)/team/[teamId]/server-actions.ts` |
 | Autosave | `components/builder/team-page-builder.tsx` |
-| Public load | `lib/teams/public.ts`, `app/[slug]/page.tsx` |
-| Billing webhook | `lib/lemon/process-webhook.ts`, `app/api/lemonsqueezy/webhook/route.ts` |
-| Limits | `supabase/migrations/20260613120000_coach_billing_hardening.sql` |
-| RLS | `supabase/migrations/20260514120000_saas_multitenant.sql` |
+| Public load | `lib/teams/public.ts`, `lib/teams/member.ts`, `app/[slug]/page.tsx` |
+| Access verify | `app/api/teams/[teamSlug]/verify-access/route.ts`, `components/mts/team-access-gate.tsx` |
+| Security tests | `lib/security/*.test.ts` |
+| RLS | `supabase/migrations/20260714120000` … `20260714150000` |
 | Upload | `app/api/admin/teams/[teamId]/upload/route.ts` |
 | Image compress | `lib/media/compress-image.ts` |
