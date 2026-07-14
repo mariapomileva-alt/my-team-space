@@ -1,4 +1,4 @@
-import { BLOCK_META } from "@/lib/blocks/meta";
+import { filterPublicPageSettings } from "@/lib/security/public-team-fields";
 import { defaultSettingsForType } from "@/lib/blocks/settings";
 import { parseVisibility } from "@/lib/team-access";
 import type { BlockInstance, BlockLayout, TeamPageSettings, TeamSpace, ThemeId } from "@/lib/types";
@@ -104,7 +104,7 @@ export function mapTeamRowToTeamSpace(row: TeamDbRow, logoPublicUrl?: string): T
   const fallback = createDefaultBlocks();
   const normalizedThemeId = row.theme_id === "sharky_aqua" ? "ocean_aqua" : row.theme_id;
   const themeId = isThemeId(normalizedThemeId) ? normalizedThemeId : "ocean_aqua";
-  const pageSettings = (row.page_settings as TeamPageSettings) ?? {};
+  const pageSettings = filterPublicPageSettings(row.page_settings);
   const fromColumn = row.logo_url?.trim();
   const fromSettings = pageSettings.logoUrl?.trim();
   const fromHeroRaw = logoFromRawBlocks(row.blocks);
