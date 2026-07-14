@@ -3,6 +3,7 @@ import { mapTeamRowToTeamSpace, type TeamDbRow } from "@/lib/teams/map-row";
 import { legacyTeamPath, publicTeamPath } from "@/lib/teams/public-url";
 import { revalidatePath, unstable_cache } from "next/cache";
 import { cache } from "react";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type PublicTeamBundle = {
   team: TeamDbRow;
@@ -14,6 +15,38 @@ export type PublicTeamBundle = {
 /** Invalidate with `revalidateTag(publicTeamCacheTag(slug), "default")` (Next.js 16) after coach edits or billing changes. */
 export function publicTeamCacheTag(slug: string): string {
   return `public-team:${slug.trim().toLowerCase()}`;
+}
+
+export async function loadTeamBundleExtras(
+  supabase: SupabaseClient,
+  teamId: string,
+): Promise<Pick<PublicTeamBundle, "schedule" | "updates" | "achievements">> {
+  const [{ data: schedule }, { data: updates }, { data: achievements }] = await Promise.all([
+    supabase
+      .from("schedule_events")
+      .select("id, title, starts_at, location")
+      .eq("team_id", teamId)
+      .order("starts_at", { ascending: true })
+      .limit(8),
+    supabase
+      .from("team_updates")
+      .select("id, title, body, published_at")
+      .eq("team_id", teamId)
+      .order("published_at", { ascending: false })
+      .limit(6),
+    supabase
+      .from("achievements")
+      .select("id, title, body, icon, created_at")
+      .eq("team_id", teamId)
+      .order("created_at", { ascending: false })
+      .limit(6),
+  ]);
+
+  return {
+    schedule: schedule ?? [],
+    updates: updates ?? [],
+    achievements: achievements ?? [],
+  };
 }
 
 /** Revalidate canonical /{slug} and legacy /team/{slug} redirect. */
@@ -28,33 +61,11 @@ async function loadPublicTeamBySlugImpl(normalizedSlug: string): Promise<PublicT
   const { data: teamRows, error } = await supabase.rpc("get_public_team_by_slug", { p_slug: normalizedSlug });
   if (error || !teamRows?.length) return null;
   const team = teamRows[0] as TeamDbRow;
-
-  const [{ data: schedule }, { data: updates }, { data: achievements }] = await Promise.all([
-    supabase
-      .from("schedule_events")
-      .select("id, title, starts_at, location")
-      .eq("team_id", team.id)
-      .order("starts_at", { ascending: true })
-      .limit(8),
-    supabase
-      .from("team_updates")
-      .select("id, title, body, published_at")
-      .eq("team_id", team.id)
-      .order("published_at", { ascending: false })
-      .limit(6),
-    supabase
-      .from("achievements")
-      .select("id, title, body, icon, created_at")
-      .eq("team_id", team.id)
-      .order("created_at", { ascending: false })
-      .limit(6),
-  ]);
+  const extras = await loadTeamBundleExtras(supabase, team.id);
 
   return {
     team,
-    schedule: schedule ?? [],
-    updates: updates ?? [],
-    achievements: achievements ?? [],
+    ...extras,
   };
 }
 

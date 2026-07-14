@@ -2,6 +2,7 @@ import { TeamPublicPage } from "@/components/mts/team-public-page";
 import { TeamSaaSExtras } from "@/components/mts/team-saas-extras";
 import { getTeamBySlug } from "@/lib/data/teams";
 import { isCurrentUserTeamCoach } from "@/lib/teams/is-team-coach";
+import { loadMemberTeamBySlug } from "@/lib/teams/member";
 import { bundleToTeamSpace, loadPublicTeamBySlug } from "@/lib/teams/public";
 import { isReservedTeamSlug, normalizeTeamSlug } from "@/lib/teams/public-url";
 import { isLegacyDemoSlug } from "@/lib/marketing/legacy-demo-slugs";
@@ -95,7 +96,8 @@ export default async function TeamPublicRoute({ params }: Props) {
     return <TeamPublicPage initialTeam={team} enableLocalPreview />;
   }
 
-  const bundle = await loadPublicTeamBySlug(teamSlug);
+  const bundle =
+    (await loadPublicTeamBySlug(teamSlug)) ?? (await loadMemberTeamBySlug(teamSlug));
   if (!bundle) notFound();
 
   const status = bundle.team.subscription_status;
