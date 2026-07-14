@@ -23,6 +23,6 @@ export const SHOWCASE_COVERS = {
   basketball: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=400&fit=crop",
   hockey: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=400&fit=crop",
   swim: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=800&h=400&fit=crop",
-  ballet: "https://images.unsplash.com/photo-1518834107812-67b0bb7c2d2e?w=800&h=400&fit=crop",
-  tennis: "https://images.unsplash.com/photo-1622163649001-09445f787b59?w=800&h=400&fit=crop",
+  ballet: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=400&fit=crop",
+  tennis: "https://images.unsplash.com/photo-1724157090170-c0e4aa4b170f?w=800&h=400&fit=crop",
 } as const;

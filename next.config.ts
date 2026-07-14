@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
       { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
       /* External video posters / embed thumbs — never store video files in Supabase Storage */
       { protocol: "https", hostname: "i.ytimg.com", pathname: "/**" },

@@ -8,23 +8,24 @@ function cover(id: string) {
   return photo(id, 1600, 840);
 }
 
+/** IDs verified against images.unsplash.com (Unsplash removes stale assets over time). */
 export const EXAMPLE_PHOTO_SETS = {
   tennis: {
-    cover: cover("photo-1554068865-24cecd4e9b26"),
+    cover: cover("photo-1724157090170-c0e4aa4b170f"),
     spotlight: [
-      cover("photo-1622163649001-09445f787b59"),
-      photo("photo-1551698618-1dfe5d97d256", 900, 680),
-      photo("photo-1532151694832-7252614dbd1b", 900, 680),
+      cover("photo-1724157090170-c0e4aa4b170f"),
+      photo("photo-1714802064588-39d1065269cf", 900, 680),
+      photo("photo-1622279457486-62dcc4a431d6", 900, 680),
     ],
     gallery: [
-      photo("photo-1554068865-24cecd4e9b26"),
-      photo("photo-1622163649001-09445f787b59"),
-      photo("photo-1595435934249-26df3d350cea"),
+      photo("photo-1724157090170-c0e4aa4b170f"),
+      photo("photo-1714802064588-39d1065269cf"),
+      photo("photo-1622279457486-62dcc4a431d6"),
       photo("photo-1551698618-1dfe5d97d256"),
-      photo("photo-1532151694832-7252614dbd1b"),
-      photo("photo-1611874824423-ef3ddb1c972a"),
-      photo("photo-1587280508545-6392f456a209"),
-      photo("photo-1617885741078-665bb78490ba"),
+      photo("photo-1571902943202-507ec2618e8f"),
+      photo("photo-1461896836934-ffe607ba8211"),
+      photo("photo-1521572163474-6864f9cf17ab"),
+      photo("photo-1503676260728-1c00da094a0b"),
     ],
     galleryCaptions: [
       "Morning clay session",
@@ -41,19 +42,19 @@ export const EXAMPLE_PHOTO_SETS = {
   dance: {
     cover: cover("photo-1504609773096-104ff2c73ba4"),
     spotlight: [
-      cover("photo-1518834107812-67b0bb7c2d2e"),
-      photo("photo-1516450360432-1aa25ef1279e", 900, 680),
+      cover("photo-1518611012118-696072aa579a"),
       photo("photo-1571019613454-1cb2f99b2d8b", 900, 680),
+      photo("photo-1547036967-23d11aacaee0", 900, 680),
     ],
     gallery: [
       photo("photo-1504609773096-104ff2c73ba4"),
-      photo("photo-1518834107812-67b0bb7c2d2e"),
-      photo("photo-1547159414-26d2a83f4a42"),
-      photo("photo-1516450360432-1aa25ef1279e"),
+      photo("photo-1518611012118-696072aa579a"),
+      photo("photo-1547036967-23d11aacaee0"),
+      photo("photo-1515886657613-9f3515b0c78f"),
       photo("photo-1571019613454-1cb2f99b2d8b"),
       photo("photo-1508700115892-45ecd05ae2ad"),
-      photo("photo-1463746934887-52fd00699226"),
       photo("photo-1518609878373-06d740f60d8b"),
+      photo("photo-1503676260728-1c00da094a0b"),
     ],
     galleryCaptions: [
       "First day smiles",
@@ -70,18 +71,18 @@ export const EXAMPLE_PHOTO_SETS = {
     cover: cover("photo-1546519638-68e109498ffc"),
     spotlight: [
       cover("photo-1574629810360-7efbbe195018"),
-      photo("photo-1577225245490-5cca4573a14f", 900, 680),
-      photo("photo-1577471348706-c7aad785419e", 900, 680),
+      photo("photo-1467232004584-a241de8bcf5d", 900, 680),
+      photo("photo-1571902943202-507ec2618e8f", 900, 680),
     ],
     gallery: [
       photo("photo-1546519638-68e109498ffc"),
-      photo("photo-1519861531473-920026218ac7"),
-      photo("photo-1574623452334-1e0ac2bddd96"),
-      photo("photo-1577225245490-5cca4573a14f"),
       photo("photo-1574629810360-7efbbe195018"),
-      photo("photo-1577471348706-c7aad785419e"),
-      photo("photo-1511516416926-57b9319f94fc"),
-      photo("photo-1504450757627-4eeb1c678bda"),
+      photo("photo-1467232004584-a241de8bcf5d"),
+      photo("photo-1571902943202-507ec2618e8f"),
+      photo("photo-1461896836934-ffe607ba8211"),
+      photo("photo-1521572163474-6864f9cf17ab"),
+      photo("photo-1551698618-1dfe5d97d256"),
+      photo("photo-1503676260728-1c00da094a0b"),
     ],
     galleryCaptions: [
       "Tip-off — city league final",
@@ -93,8 +94,8 @@ export const EXAMPLE_PHOTO_SETS = {
       "Squad photo — 2026",
       "MVP celebration",
     ],
-    shopJersey: photo("photo-1574623452334-1e0ac2bddd96", 480, 480),
-    shopShorts: photo("photo-1519861531473-920026218ac7", 480, 480),
+    shopJersey: photo("photo-1521572163474-6864f9cf17ab", 480, 480),
+    shopShorts: photo("photo-1546519638-68e109498ffc", 480, 480),
   },
 } as const;
 
