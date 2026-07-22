@@ -1,24 +1,32 @@
 # MyTeamSpace — Pre-Launch Production Audit
 
-**Date:** 14 July 2026 (updated after security milestone)  
+**Date:** 14 July 2026 (updated 22 July 2026 after production deploy + smoke)  
 **Branch:** `pre-launch-audit`  
 **Site:** https://www.myteamspace.cc/  
 **Target:** 200 paying coaches by September 2026; infrastructure headroom for **500 teams** without data loss or manual firefighting.
 
-**Security milestone (P0-01, P0-04, P0-02, P0-05):** ✅ **Implemented** on `pre-launch-audit` — 4 commits, 4 migrations, 21 new regression tests. **Not yet applied to production Supabase** until owner runs migrations.
+**Security milestone (P0-01, P0-04, P0-02, P0-05):** ✅ **Deployed and verified** on production (21 Jul 2026).
+
+| Field | Value |
+|-------|--------|
+| Production commit | `c4096db470b5fea4f19cca0320805af2f5a8bfe7` |
+| Vercel deployment | `dpl_Ac3s8mgr8JgtHMNuJL2xrEN2Km5D` |
+| Production URL | https://www.myteamspace.cc |
+| Migrations applied | SQL Editor, 21 Jul 2026 (order `…120000` → `…150000`) |
+| Smoke (owner) | Login, builder Live·Saved (Dance Stars), public page, autosave OK |
 
 ---
 
-## Security milestone status (14 Jul 2026)
+## Security milestone status (22 Jul 2026)
 
 | ID | Status | Migration | Tests | Notes |
 |----|--------|-----------|-------|-------|
-| **P0-01** | ✅ Fixed | `20260714120000_prevent_unauthorized_team_members_insert.sql` | `lib/security/team-members-insert.test.ts` | Dropped `team_members_insert_own`; INSERT only via `create_team` / `accept_team_admin_invite` RPCs |
-| **P0-04** | ✅ Fixed | `20260714130000_prevent_team_role_escalation.sql` | `lib/security/team-role-escalation.test.ts` | `team_members_guard` trigger; `update_team_staff_role` RPC; invite ON CONFLICT DO NOTHING |
-| **P0-02** | ✅ Fixed | `20260714140000_restrict_public_team_rpc_fields.sql` | `lib/security/public-team-fields.test.ts` | Explicit public DTO; `filter_public_page_settings`; `verify_team_access` + `/api/teams/[slug]/verify-access` |
-| **P0-05** | ✅ Fixed | `20260714150000_restrict_public_team_access_to_published.sql` | `lib/security/public-team-publish.test.ts` | Anon RPC + content RLS require `publish_status = published`; `get_member_team_by_slug` for coach draft preview |
+| **P0-01** | ✅ Deployed & verified | `20260714120000_prevent_unauthorized_team_members_insert.sql` | `lib/security/team-members-insert.test.ts` | Dropped `team_members_insert_own`; INSERT only via `create_team` / `accept_team_admin_invite` RPCs |
+| **P0-04** | ✅ Deployed & verified | `20260714130000_prevent_team_role_escalation.sql` | `lib/security/team-role-escalation.test.ts` | `team_members_guard` trigger; `update_team_staff_role` RPC; invite ON CONFLICT DO NOTHING |
+| **P0-02** | ✅ Deployed & verified | `20260714140000_restrict_public_team_rpc_fields.sql` | `lib/security/public-team-fields.test.ts` | Explicit public DTO; `filter_public_page_settings`; `verify_team_access` + `/api/teams/[slug]/verify-access` |
+| **P0-05** | ✅ Deployed & verified | `20260714150000_restrict_public_team_access_to_published.sql` | `lib/security/public-team-publish.test.ts` | Anon RPC + content RLS require `publish_status = published`; `get_member_team_by_slug` for coach draft preview |
 | P0-03 | ⏳ Pending | — | — | Server-side publish billing gate |
-| P0-06 | ⏳ Pending | — | — | Backup/PITR verification |
+| P0-06 | ⏳ Partial | — | — | Pro + daily backups + PITR confirmed by owner (Jul 2026); formal recovery drill still open |
 | P0-07 | ⏳ Pending | — | — | Error monitoring |
 | P0-08 | ⏳ Pending | — | — | Webhook dedup + `current_period_end` |
 
@@ -29,24 +37,23 @@
 3. `security: restrict public team RPC fields`
 4. `security: restrict public team access to published pages`
 
-### Apply migrations (production Supabase)
+### Production migrations (applied)
 
-**Order (strict):**
+Applied via Supabase SQL Editor in order:
 
 1. `20260714120000_prevent_unauthorized_team_members_insert.sql`
 2. `20260714130000_prevent_team_role_escalation.sql`
 3. `20260714140000_restrict_public_team_rpc_fields.sql`
 4. `20260714150000_restrict_public_team_access_to_published.sql`
 
-**How:** Supabase CLI `supabase db push` **or** paste each file in SQL Editor in order. All migrations are **additive** (no data deletion).
-
-**Deploy app:** After migrations, deploy `pre-launch-audit` branch to Vercel (includes `TeamAccessGate` server verify + member draft loader).
+Live RPC check after apply: `get_public_team_by_slug`, `verify_team_access`, `get_member_team_by_slug` all respond.  
+Note: CLI `schema_migrations` may still be empty (SQL Editor path); optional `migration repair` later.
 
 ### Remaining security risk (after milestone)
 
 - **P0-03:** Coach can still publish without server-side subscription check.
 - **P0-08:** Duplicate webhook events may double-process; `current_period_end` not persisted.
-- **RLS integration tests:** Vitest covers migration SQL + TS helpers; live PostgREST policy tests still recommended on staging.
+- **P0-07:** No error monitoring / deploy alerts yet.
 - **Storage:** Public `team-assets` bucket unchanged (P1).
 
 ---
@@ -69,8 +76,8 @@
 
 ### Must fix before sales (P0)
 
-P0-01, P0-04, P0-02, P0-05 — **done on branch** (apply migrations + deploy).  
-Still required: **P0-03, P0-06, P0-07, P0-08** (see [Risk table](#risk-table)).
+P0-01, P0-04, P0-02, P0-05 — **deployed and verified on production**.  
+Still required: **P0-03, P0-07, P0-08** (+ formal recovery drill for P0-06) — see [Risk table](#risk-table).
 
 ### Can wait until after first 50 customers (P2/P3)
 
