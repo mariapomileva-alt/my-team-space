@@ -235,11 +235,11 @@ Lemon Squeezy → HMAC verify → `processLemonSqueezyWebhook` → upsert subscr
 
 | ID | Sev | Probability | Impact | Affected flow | Evidence | Safe fix | Regression risk | Effort |
 |----|-----|-------------|--------|---------------|----------|----------|-----------------|--------|
-| P0-01 | P0 | ~~High~~ | Critical | Tenant isolation | ~~`team_members_insert_own`~~ **Fixed** — policy dropped | — | — | — |
-| P0-02 | P0 | ~~High~~ | Critical | Public privacy | ~~`SELECT *` RPC~~ **Fixed** — explicit DTO + `verify_team_access` | — | — | — |
+| P0-01 | P0 | ~~High~~ | Critical | Tenant isolation | ~~`team_members_insert_own`~~ **Deployed & verified** | — | — | — |
+| P0-02 | P0 | ~~High~~ | Critical | Public privacy | ~~`SELECT *` RPC~~ **Deployed & verified** | — | — | — |
 | P0-03 | P0 | Medium | High | Billing / go-live | `saveTeamContent` sets `publish_status` without `publishRequiresCheckout` (client-only gate) | Server-side billing check before publish | Low | S |
-| P0-04 | P0 | ~~Medium~~ | High | Role security | ~~`team_members_update_own`~~ **Fixed** — trigger + RPC | — | — | — |
-| P0-05 | P0 | ~~Medium~~ | High | Content leak | ~~RLS ignores publish~~ **Fixed** — RPC + RLS + member loader | — | — | — |
+| P0-04 | P0 | ~~Medium~~ | High | Role security | ~~`team_members_update_own`~~ **Deployed & verified** | — | — | — |
+| P0-05 | P0 | ~~Medium~~ | High | Content leak | ~~RLS ignores publish~~ **Deployed & verified** | — | — | — |
 | P0-06 | P0 | Low | Critical | DR | No documented backup/restore runbook (until this audit) | `docs/production-recovery.md` + verify Supabase PITR | None | S |
 | P0-07 | P0 | High | High | Operations | No error monitoring; deploy failures went unnoticed | Sentry or Vercel log drains + uptime ping | Low | S |
 | P0-08 | P0 | Medium | Medium | Billing accuracy | Webhook doesn't pass `current_period_end`; no webhook event dedup | Extend `process-webhook.ts`; optional `webhook_events` idempotency table | Low | M |
@@ -287,7 +287,7 @@ Lemon Squeezy → HMAC verify → `processLemonSqueezyWebhook` → upsert subscr
 | Area | Status |
 |------|--------|
 | RLS enabled | Yes on all tenant tables |
-| Tenant isolation | **Improved** — P0-01/04/05 fixed on branch; apply migrations |
+| Tenant isolation | **Deployed & verified** — P0-01/02/04/05 on production |
 | Billing writes | Correct — client cannot UPDATE `coach_subscriptions` |
 | Service role | Server-only (`lib/supabase/admin.ts` + `server-only`) |
 | Webhook signature | HMAC verified |
