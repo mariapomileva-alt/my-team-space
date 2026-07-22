@@ -1,6 +1,7 @@
 "use server";
 
 import { assertTeamEditable } from "@/lib/billing/coach-can-edit";
+import { assertCanPublishTeam } from "@/lib/billing/publish-access";
 import { assertTeamMember } from "@/lib/team-member-access";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TeamSpace } from "@/lib/types";
@@ -54,6 +55,10 @@ export async function saveTeamContent(
 
   if (options?.publish && membership.role !== "coach") {
     throw new Error("Only the team owner can publish the page.");
+  }
+
+  if (options?.publish) {
+    await assertCanPublishTeam(supabase, user.id, teamId);
   }
 
   if (membership.role === "coach") {

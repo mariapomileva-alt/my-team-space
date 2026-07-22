@@ -25,7 +25,7 @@
 | **P0-04** | ✅ Deployed & verified | `20260714130000_prevent_team_role_escalation.sql` | `lib/security/team-role-escalation.test.ts` | `team_members_guard` trigger; `update_team_staff_role` RPC; invite ON CONFLICT DO NOTHING |
 | **P0-02** | ✅ Deployed & verified | `20260714140000_restrict_public_team_rpc_fields.sql` | `lib/security/public-team-fields.test.ts` | Explicit public DTO; `filter_public_page_settings`; `verify_team_access` + `/api/teams/[slug]/verify-access` |
 | **P0-05** | ✅ Deployed & verified | `20260714150000_restrict_public_team_access_to_published.sql` | `lib/security/public-team-publish.test.ts` | Anon RPC + content RLS require `publish_status = published`; `get_member_team_by_slug` for coach draft preview |
-| P0-03 | ⏳ Pending | — | — | Server-side publish billing gate |
+| P0-03 | ✅ Fixed on branch | — | `lib/billing/publish-access.test.ts` | Server `assertCanPublishTeam` on publish only; autosave unchanged |
 | P0-06 | ⏳ Partial | — | — | Pro + daily backups + PITR confirmed by owner (Jul 2026); formal recovery drill still open |
 | P0-07 | ⏳ Pending | — | — | Error monitoring |
 | P0-08 | ⏳ Pending | — | — | Webhook dedup + `current_period_end` |
@@ -237,7 +237,7 @@ Lemon Squeezy → HMAC verify → `processLemonSqueezyWebhook` → upsert subscr
 |----|-----|-------------|--------|---------------|----------|----------|-----------------|--------|
 | P0-01 | P0 | ~~High~~ | Critical | Tenant isolation | ~~`team_members_insert_own`~~ **Deployed & verified** | — | — | — |
 | P0-02 | P0 | ~~High~~ | Critical | Public privacy | ~~`SELECT *` RPC~~ **Deployed & verified** | — | — | — |
-| P0-03 | P0 | Medium | High | Billing / go-live | `saveTeamContent` sets `publish_status` without `publishRequiresCheckout` (client-only gate) | Server-side billing check before publish | Low | S |
+| P0-03 | P0 | Medium | High | Billing / go-live | ~~client-only gate~~ **Fixed on branch** — `assertCanPublishTeam` in `saveTeamContent` | Deploy after review | Low | S |
 | P0-04 | P0 | ~~Medium~~ | High | Role security | ~~`team_members_update_own`~~ **Deployed & verified** | — | — | — |
 | P0-05 | P0 | ~~Medium~~ | High | Content leak | ~~RLS ignores publish~~ **Deployed & verified** | — | — | — |
 | P0-06 | P0 | Low | Critical | DR | No documented backup/restore runbook (until this audit) | `docs/production-recovery.md` + verify Supabase PITR | None | S |
