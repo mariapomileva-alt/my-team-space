@@ -28,7 +28,7 @@
 | P0-03 | ✅ Fixed on branch | — | `lib/billing/publish-access.test.ts` | Server `assertCanPublishTeam` on publish only; autosave unchanged |
 | P0-06 | ⏳ Partial | — | — | Pro + daily backups + PITR confirmed by owner (Jul 2026); formal recovery drill still open |
 | P0-07 | ⏳ Pending | — | — | Error monitoring |
-| P0-08 | ⏳ Pending | — | — | Webhook dedup + `current_period_end` |
+| P0-08 | ✅ Fixed on branch | `20260723120000_lemon_webhook_dedup_and_period_end.sql` | `lib/lemon/webhook-payload.test.ts` | Dedup via `lemon_webhook_events`; pass `current_period_end`; skip older `lemon_updated_at` |
 
 ### Commits (security milestone)
 
@@ -242,7 +242,7 @@ Lemon Squeezy → HMAC verify → `processLemonSqueezyWebhook` → upsert subscr
 | P0-05 | P0 | ~~Medium~~ | High | Content leak | ~~RLS ignores publish~~ **Deployed & verified** | — | — | — |
 | P0-06 | P0 | Low | Critical | DR | No documented backup/restore runbook (until this audit) | `docs/production-recovery.md` + verify Supabase PITR | None | S |
 | P0-07 | P0 | High | High | Operations | No error monitoring; deploy failures went unnoticed | Sentry or Vercel log drains + uptime ping | Low | S |
-| P0-08 | P0 | Medium | Medium | Billing accuracy | Webhook doesn't pass `current_period_end`; no webhook event dedup | Extend `process-webhook.ts`; optional `webhook_events` idempotency table | Low | M |
+| P0-08 | P0 | Medium | Medium | Billing accuracy | ~~no dedup / period end~~ **Fixed on branch** — claim event + renews_at/ends_at + ordering | Apply migration + deploy | Low | M |
 | P1-01 | P1 | High | High | Data loss | Settings page autosave (`team-settings-client.tsx`) without `updated_at` lock | Reuse `saveTeamContent` or add locking | Low | S |
 | P1-02 | P1 | Medium | Medium | Autosave | Silent failures on `persist(true)` | Surface error state in UI | Low | S |
 | P1-03 | P1 | Medium | Medium | Auth UX | No logout, no password reset | Add sign-out + reset flow | Low | S |
