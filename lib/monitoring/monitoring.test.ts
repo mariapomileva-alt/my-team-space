@@ -82,5 +82,7 @@ describe("P0-07 — health endpoint contract", () => {
     expect(src).toMatch(/environment/);
     expect(src).toMatch(/get_public_team_by_slug/);
     expect(src).toMatch(/isBillingConfigured/);
+    expect(src).not.toMatch(/env_missing/);
+    expect(src).not.toMatch(/supabase_detail/);
   });
 });

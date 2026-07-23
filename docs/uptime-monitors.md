@@ -1,28 +1,44 @@
-# Uptime monitors (UptimeRobot or equivalent)
+# Uptime monitors (UptimeRobot)
 
 Do **not** POST to the Lemon webhook without a valid signature.
 
-## Monitors to create
+## Automated setup (API v3)
+
+```bash
+# Main API key in .env.local (gitignored) — never commit
+node scripts/setup-uptimerobot.mjs
+```
+
+Dry run: `UPTIMEROBOT_DRY_RUN=1 node scripts/setup-uptimerobot.mjs`  
+Test alert cycle: `UPTIMEROBOT_SEND_TEST_ALERT=1 node scripts/setup-uptimerobot.mjs`  
+(pause → start on Health monitor)
+
+## Monitors (live)
 
 | Name | URL | Type | Interval | Expect |
 |------|-----|------|----------|--------|
-| Homepage | https://www.myteamspace.cc/ | HTTP(S) | 5 min | 200 |
-| Login | https://www.myteamspace.cc/admin/login | HTTP(S) | 5 min | 200 |
-| Health | https://www.myteamspace.cc/api/health | HTTP(S) | 5 min | 200 + JSON `status` is `ok` or `degraded` |
-| Public team page | https://www.myteamspace.cc/{your-live-slug} | HTTP(S) | 5 min | 200 |
+| MyTeamSpace Production Homepage | https://www.myteamspace.cc/ | HTTP | 5 min | 2xx/3xx |
+| MyTeamSpace Production Health | https://www.myteamspace.cc/api/health | Keyword | 5 min | keyword `"status":"ok"` must exist (`ALERT_NOT_EXISTS`) |
+| MyTeamSpace Public Page | https://www.myteamspace.cc/stars | Keyword | 5 min | keyword `Dance Is` must exist (`ALERT_NOT_EXISTS`) |
 
-Replace `{your-live-slug}` with a known published team (e.g. Dance Stars slug).
+Alert contacts: existing account Email contact, Up + Down. Free plan: `threshold=0` (no “2 consecutive failures” setting). Custom User-Agent / SSL expiry reminder via API are Pro/blocked on Free.
 
 ## Alert contacts
 
-- Email: your ops inbox
-- Optional: Telegram / Slack webhook from UptimeRobot
+- Email: account default / existing contacts only — do not invent addresses in git
+- Optional Slack / Telegram: only with your confirmation + secret stored outside the repo
 
-## Keyword checks (optional)
+## Do not monitor with anonymous traffic
 
-For `/api/health`, keyword: `"status":"ok"` **or** alert only on HTTP ≥ 500 (degraded lemon_config still returns 200).
-
-## Do not monitor with anonymous POST
-
-- `/api/lemonsqueezy/webhook` POST
+- `/api/lemonsqueezy/webhook` POST (or unsigned GET spam)
 - `/api/admin/**` authenticated routes
+
+Webhook health: Sentry + structured `webhook_*` logs + Lemon delivery log.
+
+## Pause / maintenance
+
+1. Before a planned production migration: pause the three monitors **or** create a Maintenance Window in UptimeRobot and attach them.
+2. After migration: resume monitors; confirm all Up + health keyword still matches.
+3. Incidents: monitor detail → Logs.
+
+Full playbook: `docs/monitoring.md`

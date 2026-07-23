@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "uptime:setup": "node scripts/setup-uptimerobot.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
