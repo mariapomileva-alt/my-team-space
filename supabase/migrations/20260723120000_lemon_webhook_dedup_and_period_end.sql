@@ -51,6 +51,8 @@ end;
 $$;
 
 revoke all on function public.claim_lemon_webhook_event(text, text, text) from public;
+revoke all on function public.claim_lemon_webhook_event(text, text, text) from anon;
+revoke all on function public.claim_lemon_webhook_event(text, text, text) from authenticated;
 grant execute on function public.claim_lemon_webhook_event(text, text, text) to service_role;
 
 create or replace function public.upsert_coach_subscription_from_lemon(
