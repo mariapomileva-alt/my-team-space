@@ -34,7 +34,7 @@ Uptime setup: `docs/monitoring.md` + `node scripts/setup-uptimerobot.mjs`
 | Field | Value (update after each prod deploy) |
 |-------|----------------------------------------|
 | Branch | `pre-launch-audit` |
-| Last known monitoring commit | `40bb1bf` prod health; harden health + uptime docs pending next deploy |
+| Last known monitoring commit | `ab2f72f` (production) |
 | UptimeRobot monitors | Homepage / Health / Public Page (`/stars`) — live |
 | Last known P0-08 deploy | `0ea2bc7` / `dpl_KnF3pf6WZLXXYbfGnss4XKst4MEV` |
 | Preview example | Vercel Preview URLs (SSO protected) |
