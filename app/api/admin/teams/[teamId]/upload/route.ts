@@ -1,3 +1,11 @@
+import {
+  captureMonitoringException,
+  createRequestId,
+  MonitoringEvents,
+  runWithMonitoringContextAsync,
+  trackEvent,
+  withDurationLog,
+} from "@/lib/monitoring";
 import { isCurrentUserTeamMember } from "@/lib/teams/is-team-coach";
 import { buildTeamAssetPath, teamAssetPublicUrl, TEAM_ASSETS_BUCKET } from "@/lib/storage/team-assets";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -20,6 +28,16 @@ export async function POST(
   { params }: { params: Promise<{ teamId: string }> },
 ) {
   const { teamId } = await params;
+  const request_id = createRequestId();
+
+  return runWithMonitoringContextAsync(
+    {
+      request_id,
+      team_id: teamId,
+      route: `/api/admin/teams/${teamId}/upload`,
+      action: "upload",
+    },
+    async () => {
   if (!teamId) return NextResponse.json({ error: "Missing team" }, { status: 400 });
 
   const allowed = await isCurrentUserTeamMember(teamId);
@@ -59,25 +77,49 @@ export async function POST(
     return NextResponse.json({ error: "Invalid storage path" }, { status: 500 });
   }
 
-  const supabase = await createServerSupabase();
-  const buffer = Buffer.from(await file.arrayBuffer());
+  try {
+    const supabase = await createServerSupabase();
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-  const { error } = await supabase.storage.from(TEAM_ASSETS_BUCKET).upload(path, buffer, {
-    contentType: mime,
-    upsert: false,
-  });
+    const uploadResult = await withDurationLog("upload", "storage_upload", async () =>
+      supabase.storage.from(TEAM_ASSETS_BUCKET).upload(path, buffer, {
+        contentType: mime,
+        upsert: false,
+      }),
+    );
+    const { error } = uploadResult;
 
-  if (error) {
-    const msg = error.message ?? "Upload failed";
-    const friendly =
-      /bucket not found/i.test(msg)
-        ? "Storage bucket “team-assets” is missing. In Supabase SQL Editor, run supabase/RUN_TEAM_ASSETS_STORAGE.sql, then try again."
-        : msg;
-    return NextResponse.json({ error: friendly }, { status: 500 });
+    if (error) {
+      const msg = error.message ?? "Upload failed";
+      const friendly =
+        /bucket not found/i.test(msg)
+          ? "Storage bucket “team-assets” is missing. In Supabase SQL Editor, run supabase/RUN_TEAM_ASSETS_STORAGE.sql, then try again."
+          : msg;
+      trackEvent(MonitoringEvents.gallery_upload_failed, {
+        status: 500,
+        error_code: "STORAGE_UPLOAD_FAILED",
+        folder,
+      });
+      captureMonitoringException(error, { team_id: teamId, folder });
+      return NextResponse.json({ error: friendly }, { status: 500 });
+    }
+
+    trackEvent(MonitoringEvents.gallery_upload, { status: "ok", folder });
+    return NextResponse.json(
+      {
+        url: teamAssetPublicUrl(path),
+        path,
+      },
+      { headers: { "x-request-id": request_id } },
+    );
+  } catch (e) {
+    trackEvent(MonitoringEvents.gallery_upload_failed, {
+      status: 500,
+      error_code: "UPLOAD_EXCEPTION",
+    });
+    captureMonitoringException(e, { team_id: teamId });
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
-
-  return NextResponse.json({
-    url: teamAssetPublicUrl(path),
-    path,
-  });
+    },
+  );
 }

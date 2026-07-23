@@ -8,6 +8,7 @@ import {
   shouldApplyLemonSubscriptionUpdate,
   type LemonWebhookBody,
 } from "@/lib/lemon/webhook-payload";
+import { mergeMonitoringContext, MonitoringEvents, trackEvent } from "@/lib/monitoring";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { publicTeamCacheTag, revalidatePublicTeamPaths } from "@/lib/teams/public";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -70,6 +71,7 @@ async function claimWebhookDelivery(
       error.code === "42P01"
     ) {
       console.warn("[lemon-webhook] claim_lemon_webhook_event missing; continuing without dedup");
+      trackEvent(MonitoringEvents.webhook_processed, { status: "dedup_unavailable" });
       return "unkeyed";
     }
     throw error;
@@ -86,7 +88,13 @@ async function syncCoachSubscription(
   if (!data || data.type !== "subscriptions" || !data.id) return;
 
   const claim = await claimWebhookDelivery(admin, payload);
-  if (claim === "duplicate") return;
+  if (claim === "duplicate") {
+    trackEvent(MonitoringEvents.webhook_duplicate, {
+      event_name: payload.meta?.event_name ?? "unknown",
+      status: "duplicate",
+    });
+    return;
+  }
 
   const subId = String(data.id);
   const attrs = data.attributes ?? {};
@@ -126,6 +134,11 @@ async function syncCoachSubscription(
 
   if (!userId) return;
 
+  mergeMonitoringContext({
+    user_id: userId,
+    subscription_id: subId,
+  });
+
   const { data: existingSub } = await admin
     .from("coach_subscriptions")
     .select("lemon_updated_at, subscription_status, current_period_end")
@@ -138,6 +151,10 @@ async function syncCoachSubscription(
       lemonUpdatedAt,
     )
   ) {
+    trackEvent(MonitoringEvents.webhook_stale, {
+      event_name: payload.meta?.event_name ?? "unknown",
+      status: "stale",
+    });
     return;
   }
 
@@ -178,6 +195,20 @@ async function syncCoachSubscription(
   }
 
   await invalidateCoachTeams(admin, userId);
+
+  const eventName = payload.meta?.event_name ?? "";
+  if (eventName === "subscription_created" || mappedStatus === "trialing" || mappedStatus === "active") {
+    if (eventName === "subscription_created") {
+      trackEvent(MonitoringEvents.subscription_created, { status: mappedStatus });
+    }
+  }
+  if (eventName === "subscription_cancelled" || mappedStatus === "cancelled" || mappedStatus === "expired") {
+    trackEvent(MonitoringEvents.subscription_cancelled, { status: mappedStatus });
+  }
+  trackEvent(MonitoringEvents.webhook_processed, {
+    event_name: eventName || "unknown",
+    status: mappedStatus,
+  });
 }
 
 export async function processLemonSqueezyWebhook(payload: LemonWebhookBody) {
