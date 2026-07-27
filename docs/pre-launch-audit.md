@@ -26,7 +26,7 @@
 | **P0-02** | ✅ Deployed & verified | `20260714140000_restrict_public_team_rpc_fields.sql` | `lib/security/public-team-fields.test.ts` | Explicit public DTO; `filter_public_page_settings`; `verify_team_access` + `/api/teams/[slug]/verify-access` |
 | **P0-05** | ✅ Deployed & verified | `20260714150000_restrict_public_team_access_to_published.sql` | `lib/security/public-team-publish.test.ts` | Anon RPC + content RLS require `publish_status = published`; `get_member_team_by_slug` for coach draft preview |
 | P0-03 | ✅ Fixed on branch | — | `lib/billing/publish-access.test.ts` | Server `assertCanPublishTeam` on publish only; autosave unchanged |
-| P0-06 | ⏳ Partial | — | — | Pro + daily backups + PITR confirmed by owner (Jul 2026); formal recovery drill still open |
+| P0-06 | ✅ Done | — | `scripts/recovery-integrity-check.mjs` | Physical daily backups verified; Restore-to-new-project drill PASS (fork `vdjleqiuxovskirqzjcg`); **PITR add-on off** (optional ~$100+/mo) |
 | P0-07 | ✅ Fixed on branch | — | `lib/monitoring/monitoring.test.ts` | Sentry (optional DSN) + structured logs + `/api/health` + docs |
 | P0-08 | ✅ Fixed on branch | `20260723120000_lemon_webhook_dedup_and_period_end.sql` | `lib/lemon/webhook-payload.test.ts` | Dedup via `lemon_webhook_events`; pass `current_period_end`; skip older `lemon_updated_at` |
 

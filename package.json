@@ -11,7 +11,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "uptime:setup": "node scripts/setup-uptimerobot.mjs"
+    "uptime:setup": "node scripts/setup-uptimerobot.mjs",
+    "recovery:check": "node scripts/recovery-integrity-check.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

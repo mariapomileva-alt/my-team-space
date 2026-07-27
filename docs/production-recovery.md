@@ -1,9 +1,11 @@
 # Production recovery — MyTeamSpace
 
-**Last updated:** 14 July 2026  
+**Last updated:** 24 July 2026  
 **Production URL:** https://www.myteamspace.cc/  
-**Supabase:** single project (multi-tenant)  
+**Supabase:** single project (multi-tenant) — ref `yundypamrubdrbmnilgi`  
 **Hosting:** Vercel project `my-team-space` (team `marija-s-projects1`)
+
+**Formal drill:** see `docs/p0-06-recovery-drill.md` + `scripts/recovery-integrity-check.mjs`.
 
 ---
 
@@ -13,6 +15,7 @@
 2. Note **time (UTC)**, **symptom**, **affected coaches/teams** (slugs, emails).
 3. Capture **Vercel deployment ID** (current production) from Vercel dashboard.
 4. Capture **Supabase project ref** and confirm you have **Owner** access.
+5. Prefer **Restore to a New Project** over in-place restore whenever possible.
 
 ---
 
@@ -20,27 +23,36 @@
 
 ### Verify backup policy
 
-1. Supabase Dashboard → **Project Settings → Database → Backups**
-2. Confirm **daily backups** enabled (Pro plan minimum for production).
-3. Confirm **Point-in-Time Recovery (PITR)** — note retention window (e.g. 7 days).
+1. Supabase Dashboard → **Database → Backups → Scheduled**  
+   https://supabase.com/dashboard/project/yundypamrubdrbmnilgi/database/backups/scheduled  
+   (bare `/database/backups` 404s — use `/scheduled`, `/pitr`, or `/restore-to-new-project`)
+2. Confirm **physical / daily backups** (paid plan).
+3. Confirm **PITR** if enabled —  
+   https://supabase.com/dashboard/project/yundypamrubdrbmnilgi/database/backups/pitr  
+   note earliest/latest recovery points (UTC).
+4. Confirm **Restore to a New Project** is available —  
+   https://supabase.com/dashboard/project/yundypamrubdrbmnilgi/database/backups/restore-to-new-project
 
-### Restore entire database (disaster)
+### Restore to a new project (preferred — non-destructive to production)
 
-> **Destructive to current data.** Use only for catastrophic corruption or bad migration.
+Use for drills and most recovery analysis. Creates an **independent** billed project; production stays online.
 
-1. Supabase Dashboard → **Database → Backups → Restore**
-2. Choose backup timestamp **before** the incident.
-3. Restore creates a **new** project or overwrites per Supabase UI flow — follow Supabase docs for your plan.
-4. Update Vercel env vars if project ref changes (`SUPABASE_URL`, keys).
-5. Redeploy Vercel production.
-6. Verify: login, one known team slug, webhook GET health.
+1. Source project → **Database → Backups → Restore to a New Project**
+2. Pick physical backup **or** PITR timestamp **before** the incident.
+3. Review cost → confirm.
+4. When ready: verify with `node scripts/recovery-integrity-check.mjs` using `.env.recovery` for the **new** project only.
+5. Storage files are **not** copied — re-upload or copy objects separately if needed.
+6. Disable outbound extensions (`pg_net`, cron, wrappers) on the fork if present.
+7. After validation: either cut over (update Vercel env + redeploy) **or** delete the fork.
 
-### Point-in-time recovery (preferred for partial window)
+### Restore in-place on production (last resort)
 
-1. Dashboard → **Database → PITR**
-2. Select timestamp just before bad migration/deploy.
-3. Follow Supabase wizard to fork/restore.
-4. Swap env vars to recovered instance if new project.
+> **Destructive / downtime.** Requires explicit owner confirmation. Do **not** use for drills.
+
+1. Dashboard → **Database → Backups / PITR → Restore** on the **same** project.
+2. Expect downtime proportional to DB size.
+3. After restore: verify login, `/{slug}`, `/api/health`, Lemon webhook GET.
+4. Do **not** run this during P0-06 drill.
 
 ---
 
