@@ -2,6 +2,13 @@ import type { BlockInstance, TeamSpace, TeamVisibility } from "@/lib/types";
 
 export const TEAM_ACCESS_COOKIE = "mts_team_access";
 
+/** Cookie value set only after server-side verify_team_access RPC succeeds. */
+export const TEAM_ACCESS_GRANTED = "granted";
+
+export function teamAccessCookieName(slug: string): string {
+  return `${TEAM_ACCESS_COOKIE}_${slug.trim().toLowerCase()}`;
+}
+
 /** Blocks that default to private in mixed mode */
 export const PRIVATE_BY_DEFAULT_TYPES = new Set([
   "gallery",

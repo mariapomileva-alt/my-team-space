@@ -1,6 +1,16 @@
 "use server";
 
 import { assertTeamEditable } from "@/lib/billing/coach-can-edit";
+import { assertCanPublishTeam } from "@/lib/billing/publish-access";
+import {
+  captureMonitoringException,
+  createRequestId,
+  mergeMonitoringContext,
+  MonitoringEvents,
+  runWithMonitoringContextAsync,
+  trackEvent,
+  withDurationLog,
+} from "@/lib/monitoring";
 import { assertTeamMember } from "@/lib/team-member-access";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TeamSpace } from "@/lib/types";
@@ -49,87 +59,124 @@ export async function saveTeamContent(
   team: TeamSpace,
   options?: { publish?: boolean },
 ): Promise<{ updatedAt: string }> {
-  const { supabase, user } = await getCoachContext();
-  const membership = await assertTeamMember(supabase, user.id, teamId);
+  const request_id = createRequestId();
+  const isPublish = Boolean(options?.publish);
+  const action = isPublish ? "publish" : "autosave";
 
-  if (options?.publish && membership.role !== "coach") {
-    throw new Error("Only the team owner can publish the page.");
-  }
+  return runWithMonitoringContextAsync(
+    {
+      request_id,
+      team_id: teamId,
+      route: `/admin/team/${teamId}`,
+      action,
+    },
+    async () => {
+      trackEvent(isPublish ? MonitoringEvents.publish_started : MonitoringEvents.autosave_started, {
+        status: "started",
+      });
 
-  if (membership.role === "coach") {
-    await assertTeamEditable(supabase, user.id, teamId);
-  }
+      try {
+        return await withDurationLog(isPublish ? "publish" : "autosave", action, async () => {
+          const { supabase, user } = await getCoachContext();
+          mergeMonitoringContext({ user_id: user.id });
+          const membership = await assertTeamMember(supabase, user.id, teamId);
 
-  let payload = team;
-  if (!payload.updatedAt?.trim()) {
-    const current = await loadTeamRow(supabase, teamId);
-    if (!current.updated_at) {
-      throw new Error(STALE_TEAM_VERSION);
-    }
-    payload = { ...payload, updatedAt: current.updated_at };
-  }
+          if (options?.publish && membership.role !== "coach") {
+            throw new Error("Only the team owner can publish the page.");
+          }
 
-  const logoUrl = payload.logoUrl?.trim().slice(0, 2048) || null;
-  const pageSettings = {
-    ...(payload.pageSettings ?? {}),
-    logoUrl,
-  };
+          if (options?.publish) {
+            await assertCanPublishTeam(supabase, user.id, teamId);
+          }
 
-  const blocks = payload.blocks.map((block) => {
-    if (block.type !== "hero") return block;
-    const settings =
-      block.settings && typeof block.settings === "object"
-        ? { ...block.settings }
-        : {};
-    if (logoUrl) settings.teamPhotoUrl = logoUrl;
-    return { ...block, settings };
-  });
+          if (membership.role === "coach") {
+            await assertTeamEditable(supabase, user.id, teamId);
+          }
 
-  const patch: Record<string, unknown> = {
-    name: payload.name.slice(0, 200),
-    tagline: payload.tagline?.slice(0, 220) ?? null,
-    logo_url: logoUrl,
-    ...(logoUrl ? { logo_path: null } : {}),
-    theme_id: payload.themeId,
-    primary_color: payload.primaryColor.slice(0, 32),
-    secondary_color: payload.secondaryColor.slice(0, 32),
-    blocks: blocks as unknown as object,
-    page_visibility: payload.pageVisibility ?? "public",
-    access_code: payload.accessCode?.slice(0, 64) ?? null,
-    invite_token: payload.inviteToken?.slice(0, 64) ?? null,
-    page_settings: pageSettings as object,
-  };
-  if (options?.publish) {
-    patch.publish_status = "published";
-  }
+          let payload = team;
+          if (!payload.updatedAt?.trim()) {
+            const current = await loadTeamRow(supabase, teamId);
+            if (!current.updated_at) {
+              throw new Error(STALE_TEAM_VERSION);
+            }
+            payload = { ...payload, updatedAt: current.updated_at };
+          }
 
-  const lockUpdatedAt = payload.updatedAt?.trim();
-  let query = supabase.from("teams").update(patch).eq("id", teamId);
-  if (lockUpdatedAt) {
-    query = query.eq("updated_at", lockUpdatedAt);
-  }
+          const logoUrl = payload.logoUrl?.trim().slice(0, 2048) || null;
+          const pageSettings = {
+            ...(payload.pageSettings ?? {}),
+            logoUrl,
+          };
 
-  let { data: row, error } = await query.select("slug, updated_at").maybeSingle();
+          const blocks = payload.blocks.map((block) => {
+            if (block.type !== "hero") return block;
+            const settings =
+              block.settings && typeof block.settings === "object"
+                ? { ...block.settings }
+                : {};
+            if (logoUrl) settings.teamPhotoUrl = logoUrl;
+            return { ...block, settings };
+          });
 
-  if (error?.message?.includes("publish_status") && options?.publish) {
-    const { publish_status: _removed, ...withoutPublish } = patch;
-    let retry = supabase.from("teams").update(withoutPublish).eq("id", teamId);
-    if (lockUpdatedAt) retry = retry.eq("updated_at", lockUpdatedAt);
-    ({ data: row, error } = await retry.select("slug, updated_at").maybeSingle());
-    if (!error && row) {
-      throw new Error(
-        "Published in app, but publish_status column is missing — run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase.",
-      );
-    }
-  }
+          const patch: Record<string, unknown> = {
+            name: payload.name.slice(0, 200),
+            tagline: payload.tagline?.slice(0, 220) ?? null,
+            logo_url: logoUrl,
+            ...(logoUrl ? { logo_path: null } : {}),
+            theme_id: payload.themeId,
+            primary_color: payload.primaryColor.slice(0, 32),
+            secondary_color: payload.secondaryColor.slice(0, 32),
+            blocks: blocks as unknown as object,
+            page_visibility: payload.pageVisibility ?? "public",
+            access_code: payload.accessCode?.slice(0, 64) ?? null,
+            invite_token: payload.inviteToken?.slice(0, 64) ?? null,
+            page_settings: pageSettings as object,
+          };
+          if (options?.publish) {
+            patch.publish_status = "published";
+          }
 
-  if (error) throw new Error(error.message);
-  if (!row) {
-    throw new Error(STALE_TEAM_VERSION);
-  }
+          const lockUpdatedAt = payload.updatedAt?.trim();
+          let query = supabase.from("teams").update(patch).eq("id", teamId);
+          if (lockUpdatedAt) {
+            query = query.eq("updated_at", lockUpdatedAt);
+          }
 
-  if (row.slug) revalidateTeamSurfaces(teamId, row.slug);
-  return { updatedAt: String(row.updated_at) };
+          let { data: row, error } = await query.select("slug, updated_at").maybeSingle();
+
+          if (error?.message?.includes("publish_status") && options?.publish) {
+            const { publish_status: _removed, ...withoutPublish } = patch;
+            let retry = supabase.from("teams").update(withoutPublish).eq("id", teamId);
+            if (lockUpdatedAt) retry = retry.eq("updated_at", lockUpdatedAt);
+            ({ data: row, error } = await retry.select("slug, updated_at").maybeSingle());
+            if (!error && row) {
+              throw new Error(
+                "Published in app, but publish_status column is missing — run supabase/RUN_COACH_SUBSCRIPTIONS.sql in Supabase.",
+              );
+            }
+          }
+
+          if (error) throw new Error(error.message);
+          if (!row) {
+            throw new Error(STALE_TEAM_VERSION);
+          }
+
+          if (row.slug) revalidateTeamSurfaces(teamId, row.slug);
+          if (isPublish) {
+            trackEvent(MonitoringEvents.publish_success, { status: "ok" });
+          }
+          return { updatedAt: String(row.updated_at) };
+        });
+      } catch (e) {
+        trackEvent(isPublish ? MonitoringEvents.publish_failed : MonitoringEvents.autosave_failed, {
+          status: "error",
+          error_code: e instanceof Error ? e.message.slice(0, 80) : "unknown",
+        });
+        captureMonitoringException(e, { team_id: teamId, action });
+        throw e;
+      }
+    },
+  );
 }
 
 export async function addTeamUpdate(teamId: string, formData: FormData) {
